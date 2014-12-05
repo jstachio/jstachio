@@ -1,0 +1,9 @@
+*~
+/build
+/target
+/static-mustache/build
+/static-mustache/target
+/static-mustache-examples/build
+/static-mustache-examples/target
+/.nb-gradle
+/.gradle

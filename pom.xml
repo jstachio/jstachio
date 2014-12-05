@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.sviperll</groupId>
+        <artifactId>sviperll-maven-parent-6</artifactId>
+        <version>3.1</version>
+    </parent>
+    <groupId>com.github.sviperll</groupId>
+    <artifactId>static-mustache-maven-parent</artifactId>
+    <name>static-mustache-maven-parent</name>
+    <packaging>pom</packaging>
+    <version>0.1-SNAPSHOT</version>
+    <url>http://maven.apache.org</url>
+    <properties>
+        <netbeans.hint.license>BSD3</netbeans.hint.license>
+    </properties>
+    <modules>
+        <module>static-mustache</module>
+        <module>static-mustache-examples</module>
+    </modules>
+    <scm>
+        <connection>scm:git:git://github.com/sviperll/static-mustache.git</connection>
+        <developerConnection>scm:git:git@github.com:sviperll/static-mustache.git</developerConnection>
+        <url>https://github.com/sviperll/static-mustache</url>
+      <tag>HEAD</tag>
+  </scm>
+    <licenses>
+        <license>
+            <name>The BSD 3-Clause License</name>
+            <url>http://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagNameFormat>static-mustache-@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <developers>
+        <developer>
+            <id>sviperll</id>
+            <name>Victor Nazarov</name>
+            <email>asviraspossible@gmail.com</email>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
