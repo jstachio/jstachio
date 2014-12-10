@@ -27,20 +27,35 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache.util;
 
-import com.github.sviperll.staticmustache.TypeException;
+import com.github.sviperll.staticmustache.token.Position;
+import com.github.sviperll.staticmustache.token.PositionedToken;
+import com.github.sviperll.staticmustache.token.ProcessingException;
+import com.github.sviperll.staticmustache.token.TokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
+class PositionAnnotator implements TokenProcessor<Character>{
+    private final String fileName;
+    private final TokenProcessor<PositionedToken<Character>> processor;
+    private int row = 1;
+    private int col = 1;
+    public PositionAnnotator(String fileName, TokenProcessor<PositionedToken<Character>> processor) {
+        this.fileName = fileName;
+        this.processor = processor;
     }
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
+    @Override
+    public void processToken(Character token) throws ProcessingException {
+        processor.processToken(new PositionedToken<Character>(new Position(fileName, row, col), token));
+        if (token != null && token != '\n') {
+            col++;
+        } else {
+            row++;
+            col = 1;
+        }
     }
 }

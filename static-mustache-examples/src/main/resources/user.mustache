@@ -1,8 +1,14 @@
-Name: {{   name   }}
+{{#name}}
+Name: {{.}}, Name Length is {{length}}
+{{/name}}
 Age: {{  age  }}
 
 Card:
 
 {{ card }}
 
-endoffile
+{{#array}}
+ * {{.}}{{/array}}
+
+{{#array1}}
+  {{.}}{{/array1}}

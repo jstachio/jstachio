@@ -27,27 +27,14 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache.util;
+
+import com.github.sviperll.staticmustache.token.TokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
-    private final TokenProcessor<PositionedToken<T>> downstream;
-    private Position position = null;
-
-    public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
-        this.downstream = downstream;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    @Override
-    public void processToken(T transformedToken) throws ProcessingException {
-        downstream.processToken(new PositionedToken<T>(position, transformedToken));
-    }
-
+interface TokenProcessorDecorator<T, U> {
+    TokenProcessor<T> decorateTokenProcessor(TokenProcessor<U> t);
 }

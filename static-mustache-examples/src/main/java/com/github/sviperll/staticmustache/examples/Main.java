@@ -29,7 +29,15 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
+import com.github.sviperll.staticmustache.Renderable;
+import com.github.sviperll.staticmustache.Renderer;
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        User user = new User("Victor", 29, null, new String[] {"aaa", "bbb", "ccc"}, new int[] {1,2,3,4,5});
+        Renderable renderable = new RenderableUserAdapter(user);
+        Renderer renderer = renderable.createRenderer(System.out);
+        renderer.render();
     }
 }

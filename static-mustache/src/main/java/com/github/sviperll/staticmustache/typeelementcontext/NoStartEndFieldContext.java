@@ -27,32 +27,38 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.typeelementcontext;
 
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import com.github.sviperll.staticmustache.TypeException;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class TypeProcessor {
-    private final SpecialTypes types;
-    private final Types util;
-
-    TypeProcessor(SpecialTypes types, Types util) {
-        this.types = types;
-        this.util = util;
-
+public class NoStartEndFieldContext implements FieldContext {
+    private final FieldContext parent;
+    public NoStartEndFieldContext(FieldContext parent) {
+        this.parent = parent;
     }
-    String inline(TypeMirror type, String expression, String writer) throws TypeException {
-        if (util.isAssignable(type, types._Renderable))
-            return expression + ".createRenderer(" + writer + ").render(); ";
-        else if (util.isAssignable(type, types._int))
-            return writer + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._String))
-            return writer + ".append(" + expression + "); ";
-        else
-            throw new TypeException("Unsupported inlining: " + expression + ": unsupported type");
+
+    @Override
+    public String endOfBlock() {
+        return "";
     }
+
+    @Override
+    public ContextEntry getEntry(String name) throws TypeException {
+        return parent.getEntry(name);
+    }
+
+    @Override
+    public ContextEntry thisEntry() throws TypeException {
+        return parent.thisEntry();
+    }
+
+    @Override
+    public String startOfBlock() {
+        return "";
+    }
+
 }

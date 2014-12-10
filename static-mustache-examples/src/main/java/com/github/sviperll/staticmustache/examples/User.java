@@ -41,9 +41,13 @@ public class User {
     final String name;
     final int age;
     final Renderable card;
-    public User(String name, int age, Renderable card) {
+    final String[] array;
+    final int[] array1;
+    public User(String name, int age, Renderable card, String[] array, int[] array1) {
         this.name = name;
         this.age = age;
         this.card = card;
+        this.array = array;
+        this.array1 = array1;
     }
 }

@@ -27,30 +27,47 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.typeelementcontext;
+
+import com.github.sviperll.staticmustache.TypeException;
+import javax.lang.model.type.TypeMirror;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> {
-    public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(final TokenProcessorDecorator<T, U> decorator, final TokenProcessor<PositionedToken<U>> positionedDownstream) {
-        PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
-        TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
-        return new PositionedTransformer<T, U>(downstream, processor);
-    }
+public class NothingFieldContext implements FieldContext {
+    private final String expression;
+    private final TypeMirror type;
+    private final FieldContext parent;
 
-    private final PositionHodingTokenProcessor<U> downstream;
-    private final TokenProcessor<T> processor;
-
-    private PositionedTransformer(PositionHodingTokenProcessor<U> downstream, TokenProcessor<T> processor) {
-        this.downstream = downstream;
-        this.processor = processor;
+    NothingFieldContext(String expression, TypeMirror type, FieldContext parent) {
+        this.expression = expression;
+        this.type = type;
+        this.parent = parent;
     }
 
     @Override
-    public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
-        downstream.setPosition(sourceToken.position());
-        processor.processToken(sourceToken.innerToken());
+    public String endOfBlock() {
+        return parent.endOfBlock();
     }
+
+    @Override
+    public ContextEntry getEntry(String name) throws TypeException {
+        if (parent == null)
+            throw new TypeException("Unknown field: " + name);
+        else
+            return parent.getEntry(name);
+    }
+
+    @Override
+    public ContextEntry thisEntry() throws TypeException {
+        return new ContextEntry(expression, type);
+    }
+
+    @Override
+    public String startOfBlock() {
+        return parent.startOfBlock();
+    }
+
 }

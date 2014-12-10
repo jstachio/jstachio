@@ -27,30 +27,16 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache;
+
+import com.github.sviperll.staticmustache.token.ProcessingException;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class PositionAnnotator implements TokenProcessor<Character>{
-    private final String fileName;
-    private final TokenProcessor<PositionedToken<Character>> processor;
-    private int row = 1;
-    private int col = 1;
-    public PositionAnnotator(String fileName, TokenProcessor<PositionedToken<Character>> processor) {
-        this.fileName = fileName;
-        this.processor = processor;
-    }
+interface MustacheTokenizerState extends ParensisToken.Visitor<Void, ProcessingException> {
 
-    @Override
-    public void processToken(Character token) throws ProcessingException {
-        processor.processToken(new PositionedToken<Character>(new Position(fileName, row, col), token));
-        if (token != null && token != '\n') {
-            col++;
-        } else {
-            row++;
-            col = 1;
-        }
-    }
+    void onStateChange() throws ProcessingException;
+
 }

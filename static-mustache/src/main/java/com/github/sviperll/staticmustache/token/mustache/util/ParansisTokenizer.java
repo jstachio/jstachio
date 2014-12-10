@@ -27,21 +27,29 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache.util;
+
+import com.github.sviperll.staticmustache.token.mustache.ParensisToken;
+import com.github.sviperll.staticmustache.token.PositionedToken;
+import com.github.sviperll.staticmustache.token.ProcessingException;
+import com.github.sviperll.staticmustache.token.TokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class ParansisTokenizer implements TokenProcessor<Character> {
-    public static TokenProcessorDecorator<Character, ParensisToken> decorator() {
+    static TokenProcessorDecorator<Character, ParensisToken> decorator() {
         return new TokenProcessorDecorator<Character, ParensisToken>() {
-
             @Override
             public TokenProcessor<Character> decorateTokenProcessor(TokenProcessor<ParensisToken> downstream) {
                 return new ParansisTokenizer(downstream);
             }
         };
+    }
+    public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<ParensisToken>> downstream) {
+        TokenProcessor<PositionedToken<Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(ParansisTokenizer.decorator(), downstream);
+        return new PositionAnnotator(fileName, paransisTokenizer);
     }
 
     private final TokenProcessor<ParensisToken> downstream;

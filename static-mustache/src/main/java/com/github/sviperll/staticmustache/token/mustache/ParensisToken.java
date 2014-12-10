@@ -10,7 +10,7 @@
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the documentation and/or
- *     other materials provided with the distribution.
+ *     character materials provided with the distribution.
  *
  *  3. Neither the name of the copyright holder nor the names of its contributors
  *     may be used to endorse or promote products derived from this software
@@ -27,37 +27,53 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
-
-import java.io.IOException;
-import java.util.List;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
+package com.github.sviperll.staticmustache.token.mustache;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TypeElementContext {
-    private final TypeProcessor processor;
-    private final String expression;
-    private final TypeElement type;
-    private final String writerExpression;
-
-    public TypeElementContext(TypeProcessor processor, TypeElement type, String expression, String writerExpression) {
-        this.processor = processor;
-        this.expression = expression;
-        this.type = type;
-        this.writerExpression = writerExpression;
+public abstract class ParensisToken {
+    public static ParensisToken openParensis() {
+        return new ParensisToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.openParensis();
+            }
+        };
+    }
+    public static ParensisToken closingParensis() {
+        return new ParensisToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.closingParensis();
+            }
+        };
+    }
+    public static ParensisToken character(final char s) {
+        return new ParensisToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.character(s);
+            }
+        };
+    }
+    public static ParensisToken endOfFile() {
+        return new ParensisToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.endOfFile();
+            }
+        };
+    }
+    public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
+    private ParensisToken() {
     }
 
-    String inline(String name) throws TypeException {
-        List<? extends Element> enclosedElements = type.getEnclosedElements();
-        for (Element element: enclosedElements) {
-            if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name))
-                return processor.inline(element.asType(), expression + "." + name, writerExpression);
-        }
-        throw new TypeException("Unknown field: " + name);
+    public interface Visitor<R, E extends Exception> {
+        R openParensis() throws E;
+        R closingParensis() throws E;
+        R character(char c) throws E;
+        R endOfFile() throws E;
     }
 }

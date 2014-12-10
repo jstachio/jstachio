@@ -27,20 +27,25 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
-
-import com.github.sviperll.staticmustache.TypeException;
+package com.github.sviperll.staticmustache.typeelementcontext;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
+class EnclosedRelation {
+    private final String name;
+    private final TemplateContext context;
+    public EnclosedRelation(String name, TemplateContext context) {
+        this.name = name;
+        this.context = context;
     }
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
+    String name() {
+        return name;
+    }
+
+    TemplateContext parentContext() {
+        return context;
     }
 }

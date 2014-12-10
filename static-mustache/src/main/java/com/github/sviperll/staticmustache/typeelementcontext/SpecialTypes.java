@@ -27,8 +27,9 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.typeelementcontext;
 
+import com.github.sviperll.staticmustache.Renderable;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -40,11 +41,41 @@ import javax.lang.model.util.Types;
  */
 public class SpecialTypes {
     public final TypeMirror _Renderable;
+    public final TypeMirror _Error;
+    public final TypeMirror _RuntimeException;
     public final TypeMirror _int;
+    public final TypeMirror _short;
+    public final TypeMirror _long;
+    public final TypeMirror _char;
+    public final TypeMirror _byte;
+    public final TypeMirror _float;
+    public final TypeMirror _double;
+    public final TypeMirror _Integer;
+    public final TypeMirror _Short;
+    public final TypeMirror _Long;
+    public final TypeMirror _Character;
+    public final TypeMirror _Byte;
+    public final TypeMirror _Float;
+    public final TypeMirror _Double;
     public final TypeMirror _String;
     public SpecialTypes(Elements declarations, Types types) {
         _Renderable = declarations.getTypeElement(Renderable.class.getName()).asType();
         _String = declarations.getTypeElement(String.class.getName()).asType();
         _int = types.getPrimitiveType(TypeKind.INT);
+        _short = types.getPrimitiveType(TypeKind.SHORT);
+        _long = types.getPrimitiveType(TypeKind.LONG);
+        _char = types.getPrimitiveType(TypeKind.CHAR);
+        _byte = types.getPrimitiveType(TypeKind.BYTE);
+        _float = types.getPrimitiveType(TypeKind.FLOAT);
+        _double = types.getPrimitiveType(TypeKind.DOUBLE);
+        _Integer = declarations.getTypeElement(Integer.class.getName()).asType();
+        _Short = declarations.getTypeElement(Short.class.getName()).asType();
+        _Long = declarations.getTypeElement(Long.class.getName()).asType();
+        _Character = declarations.getTypeElement(Character.class.getName()).asType();
+        _Byte = declarations.getTypeElement(Byte.class.getName()).asType();
+        _Float = declarations.getTypeElement(Float.class.getName()).asType();
+        _Double = declarations.getTypeElement(Double.class.getName()).asType();
+        _Error = declarations.getTypeElement(Error.class.getName()).asType();
+        _RuntimeException = declarations.getTypeElement(RuntimeException.class.getName()).asType();
     }
 }

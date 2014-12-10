@@ -27,20 +27,54 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache;
 
-import com.github.sviperll.staticmustache.TypeException;
+import com.github.sviperll.staticmustache.token.ProcessingException;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
+class BeforeIdentifierMustacheTokenizerState implements MustacheTokenizerState {
+    final MustacheTokenizerFieldKind kind;
+    private final MustacheTokenizer tokenizer;
+
+    BeforeIdentifierMustacheTokenizerState(MustacheTokenizerFieldKind kind, final MustacheTokenizer outer) {
+        this.tokenizer = outer;
+        this.kind = kind;
     }
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
+    @Override
+    public Void openParensis() throws ProcessingException {
+        tokenizer.error("Unexpected open parensis");
+        return null;
     }
+
+    @Override
+    public Void closingParensis() throws ProcessingException {
+        tokenizer.error("Unexpected closing parensis");
+        return null;
+    }
+
+    @Override
+    public Void character(char c) throws ProcessingException {
+        if (Character.isWhitespace(c)) {
+        } else {
+            StringBuilder fieldName = new StringBuilder();
+            fieldName.append(c);
+            tokenizer.setState(new IdentifierMustacheTokenizerState(kind, fieldName, tokenizer));
+        }
+        return null;
+    }
+
+    @Override
+    public Void endOfFile() throws ProcessingException {
+        tokenizer.error("Unclosed field at the end of file");
+        return null;
+    }
+
+    @Override
+    public void onStateChange() throws ProcessingException {
+    }
+
 }

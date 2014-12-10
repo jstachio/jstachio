@@ -29,18 +29,17 @@
  */
 package com.github.sviperll.staticmustache.token;
 
-import com.github.sviperll.staticmustache.TypeException;
+import com.github.sviperll.staticmustache.token.mustache.MustacheTokenizer;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
+public class TokenProcessors {
+    public static TokenProcessor<Character> createMustacheTokenizer(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
+        return MustacheTokenizer.createInstance(fileName, downstream);
     }
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
+    private TokenProcessors() {
     }
 }

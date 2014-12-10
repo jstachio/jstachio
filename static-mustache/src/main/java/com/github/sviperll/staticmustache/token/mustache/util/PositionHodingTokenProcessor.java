@@ -27,20 +27,32 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.mustache.util;
 
-import com.github.sviperll.staticmustache.TypeException;
+import com.github.sviperll.staticmustache.token.Position;
+import com.github.sviperll.staticmustache.token.PositionedToken;
+import com.github.sviperll.staticmustache.token.ProcessingException;
+import com.github.sviperll.staticmustache.token.TokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
+public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
+    private final TokenProcessor<PositionedToken<T>> downstream;
+    private Position position = null;
+
+    public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
+        this.downstream = downstream;
     }
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
+    public void setPosition(Position position) {
+        this.position = position;
     }
+
+    @Override
+    public void processToken(T transformedToken) throws ProcessingException {
+        downstream.processToken(new PositionedToken<T>(position, transformedToken));
+    }
+
 }

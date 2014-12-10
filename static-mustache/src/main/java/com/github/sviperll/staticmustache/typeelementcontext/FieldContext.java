@@ -27,7 +27,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.typeelementcontext;
 
 import com.github.sviperll.staticmustache.TypeException;
 
@@ -35,12 +35,14 @@ import com.github.sviperll.staticmustache.TypeException;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ProcessingException extends Exception {
-    public ProcessingException(Position position, String message) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] " + message);
-    }
+public interface FieldContext {
 
-    public ProcessingException(Position position, TypeException typeException) {
-        super(position.fileName() + ":[" + position.row() + "," + position.col() + "] Type error: " + typeException.getMessage(), typeException);
-    }
+    String endOfBlock();
+
+    ContextEntry getEntry(String name) throws TypeException;
+
+    ContextEntry thisEntry() throws TypeException;
+
+    String startOfBlock();
+
 }

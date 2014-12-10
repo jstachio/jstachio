@@ -29,6 +29,7 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.staticmustache.typeelementcontext.TemplateContext;
 import com.github.sviperll.staticmustache.token.ProcessingException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -53,7 +54,7 @@ class TemplateCompilerManager {
         this.writer = writer;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TypeElementContext context) throws IOException, ProcessingException {
+    void compileTemplate(FileObject resource, Charset charset, TemplateContext context) throws IOException, ProcessingException {
         InputStream inputStream = resource.openInputStream();
         try {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);

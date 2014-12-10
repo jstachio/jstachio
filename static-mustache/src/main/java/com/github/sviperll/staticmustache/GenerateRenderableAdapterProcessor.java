@@ -29,33 +29,30 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.staticmustache.typeelementcontext.SpecialTypes;
+import com.github.sviperll.staticmustache.typeelementcontext.TypeProcessor;
+import com.github.sviperll.staticmustache.typeelementcontext.TemplateContext;
 import com.github.sviperll.staticmustache.token.ProcessingException;
+import com.github.sviperll.staticmustache.typeelementcontext.FieldContext;
+import com.github.sviperll.staticmustache.typeelementcontext.TypeElementFieldContext;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -65,55 +62,6 @@ import javax.tools.StandardLocation;
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
-    private static HashMap<String, Object> toScope(AnnotationMirror annotation) {
-        HashMap<String, Object> scope = new HashMap<String, Object>();
-        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: annotation.getElementValues().entrySet()) {
-            scope.put(entry.getKey().getSimpleName().toString(), toScopeValue(entry.getValue()));
-        }
-        return scope;
-    }
-
-    private static Object toScopeValue(Object value) {
-        if (value instanceof TypeMirror) {
-            return toTypeName((TypeMirror)value);
-        } else if (value instanceof VariableElement) {
-            return toEnumConstantName((VariableElement)value);
-        } else if (value instanceof AnnotationMirror) {
-            return toScope((AnnotationMirror)value);
-        } else if (value instanceof List) {
-            List<Object> result = new ArrayList<Object>();
-            @SuppressWarnings("unchecked")
-            List<? extends AnnotationValue> annotationValues = (List<? extends AnnotationValue>)value;
-            for (AnnotationValue annotationValue: annotationValues) {
-                result.add(toScopeValue(annotationValue));
-            }
-            return result;
-        } else if (value instanceof AnnotationValue) {
-            AnnotationValue annotationValue = (AnnotationValue)value;
-            return toScopeValue(annotationValue.getValue());
-        } else {
-            System.out.println(value.getClass().getName() + ": " + value);
-            return value;
-        }
-    }
-
-    private static String toTypeName(TypeMirror type) {
-        if (type instanceof ArrayType) {
-            ArrayType arrayType = (ArrayType)type;
-            return toTypeName(arrayType.getComponentType()) + "[]";
-        } else if (type instanceof DeclaredType) {
-            DeclaredType declaredType = (DeclaredType)type;
-            TypeElement typeDeclaration = (TypeElement)declaredType.asElement();
-            return typeDeclaration.getQualifiedName().toString();
-        } else {
-            throw new UnsupportedOperationException("Not supported");
-        }
-    }
-
-    private static String toEnumConstantName(VariableElement enumConstant) {
-        return enumConstant.getSimpleName().toString();
-    }
-
     private final List<String> errors = new ArrayList<String>();
 
     @Override
@@ -135,7 +83,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 
     private void writeRenderableAdapterClass(TypeElement element, GenerateRenderableAdapter directive) throws RuntimeException {
         String className = element.getQualifiedName().toString();
-        String classSimpleName = element.getSimpleName().toString();
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         String packageName = packageElement.getQualifiedName().toString();
 
@@ -150,44 +97,48 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         String templatePath = directive.template();
         Charset templateCharset = directive.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(directive.charset());
         try {
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter writer = new PrintWriter(stringWriter);
+            try {
+                writer.println("package " + packageName + ";");
+                writer.println("class " + adapterClassSimpleName + " implements " + Renderable.class.getName() + "{");
+                writer.println("    private final " + className + " data;");
+                writer.println("    public " + adapterClassSimpleName + "(" + className + " data) {");
+                writer.println("        this.data = data;");
+                writer.println("    }");
+                writer.println("    @Override");
+                writer.println("    public " + Renderer.class.getName() + " createRenderer(" + Appendable.class.getName() + " writer) {");
+                writer.println("        return new " + adapterRendererClassName + "(data, writer);");
+                writer.println("    }");
+                writer.println("    private static class " + adapterRendererClassSimpleName + " implements " + Renderer.class.getName() + " {");
+                writer.println("        private final " + Appendable.class.getName() + " writer;");
+                writer.println("        private final " + className + " data;");
+                writer.println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer) {");
+                writer.println("            this.writer = writer;");
+                writer.println("            this.data = data;");
+                writer.println("        }");
+                writer.println("        @Override");
+                writer.println("        public void render() throws " + IOException.class.getName() + " {");
+                TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
+                FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
+                Types typeUtils = processingEnv.getTypeUtils();
+                SpecialTypes types = new SpecialTypes(processingEnv.getElementUtils(), typeUtils);
+                TypeProcessor typeProcessor = new TypeProcessor(types, typeUtils);
+                FieldContext fieldContext = new TypeElementFieldContext(typeProcessor, element, "data");
+                TemplateContext context = new TemplateContext(typeProcessor, "writer", fieldContext);
+                compilerManager.compileTemplate(resource, templateCharset, context);
+                writer.println("        }");
+                writer.println("    }");
+                writer.println("}");
+            } finally {
+                writer.close();
+            }
             JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(adapterClassName, element);
             OutputStream stream = sourceFile.openOutputStream();
             try {
                 Writer outputWriter = new OutputStreamWriter(stream);
                 try {
-                    PrintWriter writer = new PrintWriter(outputWriter);
-                    try {
-                        writer.println("package " + packageName + ";");
-                        writer.println("class " + adapterClassSimpleName + " implements " + Renderable.class.getName() + "{");
-                        writer.println("    private final " + className + " data;");
-                        writer.println("    public " + adapterClassSimpleName + "(" + className + " data) {");
-                        writer.println("        this.data = data;");
-                        writer.println("    }");
-                        writer.println("    @Override");
-                        writer.println("    public " + Renderer.class.getName() + " createRenderer(" + Appendable.class.getName() + " writer) {");
-                        writer.println("        return new " + adapterRendererClassName + "(data, writer);");
-                        writer.println("    }");
-                        writer.println("    private static class " + adapterRendererClassSimpleName + " implements " + Renderer.class.getName() + " {");
-                        writer.println("        private final " + Appendable.class.getName() + " writer;");
-                        writer.println("        private final " + className + " data;");
-                        writer.println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer) {");
-                        writer.println("            this.writer = writer;");
-                        writer.println("            this.data = data;");
-                        writer.println("        }");
-                        writer.println("        @Override");
-                        writer.println("        public void render() throws " + IOException.class.getName() + " {");
-                        TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
-                        FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
-                        Types typeUtils = processingEnv.getTypeUtils();
-                        SpecialTypes types = new SpecialTypes(processingEnv.getElementUtils(), typeUtils);
-                        TypeProcessor typeProcessor = new TypeProcessor(types, typeUtils);
-                        compilerManager.compileTemplate(resource, templateCharset, new TypeElementContext(typeProcessor, element, "data", "writer"));
-                        writer.println("        }");
-                        writer.println("    }");
-                        writer.println("}");
-                    } finally {
-                        writer.close();
-                    }
+                    outputWriter.append(stringWriter.getBuffer().toString());
                 } finally {
                     outputWriter.close();
                 }
@@ -195,7 +146,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 stream.close();
             }
         } catch (ProcessingException ex) {
-            errors.add(ex.getMessage());
+            throw new RuntimeException(ex);
+            // errors.add(ex.getMessage());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

@@ -27,12 +27,29 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.typeelementcontext;
+
+import javax.lang.model.type.TypeMirror;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public interface TokenProcessorDecorator<T, U> {
-    TokenProcessor<T> decorateTokenProcessor(TokenProcessor<U> t);
+public class ContextEntry {
+    private final String expression;
+    private final TypeMirror type;
+
+    ContextEntry(String expression, TypeMirror type) {
+        this.expression = expression;
+        this.type = type;
+    }
+
+    String expression() {
+        return expression;
+    }
+
+    TypeMirror type() {
+        return type;
+    }
+
 }

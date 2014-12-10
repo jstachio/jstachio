@@ -10,7 +10,7 @@
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the documentation and/or
- *     character materials provided with the distribution.
+ *     other materials provided with the distribution.
  *
  *  3. Neither the name of the copyright holder nor the names of its contributors
  *     may be used to endorse or promote products derived from this software
@@ -27,53 +27,51 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.typeelementcontext;
+
+import com.github.sviperll.staticmustache.TypeException;
+import javax.lang.model.type.TypeMirror;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public abstract class ParensisToken {
-    public static ParensisToken openParensis() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.openParensis();
-            }
-        };
-    }
-    public static ParensisToken closingParensis() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.closingParensis();
-            }
-        };
-    }
-    public static ParensisToken character(final char s) {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.character(s);
-            }
-        };
-    }
-    public static ParensisToken endOfFile() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endOfFile();
-            }
-        };
-    }
-    public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
-    private ParensisToken() {
+class ArrayFieldContext implements FieldContext {
+    private final String expression;
+    private final FieldContext parent;
+    private final TypeMirror elementType;
+    private final TypeProcessor types;
+
+    public ArrayFieldContext(String expression, FieldContext parent, TypeMirror elementType, TypeProcessor types) {
+        this.expression = expression;
+        this.parent = parent;
+        this.elementType = elementType;
+        this.types = types;
     }
 
-    interface Visitor<R, E extends Exception> {
-        R openParensis() throws E;
-        R closingParensis() throws E;
-        R character(char c) throws E;
-        R endOfFile() throws E;
+    @Override
+    public String startOfBlock() {
+        return parent.startOfBlock() + "if (" + expression + " != null) { for (int i = 0; i < " + expression + ".length; i++) { ";
     }
+
+    @Override
+    public String endOfBlock() {
+        return "}}" + parent.endOfBlock();
+    }
+
+    @Override
+    public ContextEntry getEntry(String name) throws TypeException {
+        if (name.equals("length")) {
+            return new ContextEntry(expression + ".length", types.intType());
+        } else if (parent != null)
+            return parent.getEntry(name);
+        else
+            throw new TypeException(name + " field not found");
+    }
+
+    @Override
+    public ContextEntry thisEntry() throws TypeException {
+        return new ContextEntry(expression, types.arrayType(elementType));
+    }
+
 }

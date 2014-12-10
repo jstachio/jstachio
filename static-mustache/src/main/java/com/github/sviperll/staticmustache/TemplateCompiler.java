@@ -29,15 +29,13 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.staticmustache.typeelementcontext.TemplateContext;
 import com.github.sviperll.staticmustache.token.MustacheToken;
-import com.github.sviperll.staticmustache.token.MustacheTokenizer;
-import com.github.sviperll.staticmustache.token.ParansisTokenizer;
 import com.github.sviperll.staticmustache.token.ProcessingException;
 import com.github.sviperll.staticmustache.token.Position;
-import com.github.sviperll.staticmustache.token.PositionAnnotator;
 import com.github.sviperll.staticmustache.token.PositionedToken;
-import com.github.sviperll.staticmustache.token.PositionedTransformer;
 import com.github.sviperll.staticmustache.token.TokenProcessor;
+import com.github.sviperll.staticmustache.token.TokenProcessors;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -62,23 +60,21 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
     private final Reader inputReader;
     private final PrintWriter writer;
-    private final TypeElementContext context;
+    private TemplateContext context;
 
-    TemplateCompiler(Reader inputReader, PrintWriter writer, TypeElementContext context) {
+    TemplateCompiler(Reader inputReader, PrintWriter writer, TemplateContext context) {
         this.inputReader = inputReader;
         this.writer = writer;
         this.context = context;
     }
 
     public void run(String fileName) throws ProcessingException, IOException {
-        MustacheTokenizer mustacheTokenizer = MustacheTokenizer.createInstance(this);
-        TokenProcessor<PositionedToken<Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(ParansisTokenizer.decorator(), mustacheTokenizer);
-        PositionAnnotator positionAnnotator = new PositionAnnotator(fileName, paransisTokenizer);
+        TokenProcessor<Character> processor = TokenProcessors.createMustacheTokenizer(fileName, this);
         int readResult;
         while ((readResult = inputReader.read()) >= 0) {
-            positionAnnotator.processToken((char)readResult);
+            processor.processToken((char)readResult);
         }
-        positionAnnotator.processToken(null); // Signal EOF
+        processor.processToken(null); // Signal EOF
         writer.println();
     }
 
@@ -93,25 +89,35 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         token.accept(new MustacheToken.Visitor<Void, ProcessingException>() {
             @Override
             public Void beginBlock(String name) throws ProcessingException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                try {
+                    context = context.createChild(name);
+                    writer.print(context.startOfBlock());
+                } catch (TypeException ex) {
+                    throw new ProcessingException(position, ex);
+                }
+                return null;
             }
 
             @Override
             public Void endBlock(String name) throws ProcessingException {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if (!context.isEnclosed())
+                    throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
+                else if (!context.currentEnclosedContextName().equals(name))
+                    throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
+                else {
+                    writer.print(context.endOfBlock());
+                    context = context.parentContext();
+                    return null;
+                }
             }
 
             @Override
             public Void field(String name) throws ProcessingException {
-                if (!isJavaIdentifier(name))
-                    throw new ProcessingException(position, "Wrong identifier: " + name);
-                else {
-                    try {
-                        writer.print(context.inline(name));
-                        return null;
-                    } catch (TypeException ex) {
-                        throw new ProcessingException(position, ex);
-                    }
+                try {
+                    writer.print(context.inline(name));
+                    return null;
+                } catch (TypeException ex) {
+                    throw new ProcessingException(position, ex);
                 }
             }
 
