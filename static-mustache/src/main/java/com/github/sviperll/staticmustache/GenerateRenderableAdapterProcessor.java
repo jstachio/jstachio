@@ -29,12 +29,8 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.typeelementcontext.SpecialTypes;
-import com.github.sviperll.staticmustache.typeelementcontext.TypeProcessor;
-import com.github.sviperll.staticmustache.typeelementcontext.TemplateContext;
-import com.github.sviperll.staticmustache.token.ProcessingException;
-import com.github.sviperll.staticmustache.typeelementcontext.FieldContext;
-import com.github.sviperll.staticmustache.typeelementcontext.TypeElementFieldContext;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -53,7 +49,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -62,6 +57,26 @@ import javax.tools.StandardLocation;
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
+    private static String formatErrorMessage(Position position, String message) {
+        String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
+        Object[] fields = new Object[] {
+            position.fileName(),
+            position.row(),
+            message,
+            position.currentLine(),
+            columnPositioningString(position.col()),
+        };
+        return String.format(formatString, fields);
+    }
+
+    private static String columnPositioningString(int col) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < col - 1; i++)
+            builder.append(' ');
+        builder.append('^');
+        return builder.toString();
+    }
+
     private final List<String> errors = new ArrayList<String>();
 
     @Override
@@ -121,11 +136,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 writer.println("        public void render() throws " + IOException.class.getName() + " {");
                 TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
                 FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
-                Types typeUtils = processingEnv.getTypeUtils();
-                SpecialTypes types = new SpecialTypes(processingEnv.getElementUtils(), typeUtils);
-                TypeProcessor typeProcessor = new TypeProcessor(types, typeUtils);
-                FieldContext fieldContext = new TypeElementFieldContext(typeProcessor, element, "data");
-                TemplateContext context = new TemplateContext(typeProcessor, "writer", fieldContext);
+                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+                TemplateCompilerContext context = TemplateCompilerContext.createInstace(codeGenerator, element, "data", "writer");
                 compilerManager.compileTemplate(resource, templateCharset, context);
                 writer.println("        }");
                 writer.println("    }");
@@ -146,11 +158,10 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 stream.close();
             }
         } catch (ProcessingException ex) {
-            throw new RuntimeException(ex);
-            // errors.add(ex.getMessage());
+            String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
+            errors.add(errorMessage);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }

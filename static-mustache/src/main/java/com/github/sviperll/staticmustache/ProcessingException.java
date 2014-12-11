@@ -29,48 +29,30 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
+import com.github.sviperll.staticmustache.context.ContextException;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
+@SuppressWarnings("serial")
+public class ProcessingException extends Exception {
+    private final Position position;
 
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+    private ProcessingException(Position position, String message, Throwable cause) {
+        super(message, cause);
+        this.position = position;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    public ProcessingException(Position position, String message) {
+        this(position, message, null);
     }
 
+    public ProcessingException(Position position, ContextException contextException) {
+        this(position, contextException.getMessage(), contextException);
+    }
+
+    public Position position() {
+        return position;
+    }
 }

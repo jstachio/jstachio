@@ -27,50 +27,34 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.token.util;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
+import com.github.sviperll.staticmustache.PositionedToken;
+import com.github.sviperll.staticmustache.ProcessingException;
+import com.github.sviperll.staticmustache.TokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
-
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> {
+    public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(final TokenProcessorDecorator<T, U> decorator, final TokenProcessor<PositionedToken<U>> positionedDownstream) {
+        PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
+        TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
+        return new PositionedTransformer<T, U>(downstream, processor);
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    private final PositionHodingTokenProcessor<U> downstream;
+    private final TokenProcessor<T> processor;
+
+    private PositionedTransformer(PositionHodingTokenProcessor<U> downstream, TokenProcessor<T> processor) {
+        this.downstream = downstream;
+        this.processor = processor;
     }
 
+    @Override
+    public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
+        downstream.setPosition(sourceToken.position());
+        processor.processToken(sourceToken.innerToken());
+    }
 }

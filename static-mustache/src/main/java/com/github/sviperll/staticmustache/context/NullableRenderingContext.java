@@ -27,50 +27,39 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
-
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
+package com.github.sviperll.staticmustache.context;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
+class NullableRenderingContext implements RenderingContext {
+    private final String expression;
+    private final RenderingContext parent;
 
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+    NullableRenderingContext(String expression, RenderingContext parent) {
+        this.expression = expression;
+        this.parent = parent;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    @Override
+    public String startOfRenderingCode() {
+        return parent.startOfRenderingCode() + "if (" + expression + " != null) { ";
+    }
+
+    @Override
+    public String endOfRenderingCode() {
+        return "} " + parent.endOfRenderingCode();
+    }
+
+    @Override
+    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+        return parent.getDataOrDefault(name, defaultValue);
+    }
+
+    @Override
+    public RenderingData thisCurrentData() {
+        return parent.thisCurrentData();
     }
 
 }

@@ -43,6 +43,7 @@ public class User {
     final Renderable card;
     final String[] array;
     final int[] array1;
+
     public User(String name, int age, Renderable card, String[] array, int[] array1) {
         this.name = name;
         this.age = age;

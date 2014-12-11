@@ -29,13 +29,9 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.typeelementcontext.TemplateContext;
-import com.github.sviperll.staticmustache.token.MustacheToken;
-import com.github.sviperll.staticmustache.token.ProcessingException;
-import com.github.sviperll.staticmustache.token.Position;
-import com.github.sviperll.staticmustache.token.PositionedToken;
-import com.github.sviperll.staticmustache.token.TokenProcessor;
-import com.github.sviperll.staticmustache.token.TokenProcessors;
+import com.github.sviperll.staticmustache.context.ContextException;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -60,16 +56,16 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
     private final Reader inputReader;
     private final PrintWriter writer;
-    private TemplateContext context;
+    private TemplateCompilerContext context;
 
-    TemplateCompiler(Reader inputReader, PrintWriter writer, TemplateContext context) {
+    TemplateCompiler(Reader inputReader, PrintWriter writer, TemplateCompilerContext context) {
         this.inputReader = inputReader;
         this.writer = writer;
         this.context = context;
     }
 
     public void run(String fileName) throws ProcessingException, IOException {
-        TokenProcessor<Character> processor = TokenProcessors.createMustacheTokenizer(fileName, this);
+        TokenProcessor<Character> processor = MustacheTokenizer.createInstance(fileName, this);
         int readResult;
         while ((readResult = inputReader.read()) >= 0) {
             processor.processToken((char)readResult);
@@ -84,65 +80,72 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
-        final Position position = positionedToken.position();
-        MustacheToken token = positionedToken.innerToken();
-        token.accept(new MustacheToken.Visitor<Void, ProcessingException>() {
-            @Override
-            public Void beginBlock(String name) throws ProcessingException {
-                try {
-                    context = context.createChild(name);
-                    writer.print(context.startOfBlock());
-                } catch (TypeException ex) {
-                    throw new ProcessingException(position, ex);
-                }
+        positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
+    }
+
+    private class CompilingTokenProcessor implements MustacheToken.Visitor<Void, ProcessingException> {
+        private final Position position;
+
+        public CompilingTokenProcessor(Position position) {
+            this.position = position;
+        }
+
+        @Override
+        public Void beginBlock(String name) throws ProcessingException {
+            try {
+                context = context.createChild(name);
+                writer.print(context.startOfRenderingCode());
+            } catch (ContextException ex) {
+                throw new ProcessingException(position, ex);
+            }
+            return null;
+        }
+
+        @Override
+        public Void endBlock(String name) throws ProcessingException {
+            if (!context.isEnclosed())
+                throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
+            else if (!context.currentEnclosedContextName().equals(name))
+                throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
+            else {
+                writer.print(context.endOfRenderingCode());
+                context = context.parentContext();
                 return null;
             }
+        }
 
-            @Override
-            public Void endBlock(String name) throws ProcessingException {
-                if (!context.isEnclosed())
-                    throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
-                else if (!context.currentEnclosedContextName().equals(name))
-                    throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
-                else {
-                    writer.print(context.endOfBlock());
-                    context = context.parentContext();
-                    return null;
-                }
-            }
-
-            @Override
-            public Void field(String name) throws ProcessingException {
-                try {
-                    writer.print(context.inline(name));
-                    return null;
-                } catch (TypeException ex) {
-                    throw new ProcessingException(position, ex);
-                }
-            }
-
-            @Override
-            public Void specialCharacter(char c) throws ProcessingException {
-                if (c == '\n') {
-                    append("\\n");
-                    writer.println();
-                } else if (c == '"') {
-                    append("\\\"");
-                } else
-                    append("" + c);
+        @Override
+        public Void field(String name) throws ProcessingException {
+            try {
+                TemplateCompilerContext field = context.createChild(name);
+                writer.print(field.renderingCode());
                 return null;
+            } catch (ContextException ex) {
+                throw new ProcessingException(position, ex);
             }
+        }
 
-            @Override
-            public Void text(String s) throws ProcessingException {
-                append(s);
-                return null;
-            }
+        @Override
+        public Void specialCharacter(char c) throws ProcessingException {
+            if (c == '\n') {
+                append("\\n");
+                writer.println();
+            } else if (c == '"') {
+                append("\\\"");
+            } else
+                append("" + c);
+            return null;
+        }
 
-            @Override
-            public Void endOfFile() throws ProcessingException {
-                return null;
-            }
-        });
+        @Override
+        public Void text(String s) throws ProcessingException {
+            append(s);
+            return null;
+        }
+
+        @Override
+        public Void endOfFile() throws ProcessingException {
+            return null;
+        }
     }
 }

@@ -29,48 +29,24 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
-
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @param <T>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
-
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+public class PositionedToken<T> {
+    private final Position position;
+    private final T innerToken;
+    public PositionedToken(Position position, T innerToken) {
+        this.position = position;
+        this.innerToken = innerToken;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    public Position position() {
+        return position;
     }
 
+    public T innerToken() {
+        return innerToken;
+    }
 }

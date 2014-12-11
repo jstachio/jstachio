@@ -29,48 +29,36 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
-
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
-
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+public class Position {
+    private final String fileName;
+    private final int row;
+    private final String currentLine;
+    private final int col;
+    public Position(String fileName, int row, String currentLine, int col) {
+        this.fileName = fileName;
+        this.row = row;
+        this.currentLine = currentLine;
+        this.col = col;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    public String fileName() {
+        return fileName;
+    }
+
+    public String currentLine() {
+        return currentLine;
+    }
+
+    public int row() {
+        return row;
+    }
+
+    public int col() {
+        return col;
     }
 
 }

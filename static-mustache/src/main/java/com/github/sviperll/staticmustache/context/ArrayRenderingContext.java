@@ -27,50 +27,50 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.context;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import javax.annotation.processing.Messager;
-import javax.tools.FileObject;
+import javax.lang.model.type.TypeMirror;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompilerManager {
-    private final Messager messager;
-    private final PrintWriter writer;
+class ArrayRenderingContext implements RenderingContext {
+    private final String expression;
+    private final RenderingContext parent;
+    private final TypeMirror elementType;
+    private final RenderingCodeGenerator types;
 
-    TemplateCompilerManager(Messager messager, PrintWriter writer) {
-        this.messager = messager;
-        this.writer = writer;
+    public ArrayRenderingContext(TypeMirror elementType, String expression, RenderingCodeGenerator types, RenderingContext parent) {
+        this.expression = expression;
+        this.parent = parent;
+        this.elementType = elementType;
+        this.types = types;
     }
 
-    void compileTemplate(FileObject resource, Charset charset, TemplateCompilerContext context) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, charset);
-                try {
-                    TemplateCompiler templateCompiler = new TemplateCompiler(inputReader, writer, context);
-                    templateCompiler.run(resource.getName());
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                bufferedInputStream.close();
-            }
-        } finally {
-            inputStream.close();
-        }
+    @Override
+    public String startOfRenderingCode() {
+        return parent.startOfRenderingCode() + "for (int i = 0; i < " + expression + ".length; i++) { ";
+    }
+
+    @Override
+    public String endOfRenderingCode() {
+        return "}" + parent.endOfRenderingCode();
+    }
+
+    @Override
+    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+        if (name.equals("length")) {
+            return new RenderingData(expression + ".length", types.intType());
+        } else if (parent != null)
+            return parent.getDataOrDefault(name, defaultValue);
+        else
+            return defaultValue;
+    }
+
+    @Override
+    public RenderingData thisCurrentData() {
+        return new RenderingData(expression, types.arrayType(elementType));
     }
 
 }
