@@ -40,7 +40,7 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String endOfRenderingCode() {
+    public String endOfSectionRenderingCode() {
         return "";
     }
 
@@ -50,12 +50,12 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData thisCurrentData() {
-        return parent.thisCurrentData();
+    public RenderingData currentData() {
+        return parent.currentData();
     }
 
     @Override
-    public String startOfRenderingCode() {
+    public String startOfSectionRenderingCode() {
         return "";
     }
 

@@ -38,7 +38,7 @@ public abstract class MustacheToken {
         return new MustacheToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginBlock(name);
+                return visitor.beginSection(name);
             }
         };
     }
@@ -46,7 +46,7 @@ public abstract class MustacheToken {
         return new MustacheToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endBlock(name);
+                return visitor.endSection(name);
             }
         };
     }
@@ -54,7 +54,7 @@ public abstract class MustacheToken {
         return new MustacheToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.field(name);
+                return visitor.variable(name);
             }
         };
     }
@@ -87,9 +87,11 @@ public abstract class MustacheToken {
     private MustacheToken() {
     }
     public interface Visitor<R, E extends Exception> {
-        R beginBlock(String name) throws E;
-        R endBlock(String name) throws E;
-        R field(String name) throws E;
+        R beginSection(String name) throws E;
+        R beginInvertedSection(String name) throws E;
+        R endSection(String name) throws E;
+        R variable(String name) throws E;
+        R unescapedVariable(String name) throws E;
         R specialCharacter(char c) throws E;
         R text(String s) throws E;
         R endOfFile() throws E;

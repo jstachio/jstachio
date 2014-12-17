@@ -91,10 +91,10 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void beginBlock(String name) throws ProcessingException {
+        public Void beginSection(String name) throws ProcessingException {
             try {
-                context = context.createChild(name);
-                writer.print(context.startOfRenderingCode());
+                context = context.getChild(name);
+                writer.print(context.startOfSectionRenderingCode());
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -102,23 +102,45 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void endBlock(String name) throws ProcessingException {
+        public Void beginInvertedSection(String name) throws ProcessingException {
+            try {
+                context = context.getChild(name);
+                writer.print(context.startOfSectionRenderingCode());
+            } catch (ContextException ex) {
+                throw new ProcessingException(position, ex);
+            }
+            return null;
+        }
+
+        @Override
+        public Void endSection(String name) throws ProcessingException {
             if (!context.isEnclosed())
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             else if (!context.currentEnclosedContextName().equals(name))
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             else {
-                writer.print(context.endOfRenderingCode());
+                writer.print(context.endOfSectionRenderingCode());
                 context = context.parentContext();
                 return null;
             }
         }
 
         @Override
-        public Void field(String name) throws ProcessingException {
+        public Void variable(String name) throws ProcessingException {
             try {
-                TemplateCompilerContext field = context.createChild(name);
-                writer.print(field.renderingCode());
+                TemplateCompilerContext variable = context.getChild(name);
+                writer.print(variable.renderingCode());
+                return null;
+            } catch (ContextException ex) {
+                throw new ProcessingException(position, ex);
+            }
+        }
+
+        @Override
+        public Void unescapedVariable(String name) throws ProcessingException {
+            try {
+                TemplateCompilerContext variable = context.getChild(name);
+                writer.print(variable.renderingCode());
                 return null;
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);

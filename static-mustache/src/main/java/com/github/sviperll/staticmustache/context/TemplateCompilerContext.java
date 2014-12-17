@@ -29,8 +29,6 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.lang.model.element.TypeElement;
 
 /**
@@ -58,8 +56,8 @@ public class TemplateCompilerContext {
         this.generator = processor;
     }
 
-    private String renderingCodeBody() throws ContextException {
-        RenderingData entry = context.thisCurrentData();
+    private String sectionBodyRenderingCode() throws ContextException {
+        RenderingData entry = context.currentData();
         try {
             return generator.generateRenderingCode(entry.type(), entry.expression(), writerExpression);
         } catch (TypeException ex) {
@@ -68,18 +66,18 @@ public class TemplateCompilerContext {
     }
 
     public String renderingCode() throws ContextException {
-        return startOfRenderingCode() + renderingCodeBody() + endOfRenderingCode();
+        return startOfSectionRenderingCode() + sectionBodyRenderingCode() + endOfSectionRenderingCode();
     }
 
-    public String startOfRenderingCode() {
-        return context.startOfRenderingCode();
+    public String startOfSectionRenderingCode() {
+        return context.startOfSectionRenderingCode();
     }
 
-    public String endOfRenderingCode() {
-        return context.endOfRenderingCode();
+    public String endOfSectionRenderingCode() {
+        return context.endOfSectionRenderingCode();
     }
 
-    public TemplateCompilerContext createChild(String name) throws ContextException {
+    public TemplateCompilerContext getChild(String name) throws ContextException {
         if (name.equals(".")) {
             return new TemplateCompilerContext(generator, writerExpression, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
         } else {

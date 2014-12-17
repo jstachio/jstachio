@@ -47,8 +47,8 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
-    public String endOfRenderingCode() {
-        return parent.endOfRenderingCode();
+    public String endOfSectionRenderingCode() {
+        return parent.endOfSectionRenderingCode();
     }
 
     @Override
@@ -60,13 +60,13 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData thisCurrentData() {
+    public RenderingData currentData() {
         return new RenderingData(expression, type);
     }
 
     @Override
-    public String startOfRenderingCode() {
-        return parent.startOfRenderingCode();
+    public String startOfSectionRenderingCode() {
+        return parent.startOfSectionRenderingCode();
     }
 
 }

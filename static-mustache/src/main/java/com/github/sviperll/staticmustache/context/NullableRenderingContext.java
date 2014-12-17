@@ -43,13 +43,13 @@ class NullableRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String startOfRenderingCode() {
-        return parent.startOfRenderingCode() + "if (" + expression + " != null) { ";
+    public String startOfSectionRenderingCode() {
+        return parent.startOfSectionRenderingCode() + "if (" + expression + " != null) { ";
     }
 
     @Override
-    public String endOfRenderingCode() {
-        return "} " + parent.endOfRenderingCode();
+    public String endOfSectionRenderingCode() {
+        return "} " + parent.endOfSectionRenderingCode();
     }
 
     @Override
@@ -58,8 +58,8 @@ class NullableRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData thisCurrentData() {
-        return parent.thisCurrentData();
+    public RenderingData currentData() {
+        return parent.currentData();
     }
 
 }
