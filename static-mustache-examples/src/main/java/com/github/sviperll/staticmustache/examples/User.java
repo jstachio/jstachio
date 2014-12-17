@@ -43,12 +43,14 @@ public class User {
     final Renderable card;
     final String[] array;
     final int[] array1;
+    final boolean cardEnabled;
 
-    public User(String name, int age, Renderable card, String[] array, int[] array1) {
+    public User(String name, int age, Renderable card, String[] array, int[] array1, boolean cardEnabled) {
         this.name = name;
         this.age = age;
         this.card = card;
         this.array = array;
         this.array1 = array1;
+        this.cardEnabled = cardEnabled;
     }
 }

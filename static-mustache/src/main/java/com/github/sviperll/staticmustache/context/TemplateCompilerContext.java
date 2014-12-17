@@ -66,15 +66,15 @@ public class TemplateCompilerContext {
     }
 
     public String renderingCode() throws ContextException {
-        return startOfSectionRenderingCode() + sectionBodyRenderingCode() + endOfSectionRenderingCode();
+        return beginSectionRenderingCode() + sectionBodyRenderingCode() + endSectionRenderingCode();
     }
 
-    public String startOfSectionRenderingCode() {
-        return context.startOfSectionRenderingCode();
+    public String beginSectionRenderingCode() {
+        return context.beginSectionRenderingCode();
     }
 
-    public String endOfSectionRenderingCode() {
-        return context.endOfSectionRenderingCode();
+    public String endSectionRenderingCode() {
+        return context.endSectionRenderingCode();
     }
 
     public TemplateCompilerContext getChild(String name) throws ContextException {
@@ -87,6 +87,23 @@ public class TemplateCompilerContext {
             RenderingContext enclosedField;
             try {
                 enclosedField = generator.createRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
+            } catch (TypeException ex) {
+                throw new ContextException("Can't use " + name + " for rendering", ex);
+            }
+            return new TemplateCompilerContext(generator, writerExpression, enclosedField, new EnclosedRelation(name, this));
+        }
+    }
+
+    public TemplateCompilerContext getInvertedChild(String name) throws ContextException {
+        if (name.equals(".")) {
+            throw new ContextException("Current section can't be inverted");
+        } else {
+            RenderingData entry = context.getDataOrDefault(name, null);
+            if (entry == null)
+                throw new ContextException("Field not found in current context: " + name);
+            RenderingContext enclosedField;
+            try {
+                enclosedField = generator.createInvertedRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
             } catch (TypeException ex) {
                 throw new ContextException("Can't use " + name + " for rendering", ex);
             }

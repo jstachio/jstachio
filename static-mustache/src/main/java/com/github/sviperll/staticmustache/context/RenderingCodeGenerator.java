@@ -71,19 +71,19 @@ public class RenderingCodeGenerator {
     String generateRenderingCode(TypeMirror type, String expression, String writer) throws TypeException {
         if (util.isAssignable(type, types._Renderable))
             return expression + ".createRenderer(" + writer + ").render(); ";
-        else if (util.isAssignable(type, types._int))
+        else if (util.isSameType(type, types._int))
             return writer + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._short))
+        else if (util.isSameType(type, types._short))
             return writer + ".append(" + Short.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._long))
+        else if (util.isSameType(type, types._long))
             return writer + ".append(" + Long.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._byte))
+        else if (util.isSameType(type, types._byte))
             return writer + ".append(" + Byte.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._char))
+        else if (util.isSameType(type, types._char))
             return writer + ".append(" + Character.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._float))
+        else if (util.isSameType(type, types._float))
             return writer + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._double))
+        else if (util.isSameType(type, types._double))
             return writer + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isAssignable(type, types._String))
             return writer + ".append(" + expression + "); ";
@@ -110,24 +110,48 @@ public class RenderingCodeGenerator {
                || util.isAssignable(exceptionType, types._RuntimeException);
     }
 
-    RenderingContext createRenderingContext(TypeMirror type, String expression, RenderingContext parent) throws TypeException {
-        if (type instanceof DeclaredType) {
+    RenderingContext createRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
+        if (util.isSameType(type, types._boolean)) {
+            return new BooleanRenderingContext(expression, enclosing);
+        } else if (util.isAssignable(type, types._Boolean)) {
+            RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
+            BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression, nullableContext);
+            return booleanContext;
+        } else if (type instanceof DeclaredType) {
             DeclaredType declaredType = (DeclaredType)type;
             Element contextElement = declaredType.asElement();
             if (!(contextElement instanceof TypeElement)) {
                 throw new TypeException("Can't bind field: " + contextElement.getSimpleName() + " is " + contextElement.getKind());
             } else {
-                DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(this, (TypeElement)contextElement, expression, parent);
-                return new NullableRenderingContext(expression, declaredContext);
+                RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
+                DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(this, (TypeElement)contextElement, expression, nullableContext);
+                return declaredContext;
             }
         } else if (type instanceof ArrayType) {
             ArrayType arrayType = (ArrayType)type;
             TypeMirror componentType = arrayType.getComponentType();
-            NullableRenderingContext nullable = new NullableRenderingContext(expression, parent);
+            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             ArrayRenderingContext array = new ArrayRenderingContext(componentType, expression, this, nullable);
             return createRenderingContext(componentType, expression + "[i]", array);
         } else
-            return new NoDataContext(expression, type, parent);
+            return new NoDataContext(expression, type, enclosing);
+    }
+
+    RenderingContext createInvertedRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
+        if (util.isSameType(type, types._boolean)) {
+            return new BooleanRenderingContext("!(" + expression + ")", enclosing);
+        } else if (util.isAssignable(type, types._Boolean)) {
+            return new BooleanRenderingContext("(" + expression + ") == null || !(" + expression + ")", enclosing);
+        } else if (type instanceof DeclaredType) {
+            return new BooleanRenderingContext("(" + expression + ") == null", enclosing);
+        } else if (type instanceof ArrayType) {
+            return new BooleanRenderingContext("(" + expression + ") == null || (" + expression + ").length == 0", enclosing);
+        } else
+            throw new TypeException("Can't invert " + expression + " expression of " + type + " type");
+    }
+
+    private RenderingContext nullableRenderingContext(String expression, RenderingContext context) {
+        return new BooleanRenderingContext(expression + " != null", context);
     }
 
     TypeMirror intType() {

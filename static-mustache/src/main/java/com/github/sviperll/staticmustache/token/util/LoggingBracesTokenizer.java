@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2014, vir
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,16 +27,63 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.token.util;
 
 import com.github.sviperll.staticmustache.ProcessingException;
+import com.github.sviperll.staticmustache.TokenProcessor;
+import com.github.sviperll.staticmustache.token.BracesToken;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author vir
  */
-interface MustacheTokenizerState extends BracesToken.Visitor<Void, ProcessingException> {
+class LoggingBracesTokenizer implements TokenProcessor<BracesToken>, BracesToken.Visitor<Void, RuntimeException> {
+    private final TokenProcessor<BracesToken> downstream;
 
-    void beforeStateChange() throws ProcessingException;
+    LoggingBracesTokenizer(TokenProcessor<BracesToken> downstream) {
+        this.downstream = downstream;
+    }
+
+    @Override
+    public void processToken(BracesToken token) throws ProcessingException {
+        token.accept(this);
+        downstream.processToken(token);
+    }
+
+    @Override
+    public Void twoOpenBraces() throws RuntimeException {
+        System.err.println("twoOpenBraces");
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws RuntimeException {
+        System.err.println("twoClosingBraces");
+        return null;
+    }
+
+    @Override
+    public Void threeOpenBraces() throws RuntimeException {
+        System.err.println("threeOpenBraces");
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws RuntimeException {
+        System.err.println("threeClosingBraces");
+        return null;
+    }
+
+    @Override
+    public Void character(char c) throws RuntimeException {
+        System.err.println("character: " + c);
+        return null;
+    }
+
+    @Override
+    public Void endOfFile() throws RuntimeException {
+        System.err.println("endOfFile");
+        return null;
+    }
 
 }

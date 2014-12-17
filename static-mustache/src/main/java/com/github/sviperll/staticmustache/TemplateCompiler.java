@@ -94,7 +94,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public Void beginSection(String name) throws ProcessingException {
             try {
                 context = context.getChild(name);
-                writer.print(context.startOfSectionRenderingCode());
+                writer.print(context.beginSectionRenderingCode());
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -104,8 +104,8 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public Void beginInvertedSection(String name) throws ProcessingException {
             try {
-                context = context.getChild(name);
-                writer.print(context.startOfSectionRenderingCode());
+                context = context.getInvertedChild(name);
+                writer.print(context.beginSectionRenderingCode());
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -119,7 +119,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             else if (!context.currentEnclosedContextName().equals(name))
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             else {
-                writer.print(context.endOfSectionRenderingCode());
+                writer.print(context.endSectionRenderingCode());
                 context = context.parentContext();
                 return null;
             }

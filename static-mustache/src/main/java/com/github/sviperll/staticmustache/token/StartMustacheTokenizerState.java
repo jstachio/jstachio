@@ -43,29 +43,47 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void openParensis() throws ProcessingException {
-        tokenizer.error("Unexpected open parensis");
+    public Void twoOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void closingParensis() throws ProcessingException {
-        tokenizer.error("Unexpected closing parensis");
+    public Void threeOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws ProcessingException {
+        tokenizer.error("Unexpected closing braces");
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        tokenizer.error("Unexpected closing braces");
         return null;
     }
 
     @Override
     public Void character(char c) throws ProcessingException {
         if (c == '#')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTokenizerFieldKind.OPEN_BLOCK, tokenizer));
+            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
+        else if (c == '^')
+            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
         else if (c == '/')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTokenizerFieldKind.CLOSE_BLOCK, tokenizer));
+            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
+        else if (c == '&')
+            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
+        else if (c == '!')
+            tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
         else if (Character.isWhitespace(c))
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTokenizerFieldKind.INLINE, tokenizer));
+            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
         else {
             StringBuilder fieldName = new StringBuilder();
             fieldName.append(c);
-            tokenizer.setState(new IdentifierMustacheTokenizerState(MustacheTokenizerFieldKind.INLINE, fieldName, tokenizer));
+            tokenizer.setState(new IdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, fieldName, tokenizer));
         }
         return null;
     }
@@ -77,7 +95,7 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public void onStateChange() throws ProcessingException {
+    public void beforeStateChange() throws ProcessingException {
     }
 
 }

@@ -60,13 +60,13 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String startOfSectionRenderingCode() {
-        return parent.startOfSectionRenderingCode();
+    public String beginSectionRenderingCode() {
+        return parent.beginSectionRenderingCode();
     }
 
     @Override
-    public String endOfSectionRenderingCode() {
-        return parent.endOfSectionRenderingCode();
+    public String endSectionRenderingCode() {
+        return parent.endSectionRenderingCode();
     }
 
     @Override

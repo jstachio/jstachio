@@ -40,7 +40,7 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String endOfSectionRenderingCode() {
+    public String endSectionRenderingCode() {
         return "";
     }
 
@@ -55,7 +55,7 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String startOfSectionRenderingCode() {
+    public String beginSectionRenderingCode() {
         return "";
     }
 

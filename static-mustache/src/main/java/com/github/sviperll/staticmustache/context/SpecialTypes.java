@@ -50,6 +50,7 @@ class SpecialTypes {
     public final TypeMirror _byte;
     public final TypeMirror _float;
     public final TypeMirror _double;
+    public final TypeMirror _boolean;
     public final TypeMirror _Integer;
     public final TypeMirror _Short;
     public final TypeMirror _Long;
@@ -58,6 +59,7 @@ class SpecialTypes {
     public final TypeMirror _Float;
     public final TypeMirror _Double;
     public final TypeMirror _String;
+    public final TypeMirror _Boolean;
     public SpecialTypes(Elements declarations, Types types) {
         _Renderable = declarations.getTypeElement(Renderable.class.getName()).asType();
         _String = declarations.getTypeElement(String.class.getName()).asType();
@@ -68,6 +70,7 @@ class SpecialTypes {
         _byte = types.getPrimitiveType(TypeKind.BYTE);
         _float = types.getPrimitiveType(TypeKind.FLOAT);
         _double = types.getPrimitiveType(TypeKind.DOUBLE);
+        _boolean = types.getPrimitiveType(TypeKind.BOOLEAN);
         _Integer = declarations.getTypeElement(Integer.class.getName()).asType();
         _Short = declarations.getTypeElement(Short.class.getName()).asType();
         _Long = declarations.getTypeElement(Long.class.getName()).asType();
@@ -75,6 +78,7 @@ class SpecialTypes {
         _Byte = declarations.getTypeElement(Byte.class.getName()).asType();
         _Float = declarations.getTypeElement(Float.class.getName()).asType();
         _Double = declarations.getTypeElement(Double.class.getName()).asType();
+        _Boolean = declarations.getTypeElement(Boolean.class.getName()).asType();
         _Error = declarations.getTypeElement(Error.class.getName()).asType();
         _RuntimeException = declarations.getTypeElement(RuntimeException.class.getName()).asType();
     }

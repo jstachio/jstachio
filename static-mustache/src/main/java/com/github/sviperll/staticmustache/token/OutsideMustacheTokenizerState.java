@@ -45,13 +45,25 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void openParensis() throws ProcessingException {
+    public Void twoOpenBraces() throws ProcessingException {
         tokenizer.setState(new StartMustacheTokenizerState(tokenizer));
         return null;
     }
 
     @Override
-    public Void closingParensis() throws ProcessingException {
+    public Void threeOpenBraces() throws ProcessingException {
+        tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES, tokenizer));
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        text.append("}}}");
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws ProcessingException {
         text.append("}}");
         return null;
     }
@@ -75,10 +87,11 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public void onStateChange() throws ProcessingException {
+    public void beforeStateChange() throws ProcessingException {
         if (text.length() > 0) {
             tokenizer.emitToken(MustacheToken.text(text.toString()));
         }
     }
+
 
 }
