@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2014, vir
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,13 +27,39 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache.context;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author vir
  */
- enum MustacheTokenizerFieldKind {
-    INLINE, OPEN_BLOCK, CLOSE_BLOCK
+class BooleanRenderingContext implements RenderingContext {
+    private final String expression;
+    private final RenderingContext parent;
+
+    BooleanRenderingContext(String expression, RenderingContext parent) {
+        this.expression = expression;
+        this.parent = parent;
+    }
+
+    @Override
+    public String beginSectionRenderingCode() {
+        return parent.beginSectionRenderingCode() + "if (" + expression + ") { ";
+    }
+
+    @Override
+    public String endSectionRenderingCode() {
+        return "} " + parent.endSectionRenderingCode();
+    }
+
+    @Override
+    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+        return parent.getDataOrDefault(name, defaultValue);
+    }
+
+    @Override
+    public RenderingData currentData() {
+        return parent.currentData();
+    }
 
 }

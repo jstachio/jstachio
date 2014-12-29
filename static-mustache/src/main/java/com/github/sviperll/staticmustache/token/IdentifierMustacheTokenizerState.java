@@ -37,35 +37,55 @@ import com.github.sviperll.staticmustache.ProcessingException;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
-    final MustacheTokenizerFieldKind kind;
-    final StringBuilder fieldName;
+    final MustacheTagKind kind;
+    final StringBuilder name;
     private final MustacheTokenizer tokenizer;
 
-    IdentifierMustacheTokenizerState(MustacheTokenizerFieldKind kind, StringBuilder fieldName,
-                                     final MustacheTokenizer tokenizer) {
+    IdentifierMustacheTokenizerState(MustacheTagKind kind,
+                                     StringBuilder name,
+                                     MustacheTokenizer tokenizer) {
         this.tokenizer = tokenizer;
         this.kind = kind;
-        this.fieldName = fieldName;
+        this.name = name;
     }
 
     @Override
-    public Void openParensis() throws ProcessingException {
-        tokenizer.error("Unexpected open parensis");
+    public Void twoOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void closingParensis() throws ProcessingException {
-        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+    public Void threeOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws ProcessingException {
+        if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
+            tokenizer.error("Expecting three closing braces, not two");
+        else
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        else
+            tokenizer.error("Expecting two closing braces, not three");
         return null;
     }
 
     @Override
     public Void character(char c) throws ProcessingException {
         if (Character.isWhitespace(c)) {
-            tokenizer.setState(new EndMustacheTokenizerState(tokenizer));
+            boolean expectsThree = kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES;
+            tokenizer.setState(new EndMustacheTokenizerState(tokenizer, expectsThree));
         } else {
-            fieldName.append(c);
+            name.append(c);
         }
         return null;
     }
@@ -77,17 +97,26 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public void onStateChange() throws ProcessingException {
-        String fieldNameString = fieldName.toString();
+    public void beforeStateChange() throws ProcessingException {
+        String nameString = name.toString();
         switch (kind) {
-            case INLINE:
-                tokenizer.emitToken(MustacheToken.field(fieldNameString));
+            case VARIABLE:
+                tokenizer.emitToken(MustacheToken.variable(nameString));
                 break;
-            case OPEN_BLOCK:
-                tokenizer.emitToken(MustacheToken.beginBlock(fieldNameString));
+            case UNESCAPED_VARIABLE_TWO_BRACES:
+                tokenizer.emitToken(MustacheToken.unescapedVariable(nameString));
                 break;
-            case CLOSE_BLOCK:
-                tokenizer.emitToken(MustacheToken.endBlock(fieldNameString));
+            case UNESCAPED_VARIABLE_THREE_BRACES:
+                tokenizer.emitToken(MustacheToken.unescapedVariable(nameString));
+                break;
+            case BEGIN_SECTION:
+                tokenizer.emitToken(MustacheToken.beginSection(nameString));
+                break;
+            case BEGIN_INVERTED_SECTION:
+                tokenizer.emitToken(MustacheToken.beginInvertedSection(nameString));
+                break;
+            case END_SECTION:
+                tokenizer.emitToken(MustacheToken.endSection(nameString));
                 break;
             default:
                 throw new IllegalStateException("Wrong kind in parser: " + kind);

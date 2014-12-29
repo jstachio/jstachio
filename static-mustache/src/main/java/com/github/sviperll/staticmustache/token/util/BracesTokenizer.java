@@ -32,30 +32,30 @@ package com.github.sviperll.staticmustache.token.util;
 import com.github.sviperll.staticmustache.PositionedToken;
 import com.github.sviperll.staticmustache.ProcessingException;
 import com.github.sviperll.staticmustache.TokenProcessor;
-import com.github.sviperll.staticmustache.token.ParensisToken;
+import com.github.sviperll.staticmustache.token.BracesToken;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class ParansisTokenizer implements TokenProcessor<Character> {
-    static TokenProcessorDecorator<Character, ParensisToken> decorator() {
-        return new TokenProcessorDecorator<Character, ParensisToken>() {
+public class BracesTokenizer implements TokenProcessor<Character> {
+    static TokenProcessorDecorator<Character, BracesToken> decorator() {
+        return new TokenProcessorDecorator<Character, BracesToken>() {
             @Override
-            public TokenProcessor<Character> decorateTokenProcessor(TokenProcessor<ParensisToken> downstream) {
-                return new ParansisTokenizer(downstream);
+            public TokenProcessor<Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
+                return new BracesTokenizer(downstream);
             }
         };
     }
-    public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<ParensisToken>> downstream) {
-        TokenProcessor<PositionedToken<Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(ParansisTokenizer.decorator(), downstream);
+    public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<BracesToken>> downstream) {
+        TokenProcessor<PositionedToken<Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
         return new PositionAnnotator(fileName, paransisTokenizer);
     }
 
-    private final TokenProcessor<ParensisToken> downstream;
+    private final TokenProcessor<BracesToken> downstream;
     private State state = State.NONE;
 
-    public ParansisTokenizer(TokenProcessor<ParensisToken> downstream) {
+    public BracesTokenizer(TokenProcessor<BracesToken> downstream) {
         this.downstream = downstream;
     }
 
@@ -63,42 +63,62 @@ public class ParansisTokenizer implements TokenProcessor<Character> {
     public void processToken(Character token) throws ProcessingException {
         if (token == null) {
             if (state == State.WAS_OPEN) {
-                downstream.processToken(ParensisToken.character('{'));
+                downstream.processToken(BracesToken.character('{'));
+            } else if (state == State.WAS_OPEN_TWICE) {
+                downstream.processToken(BracesToken.twoOpenBraces());
             } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(ParensisToken.character('}'));
+                downstream.processToken(BracesToken.character('}'));
+            } else if (state == State.WAS_CLOSE_TWICE) {
+                downstream.processToken(BracesToken.twoClosingBraces());
             }
-            downstream.processToken(ParensisToken.endOfFile());
+            downstream.processToken(BracesToken.endOfFile());
+            state = State.NONE;
         } else if (token == '{') {
             if (state == State.WAS_OPEN) {
+                state = State.WAS_OPEN_TWICE;
+            } else if (state == State.WAS_OPEN_TWICE) {
+                downstream.processToken(BracesToken.threeOpenBraces());
                 state = State.NONE;
-                downstream.processToken(ParensisToken.openParensis());
             } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(ParensisToken.character('}'));
+                downstream.processToken(BracesToken.character('}'));
+                state = State.WAS_OPEN;
+            } else if (state == State.WAS_CLOSE_TWICE) {
+                downstream.processToken(BracesToken.twoClosingBraces());
                 state = State.WAS_OPEN;
             } else {
                 state = State.WAS_OPEN;
             }
         } else if (token == '}') {
             if (state == State.WAS_CLOSE) {
+                state = State.WAS_CLOSE_TWICE;
+            } else if (state == State.WAS_CLOSE_TWICE) {
+                downstream.processToken(BracesToken.threeClosingBraces());
                 state = State.NONE;
-                downstream.processToken(ParensisToken.closingParensis());
             } else if (state == State.WAS_OPEN) {
-                downstream.processToken(ParensisToken.character('{'));
+                downstream.processToken(BracesToken.character('{'));
+                state = State.WAS_CLOSE;
+            } else if (state == State.WAS_OPEN_TWICE) {
+                downstream.processToken(BracesToken.twoOpenBraces());
                 state = State.WAS_CLOSE;
             } else {
                 state = State.WAS_CLOSE;
             }
         } else {
             if (state == State.WAS_OPEN) {
-                downstream.processToken(ParensisToken.character('{'));
+                downstream.processToken(BracesToken.character('{'));
+            } else if (state == State.WAS_OPEN_TWICE) {
+                downstream.processToken(BracesToken.twoOpenBraces());
             } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(ParensisToken.character('}'));
+                downstream.processToken(BracesToken.character('}'));
+            } else if (state == State.WAS_CLOSE_TWICE) {
+                downstream.processToken(BracesToken.twoClosingBraces());
             }
-            downstream.processToken(ParensisToken.character(token));
+            downstream.processToken(BracesToken.character(token));
+            state = State.NONE;
         }
     }
 
     private enum State {
-        WAS_OPEN, WAS_CLOSE, NONE
+        WAS_OPEN, WAS_OPEN_TWICE, WAS_CLOSE, WAS_CLOSE_TWICE, NONE
     }
 }

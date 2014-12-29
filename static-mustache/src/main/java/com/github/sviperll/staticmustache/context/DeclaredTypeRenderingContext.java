@@ -60,13 +60,13 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String startOfRenderingCode() {
-        return parent.startOfRenderingCode();
+    public String beginSectionRenderingCode() {
+        return parent.beginSectionRenderingCode();
     }
 
     @Override
-    public String endOfRenderingCode() {
-        return parent.endOfRenderingCode();
+    public String endSectionRenderingCode() {
+        return parent.endSectionRenderingCode();
     }
 
     @Override
@@ -122,7 +122,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData thisCurrentData() {
+    public RenderingData currentData() {
         return new RenderingData(expression, thisElement.asType());
     }
 }

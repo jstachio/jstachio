@@ -57,8 +57,8 @@ public class TemplateCompilerContext {
         this.variables = variables;
     }
 
-    private String renderingCodeBody() throws ContextException {
-        RenderingData entry = context.thisCurrentData();
+    private String sectionBodyRenderingCode() throws ContextException {
+        RenderingData entry = context.currentData();
         try {
             return generator.generateRenderingCode(entry.type(), entry.expression(), variables.writer());
         } catch (TypeException ex) {
@@ -67,18 +67,18 @@ public class TemplateCompilerContext {
     }
 
     public String renderingCode() throws ContextException {
-        return startOfRenderingCode() + renderingCodeBody() + endOfRenderingCode();
+        return beginSectionRenderingCode() + sectionBodyRenderingCode() + endSectionRenderingCode();
     }
 
-    public String startOfRenderingCode() {
-        return context.startOfRenderingCode();
+    public String beginSectionRenderingCode() {
+        return context.beginSectionRenderingCode();
     }
 
-    public String endOfRenderingCode() {
-        return context.endOfRenderingCode();
+    public String endSectionRenderingCode() {
+        return context.endSectionRenderingCode();
     }
 
-    public TemplateCompilerContext createChild(String name) throws ContextException {
+    public TemplateCompilerContext getChild(String name) throws ContextException {
         if (name.equals(".")) {
             return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
         } else {
@@ -88,6 +88,23 @@ public class TemplateCompilerContext {
             RenderingContext enclosedField;
             try {
                 enclosedField = generator.createRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
+            } catch (TypeException ex) {
+                throw new ContextException("Can't use " + name + " for rendering", ex);
+            }
+            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+        }
+    }
+
+    public TemplateCompilerContext getInvertedChild(String name) throws ContextException {
+        if (name.equals(".")) {
+            throw new ContextException("Current section can't be inverted");
+        } else {
+            RenderingData entry = context.getDataOrDefault(name, null);
+            if (entry == null)
+                throw new ContextException("Field not found in current context: " + name);
+            RenderingContext enclosedField;
+            try {
+                enclosedField = generator.createInvertedRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
             } catch (TypeException ex) {
                 throw new ContextException("Can't use " + name + " for rendering", ex);
             }

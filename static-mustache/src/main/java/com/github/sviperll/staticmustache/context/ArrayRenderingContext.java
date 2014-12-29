@@ -49,13 +49,13 @@ class ArrayRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String startOfRenderingCode() {
-        return parent.startOfRenderingCode() + "for (int i = 0; i < " + expression + ".length; i++) { ";
+    public String beginSectionRenderingCode() {
+        return parent.beginSectionRenderingCode() + "for (int i = 0; i < " + expression + ".length; i++) { ";
     }
 
     @Override
-    public String endOfRenderingCode() {
-        return "}" + parent.endOfRenderingCode();
+    public String endSectionRenderingCode() {
+        return "}" + parent.endSectionRenderingCode();
     }
 
     @Override
@@ -69,7 +69,7 @@ class ArrayRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData thisCurrentData() {
+    public RenderingData currentData() {
         return new RenderingData(expression, types.arrayType(elementType));
     }
 

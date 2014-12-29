@@ -10,7 +10,7 @@
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the documentation and/or
- *     text materials provided with the distribution.
+ *     character materials provided with the distribution.
  *
  *  3. Neither the name of the copyright holder nor the names of its contributors
  *     may be used to endorse or promote products derived from this software
@@ -27,90 +27,71 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.token;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public abstract class MustacheToken {
-    public static MustacheToken beginSection(final String name) {
-        return new MustacheToken() {
+public abstract class BracesToken {
+    public static BracesToken twoOpenBraces() {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginSection(name);
+                return visitor.twoOpenBraces();
             }
         };
     }
-    public static MustacheToken beginInvertedSection(final String name) {
-        return new MustacheToken() {
+    public static BracesToken twoClosingBraces() {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginInvertedSection(name);
+                return visitor.twoClosingBraces();
             }
         };
     }
-    public static MustacheToken endSection(final String name) {
-        return new MustacheToken() {
+    public static BracesToken threeOpenBraces() {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endSection(name);
+                return visitor.threeOpenBraces();
             }
         };
     }
-    public static MustacheToken variable(final String name) {
-        return new MustacheToken() {
+    public static BracesToken threeClosingBraces() {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.variable(name);
+                return visitor.threeClosingBraces();
             }
         };
     }
-    public static MustacheToken unescapedVariable(final String name) {
-        return new MustacheToken() {
+    public static BracesToken character(final char s) {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.unescapedVariable(name);
+                return visitor.character(s);
             }
         };
     }
-    public static MustacheToken specialCharacter(final char c) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.specialCharacter(c);
-            }
-        };
-    }
-    public static MustacheToken text(final String s) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.text(s);
-            }
-        };
-    }
-    public static MustacheToken endOfFile() {
-        return new MustacheToken() {
+    public static BracesToken endOfFile() {
+        return new BracesToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
                 return visitor.endOfFile();
             }
         };
     }
-
     public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
-
-    private MustacheToken() {
+    private BracesToken() {
     }
+
     public interface Visitor<R, E extends Exception> {
-        R beginSection(String name) throws E;
-        R beginInvertedSection(String name) throws E;
-        R endSection(String name) throws E;
-        R variable(String name) throws E;
-        R unescapedVariable(String name) throws E;
-        R specialCharacter(char c) throws E;
-        R text(String s) throws E;
+        R twoOpenBraces() throws E;
+        R twoClosingBraces() throws E;
+        R threeOpenBraces() throws E;
+        R threeClosingBraces() throws E;
+        R character(char c) throws E;
         R endOfFile() throws E;
     }
 }

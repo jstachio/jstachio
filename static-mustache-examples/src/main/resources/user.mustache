@@ -3,12 +3,20 @@ Name: {{.}}, Name Length is {{length}}
 {{/name}}
 Age: {{  age  }}
 
-Card:
+Name HTML: {{& name }}
+
+Card:{{! Card can be custom renderable object }}
+
+{{#cardEnabled}}
 
 {{ card }}
 
+{{/cardEnabled}}
+
 {{#array}}
  * {{.}}{{/array}}
+{{^array}}
+ No data in array{{/array}}
 
 {{#array1}}
  . {{.}}{{/array1}}

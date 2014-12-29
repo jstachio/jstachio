@@ -27,39 +27,51 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
+package com.github.sviperll.staticmustache.token;
 
-/**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
- */
-class NullableRenderingContext implements RenderingContext {
-    private final String expression;
-    private final RenderingContext parent;
+import com.github.sviperll.staticmustache.ProcessingException;
 
-    NullableRenderingContext(String expression, RenderingContext parent) {
-        this.expression = expression;
-        this.parent = parent;
+class CommentMustacheTokenizerState implements MustacheTokenizerState {
+    private final MustacheTokenizer tokenizer;
+
+    CommentMustacheTokenizerState(MustacheTokenizer tokenizer) {
+        this.tokenizer = tokenizer;
     }
 
     @Override
-    public String startOfRenderingCode() {
-        return parent.startOfRenderingCode() + "if (" + expression + " != null) { ";
+    public void beforeStateChange() throws ProcessingException {
     }
 
     @Override
-    public String endOfRenderingCode() {
-        return "} " + parent.endOfRenderingCode();
+    public Void twoOpenBraces() throws ProcessingException {
+        return null;
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
-        return parent.getDataOrDefault(name, defaultValue);
+    public Void threeOpenBraces() throws ProcessingException {
+        return null;
     }
 
     @Override
-    public RenderingData thisCurrentData() {
-        return parent.thisCurrentData();
+    public Void twoClosingBraces() throws ProcessingException {
+        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        tokenizer.error("Two closing braces should close comment, not three");
+        return null;
+    }
+    @Override
+    public Void character(char c) throws ProcessingException {
+        return null;
+    }
+
+    @Override
+    public Void endOfFile() throws ProcessingException {
+        tokenizer.error("Unexpected end of file: comment not closed");
+        return null;
     }
 
 }

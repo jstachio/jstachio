@@ -10,7 +10,7 @@
  *
  *  2. Redistributions in binary form must reproduce the above copyright notice,
  *     this list of conditions and the following disclaimer in the documentation and/or
- *     character materials provided with the distribution.
+ *     other materials provided with the distribution.
  *
  *  3. Neither the name of the copyright holder nor the names of its contributors
  *     may be used to endorse or promote products derived from this software
@@ -33,47 +33,6 @@ package com.github.sviperll.staticmustache.token;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public abstract class ParensisToken {
-    public static ParensisToken openParensis() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.openParensis();
-            }
-        };
-    }
-    public static ParensisToken closingParensis() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.closingParensis();
-            }
-        };
-    }
-    public static ParensisToken character(final char s) {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.character(s);
-            }
-        };
-    }
-    public static ParensisToken endOfFile() {
-        return new ParensisToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endOfFile();
-            }
-        };
-    }
-    public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
-    private ParensisToken() {
-    }
-
-    public interface Visitor<R, E extends Exception> {
-        R openParensis() throws E;
-        R closingParensis() throws E;
-        R character(char c) throws E;
-        R endOfFile() throws E;
-    }
+ enum MustacheTagKind {
+    VARIABLE, BEGIN_SECTION, END_SECTION, BEGIN_INVERTED_SECTION, UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES
 }

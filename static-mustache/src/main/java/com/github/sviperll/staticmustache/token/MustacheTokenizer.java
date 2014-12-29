@@ -34,17 +34,17 @@ import com.github.sviperll.staticmustache.Position;
 import com.github.sviperll.staticmustache.PositionedToken;
 import com.github.sviperll.staticmustache.ProcessingException;
 import com.github.sviperll.staticmustache.TokenProcessor;
-import com.github.sviperll.staticmustache.token.util.ParansisTokenizer;
+import com.github.sviperll.staticmustache.token.util.BracesTokenizer;
 import com.github.sviperll.staticmustache.token.util.PositionHodingTokenProcessor;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class MustacheTokenizer implements TokenProcessor<PositionedToken<ParensisToken>> {
+public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesToken>> {
     public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
-        TokenProcessor<PositionedToken<ParensisToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
-        return ParansisTokenizer.createInstance(fileName, mustacheTokenizer);
+        TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
+        return BracesTokenizer.createInstance(fileName, mustacheTokenizer);
     }
 
     private final PositionHodingTokenProcessor<MustacheToken> downstream;
@@ -55,15 +55,15 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<Parensi
     }
 
     @Override
-    public void processToken(PositionedToken<ParensisToken> positionedToken) throws ProcessingException {
+    public void processToken(PositionedToken<BracesToken> positionedToken) throws ProcessingException {
         position = positionedToken.position();
         downstream.setPosition(position);
-        ParensisToken token = positionedToken.innerToken();
+        BracesToken token = positionedToken.innerToken();
         token.accept(state);
     }
-    
+
     void setState(MustacheTokenizerState newState) throws ProcessingException {
-        state.onStateChange();
+        state.beforeStateChange();
         state = newState;
     }
 

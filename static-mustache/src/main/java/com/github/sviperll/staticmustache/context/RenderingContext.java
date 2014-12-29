@@ -34,8 +34,8 @@ package com.github.sviperll.staticmustache.context;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 interface RenderingContext {
-    String startOfRenderingCode();
-    String endOfRenderingCode();
+    String beginSectionRenderingCode();
+    String endSectionRenderingCode();
     RenderingData getDataOrDefault(String name, RenderingData defaultValue);
-    RenderingData thisCurrentData();
+    RenderingData currentData();
 }

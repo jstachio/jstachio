@@ -37,20 +37,40 @@ import com.github.sviperll.staticmustache.ProcessingException;
  */
 class EndMustacheTokenizerState implements MustacheTokenizerState {
     private final MustacheTokenizer tokenizer;
+    private final boolean expectsThree;
 
-    EndMustacheTokenizerState(final MustacheTokenizer tokenizer) {
+    EndMustacheTokenizerState(final MustacheTokenizer tokenizer, boolean expectsThree) {
         this.tokenizer = tokenizer;
+        this.expectsThree = expectsThree;
     }
 
     @Override
-    public Void openParensis() throws ProcessingException {
-        tokenizer.error("Unexpected open parensis");
+    public Void twoOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void closingParensis() throws ProcessingException {
-        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+    public Void threeOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws ProcessingException {
+        if (expectsThree)
+            tokenizer.error("Expects three closing braces, not two");
+        else
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        if (expectsThree)
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        else
+            tokenizer.error("Expects two closing braces, not three");
         return null;
     }
 
@@ -69,7 +89,7 @@ class EndMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public void onStateChange() throws ProcessingException {
+    public void beforeStateChange() throws ProcessingException {
     }
 
 }

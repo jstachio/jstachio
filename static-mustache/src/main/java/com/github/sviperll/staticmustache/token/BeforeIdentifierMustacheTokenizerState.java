@@ -36,23 +36,23 @@ import com.github.sviperll.staticmustache.ProcessingException;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class BeforeIdentifierMustacheTokenizerState implements MustacheTokenizerState {
-    final MustacheTokenizerFieldKind kind;
+    final MustacheTagKind kind;
     private final MustacheTokenizer tokenizer;
 
-    BeforeIdentifierMustacheTokenizerState(MustacheTokenizerFieldKind kind, final MustacheTokenizer outer) {
+    BeforeIdentifierMustacheTokenizerState(MustacheTagKind kind, final MustacheTokenizer outer) {
         this.tokenizer = outer;
         this.kind = kind;
     }
 
     @Override
-    public Void openParensis() throws ProcessingException {
-        tokenizer.error("Unexpected open parensis");
+    public Void twoOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void closingParensis() throws ProcessingException {
-        tokenizer.error("Unexpected closing parensis");
+    public Void twoClosingBraces() throws ProcessingException {
+        tokenizer.error("Unexpected closing braces");
         return null;
     }
 
@@ -74,7 +74,19 @@ class BeforeIdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public void onStateChange() throws ProcessingException {
+    public void beforeStateChange() throws ProcessingException {
+    }
+
+    @Override
+    public Void threeOpenBraces() throws ProcessingException {
+        tokenizer.error("Unexpected open braces");
+        return null;
+   }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        tokenizer.error("Unexpected closing braces");
+        return null;
     }
 
 }
