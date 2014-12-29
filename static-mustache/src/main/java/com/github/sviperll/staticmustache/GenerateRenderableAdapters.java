@@ -27,35 +27,23 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.examples;
+package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.Html;
-import com.github.sviperll.staticmustache.Renderable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapters({
-    @GenerateRenderableAdapter(template = "user.mustache", templateFormat = Text.class, adapterName = "RenderableTextUserAdapter"),
-    @GenerateRenderableAdapter(template = "user.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUserAdapter")
-})
-public class User {
-    final String name;
-    final int age;
-    final Renderable<Text> card;
-    final String[] array;
-    final int[] array1;
-    final boolean cardEnabled;
-
-    public User(String name, int age, Renderable<Text> card, String[] array, int[] array1, boolean cardEnabled) {
-        this.name = name;
-        this.age = age;
-        this.card = card;
-        this.array = array;
-        this.array1 = array1;
-        this.cardEnabled = cardEnabled;
-    }
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE)
+@Documented
+public @interface GenerateRenderableAdapters {
+    /**
+      * @return several templates to generate adapters */
+    GenerateRenderableAdapter[] value();
 }

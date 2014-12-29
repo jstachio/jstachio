@@ -57,17 +57,21 @@ public class TemplateCompilerContext {
         this.variables = variables;
     }
 
-    private String sectionBodyRenderingCode() throws ContextException {
+    private String sectionBodyRenderingCode(String writerVariableName) throws ContextException {
         RenderingData entry = context.currentData();
         try {
-            return generator.generateRenderingCode(entry.type(), entry.expression(), variables.writer());
+            return generator.generateRenderingCode(entry.type(), entry.expression(), writerVariableName);
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }
     }
 
     public String renderingCode() throws ContextException {
-        return beginSectionRenderingCode() + sectionBodyRenderingCode() + endSectionRenderingCode();
+        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.writer()) + endSectionRenderingCode();
+    }
+
+    public String unescapedRenderingCode() throws ContextException {
+        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.unescapedWriter()) + endSectionRenderingCode();
     }
 
     public String beginSectionRenderingCode() {

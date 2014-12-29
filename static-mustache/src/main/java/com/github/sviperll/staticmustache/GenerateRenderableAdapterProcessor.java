@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
@@ -106,45 +107,88 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                     if (processingEnv.getTypeUtils().isSubtype(annotationMirror.getAnnotationType(), generateRenderableAdapterElement.asType()))
                         directive = annotationMirror;
                 }
-                writeRenderableAdapterClass(classElement, classElement.getAnnotation(GenerateRenderableAdapter.class), directive);
+                writeRenderableAdapterClass(classElement, directive);
+            }
+            Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapters.class.getName());
+            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapters.class)) {
+                TypeElement classElement = (TypeElement)element;
+                List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+                for (AnnotationMirror mirror: annotationMirrors) {
+                    if (processingEnv.getTypeUtils().isSubtype(mirror.getAnnotationType(), generateRenderableAdaptersElement.asType())) {
+                        Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = mirror.getElementValues();
+                        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: elementValues.entrySet()) {
+                            if (entry.getKey().getSimpleName().contentEquals("value")) {
+                                @SuppressWarnings("unchecked")
+                                List<? extends AnnotationValue> directives = (List<? extends AnnotationValue>)entry.getValue().getValue();
+                                for (AnnotationValue directiveValue: directives) {
+                                    AnnotationMirror directive = (AnnotationMirror)directiveValue.getValue();
+                                    writeRenderableAdapterClass(classElement, directive);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         return true;
     }
 
-    private void writeRenderableAdapterClass(TypeElement element, GenerateRenderableAdapter directive, AnnotationMirror directiveMirror) throws RuntimeException {
-        String className = element.getQualifiedName().toString();
-        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        String packageName = packageElement.getQualifiedName().toString();
-
-        String adapterClassSimpleName;
-        if (!directive.adapterName().equals(":auto"))
-            adapterClassSimpleName = directive.adapterName();
-        else
-            adapterClassSimpleName = "Renderable" + element.getSimpleName().toString() + "Adapter";
-        String adapterClassName = packageName + "." + adapterClassSimpleName;
-        String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
-        String adapterRendererClassName = adapterClassName + "." + adapterRendererClassSimpleName;
-        String templatePath = directive.template();
+    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws RuntimeException {
         Method templateFormatMethod;
+        Method adapterNameMethod;
+        Method templateMethod;
+        Method charsetMethod;
         try {
             templateFormatMethod = GenerateRenderableAdapter.class.getDeclaredMethod("templateFormat");
+            adapterNameMethod = GenerateRenderableAdapter.class.getDeclaredMethod("adapterName");
+            templateMethod = GenerateRenderableAdapter.class.getDeclaredMethod("template");
+            charsetMethod = GenerateRenderableAdapter.class.getDeclaredMethod("charset");
         } catch (NoSuchMethodException ex) {
             throw new RuntimeException(ex);
         } catch (SecurityException ex) {
             throw new RuntimeException(ex);
         }
-        Class<?> templateFormatClass = (Class<?>)templateFormatMethod.getDefaultValue();
-        TypeElement templateFormatElement = processingEnv.getElementUtils().getTypeElement(templateFormatClass.getName());
-        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: directiveMirror.getElementValues().entrySet()) {
+
+        String className = element.getQualifiedName().toString();
+        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+        String packageName = packageElement.getQualifiedName().toString();
+
+        String templatePath = null;
+        String directiveAdapterName = null;
+        String directiveCharset = null;
+        TypeElement templateFormatElement = null;
+        Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = processingEnv.getElementUtils().getElementValuesWithDefaults(directiveMirror);
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: annotationValues.entrySet()) {
             if (entry.getKey().getSimpleName().contentEquals(templateFormatMethod.getName())) {
                 AnnotationValue value = entry.getValue();
                 Object templateFormatValue = value.getValue();
                 DeclaredType templateFormatType = (DeclaredType)templateFormatValue;
                 templateFormatElement = (TypeElement)templateFormatType.asElement();
+            } else if (entry.getKey().getSimpleName().contentEquals(adapterNameMethod.getName())) {
+                directiveAdapterName = (String)entry.getValue().getValue();
+            } else if (entry.getKey().getSimpleName().contentEquals(templateMethod.getName())) {
+                templatePath = (String)entry.getValue().getValue();
+            } else if (entry.getKey().getSimpleName().contentEquals(charsetMethod.getName())) {
+                directiveCharset = (String)entry.getValue().getValue();
             }
         }
-        Charset templateCharset = directive.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(directive.charset());
+        if (templateFormatElement == null)
+            throw new RuntimeException(templateFormatMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+        if (directiveAdapterName == null)
+            throw new RuntimeException(adapterNameMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+        if (directiveCharset == null)
+            throw new RuntimeException(charsetMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+        if (templatePath == null)
+            throw new RuntimeException(templateMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+        String adapterClassSimpleName;
+        if (!directiveAdapterName.equals(":auto"))
+            adapterClassSimpleName = directiveAdapterName;
+        else
+            adapterClassSimpleName = "Renderable" + element.getSimpleName().toString() + "Adapter";
+        String adapterClassName = packageName + "." + adapterClassSimpleName;
+        String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
+        String adapterRendererClassName = adapterClassName + "." + adapterRendererClassSimpleName;
+        Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
             TemplateFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TemplateFormat.class);
             if (templateFormatAnnotation == null) {

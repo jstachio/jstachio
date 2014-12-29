@@ -140,7 +140,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public Void unescapedVariable(String name) throws ProcessingException {
             try {
                 TemplateCompilerContext variable = context.getChild(name);
-                writer.print(variable.renderingCode());
+                writer.print(variable.unescapedRenderingCode());
                 return null;
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
