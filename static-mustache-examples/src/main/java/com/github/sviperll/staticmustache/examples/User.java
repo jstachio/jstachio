@@ -36,15 +36,15 @@ import com.github.sviperll.staticmustache.Renderable;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(template = "user.mustache")
+@GenerateRenderableAdapter(template = "user.mustache", templateFormat = Text.class)
 public class User {
     final String name;
     final int age;
-    final Renderable card;
+    final Renderable<Text> card;
     final String[] array;
     final int[] array1;
 
-    public User(String name, int age, Renderable card, String[] array, int[] array1) {
+    public User(String name, int age, Renderable<Text> card, String[] array, int[] array1) {
         this.name = name;
         this.age = age;
         this.card = card;

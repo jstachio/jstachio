@@ -29,26 +29,36 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.staticmustache.context.ContextVariables;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
+import com.github.sviperll.texttemplates.TemplateFormat;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -87,16 +97,22 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error);
             }
         } else {
+            Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapter.class.getName());
             for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapter.class)) {
                 TypeElement classElement = (TypeElement)element;
-                GenerateRenderableAdapter directive = element.getAnnotation(GenerateRenderableAdapter.class);
-                writeRenderableAdapterClass(classElement, directive);
+                List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
+                AnnotationMirror directive = null;
+                for (AnnotationMirror annotationMirror: annotationMirrors) {
+                    if (processingEnv.getTypeUtils().isSubtype(annotationMirror.getAnnotationType(), generateRenderableAdapterElement.asType()))
+                        directive = annotationMirror;
+                }
+                writeRenderableAdapterClass(classElement, classElement.getAnnotation(GenerateRenderableAdapter.class), directive);
             }
         }
         return true;
     }
 
-    private void writeRenderableAdapterClass(TypeElement element, GenerateRenderableAdapter directive) throws RuntimeException {
+    private void writeRenderableAdapterClass(TypeElement element, GenerateRenderableAdapter directive, AnnotationMirror directiveMirror) throws RuntimeException {
         String className = element.getQualifiedName().toString();
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         String packageName = packageElement.getQualifiedName().toString();
@@ -110,26 +126,51 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
         String adapterRendererClassName = adapterClassName + "." + adapterRendererClassSimpleName;
         String templatePath = directive.template();
+        Method templateFormatMethod;
+        try {
+            templateFormatMethod = GenerateRenderableAdapter.class.getDeclaredMethod("templateFormat");
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        } catch (SecurityException ex) {
+            throw new RuntimeException(ex);
+        }
+        Class<?> templateFormatClass = (Class<?>)templateFormatMethod.getDefaultValue();
+        TypeElement templateFormatElement = processingEnv.getElementUtils().getTypeElement(templateFormatClass.getName());
+        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: directiveMirror.getElementValues().entrySet()) {
+            if (entry.getKey().getSimpleName().contentEquals(templateFormatMethod.getName())) {
+                AnnotationValue value = entry.getValue();
+                Object templateFormatValue = value.getValue();
+                DeclaredType templateFormatType = (DeclaredType)templateFormatValue;
+                templateFormatElement = (TypeElement)templateFormatType.asElement();
+            }
+        }
         Charset templateCharset = directive.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(directive.charset());
         try {
+            TemplateFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TemplateFormat.class);
+            if (templateFormatAnnotation == null) {
+                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TemplateFormat.class.getName() + " annotation");
+            }
             StringWriter stringWriter = new StringWriter();
             PrintWriter writer = new PrintWriter(stringWriter);
             try {
                 writer.println("package " + packageName + ";");
-                writer.println("class " + adapterClassSimpleName + " implements " + Renderable.class.getName() + "{");
+                writer.println("class " + adapterClassSimpleName + " implements " + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + "> {");
                 writer.println("    private final " + className + " data;");
                 writer.println("    public " + adapterClassSimpleName + "(" + className + " data) {");
                 writer.println("        this.data = data;");
                 writer.println("    }");
                 writer.println("    @Override");
-                writer.println("    public " + Renderer.class.getName() + " createRenderer(" + Appendable.class.getName() + " writer) {");
-                writer.println("        return new " + adapterRendererClassName + "(data, writer);");
+                writer.println("    public " + Renderer.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
+                writer.println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
+                writer.println("        return new " + adapterRendererClassName + "(data, writer, unescapedWriter);");
                 writer.println("    }");
                 writer.println("    private static class " + adapterRendererClassSimpleName + " implements " + Renderer.class.getName() + " {");
+                writer.println("        private final " + Appendable.class.getName() + " unescapedWriter;");
                 writer.println("        private final " + Appendable.class.getName() + " writer;");
                 writer.println("        private final " + className + " data;");
-                writer.println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer) {");
+                writer.println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer, " + Appendable.class.getName() + " unescapedWriter) {");
                 writer.println("            this.writer = writer;");
+                writer.println("            this.unescapedWriter = unescapedWriter;");
                 writer.println("            this.data = data;");
                 writer.println("        }");
                 writer.println("        @Override");
@@ -137,7 +178,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
                 FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
-                TemplateCompilerContext context = TemplateCompilerContext.createInstace(codeGenerator, element, "data", "writer");
+                ContextVariables variables = new ContextVariables("data", "writer", "unescapedWriter");
+                TemplateCompilerContext context = TemplateCompilerContext.createInstace(codeGenerator, element, variables);
                 compilerManager.compileTemplate(resource, templateCharset, context);
                 writer.println("        }");
                 writer.println("    }");
@@ -160,6 +202,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         } catch (ProcessingException ex) {
             String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
             errors.add(errorMessage);
+        } catch (DeclarationException ex) {
+            errors.add(ex.getMessage());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

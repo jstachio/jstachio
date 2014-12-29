@@ -51,6 +51,14 @@ public @interface GenerateRenderableAdapter {
     String adapterName() default ":auto";
 
     /**
+     * You can create custom formats using
+     * @TemplateFormat annotation
+     *
+     * @return format of given template (HTML is default)
+     */
+    Class<?> templateFormat() default Html.class;
+
+    /**
      * @return encoding of given template file */
     String charset() default ":default";
 }

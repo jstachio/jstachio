@@ -5,20 +5,9 @@
         <artifactId>static-mustache-maven-parent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>static-mustache-examples</artifactId>
-    <name>static-mustache-examples</name>
+    <artifactId>text-templates</artifactId>
+    <name>text-templates</name>
     <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>com.github.sviperll</groupId>
-            <artifactId>static-mustache</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>text-templates</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
-

@@ -15,6 +15,7 @@
         <netbeans.hint.license>BSD3</netbeans.hint.license>
     </properties>
     <modules>
+        <module>text-templates</module>
         <module>static-mustache</module>
         <module>static-mustache-examples</module>
     </modules>

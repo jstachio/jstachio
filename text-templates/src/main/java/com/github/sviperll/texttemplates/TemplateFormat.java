@@ -27,17 +27,49 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.examples;
+package com.github.sviperll.texttemplates;
 
-import com.github.sviperll.staticmustache.Renderable;
-import com.github.sviperll.staticmustache.Renderer;
-import java.io.IOException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        User user = new User("Victor", 29, null, new String[] {"aaa", "bbb", "ccc"}, new int[] {1,2,3,4,5});
-        Renderable<Text> renderable = new RenderableUserAdapter(user);
-        Renderer renderer = renderable.createRenderer(System.out);
-        renderer.render();
-    }
+/**
+ * Annotation to mark classes that define text template format
+ * <p>
+ * The only requirement for class is that it should provide method with
+ * the following signature:
+ * <p>
+ * {@code
+ * <pre>
+ *     public static Appendable createEscapingAppendable(Appendable appendable)
+ * </pre>
+ * }
+ * <p>
+ * An implementation of this method should decorate given appendable argument
+ * to create new appendable that will excape any special characters, specific to given format.
+ * <p>
+ * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
+ * <p>
+ * {@code
+ * <pre>
+ *     Appendable htmlAppendable = Html.createEscapingAppendable(System.out);
+ *     htmlAppendable.append(" if a < b & b < c then a < c ");
+ * </pre>
+ * }
+ * <p>
+ * The result of above code should be
+ * <p>
+ * <pre>
+ *  if a &lt; b &amp; b &lt; c then a &lt; c
+ * </pre>
+ *
+ * @author Victor Nazarov <asviraspossible@gmail.com>
+*/
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+public @interface TemplateFormat {
+    String createEscapingAppendableMethodName() default "createEscapingAppendable";
 }

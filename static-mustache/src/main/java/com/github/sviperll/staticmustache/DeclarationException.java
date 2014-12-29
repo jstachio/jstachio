@@ -27,17 +27,17 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.examples;
+package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.Renderable;
-import com.github.sviperll.staticmustache.Renderer;
-import java.io.IOException;
+/**
+ *
+ * @author Victor Nazarov <asviraspossible@gmail.com>
+ */
+@SuppressWarnings("serial")
+class DeclarationException extends Exception {
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        User user = new User("Victor", 29, null, new String[] {"aaa", "bbb", "ccc"}, new int[] {1,2,3,4,5});
-        Renderable<Text> renderable = new RenderableUserAdapter(user);
-        Renderer renderer = renderable.createRenderer(System.out);
-        renderer.render();
+    public DeclarationException(String message) {
+        super(message);
     }
+
 }

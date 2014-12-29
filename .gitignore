@@ -7,3 +7,4 @@
 /static-mustache-examples/target
 /.nb-gradle
 /.gradle
+/text-templates/target/

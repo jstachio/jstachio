@@ -30,9 +30,13 @@
 package com.github.sviperll.staticmustache;
 
 /**
+ * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
+ * html output.
+ * 
+ * @param <T> marks given renderable with it's format
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public interface Renderable {
+public interface Renderable<T> {
     Renderer createRenderer(Appendable appendable);
 }

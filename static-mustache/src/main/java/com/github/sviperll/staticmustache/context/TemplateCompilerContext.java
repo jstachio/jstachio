@@ -29,8 +29,6 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.lang.model.element.TypeElement;
 
 /**
@@ -38,30 +36,31 @@ import javax.lang.model.element.TypeElement;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class TemplateCompilerContext {
-    public static TemplateCompilerContext createInstace(RenderingCodeGenerator typeProcessor, TypeElement element, String data, String writer) {
-        RenderingContext fieldContext = new DeclaredTypeRenderingContext(typeProcessor, element, "data");
-        return new TemplateCompilerContext(typeProcessor, "writer", fieldContext);
+    public static TemplateCompilerContext createInstace(RenderingCodeGenerator codeGenerator, TypeElement element,
+                                                        ContextVariables variables) {
+        RenderingContext fieldContext = new DeclaredTypeRenderingContext(codeGenerator, element, variables.data());
+        return new TemplateCompilerContext(codeGenerator, variables, fieldContext);
     }
     private final EnclosedRelation enclosedRelation;
-    private final String writerExpression;
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
+    private final ContextVariables variables;
 
-    TemplateCompilerContext(RenderingCodeGenerator processor, String writerExpression, RenderingContext field) {
-        this(processor, writerExpression, field, null);
+    TemplateCompilerContext(RenderingCodeGenerator processor, ContextVariables variables, RenderingContext field) {
+        this(processor, variables, field, null);
     }
 
-    private TemplateCompilerContext(RenderingCodeGenerator processor, String writerExpression, RenderingContext field, EnclosedRelation parent) {
+    private TemplateCompilerContext(RenderingCodeGenerator processor, ContextVariables variables, RenderingContext field, EnclosedRelation parent) {
         this.enclosedRelation = parent;
-        this.writerExpression = writerExpression;
         this.context = field;
         this.generator = processor;
+        this.variables = variables;
     }
 
     private String renderingCodeBody() throws ContextException {
         RenderingData entry = context.thisCurrentData();
         try {
-            return generator.generateRenderingCode(entry.type(), entry.expression(), writerExpression);
+            return generator.generateRenderingCode(entry.type(), entry.expression(), variables.writer());
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }
@@ -81,7 +80,7 @@ public class TemplateCompilerContext {
 
     public TemplateCompilerContext createChild(String name) throws ContextException {
         if (name.equals(".")) {
-            return new TemplateCompilerContext(generator, writerExpression, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
+            return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
         } else {
             RenderingData entry = context.getDataOrDefault(name, null);
             if (entry == null)
@@ -92,7 +91,7 @@ public class TemplateCompilerContext {
             } catch (TypeException ex) {
                 throw new ContextException("Can't use " + name + " for rendering", ex);
             }
-            return new TemplateCompilerContext(generator, writerExpression, enclosedField, new EnclosedRelation(name, this));
+            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
         }
     }
 
