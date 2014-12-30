@@ -35,5 +35,7 @@ package com.github.sviperll.staticmustache;
  * @param <T>
  */
 public interface TokenProcessor<T> {
+    static Character EOF = null;
+
     void processToken(T token) throws ProcessingException;
 }

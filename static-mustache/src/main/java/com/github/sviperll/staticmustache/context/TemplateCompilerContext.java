@@ -29,49 +29,42 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import javax.lang.model.element.TypeElement;
-
 /**
- *
+ * @see RenderingCodeGenerator#createTemplateCompilerContext(javax.lang.model.element.TypeElement, java.lang.String, com.github.sviperll.staticmustache.context.VariableContext)
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class TemplateCompilerContext {
-    public static TemplateCompilerContext createInstace(RenderingCodeGenerator codeGenerator, TypeElement element,
-                                                        ContextVariables variables) {
-        RenderingContext fieldContext = new DeclaredTypeRenderingContext(codeGenerator, element, variables.data());
-        return new TemplateCompilerContext(codeGenerator, variables, fieldContext);
-    }
     private final EnclosedRelation enclosedRelation;
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
-    private final ContextVariables variables;
+    private final VariableContext variables;
 
-    TemplateCompilerContext(RenderingCodeGenerator processor, ContextVariables variables, RenderingContext field) {
+    TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field) {
         this(processor, variables, field, null);
     }
 
-    private TemplateCompilerContext(RenderingCodeGenerator processor, ContextVariables variables, RenderingContext field, EnclosedRelation parent) {
+    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, EnclosedRelation parent) {
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
         this.variables = variables;
     }
 
-    private String sectionBodyRenderingCode(String writerVariableName) throws ContextException {
+    private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
         RenderingData entry = context.currentData();
         try {
-            return generator.generateRenderingCode(entry.type(), entry.expression(), writerVariableName);
+            return generator.generateRenderingCode(entry.type(), entry.expression(), variables);
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }
     }
 
     public String renderingCode() throws ContextException {
-        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.writer()) + endSectionRenderingCode();
+        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables) + endSectionRenderingCode();
     }
 
     public String unescapedRenderingCode() throws ContextException {
-        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.unescapedWriter()) + endSectionRenderingCode();
+        return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.unescaped()) + endSectionRenderingCode();
     }
 
     public String beginSectionRenderingCode() {

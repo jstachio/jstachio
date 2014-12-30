@@ -69,4 +69,9 @@ class NoDataContext implements RenderingContext {
         return parent.beginSectionRenderingCode();
     }
 
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return parent.createEnclosedVariableContext();
+    }
+
 }

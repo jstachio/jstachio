@@ -39,18 +39,20 @@ class ArrayRenderingContext implements RenderingContext {
     private final String expression;
     private final RenderingContext parent;
     private final TypeMirror elementType;
+    private final String indexVariableName;
     private final RenderingCodeGenerator types;
 
-    public ArrayRenderingContext(TypeMirror elementType, String expression, RenderingCodeGenerator types, RenderingContext parent) {
+    public ArrayRenderingContext(TypeMirror elementType, String expression, String indexVariableName, RenderingCodeGenerator types, RenderingContext parent) {
         this.expression = expression;
         this.parent = parent;
         this.elementType = elementType;
+        this.indexVariableName = indexVariableName;
         this.types = types;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "for (int i = 0; i < " + expression + ".length; i++) { ";
+        return parent.beginSectionRenderingCode() + "for (int " + indexVariableName + " = 0; " + indexVariableName + " < " + expression + ".length; " + indexVariableName + "++) { ";
     }
 
     @Override
@@ -58,19 +60,30 @@ class ArrayRenderingContext implements RenderingContext {
         return "}" + parent.endSectionRenderingCode();
     }
 
+    String componentExpession() {
+        return expression + "[" + indexVariableName + "]";
+    }
+
     @Override
     public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
         if (name.equals("length")) {
-            return new RenderingData(expression + ".length", types.intType());
-        } else if (parent != null)
+            RenderingData result = parent.getDataOrDefault(name, null);
+            return result != null ? result : new RenderingData(expression + ".length", types.intType());
+        } else if (name.equals("index")) {
+            RenderingData result = parent.getDataOrDefault(name, null);
+            return result != null ? result : new RenderingData(indexVariableName, types.intType());
+        } else
             return parent.getDataOrDefault(name, defaultValue);
-        else
-            return defaultValue;
     }
 
     @Override
     public RenderingData currentData() {
         return new RenderingData(expression, types.arrayType(elementType));
+    }
+
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return parent.createEnclosedVariableContext();
     }
 
 }

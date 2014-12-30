@@ -59,4 +59,8 @@ class OwnedRenderingContext implements RenderingContext {
         return "";
     }
 
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return parent.createEnclosedVariableContext();
+    }
 }

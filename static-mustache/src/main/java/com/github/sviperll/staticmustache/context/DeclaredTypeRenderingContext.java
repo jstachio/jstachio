@@ -48,10 +48,6 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     private final RenderingContext parent;
     private final RenderingCodeGenerator utils;
 
-    public DeclaredTypeRenderingContext(RenderingCodeGenerator utils, TypeElement element, String expression) {
-        this(utils, element, expression, null);
-    }
-
     DeclaredTypeRenderingContext(RenderingCodeGenerator utils, TypeElement element, String expression, RenderingContext parent) {
         this.expression = expression;
         this.thisElement = element;
@@ -89,10 +85,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
                 return new RenderingData(expression + "." + name, field.asType());
             }
         }
-        if (parent == null)
-            return defaultValue;
-        else
-            return parent.getDataOrDefault(name, defaultValue);
+        return parent.getDataOrDefault(name, defaultValue);
     }
 
     private RenderingData getMethodEntryOrDefault(List<? extends Element> elements, String methodName, RenderingData defaultValue) {
@@ -124,5 +117,10 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     @Override
     public RenderingData currentData() {
         return new RenderingData(expression, thisElement.asType());
+    }
+
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return parent.createEnclosedVariableContext();
     }
 }

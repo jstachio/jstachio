@@ -38,4 +38,5 @@ interface RenderingContext {
     String endSectionRenderingCode();
     RenderingData getDataOrDefault(String name, RenderingData defaultValue);
     RenderingData currentData();
+    VariableContext createEnclosedVariableContext();
 }

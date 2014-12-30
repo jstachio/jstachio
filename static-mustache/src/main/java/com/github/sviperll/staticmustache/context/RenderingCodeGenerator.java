@@ -38,6 +38,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
+ * This class allows to create TemplateCompilerContext instance
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
@@ -68,39 +69,39 @@ public class RenderingCodeGenerator {
         this.util = util;
 
     }
-    String generateRenderingCode(TypeMirror type, String expression, String writer) throws TypeException {
+    String generateRenderingCode(TypeMirror type, String expression, VariableContext variables) throws TypeException {
         if (util.isAssignable(type, types._Renderable))
-            return expression + ".createRenderer(" + writer + ").render(); ";
+            return expression + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
         else if (util.isSameType(type, types._int))
-            return writer + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._short))
-            return writer + ".append(" + Short.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._long))
-            return writer + ".append(" + Long.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Long.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._byte))
-            return writer + ".append(" + Byte.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Byte.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._char))
-            return writer + ".append(" + Character.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Character.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._float))
-            return writer + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._double))
-            return writer + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isAssignable(type, types._String))
-            return writer + ".append(" + expression + "); ";
+            return variables.writer() + ".append(" + expression + "); ";
         else if (util.isAssignable(type, types._Integer))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Long))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Short))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Byte))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Character))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Double))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else if (util.isAssignable(type, types._Float))
-            return writer + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + expression + ".toString()); ";
         else
             throw new TypeException("Can't render " + expression + " expression of " + type + " type");
     }
@@ -108,6 +109,20 @@ public class RenderingCodeGenerator {
     boolean isUnchecked(TypeMirror exceptionType) {
         return util.isAssignable(exceptionType, types._Error)
                || util.isAssignable(exceptionType, types._RuntimeException);
+    }
+
+    /**
+     * creates TemplateCompilerContext instance
+     *
+     * @param element root of the data binding context
+     * @param expression java expression of type correponding to given TypeElement
+     * @param variables declared variables to use in generated code
+     * @return new TemplateCompilerContext
+     */
+    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
+        RootRenderingContext root = new RootRenderingContext(variables);
+        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(this, element, expression, root);
+        return new TemplateCompilerContext(this, variables, rootRenderingContext);
     }
 
     RenderingContext createRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
@@ -131,8 +146,11 @@ public class RenderingCodeGenerator {
             ArrayType arrayType = (ArrayType)type;
             TypeMirror componentType = arrayType.getComponentType();
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
-            ArrayRenderingContext array = new ArrayRenderingContext(componentType, expression, this, nullable);
-            return createRenderingContext(componentType, expression + "[i]", array);
+            VariableContext variableContext = nullable.createEnclosedVariableContext();
+            String indexVariableName = variableContext.introduceNewNameLike("i");
+            RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
+            ArrayRenderingContext array = new ArrayRenderingContext(componentType, expression, indexVariableName, this, variables);
+            return createRenderingContext(componentType, array.componentExpession(), array);
         } else
             return new NoDataContext(expression, type, enclosing);
     }

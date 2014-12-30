@@ -29,7 +29,7 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.staticmustache.context.ContextVariables;
+import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.texttemplates.TemplateFormat;
@@ -209,21 +209,24 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 writer.println("        return new " + adapterRendererClassName + "(data, writer, unescapedWriter);");
                 writer.println("    }");
                 writer.println("    private static class " + adapterRendererClassSimpleName + " implements " + Renderer.class.getName() + " {");
-                writer.println("        private final " + Appendable.class.getName() + " unescapedWriter;");
-                writer.println("        private final " + Appendable.class.getName() + " writer;");
-                writer.println("        private final " + className + " data;");
+
+                VariableContext variables = VariableContext.createDefaultContext();
+                String dataName = variables.introduceNewNameLike("data");
+
+                writer.println("        private final " + Appendable.class.getName() + " " + variables.unescapedWriter() + ";");
+                writer.println("        private final " + Appendable.class.getName() + " " + variables.writer() + ";");
+                writer.println("        private final " + className + " " + dataName + ";");
                 writer.println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer, " + Appendable.class.getName() + " unescapedWriter) {");
-                writer.println("            this.writer = writer;");
-                writer.println("            this.unescapedWriter = unescapedWriter;");
-                writer.println("            this.data = data;");
+                writer.println("            this." + variables.writer() + " = writer;");
+                writer.println("            this." + variables.unescapedWriter() + " = unescapedWriter;");
+                writer.println("            this." + dataName + " = data;");
                 writer.println("        }");
                 writer.println("        @Override");
                 writer.println("        public void render() throws " + IOException.class.getName() + " {");
                 TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
                 FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
-                ContextVariables variables = new ContextVariables("data", "writer", "unescapedWriter");
-                TemplateCompilerContext context = TemplateCompilerContext.createInstace(codeGenerator, element, variables);
+                TemplateCompilerContext context = codeGenerator.createTemplateCompilerContext(element, dataName, variables);
                 compilerManager.compileTemplate(resource, templateCharset, context);
                 writer.println("        }");
                 writer.println("    }");

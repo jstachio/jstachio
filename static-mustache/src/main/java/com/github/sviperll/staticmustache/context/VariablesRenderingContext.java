@@ -27,35 +27,42 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.examples;
-
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.Html;
-import com.github.sviperll.staticmustache.Renderable;
+package com.github.sviperll.staticmustache.context;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapters({
-    @GenerateRenderableAdapter(template = "user.mustache", templateFormat = Text.class, adapterName = "RenderableTextUserAdapter"),
-    @GenerateRenderableAdapter(template = "user.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUserAdapter")
-})
-public class User {
-    final String name;
-    final int age;
-    final Renderable<Text> card;
-    final String[] array;
-    final int[][] array1;
-    final boolean cardEnabled;
+class VariablesRenderingContext implements RenderingContext {
+    private final VariableContext variables;
+    private final RenderingContext parent;
+    public VariablesRenderingContext(VariableContext variables, RenderingContext parent) {
+        this.variables = variables;
+        this.parent = parent;
+    }
 
-    public User(String name, int age, Renderable<Text> card, String[] array, int[][] array1, boolean cardEnabled) {
-        this.name = name;
-        this.age = age;
-        this.card = card;
-        this.array = array;
-        this.array1 = array1;
-        this.cardEnabled = cardEnabled;
+    @Override
+    public String beginSectionRenderingCode() {
+        return parent.beginSectionRenderingCode();
+    }
+
+    @Override
+    public String endSectionRenderingCode() {
+        return parent.endSectionRenderingCode();
+    }
+
+    @Override
+    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+        return parent.getDataOrDefault(name, defaultValue);
+    }
+
+    @Override
+    public RenderingData currentData() {
+        return parent.currentData();
+    }
+
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return variables.createEnclosedContext();
     }
 }

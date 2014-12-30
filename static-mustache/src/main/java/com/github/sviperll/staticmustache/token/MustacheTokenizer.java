@@ -42,6 +42,14 @@ import com.github.sviperll.staticmustache.token.util.PositionHodingTokenProcesso
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesToken>> {
+    /**
+     * Creates TokenProcessor to be feed one-by-one with each character of mustache template.
+     * Last fed character must be TokenProcessor#EOF wich denotes end of file.
+     *
+     * @param fileName fileName used in error messages. It can be custom string like "&lt;stdin&gt;"
+     * @param downstream TokenProcessor is invoked on each found MustacheToken
+     * @return .
+     */
     public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
         TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
         return BracesTokenizer.createInstance(fileName, mustacheTokenizer);

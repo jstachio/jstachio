@@ -27,32 +27,9 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
-
 /**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @see MustacheTokenizer#createInstance(java.lang.String, com.github.sviperll.staticmustache.TokenProcessor)
+ * <p>
+ * MustacheTokenizer parses text file and invokes given TokenProcessor on each MustacheToken
  */
-public class ContextVariables {
-    private final String data;
-    private final String writer;
-    private final String unescapedWriter;
-
-    public ContextVariables(String data, String writer, String unescapedWriter) {
-        this.data = data;
-        this.writer = writer;
-        this.unescapedWriter = unescapedWriter;
-    }
-
-    String data() {
-        return data;
-    }
-
-    String writer() {
-        return writer;
-    }
-
-    String unescapedWriter() {
-        return unescapedWriter;
-    }
-}
+package com.github.sviperll.staticmustache.token;

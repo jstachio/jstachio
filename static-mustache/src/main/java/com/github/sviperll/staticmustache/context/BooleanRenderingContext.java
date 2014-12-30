@@ -62,4 +62,8 @@ class BooleanRenderingContext implements RenderingContext {
         return parent.currentData();
     }
 
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return parent.createEnclosedVariableContext();
+    }
 }

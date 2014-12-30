@@ -70,7 +70,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         while ((readResult = inputReader.read()) >= 0) {
             processor.processToken((char)readResult);
         }
-        processor.processToken(null); // Signal EOF
+        processor.processToken(TokenProcessor.EOF);
         writer.println();
     }
 
