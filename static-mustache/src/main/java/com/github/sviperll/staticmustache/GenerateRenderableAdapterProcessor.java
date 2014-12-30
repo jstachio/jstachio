@@ -46,8 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -225,7 +223,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 writer.println("        public void render() throws " + IOException.class.getName() + " {");
                 TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
                 FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
-                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), templateFormatElement);
                 TemplateCompilerContext context = codeGenerator.createTemplateCompilerContext(element, dataName, variables);
                 compilerManager.compileTemplate(resource, templateCharset, context);
                 writer.println("        }");

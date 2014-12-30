@@ -32,10 +32,10 @@ package com.github.sviperll.staticmustache.context;
 import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -44,15 +44,15 @@ import javax.lang.model.type.TypeMirror;
  */
 class DeclaredTypeRenderingContext implements RenderingContext {
     private final String expression;
-    private final TypeElement thisElement;
     private final RenderingContext parent;
     private final RenderingCodeGenerator utils;
+    private final DeclaredType declaredType;
 
-    DeclaredTypeRenderingContext(RenderingCodeGenerator utils, TypeElement element, String expression, RenderingContext parent) {
+    DeclaredTypeRenderingContext(RenderingCodeGenerator utils, DeclaredType declaredType, String expression, RenderingContext parent) {
         this.expression = expression;
-        this.thisElement = element;
         this.parent = parent;
         this.utils = utils;
+        this.declaredType = declaredType;
     }
 
     @Override
@@ -67,7 +67,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
 
     @Override
     public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
-        List<? extends Element> enclosedElements = thisElement.getEnclosedElements();
+        List<? extends Element> enclosedElements = utils.asElement(declaredType).getEnclosedElements();
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(name)) {
                 return getMethodEntryOrDefault(enclosedElements, name, defaultValue);
@@ -81,8 +81,8 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         }
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
-                VariableElement field = (VariableElement)element;
-                return new RenderingData(expression + "." + name, field.asType());
+                TypeMirror fieldType = utils.asMemberOf(declaredType, element);
+                return new RenderingData(expression + "." + name, fieldType);
             }
         }
         return parent.getDataOrDefault(name, defaultValue);
@@ -90,11 +90,12 @@ class DeclaredTypeRenderingContext implements RenderingContext {
 
     private RenderingData getMethodEntryOrDefault(List<? extends Element> elements, String methodName, RenderingData defaultValue) {
         for (Element element: elements) {
-            if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
-                ExecutableElement method = (ExecutableElement)element;
-                if (method.getParameters().isEmpty()
-                    && !method.getModifiers().contains(Modifier.STATIC)
-                    && areUnchecked(method.getThrownTypes())) {
+            if (element.getKind() == ElementKind.METHOD
+                && element.getSimpleName().contentEquals(methodName)
+                && !element.getModifiers().contains(Modifier.STATIC)) {
+                TypeMirror methodType = utils.asMemberOf(declaredType, element);
+                ExecutableType method = (ExecutableType)methodType;
+                if (method.getParameterTypes().isEmpty() && areUnchecked(method.getThrownTypes())) {
                     return new RenderingData(expression + "." + methodName + "()", method.getReturnType());
                 }
             }
@@ -116,7 +117,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
 
     @Override
     public RenderingData currentData() {
-        return new RenderingData(expression, thisElement.asType());
+        return new RenderingData(expression, declaredType);
     }
 
     @Override

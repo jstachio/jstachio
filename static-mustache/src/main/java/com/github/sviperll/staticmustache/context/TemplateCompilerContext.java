@@ -120,4 +120,8 @@ public class TemplateCompilerContext {
     public TemplateCompilerContext parentContext() {
         return enclosedRelation.parentContext();
     }
+
+    public String textRenderingCode(String s) {
+        return variables.unescapedWriter() + ".append(\"" + s + "\"); ";
+    }
 }

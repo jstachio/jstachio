@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.context;
 
 import com.github.sviperll.staticmustache.Renderable;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -40,9 +41,9 @@ import javax.lang.model.util.Types;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class SpecialTypes {
-    public final TypeMirror _Renderable;
-    public final TypeMirror _Error;
-    public final TypeMirror _RuntimeException;
+    public final TypeElement _Renderable;
+    public final TypeElement _Error;
+    public final TypeElement _RuntimeException;
     public final TypeMirror _int;
     public final TypeMirror _short;
     public final TypeMirror _long;
@@ -51,18 +52,18 @@ class SpecialTypes {
     public final TypeMirror _float;
     public final TypeMirror _double;
     public final TypeMirror _boolean;
-    public final TypeMirror _Integer;
-    public final TypeMirror _Short;
-    public final TypeMirror _Long;
-    public final TypeMirror _Character;
-    public final TypeMirror _Byte;
-    public final TypeMirror _Float;
-    public final TypeMirror _Double;
-    public final TypeMirror _String;
-    public final TypeMirror _Boolean;
+    public final TypeElement _Integer;
+    public final TypeElement _Short;
+    public final TypeElement _Long;
+    public final TypeElement _Character;
+    public final TypeElement _Byte;
+    public final TypeElement _Float;
+    public final TypeElement _Double;
+    public final TypeElement _String;
+    public final TypeElement _Boolean;
     public SpecialTypes(Elements declarations, Types types) {
-        _Renderable = declarations.getTypeElement(Renderable.class.getName()).asType();
-        _String = declarations.getTypeElement(String.class.getName()).asType();
+        _Renderable = declarations.getTypeElement(Renderable.class.getName());
+        _String = declarations.getTypeElement(String.class.getName());
         _int = types.getPrimitiveType(TypeKind.INT);
         _short = types.getPrimitiveType(TypeKind.SHORT);
         _long = types.getPrimitiveType(TypeKind.LONG);
@@ -71,15 +72,15 @@ class SpecialTypes {
         _float = types.getPrimitiveType(TypeKind.FLOAT);
         _double = types.getPrimitiveType(TypeKind.DOUBLE);
         _boolean = types.getPrimitiveType(TypeKind.BOOLEAN);
-        _Integer = declarations.getTypeElement(Integer.class.getName()).asType();
-        _Short = declarations.getTypeElement(Short.class.getName()).asType();
-        _Long = declarations.getTypeElement(Long.class.getName()).asType();
-        _Character = declarations.getTypeElement(Character.class.getName()).asType();
-        _Byte = declarations.getTypeElement(Byte.class.getName()).asType();
-        _Float = declarations.getTypeElement(Float.class.getName()).asType();
-        _Double = declarations.getTypeElement(Double.class.getName()).asType();
-        _Boolean = declarations.getTypeElement(Boolean.class.getName()).asType();
-        _Error = declarations.getTypeElement(Error.class.getName()).asType();
-        _RuntimeException = declarations.getTypeElement(RuntimeException.class.getName()).asType();
+        _Integer = declarations.getTypeElement(Integer.class.getName());
+        _Short = declarations.getTypeElement(Short.class.getName());
+        _Long = declarations.getTypeElement(Long.class.getName());
+        _Character = declarations.getTypeElement(Character.class.getName());
+        _Byte = declarations.getTypeElement(Byte.class.getName());
+        _Float = declarations.getTypeElement(Float.class.getName());
+        _Double = declarations.getTypeElement(Double.class.getName());
+        _Boolean = declarations.getTypeElement(Boolean.class.getName());
+        _Error = declarations.getTypeElement(Error.class.getName());
+        _RuntimeException = declarations.getTypeElement(RuntimeException.class.getName());
     }
 }

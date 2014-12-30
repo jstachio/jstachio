@@ -75,7 +75,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
     }
 
     public void append(String s) {
-        writer.print("writer.append(\"" + s + "\"); ");
+        writer.print(context.textRenderingCode(s));
     }
 
     @Override

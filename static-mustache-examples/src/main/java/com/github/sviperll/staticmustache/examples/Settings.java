@@ -29,25 +29,20 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.Html;
 import com.github.sviperll.staticmustache.Renderable;
-import com.github.sviperll.staticmustache.Renderer;
-import java.io.IOException;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        int [][] array = new int[][] {new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5}};
-        User user = new User("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array);
-        Renderable<Text> renderable = new RenderableTextUserAdapter(user);
-        Renderer renderer = renderable.createRenderer(System.out);
-        renderer.render();
-        User user1 = new User("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array);
-        Renderable<Html> renderable1 = new RenderableHtmlUserAdapter(user1);
-        Renderer renderer1 = renderable1.createRenderer(System.out);
-        renderer1.render();
-        Settings settings = new Settings(renderable1, true);
-        Renderable<Html> renderable2 = new RenderableSettingsAdapter(settings);
-        Renderer renderer2 = renderable2.createRenderer(System.out);
-        renderer2.render();
+/**
+ *
+ * @author Victor Nazarov <asviraspossible@gmail.com>
+ */
+@GenerateRenderableAdapter(template = "settings.mustache", templateFormat = Html.class)
+public class Settings {
+    final Renderable<Html> info;
+    final boolean isEnabled;
+    public Settings(Renderable<Html> info, boolean isEnabled) {
+        this.info = info;
+        this.isEnabled = isEnabled;
     }
 }

@@ -43,34 +43,23 @@ import javax.lang.model.util.Types;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class RenderingCodeGenerator {
-    private static String toTypeName(TypeMirror type) {
-        if (type instanceof ArrayType) {
-            ArrayType arrayType = (ArrayType)type;
-            return toTypeName(arrayType.getComponentType()) + "[]";
-        } else if (type instanceof DeclaredType) {
-            DeclaredType declaredType = (DeclaredType)type;
-            TypeElement typeDeclaration = (TypeElement)declaredType.asElement();
-            return typeDeclaration.getQualifiedName().toString();
-        } else {
-            throw new UnsupportedOperationException("Not supported");
-        }
-    }
-
-    public static RenderingCodeGenerator createInstance(Types typeUtils, Elements elementUtils) {
+    public static RenderingCodeGenerator createInstance(Types typeUtils, Elements elementUtils, TypeElement formatClass) {
         SpecialTypes types = new SpecialTypes(elementUtils, typeUtils);
-        return new RenderingCodeGenerator(types, typeUtils);
+        return new RenderingCodeGenerator(types, typeUtils, formatClass);
     }
 
     private final SpecialTypes types;
     private final Types util;
+    private final TypeElement templateFormatElement;
 
-    RenderingCodeGenerator(SpecialTypes types, Types util) {
+    RenderingCodeGenerator(SpecialTypes types, Types util, TypeElement formatClass) {
         this.types = types;
         this.util = util;
+        this.templateFormatElement = formatClass;
 
     }
     String generateRenderingCode(TypeMirror type, String expression, VariableContext variables) throws TypeException {
-        if (util.isAssignable(type, types._Renderable))
+        if (util.isAssignable(type, util.getDeclaredType(types._Renderable, util.getDeclaredType(templateFormatElement))))
             return expression + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
         else if (util.isSameType(type, types._int))
             return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
@@ -86,29 +75,29 @@ public class RenderingCodeGenerator {
             return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
         else if (util.isSameType(type, types._double))
             return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, types._String))
+        else if (util.isAssignable(type, util.getDeclaredType(types._String)))
             return variables.writer() + ".append(" + expression + "); ";
-        else if (util.isAssignable(type, types._Integer))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Integer)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Long))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Long)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Short))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Short)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Byte))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Byte)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Character))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Character)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Double))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Double)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, types._Float))
+        else if (util.isAssignable(type, util.getDeclaredType(types._Float)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
         else
             throw new TypeException("Can't render " + expression + " expression of " + type + " type");
     }
 
     boolean isUnchecked(TypeMirror exceptionType) {
-        return util.isAssignable(exceptionType, types._Error)
-               || util.isAssignable(exceptionType, types._RuntimeException);
+        return util.isAssignable(exceptionType, util.getDeclaredType(types._Error))
+               || util.isAssignable(exceptionType, util.getDeclaredType(types._RuntimeException));
     }
 
     /**
@@ -121,25 +110,26 @@ public class RenderingCodeGenerator {
      */
     public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
-        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(this, element, expression, root);
+        DeclaredType declaredType = util.getDeclaredType(element);
+        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(this, declaredType, expression, root);
         return new TemplateCompilerContext(this, variables, rootRenderingContext);
     }
 
     RenderingContext createRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
         if (util.isSameType(type, types._boolean)) {
             return new BooleanRenderingContext(expression, enclosing);
-        } else if (util.isAssignable(type, types._Boolean)) {
+        } else if (util.isAssignable(type, util.getDeclaredType(types._Boolean))) {
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
             BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression, nullableContext);
             return booleanContext;
         } else if (type instanceof DeclaredType) {
             DeclaredType declaredType = (DeclaredType)type;
-            Element contextElement = declaredType.asElement();
-            if (!(contextElement instanceof TypeElement)) {
-                throw new TypeException("Can't bind field: " + contextElement.getSimpleName() + " is " + contextElement.getKind());
+            Element element = util.asElement(declaredType);
+            if (element == null) {
+                throw new TypeException("Can't bind field: " + expression + " is " + declaredType);
             } else {
                 RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
-                DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(this, (TypeElement)contextElement, expression, nullableContext);
+                DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(this, declaredType, expression, nullableContext);
                 return declaredContext;
             }
         } else if (type instanceof ArrayType) {
@@ -158,7 +148,7 @@ public class RenderingCodeGenerator {
     RenderingContext createInvertedRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
         if (util.isSameType(type, types._boolean)) {
             return new BooleanRenderingContext("!(" + expression + ")", enclosing);
-        } else if (util.isAssignable(type, types._Boolean)) {
+        } else if (util.isAssignable(type, util.getDeclaredType(types._Boolean))) {
             return new BooleanRenderingContext("(" + expression + ") == null || !(" + expression + ")", enclosing);
         } else if (type instanceof DeclaredType) {
             return new BooleanRenderingContext("(" + expression + ") == null", enclosing);
@@ -178,5 +168,13 @@ public class RenderingCodeGenerator {
 
     TypeMirror arrayType(TypeMirror elementType) {
         return util.getArrayType(elementType);
+    }
+
+    TypeMirror asMemberOf(DeclaredType containing, Element element) {
+        return util.asMemberOf(containing, element);
+    }
+
+    Element asElement(DeclaredType type) {
+        return util.asElement(type);
     }
 }
