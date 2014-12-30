@@ -121,7 +121,7 @@ public class TemplateCompilerContext {
         return enclosedRelation.parentContext();
     }
 
-    public String textRenderingCode(String s) {
-        return variables.unescapedWriter() + ".append(\"" + s + "\"); ";
+    public String unescapedWriterExpression() {
+        return variables.unescapedWriter();
     }
 }

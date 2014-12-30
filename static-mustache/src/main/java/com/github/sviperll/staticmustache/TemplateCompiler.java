@@ -41,19 +41,6 @@ import java.io.Reader;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>> {
-    private static boolean isJavaIdentifier(String name) {
-        char[] chars = name.toCharArray();
-        if (!Character.isJavaIdentifierStart(chars[0]))
-            return false;
-        else {
-            for (int i = 1; i < chars.length; i++) {
-                if (!Character.isJavaIdentifierPart(chars[0]))
-                    return false;
-            }
-            return true;
-        }
-    }
-
     private final Reader inputReader;
     private final PrintWriter writer;
     private TemplateCompilerContext context;
@@ -75,7 +62,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
     }
 
     public void append(String s) {
-        writer.print(context.textRenderingCode(s));
+        writer.print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
     }
 
     @Override
