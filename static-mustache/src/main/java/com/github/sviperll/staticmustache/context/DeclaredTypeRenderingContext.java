@@ -34,7 +34,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
@@ -43,16 +42,14 @@ import javax.lang.model.type.TypeMirror;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class DeclaredTypeRenderingContext implements RenderingContext {
-    private final String expression;
+    private final JavaExpression expression;
+    private final TypeElement definitionElement;
     private final RenderingContext parent;
-    private final RenderingCodeGenerator utils;
-    private final DeclaredType declaredType;
 
-    DeclaredTypeRenderingContext(RenderingCodeGenerator utils, DeclaredType declaredType, String expression, RenderingContext parent) {
+    DeclaredTypeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
         this.expression = expression;
+        this.definitionElement = element;
         this.parent = parent;
-        this.utils = utils;
-        this.declaredType = declaredType;
     }
 
     @Override
@@ -66,8 +63,8 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
-        List<? extends Element> enclosedElements = utils.asElement(declaredType).getEnclosedElements();
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
+        List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(name)) {
                 return getMethodEntryOrDefault(enclosedElements, name, defaultValue);
@@ -81,22 +78,20 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         }
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
-                TypeMirror fieldType = utils.asMemberOf(declaredType, element);
-                return new RenderingData(expression + "." + name, fieldType);
+                return expression.fieldAccess(element);
             }
         }
         return parent.getDataOrDefault(name, defaultValue);
     }
 
-    private RenderingData getMethodEntryOrDefault(List<? extends Element> elements, String methodName, RenderingData defaultValue) {
+    private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) {
         for (Element element: elements) {
             if (element.getKind() == ElementKind.METHOD
                 && element.getSimpleName().contentEquals(methodName)
                 && !element.getModifiers().contains(Modifier.STATIC)) {
-                TypeMirror methodType = utils.asMemberOf(declaredType, element);
-                ExecutableType method = (ExecutableType)methodType;
+                ExecutableType method = expression.methodSignature(element);
                 if (method.getParameterTypes().isEmpty() && areUnchecked(method.getThrownTypes())) {
-                    return new RenderingData(expression + "." + methodName + "()", method.getReturnType());
+                    return expression.methodCall(element);
                 }
             }
         }
@@ -109,15 +104,15 @@ class DeclaredTypeRenderingContext implements RenderingContext {
 
     private boolean areUnchecked(List<? extends TypeMirror> thrownTypes) {
         for (TypeMirror thrownType: thrownTypes) {
-            if (!utils.isUnchecked(thrownType))
+            if (!expression.model().isUncheckedException(thrownType))
                 return false;
         }
         return true;
     }
 
     @Override
-    public RenderingData currentData() {
-        return new RenderingData(expression, declaredType);
+    public JavaExpression currentExpression() {
+        return expression;
     }
 
     @Override

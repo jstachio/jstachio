@@ -36,13 +36,11 @@ import javax.lang.model.type.TypeMirror;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class NoDataContext implements RenderingContext {
-    private final String expression;
-    private final TypeMirror type;
+    private final JavaExpression expression;
     private final RenderingContext parent;
 
-    NoDataContext(String expression, TypeMirror type, RenderingContext parent) {
+    NoDataContext(JavaExpression expression, RenderingContext parent) {
         this.expression = expression;
-        this.type = type;
         this.parent = parent;
     }
 
@@ -52,7 +50,7 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
         if (parent == null)
             return defaultValue;
         else
@@ -60,8 +58,8 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData currentData() {
-        return new RenderingData(expression, type);
+    public JavaExpression currentExpression() {
+        return expression;
     }
 
     @Override

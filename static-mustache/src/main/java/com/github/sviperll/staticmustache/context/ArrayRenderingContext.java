@@ -29,30 +29,24 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import javax.lang.model.type.TypeMirror;
-
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class ArrayRenderingContext implements RenderingContext {
-    private final String expression;
-    private final RenderingContext parent;
-    private final TypeMirror elementType;
+    private final JavaExpression arrayExpression;
     private final String indexVariableName;
-    private final RenderingCodeGenerator types;
+    private final RenderingContext parent;
 
-    public ArrayRenderingContext(TypeMirror elementType, String expression, String indexVariableName, RenderingCodeGenerator types, RenderingContext parent) {
-        this.expression = expression;
-        this.parent = parent;
-        this.elementType = elementType;
+    public ArrayRenderingContext(JavaExpression arrayExpression, String indexVariableName, RenderingContext parent) {
+        this.arrayExpression = arrayExpression;
         this.indexVariableName = indexVariableName;
-        this.types = types;
+        this.parent = parent;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "for (int " + indexVariableName + " = 0; " + indexVariableName + " < " + expression + ".length; " + indexVariableName + "++) { ";
+        return parent.beginSectionRenderingCode() + "for (int " + indexVariableName + " = 0; " + indexExpression().text() + " < " + arrayExpression.arrayLength().text() + "; " + indexExpression().text() + "++) { ";
     }
 
     @Override
@@ -60,30 +54,35 @@ class ArrayRenderingContext implements RenderingContext {
         return "}" + parent.endSectionRenderingCode();
     }
 
-    String componentExpession() {
-        return expression + "[" + indexVariableName + "]";
+    JavaExpression componentExpession() {
+        return arrayExpression.subscript(indexExpression());
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
         if (name.equals("length")) {
-            RenderingData result = parent.getDataOrDefault(name, null);
-            return result != null ? result : new RenderingData(expression + ".length", types.intType());
+            JavaExpression result = parent.getDataOrDefault(name, null);
+            JavaExpression arrayLength = arrayExpression.arrayLength();
+            return result != null ? result : arrayLength;
         } else if (name.equals("index")) {
-            RenderingData result = parent.getDataOrDefault(name, null);
-            return result != null ? result : new RenderingData(indexVariableName, types.intType());
+            JavaExpression result = parent.getDataOrDefault(name, null);
+            return result != null ? result : indexExpression();
         } else
             return parent.getDataOrDefault(name, defaultValue);
     }
 
     @Override
-    public RenderingData currentData() {
-        return new RenderingData(expression, types.arrayType(elementType));
+    public JavaExpression currentExpression() {
+        return arrayExpression;
     }
 
     @Override
     public VariableContext createEnclosedVariableContext() {
         return parent.createEnclosedVariableContext();
+    }
+
+    private JavaExpression indexExpression() {
+        return arrayExpression.model().expression(indexVariableName, arrayExpression.model().knownTypes()._int);
     }
 
 }

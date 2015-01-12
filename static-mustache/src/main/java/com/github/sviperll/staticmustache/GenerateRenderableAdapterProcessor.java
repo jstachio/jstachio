@@ -29,6 +29,7 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
@@ -192,6 +193,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             if (templateFormatAnnotation == null) {
                 throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TemplateFormat.class.getName() + " annotation");
             }
+            if (!element.getTypeParameters().isEmpty()) {
+                throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
+            }
             StringWriter stringWriter = new StringWriter();
             PrintWriter writer = new PrintWriter(stringWriter);
             try {
@@ -223,7 +227,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 writer.println("        public void render() throws " + IOException.class.getName() + " {");
                 TemplateCompilerManager compilerManager = new TemplateCompilerManager(processingEnv.getMessager(), writer);
                 FileObject resource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
-                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), templateFormatElement);
+                JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, templateFormatElement);
                 TemplateCompilerContext context = codeGenerator.createTemplateCompilerContext(element, dataName, variables);
                 compilerManager.compileTemplate(resource, templateCharset, context);
                 writer.println("        }");

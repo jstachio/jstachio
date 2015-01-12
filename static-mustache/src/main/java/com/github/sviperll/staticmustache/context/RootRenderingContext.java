@@ -50,12 +50,12 @@ class RootRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
         return defaultValue;
     }
 
     @Override
-    public RenderingData currentData() {
+    public JavaExpression currentExpression() {
         throw new IllegalStateException("No current data in root context");
     }
 

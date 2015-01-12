@@ -51,9 +51,9 @@ public class TemplateCompilerContext {
     }
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
-        RenderingData entry = context.currentData();
+        JavaExpression entry = context.currentExpression();
         try {
-            return generator.generateRenderingCode(entry.type(), entry.expression(), variables);
+            return generator.generateRenderingCode(entry.type(), entry.text(), variables);
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }
@@ -79,12 +79,12 @@ public class TemplateCompilerContext {
         if (name.equals(".")) {
             return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
         } else {
-            RenderingData entry = context.getDataOrDefault(name, null);
+            JavaExpression entry = context.getDataOrDefault(name, null);
             if (entry == null)
                 throw new ContextException("Field not found in current context: " + name);
             RenderingContext enclosedField;
             try {
-                enclosedField = generator.createRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
+                enclosedField = generator.createRenderingContext(entry, new OwnedRenderingContext(context));
             } catch (TypeException ex) {
                 throw new ContextException("Can't use " + name + " for rendering", ex);
             }
@@ -96,12 +96,12 @@ public class TemplateCompilerContext {
         if (name.equals(".")) {
             throw new ContextException("Current section can't be inverted");
         } else {
-            RenderingData entry = context.getDataOrDefault(name, null);
+            JavaExpression entry = context.getDataOrDefault(name, null);
             if (entry == null)
                 throw new ContextException("Field not found in current context: " + name);
             RenderingContext enclosedField;
             try {
-                enclosedField = generator.createInvertedRenderingContext(entry.type(), entry.expression(), new OwnedRenderingContext(context));
+                enclosedField = generator.createInvertedRenderingContext(entry, new OwnedRenderingContext(context));
             } catch (TypeException ex) {
                 throw new ContextException("Can't use " + name + " for rendering", ex);
             }

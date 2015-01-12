@@ -43,138 +43,111 @@ import javax.lang.model.util.Types;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class RenderingCodeGenerator {
-    public static RenderingCodeGenerator createInstance(Types typeUtils, Elements elementUtils, TypeElement formatClass) {
-        SpecialTypes types = new SpecialTypes(elementUtils, typeUtils);
-        return new RenderingCodeGenerator(types, typeUtils, formatClass);
+    public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, TypeElement formatClass) {
+        return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatClass);
     }
 
-    private final SpecialTypes types;
-    private final Types util;
+    private final KnownTypes knownTypes;
+    private final JavaLanguageModel javaModel;
     private final TypeElement templateFormatElement;
 
-    RenderingCodeGenerator(SpecialTypes types, Types util, TypeElement formatClass) {
-        this.types = types;
-        this.util = util;
+    private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, TypeElement formatClass) {
+        this.knownTypes = types;
+        this.javaModel = javaModel;
         this.templateFormatElement = formatClass;
 
     }
     String generateRenderingCode(TypeMirror type, String expression, VariableContext variables) throws TypeException {
-        if (util.isAssignable(type, util.getDeclaredType(types._Renderable, util.getDeclaredType(templateFormatElement))))
+        if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement))))
             return expression + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
-        else if (util.isSameType(type, types._int))
+        else if (javaModel.isSameType(type, knownTypes._int))
             return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._short))
+        else if (javaModel.isSameType(type, knownTypes._short))
             return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._long))
+        else if (javaModel.isSameType(type, knownTypes._long))
             return variables.writer() + ".append(" + Long.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._byte))
+        else if (javaModel.isSameType(type, knownTypes._byte))
             return variables.writer() + ".append(" + Byte.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._char))
+        else if (javaModel.isSameType(type, knownTypes._char))
             return variables.writer() + ".append(" + Character.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._float))
+        else if (javaModel.isSameType(type, knownTypes._float))
             return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isSameType(type, types._double))
+        else if (javaModel.isSameType(type, knownTypes._double))
             return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._String)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._String)))
             return variables.writer() + ".append(" + expression + "); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Integer)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Integer)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Long)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Long)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Short)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Short)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Byte)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Byte)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Character)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Character)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Double)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Double)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (util.isAssignable(type, util.getDeclaredType(types._Float)))
+        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Float)))
             return variables.writer() + ".append(" + expression + ".toString()); ";
         else
             throw new TypeException("Can't render " + expression + " expression of " + type + " type");
-    }
-
-    boolean isUnchecked(TypeMirror exceptionType) {
-        return util.isAssignable(exceptionType, util.getDeclaredType(types._Error))
-               || util.isAssignable(exceptionType, util.getDeclaredType(types._RuntimeException));
     }
 
     /**
      * creates TemplateCompilerContext instance
      *
      * @param element root of the data binding context
-     * @param expression java expression of type correponding to given TypeElement
+     * @param text java expression of type correponding to given TypeElement
      * @param variables declared variables to use in generated code
      * @return new TemplateCompilerContext
      */
-    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
+    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String text, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
-        DeclaredType declaredType = util.getDeclaredType(element);
-        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(this, declaredType, expression, root);
+        JavaExpression expression = javaModel.expression(text, javaModel.getDeclaredType(element));
+        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(expression, element, root);
         return new TemplateCompilerContext(this, variables, rootRenderingContext);
     }
 
-    RenderingContext createRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
-        if (util.isSameType(type, types._boolean)) {
-            return new BooleanRenderingContext(expression, enclosing);
-        } else if (util.isAssignable(type, util.getDeclaredType(types._Boolean))) {
+    RenderingContext createRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
+        if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+            return new BooleanRenderingContext(expression.text(), enclosing);
+        } else if (javaModel.isAssignable(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
-            BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression, nullableContext);
+            BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression.text(), nullableContext);
             return booleanContext;
-        } else if (type instanceof DeclaredType) {
-            DeclaredType declaredType = (DeclaredType)type;
-            Element element = util.asElement(declaredType);
-            if (element == null) {
-                throw new TypeException("Can't bind field: " + expression + " is " + declaredType);
-            } else {
-                RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
-                DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(this, declaredType, expression, nullableContext);
-                return declaredContext;
-            }
-        } else if (type instanceof ArrayType) {
-            ArrayType arrayType = (ArrayType)type;
+        } else if (expression.type() instanceof DeclaredType) {
+            DeclaredType declaredType = (DeclaredType)expression.type();
+            RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
+            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, (TypeElement)declaredType.asElement(), nullableContext);
+            return declaredContext;
+        } else if (expression.type() instanceof ArrayType) {
+            ArrayType arrayType = (ArrayType)expression.type();
             TypeMirror componentType = arrayType.getComponentType();
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String indexVariableName = variableContext.introduceNewNameLike("i");
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
-            ArrayRenderingContext array = new ArrayRenderingContext(componentType, expression, indexVariableName, this, variables);
-            return createRenderingContext(componentType, array.componentExpession(), array);
+            ArrayRenderingContext array = new ArrayRenderingContext(expression, indexVariableName, variables);
+            return createRenderingContext(array.componentExpession(), array);
         } else
-            return new NoDataContext(expression, type, enclosing);
+            return new NoDataContext(expression, enclosing);
     }
 
-    RenderingContext createInvertedRenderingContext(TypeMirror type, String expression, RenderingContext enclosing) throws TypeException {
-        if (util.isSameType(type, types._boolean)) {
-            return new BooleanRenderingContext("!(" + expression + ")", enclosing);
-        } else if (util.isAssignable(type, util.getDeclaredType(types._Boolean))) {
-            return new BooleanRenderingContext("(" + expression + ") == null || !(" + expression + ")", enclosing);
-        } else if (type instanceof DeclaredType) {
-            return new BooleanRenderingContext("(" + expression + ") == null", enclosing);
-        } else if (type instanceof ArrayType) {
-            return new BooleanRenderingContext("(" + expression + ") == null || (" + expression + ").length == 0", enclosing);
+    RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
+        if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+            return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
+        } else if (javaModel.isAssignable(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
+            return new BooleanRenderingContext("(" + expression.text() + ") == null || !(" + expression.text() + ")", enclosing);
+        } else if (expression.type() instanceof DeclaredType) {
+            return new BooleanRenderingContext("(" + expression.text() + ") == null", enclosing);
+        } else if (expression.type() instanceof ArrayType) {
+            return new BooleanRenderingContext("(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
         } else
-            throw new TypeException("Can't invert " + expression + " expression of " + type + " type");
+            throw new TypeException("Can't invert " + expression.text() + " expression of " + expression.type() + " type");
     }
 
-    private RenderingContext nullableRenderingContext(String expression, RenderingContext context) {
-        return new BooleanRenderingContext(expression + " != null", context);
-    }
-
-    TypeMirror intType() {
-        return types._int;
-    }
-
-    TypeMirror arrayType(TypeMirror elementType) {
-        return util.getArrayType(elementType);
-    }
-
-    TypeMirror asMemberOf(DeclaredType containing, Element element) {
-        return util.asMemberOf(containing, element);
-    }
-
-    Element asElement(DeclaredType type) {
-        return util.asElement(type);
+    private RenderingContext nullableRenderingContext(JavaExpression expression, RenderingContext context) {
+        return new BooleanRenderingContext(expression.text() + " != null", context);
     }
 }

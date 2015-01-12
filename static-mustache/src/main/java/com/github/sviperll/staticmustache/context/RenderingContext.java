@@ -36,7 +36,7 @@ package com.github.sviperll.staticmustache.context;
 interface RenderingContext {
     String beginSectionRenderingCode();
     String endSectionRenderingCode();
-    RenderingData getDataOrDefault(String name, RenderingData defaultValue);
-    RenderingData currentData();
+    JavaExpression getDataOrDefault(String name, JavaExpression defaultValue);
+    JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
 }

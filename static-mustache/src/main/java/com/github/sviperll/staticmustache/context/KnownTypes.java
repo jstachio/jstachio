@@ -40,7 +40,11 @@ import javax.lang.model.util.Types;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class SpecialTypes {
+class KnownTypes {
+    static KnownTypes createInstace(Elements declarations, Types types) {
+        return new KnownTypes(declarations, types);
+    }
+
     public final TypeElement _Renderable;
     public final TypeElement _Error;
     public final TypeElement _RuntimeException;
@@ -61,7 +65,7 @@ class SpecialTypes {
     public final TypeElement _Double;
     public final TypeElement _String;
     public final TypeElement _Boolean;
-    public SpecialTypes(Elements declarations, Types types) {
+    private KnownTypes(Elements declarations, Types types) {
         _Renderable = declarations.getTypeElement(Renderable.class.getName());
         _String = declarations.getTypeElement(String.class.getName());
         _int = types.getPrimitiveType(TypeKind.INT);

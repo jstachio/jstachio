@@ -53,13 +53,13 @@ class BooleanRenderingContext implements RenderingContext {
     }
 
     @Override
-    public RenderingData getDataOrDefault(String name, RenderingData defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
         return parent.getDataOrDefault(name, defaultValue);
     }
 
     @Override
-    public RenderingData currentData() {
-        return parent.currentData();
+    public JavaExpression currentExpression() {
+        return parent.currentExpression();
     }
 
     @Override

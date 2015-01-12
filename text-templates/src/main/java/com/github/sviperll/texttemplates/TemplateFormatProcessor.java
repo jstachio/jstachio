@@ -73,6 +73,11 @@ public class TemplateFormatProcessor extends AbstractProcessor {
     }
 
     private void processElement(TypeElement templateFormatElement, TemplateFormat directive) {
+        if (!templateFormatElement.getTypeParameters().isEmpty()) {
+            Object[] arguments = new Object[] {templateFormatElement.getQualifiedName(), TemplateFormat.class.getName()};
+            String message = MessageFormat.format("{0} class annotated with {1} annotation should not contain type variables", arguments);
+            errors.add(message);
+        }
         ExecutableElement method = getCreateEscapingAppendableMethod(templateFormatElement, directive);
         if (method == null) {
             Object[] arguments = new Object[] {templateFormatElement.getQualifiedName(), TemplateFormat.class.getName(), directive.createEscapingAppendableMethodName()};

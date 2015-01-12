@@ -36,18 +36,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark classes that define text template format
+ * Marks classes defining text format.
  * <p>
- * The only requirement for class is that it should provide method with
- * the following signature:
+ * Each text format should be represented as a stand-alone class.
+ * Each class should define pecularities specific for each text format.
+ * Such classes should all be marked with TemplateFormat annotation.
  * <p>
+ * There two requirements for marked class
+ * <ul>
+ *   <li>it should have no type variables
+ *   <li>it should provide method with the following signature:
  * {@code
- * <pre>
+ * <code>
  *     public static Appendable createEscapingAppendable(Appendable appendable)
- * </pre>
+ * </code>
  * }
+ * </ul>
  * <p>
- * An implementation of this method should decorate given appendable argument
+ * An implementation of createEscapingAppendable method should decorate given appendable argument
  * to create new appendable that will excape any special characters, specific to given format.
  * <p>
  * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
@@ -55,14 +61,14 @@ import java.lang.annotation.Target;
  * {@code
  * <pre>
  *     Appendable htmlAppendable = Html.createEscapingAppendable(System.out);
- *     htmlAppendable.append(" if a < b & b < c then a < c ");
+ *     htmlAppendable.append(" if a &lt; b &amp; b &lt; c then a &lt; c ");
  * </pre>
  * }
  * <p>
- * The result of above code should be
+ * The result when running code above should be
  * <p>
  * <pre>
- *  if a &lt; b &amp; b &lt; c then a &lt; c
+ *  if a &amp;lt; b &amp;amp; b &amp;lt; c then a &amp;lt; c
  * </pre>
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>

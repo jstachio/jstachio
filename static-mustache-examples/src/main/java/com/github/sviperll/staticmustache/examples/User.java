@@ -32,7 +32,6 @@ package com.github.sviperll.staticmustache.examples;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
 import com.github.sviperll.staticmustache.Html;
-import com.github.sviperll.staticmustache.Renderable;
 
 /**
  *
