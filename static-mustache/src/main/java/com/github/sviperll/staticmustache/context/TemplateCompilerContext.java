@@ -53,7 +53,7 @@ public class TemplateCompilerContext {
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
         JavaExpression entry = context.currentExpression();
         try {
-            return generator.generateRenderingCode(entry.type(), entry.text(), variables);
+            return generator.generateRenderingCode(entry, variables);
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }

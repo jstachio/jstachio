@@ -29,13 +29,11 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import javax.lang.model.type.WildcardType;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -43,6 +41,13 @@ import javax.lang.model.util.Types;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class RenderingCodeGenerator {
+    /**
+     * Creates instance.
+     *
+     * @param javaModel language model to allow java expression manipulation
+     * @param formatClass type declaration denoting text format. formatClass should not contain type variables.
+     * @return
+     */
     public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, TypeElement formatClass) {
         return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatClass);
     }
@@ -57,65 +62,79 @@ public class RenderingCodeGenerator {
         this.templateFormatElement = formatClass;
 
     }
-    String generateRenderingCode(TypeMirror type, String expression, VariableContext variables) throws TypeException {
-        if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement))))
-            return expression + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
+    String generateRenderingCode(JavaExpression expression, VariableContext variables) throws TypeException {
+        TypeMirror type = expression.type();
+        String text = expression.text();
+        if (type instanceof WildcardType)
+            return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement))))
+            return text + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
         else if (javaModel.isSameType(type, knownTypes._int))
-            return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._short))
-            return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._long))
-            return variables.writer() + ".append(" + Long.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Long.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._byte))
-            return variables.writer() + ".append(" + Byte.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Byte.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._char))
-            return variables.writer() + ".append(" + Character.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Character.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._float))
-            return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + expression + ")); ";
+            return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._double))
-            return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + expression + ")); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._String)))
-            return variables.writer() + ".append(" + expression + "); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Integer)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Long)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Short)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Byte)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Character)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Double)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
-        else if (javaModel.isAssignable(type, javaModel.getDeclaredType(knownTypes._Float)))
-            return variables.writer() + ".append(" + expression + ".toString()); ";
+            return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + text + ")); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._String)))
+            return variables.writer() + ".append(" + text + "); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Integer)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Long)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Short)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Byte)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Character)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Double)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
+        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Float)))
+            return variables.writer() + ".append(" + text + ".toString()); ";
         else
-            throw new TypeException("Can't render " + expression + " expression of " + type + " type");
+            throw new TypeException("Can't render " + text + " expression of " + type + " type");
     }
 
     /**
-     * creates TemplateCompilerContext instance
+     * creates TemplateCompilerContext instance.
      *
-     * @param element root of the data binding context
-     * @param text java expression of type correponding to given TypeElement
+     * @param element root of the data binding context. Element should not contain type-variables.
+     * @param expression java expression of type corresponding to given TypeElement
      * @param variables declared variables to use in generated code
      * @return new TemplateCompilerContext
      */
-    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String text, VariableContext variables) {
+    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
-        JavaExpression expression = javaModel.expression(text, javaModel.getDeclaredType(element));
-        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(expression, element, root);
+        JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
+        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
         return new TemplateCompilerContext(this, variables, rootRenderingContext);
     }
 
     RenderingContext createRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
-        if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+        if (expression.type() instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)expression.type();
+            return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+        } else if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext(expression.text(), enclosing);
-        } else if (javaModel.isAssignable(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
+        } else if (javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
             BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression.text(), nullableContext);
             return booleanContext;
+        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Iterable))) {
+            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+            VariableContext variableContext = nullable.createEnclosedVariableContext();
+            String elementVariableName = variableContext.introduceNewNameLike("element");
+            RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
+            IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
+            return createRenderingContext(iterable.elementExpession(), iterable);
         } else if (expression.type() instanceof DeclaredType) {
             DeclaredType declaredType = (DeclaredType)expression.type();
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
@@ -123,7 +142,6 @@ public class RenderingCodeGenerator {
             return declaredContext;
         } else if (expression.type() instanceof ArrayType) {
             ArrayType arrayType = (ArrayType)expression.type();
-            TypeMirror componentType = arrayType.getComponentType();
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String indexVariableName = variableContext.introduceNewNameLike("i");
@@ -135,9 +153,12 @@ public class RenderingCodeGenerator {
     }
 
     RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
-        if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+        if (expression.type() instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)expression.type();
+            return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+        } else if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
-        } else if (javaModel.isAssignable(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
+        } else if (javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || !(" + expression.text() + ")", enclosing);
         } else if (expression.type() instanceof DeclaredType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null", enclosing);

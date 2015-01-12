@@ -32,6 +32,9 @@ package com.github.sviperll.staticmustache.examples;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
 import com.github.sviperll.staticmustache.Html;
+import java.io.IOException;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -46,11 +49,23 @@ public class User {
     final int age;
     final String[] array;
     final int[][] array1;
+    final List<? extends Item<? extends String>> list1;
 
-    public User(String name, int age, String[] array, int[][] array1) {
+    public User(String name, int age, String[] array, int[][] array1, List<? extends Item<? extends String>> list1) {
         this.name = name;
         this.age = age;
         this.array = array;
         this.array1 = array1;
+        this.list1 = list1;
+    }
+
+    public static class Item<T> {
+        private final T value;
+        public Item(T value) {
+            this.value = value;
+        }
+        public T value() {
+            return value;
+        }
     }
 }

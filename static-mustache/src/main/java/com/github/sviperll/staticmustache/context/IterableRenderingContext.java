@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,33 +29,33 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class ArrayRenderingContext implements RenderingContext {
-    private final JavaExpression arrayExpression;
-    private final String indexVariableName;
+class IterableRenderingContext implements RenderingContext {
+    private final JavaExpression expression;
+    private final String elementVariableName;
     private final RenderingContext parent;
 
-    public ArrayRenderingContext(JavaExpression arrayExpression, String indexVariableName, RenderingContext parent) {
-        this.arrayExpression = arrayExpression;
-        this.indexVariableName = indexVariableName;
+    public IterableRenderingContext(JavaExpression expression, String elementVariableName, RenderingContext parent) {
+        this.expression = expression;
+        this.elementVariableName = elementVariableName;
         this.parent = parent;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "for (int " + indexVariableName + " = 0; " + indexExpression().text() + " < " + arrayExpression.arrayLength().text() + "; " + indexExpression().text() + "++) { ";
+        return parent.beginSectionRenderingCode() + "for (" + elementExpession().type() + " " + elementVariableName + ": " + expression.text() + ") { ";
     }
 
     @Override
     public String endSectionRenderingCode() {
         return "}" + parent.endSectionRenderingCode();
-    }
-
-    JavaExpression componentExpession() {
-        return arrayExpression.subscript(indexExpression());
     }
 
     @Override
@@ -65,7 +65,7 @@ class ArrayRenderingContext implements RenderingContext {
 
     @Override
     public JavaExpression currentExpression() {
-        return arrayExpression;
+        return expression;
     }
 
     @Override
@@ -73,8 +73,13 @@ class ArrayRenderingContext implements RenderingContext {
         return parent.createEnclosedVariableContext();
     }
 
-    private JavaExpression indexExpression() {
-        return arrayExpression.model().expression(indexVariableName, arrayExpression.model().knownTypes()._int);
+    JavaExpression elementExpession() {
+        DeclaredType iterableType = expression.model().getSupertype((DeclaredType)expression.type(), expression.model().knownTypes()._Iterable);
+        TypeMirror elementType = iterableType.getTypeArguments().iterator().next();
+        if (elementType instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType)elementType;
+            elementType = wildcardType.getExtendsBound();
+        }
+        return expression.model().expression(elementVariableName, elementType);
     }
-
 }

@@ -33,15 +33,21 @@ import com.github.sviperll.staticmustache.Html;
 import com.github.sviperll.staticmustache.Renderable;
 import com.github.sviperll.staticmustache.Renderer;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         int [][] array = new int[][] {new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5}};
-        User user = new User("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array);
+        List<User.Item<String>> list1 = new ArrayList<User.Item<String>>();
+        list1.add(new User.Item<String>("abc"));
+        list1.add(new User.Item<String>("def"));
+
+        User user = new User("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
         Renderable<Text> renderable = new RenderableTextUserAdapter(user);
         Renderer renderer = renderable.createRenderer(System.out);
         renderer.render();
-        User user1 = new User("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array);
+        User user1 = new User("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);
         Renderable<Html> renderable1 = new RenderableHtmlUserAdapter(user1);
         Renderer renderer1 = renderable1.createRenderer(System.out);
         renderer1.render();

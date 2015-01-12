@@ -29,8 +29,11 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -65,8 +68,8 @@ public class JavaLanguageModel {
         return operations.isSameType(first, second);
     }
 
-    boolean isAssignable(TypeMirror newValueType, TypeMirror assignedToVariableType) {
-        return operations.isAssignable(newValueType, assignedToVariableType);
+    boolean isSubtype(TypeMirror subtype, TypeMirror supertype) {
+        return operations.isSubtype(subtype, supertype);
     }
 
     boolean isUncheckedException(TypeMirror exceptionType) {
@@ -84,5 +87,30 @@ public class JavaLanguageModel {
 
     JavaExpression expression(String text, TypeMirror type) {
         return new JavaExpression(this, text, type);
+    }
+
+    TypeMirror getGenericDeclaredType(TypeElement element) {
+        List<? extends TypeParameterElement> typeParameters = element.getTypeParameters();
+        List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(typeParameters.size());
+        for (TypeParameterElement typeParameter: typeParameters) {
+            typeArguments.add(operations.getWildcardType(null, null));
+        }
+        TypeMirror[] typeArgumentArray = new TypeMirror[typeArguments.size()];
+        typeArgumentArray = typeArguments.toArray(typeArgumentArray);
+        return getDeclaredType(element, typeArgumentArray);
+    }
+
+    DeclaredType getSupertype(DeclaredType type, TypeElement supertypeDeclaration) {
+        if (type.asElement().equals(supertypeDeclaration))
+            return type;
+        else {
+            List<? extends TypeMirror> supertypes = operations.directSupertypes(type);
+            for (TypeMirror supertype: supertypes) {
+                DeclaredType result = getSupertype((DeclaredType)supertype, supertypeDeclaration);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
     }
 }
