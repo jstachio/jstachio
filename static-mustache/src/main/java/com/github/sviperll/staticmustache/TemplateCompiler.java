@@ -35,6 +35,7 @@ import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -66,7 +67,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
     }
 
     @Override
-    public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+    public void processToken(@Nonnull PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
     }
 

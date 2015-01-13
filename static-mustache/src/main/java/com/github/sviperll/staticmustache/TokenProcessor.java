@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache;
 
+import javax.annotation.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -37,5 +39,5 @@ package com.github.sviperll.staticmustache;
 public interface TokenProcessor<T> {
     static Character EOF = null;
 
-    void processToken(T token) throws ProcessingException;
+    void processToken(@Nullable T token) throws ProcessingException;
 }

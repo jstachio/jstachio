@@ -30,9 +30,9 @@
 package com.github.sviperll.staticmustache;
 
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
-import com.github.sviperll.staticmustache.context.VariableContext;
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.texttemplates.TemplateFormat;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -200,6 +200,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             PrintWriter writer = new PrintWriter(stringWriter);
             try {
                 writer.println("package " + packageName + ";");
+                writer.println("@javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
                 writer.println("class " + adapterClassSimpleName + " implements " + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + "> {");
                 writer.println("    private final " + className + " data;");
                 writer.println("    public " + adapterClassSimpleName + "(" + className + " data) {");
@@ -240,7 +241,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(adapterClassName, element);
             OutputStream stream = sourceFile.openOutputStream();
             try {
-                Writer outputWriter = new OutputStreamWriter(stream);
+                Writer outputWriter = new OutputStreamWriter(stream, Charset.defaultCharset());
                 try {
                     outputWriter.append(stringWriter.getBuffer().toString());
                 } finally {

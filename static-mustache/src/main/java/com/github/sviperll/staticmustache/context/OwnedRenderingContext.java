@@ -40,23 +40,23 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
+    public String beginSectionRenderingCode() {
+        return "";
+    }
+
+    @Override
     public String endSectionRenderingCode() {
         return "";
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         return parent.getDataOrDefault(name, defaultValue);
     }
 
     @Override
     public JavaExpression currentExpression() {
         return parent.currentExpression();
-    }
-
-    @Override
-    public String beginSectionRenderingCode() {
-        return "";
     }
 
     @Override

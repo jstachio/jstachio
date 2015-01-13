@@ -54,7 +54,10 @@ import java.lang.annotation.Target;
  * </ul>
  * <p>
  * An implementation of createEscapingAppendable method should decorate given appendable argument
- * to create new appendable that will excape any special characters, specific to given format.
+ * to create new appendable that will escape any special characters, specific to given format.
+ * <p>
+ * Decorated appendable should never buffer any data.
+ * Escaped text should be written to original appendable immediately.
  * <p>
  * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
  * <p>

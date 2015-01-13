@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import javax.annotation.processing.Messager;
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 
 /**
@@ -66,10 +67,18 @@ class TemplateCompilerManager {
                     inputReader.close();
                 }
             } finally {
-                bufferedInputStream.close();
+                try {
+                    bufferedInputStream.close();
+                } catch (Exception ex) {
+                    messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
+                }
             }
         } finally {
-            inputStream.close();
+            try {
+                inputStream.close();
+            } catch (Exception ex) {
+                messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
+            }
         }
     }
 

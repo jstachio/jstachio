@@ -29,7 +29,9 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -63,34 +65,37 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
-        for (Element element: enclosedElements) {
-            if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(name)) {
-                return getMethodEntryOrDefault(enclosedElements, name, defaultValue);
-            }
-        }
-        String getterName = getterName(name);
-        for (Element element: enclosedElements) {
-            if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(getterName)) {
-                return getMethodEntryOrDefault(enclosedElements, getterName, defaultValue);
-            }
-        }
-        for (Element element: enclosedElements) {
-            if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
-                return expression.fieldAccess(element);
-            }
-        }
+        JavaExpression result = getMethodEntryOrDefault(enclosedElements, name, null);
+        if (result != null)
+            return result;
+        result = getMethodEntryOrDefault(enclosedElements, getterName(name), null);
+        if (result != null)
+            return result;
+        result = getFieldEntryOrDefault(enclosedElements, name, null);
+        if (result != null)
+            return result;
         return parent.getDataOrDefault(name, defaultValue);
     }
 
-    private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) {
+    private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {
         for (Element element: elements) {
-            if (element.getKind() == ElementKind.METHOD
-                && element.getSimpleName().contentEquals(methodName)
-                && !element.getModifiers().contains(Modifier.STATIC)) {
+            if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
                 ExecutableType method = expression.methodSignature(element);
-                if (method.getParameterTypes().isEmpty() && areUnchecked(method.getThrownTypes())) {
+                if (method.getParameterTypes().isEmpty()) {
+                    if (element.getModifiers().contains(Modifier.PRIVATE)) {
+                        throw new ContextException(MessageFormat.format("Refence to private method: '{0}': use package (default) access modifier to access method instead",
+                                                                        methodName));
+                    }
+                    if (element.getModifiers().contains(Modifier.STATIC)) {
+                        throw new ContextException(MessageFormat.format("Refence to static method: '{0}': only instance methods are accessible",
+                                                                        methodName));
+                    }
+                    if (!areUnchecked(method.getThrownTypes())) {
+                        throw new ContextException(MessageFormat.format("Refence to method throwing checked exceptions: '{0}': only unchecked exceptions are allowed",
+                                                                        methodName));
+                    }
                     return expression.methodCall(element);
                 }
             }
@@ -98,8 +103,25 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         return defaultValue;
     }
 
+    private JavaExpression getFieldEntryOrDefault(List<? extends Element> enclosedElements, String name, JavaExpression defaultValue) throws ContextException {
+        for (Element element: enclosedElements) {
+            if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
+                if (element.getModifiers().contains(Modifier.PRIVATE)) {
+                    throw new ContextException(MessageFormat.format("Refence to private field: '{0}': use package (default) access modifier to access field instead",
+                                                                    name));
+                }
+                if (element.getModifiers().contains(Modifier.STATIC)) {
+                    throw new ContextException(MessageFormat.format("Refence to static field: '{0}': only instance fields are accessible",
+                                                                    name));
+                }
+                return expression.fieldAccess(element);
+            }
+        }
+        return defaultValue;
+    }
+
     private String getterName(String name) {
-        return "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
+        return "get" + name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
     }
 
     private boolean areUnchecked(List<? extends TypeMirror> thrownTypes) {

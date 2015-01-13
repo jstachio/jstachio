@@ -89,4 +89,7 @@ public class Html {
             return this;
         }
     }
+
+    private Html() {
+    }
 }

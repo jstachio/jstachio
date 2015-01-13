@@ -29,7 +29,7 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import javax.lang.model.type.TypeMirror;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -39,7 +39,7 @@ class NoDataContext implements RenderingContext {
     private final JavaExpression expression;
     private final RenderingContext parent;
 
-    NoDataContext(JavaExpression expression, RenderingContext parent) {
+    NoDataContext(JavaExpression expression, @Nonnull RenderingContext parent) {
         this.expression = expression;
         this.parent = parent;
     }
@@ -50,11 +50,8 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
-        if (parent == null)
-            return defaultValue;
-        else
-            return parent.getDataOrDefault(name, defaultValue);
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+        return parent.getDataOrDefault(name, defaultValue);
     }
 
     @Override

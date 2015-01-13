@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache;
 
+import javax.annotation.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -37,7 +39,7 @@ package com.github.sviperll.staticmustache;
 public class PositionedToken<T> {
     private final Position position;
     private final T innerToken;
-    public PositionedToken(Position position, T innerToken) {
+    public PositionedToken(Position position, @Nullable T innerToken) {
         this.position = position;
         this.innerToken = innerToken;
     }

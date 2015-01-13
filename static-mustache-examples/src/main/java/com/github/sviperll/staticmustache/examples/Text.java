@@ -40,4 +40,7 @@ public class Text {
     public static Appendable createEscapingAppendable(Appendable appendable) {
         return appendable;
     }
+
+    private Text() {
+    }
 }

@@ -28,8 +28,9 @@
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * @see MustacheTokenizer#createInstance(java.lang.String, com.github.sviperll.staticmustache.TokenProcessor)
+ * @see MustacheTokenizer#createInstance
  * <p>
  * MustacheTokenizer parses text file and invokes given TokenProcessor on each MustacheToken
  */
+@javax.annotation.ParametersAreNonnullByDefault
 package com.github.sviperll.staticmustache.token;

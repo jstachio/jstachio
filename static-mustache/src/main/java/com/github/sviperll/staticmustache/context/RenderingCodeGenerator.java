@@ -29,6 +29,7 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.text.MessageFormat;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -100,7 +101,7 @@ public class RenderingCodeGenerator {
         else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Float)))
             return variables.writer() + ".append(" + text + ".toString()); ";
         else
-            throw new TypeException("Can't render " + text + " expression of " + type + " type");
+            throw new TypeException(MessageFormat.format("Can't render {0} expression of {1} type", text, type));
     }
 
     /**
@@ -141,7 +142,6 @@ public class RenderingCodeGenerator {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, (TypeElement)declaredType.asElement(), nullableContext);
             return declaredContext;
         } else if (expression.type() instanceof ArrayType) {
-            ArrayType arrayType = (ArrayType)expression.type();
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String indexVariableName = variableContext.introduceNewNameLike("i");
@@ -165,7 +165,9 @@ public class RenderingCodeGenerator {
         } else if (expression.type() instanceof ArrayType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
         } else
-            throw new TypeException("Can't invert " + expression.text() + " expression of " + expression.type() + " type");
+            throw new TypeException(MessageFormat.format("Can't invert {0} expression of {1} type",
+                                                         expression.text(),
+                                                         expression.type()));
     }
 
     private RenderingContext nullableRenderingContext(JavaExpression expression, RenderingContext context) {

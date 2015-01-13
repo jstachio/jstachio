@@ -32,9 +32,7 @@ package com.github.sviperll.staticmustache.examples;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
 import com.github.sviperll.staticmustache.Html;
-import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  *
@@ -64,7 +62,7 @@ public class User {
         public Item(T value) {
             this.value = value;
         }
-        public T value() {
+        T value() {
             return value;
         }
     }

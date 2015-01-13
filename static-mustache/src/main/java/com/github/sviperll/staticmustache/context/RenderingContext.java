@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import javax.annotation.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -36,7 +38,7 @@ package com.github.sviperll.staticmustache.context;
 interface RenderingContext {
     String beginSectionRenderingCode();
     String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, JavaExpression defaultValue);
+    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
 }

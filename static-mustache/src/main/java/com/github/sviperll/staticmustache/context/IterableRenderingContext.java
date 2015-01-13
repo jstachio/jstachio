@@ -50,7 +50,11 @@ class IterableRenderingContext implements RenderingContext {
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "for (" + elementExpession().type() + " " + elementVariableName + ": " + expression.text() + ") { ";
+        return parent.beginSectionRenderingCode()
+               + String.format("for (%s %s: %s) { ",
+                               elementExpession().type(),
+                               elementVariableName,
+                               expression.text());
     }
 
     @Override
@@ -59,7 +63,7 @@ class IterableRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         return parent.getDataOrDefault(name, defaultValue);
     }
 

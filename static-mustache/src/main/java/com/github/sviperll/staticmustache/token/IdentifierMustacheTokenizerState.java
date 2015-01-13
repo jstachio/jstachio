@@ -104,8 +104,6 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
                 tokenizer.emitToken(MustacheToken.variable(nameString));
                 break;
             case UNESCAPED_VARIABLE_TWO_BRACES:
-                tokenizer.emitToken(MustacheToken.unescapedVariable(nameString));
-                break;
             case UNESCAPED_VARIABLE_THREE_BRACES:
                 tokenizer.emitToken(MustacheToken.unescapedVariable(nameString));
                 break;

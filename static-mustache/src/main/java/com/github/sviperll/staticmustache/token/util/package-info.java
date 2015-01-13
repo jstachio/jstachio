@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,41 +27,5 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
-
-import java.io.Serializable;
-
-/**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
- */
-@SuppressWarnings("serial")
-public class Position implements Serializable {
-    private final String fileName;
-    private final int row;
-    private final String currentLine;
-    private final int col;
-    public Position(String fileName, int row, String currentLine, int col) {
-        this.fileName = fileName;
-        this.row = row;
-        this.currentLine = currentLine;
-        this.col = col;
-    }
-
-    public String fileName() {
-        return fileName;
-    }
-
-    public String currentLine() {
-        return currentLine;
-    }
-
-    public int row() {
-        return row;
-    }
-
-    public int col() {
-        return col;
-    }
-
-}
+@javax.annotation.ParametersAreNonnullByDefault
+package com.github.sviperll.staticmustache.token.util;

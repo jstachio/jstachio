@@ -46,7 +46,12 @@ class ArrayRenderingContext implements RenderingContext {
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "for (int " + indexVariableName + " = 0; " + indexExpression().text() + " < " + arrayExpression.arrayLength().text() + "; " + indexExpression().text() + "++) { ";
+        return parent.beginSectionRenderingCode()
+               + String.format("for (int %s = 0; %s < %s; %s++) { ",
+                               indexVariableName,
+                               indexExpression().text(),
+                               arrayExpression.arrayLength().text(),
+                               indexExpression().text());
     }
 
     @Override
@@ -59,7 +64,7 @@ class ArrayRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         return parent.getDataOrDefault(name, defaultValue);
     }
 

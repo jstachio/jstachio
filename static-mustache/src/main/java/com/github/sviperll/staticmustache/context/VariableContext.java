@@ -31,6 +31,7 @@ package com.github.sviperll.staticmustache.context;
 
 import java.util.Map;
 import java.util.TreeMap;
+import javax.annotation.Nullable;
 
 /**
  *
@@ -47,9 +48,9 @@ public class VariableContext {
     private final String writer;
     private final String unescapedWriter;
     private final Map<String, Integer> variables;
-    private final VariableContext parent;
+    private final @Nullable VariableContext parent;
 
-    VariableContext(String writer, String unescapedWriter, Map<String, Integer> variables, VariableContext parent) {
+    VariableContext(String writer, String unescapedWriter, Map<String, Integer> variables, @Nullable VariableContext parent) {
         this.writer = writer;
         this.unescapedWriter = unescapedWriter;
         this.variables = variables;

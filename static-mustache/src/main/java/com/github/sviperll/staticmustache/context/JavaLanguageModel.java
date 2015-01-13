@@ -91,8 +91,9 @@ public class JavaLanguageModel {
 
     TypeMirror getGenericDeclaredType(TypeElement element) {
         List<? extends TypeParameterElement> typeParameters = element.getTypeParameters();
-        List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(typeParameters.size());
-        for (TypeParameterElement typeParameter: typeParameters) {
+        int numberOfParameters = typeParameters.size();
+        List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(numberOfParameters);
+        for (int i = 0; i < numberOfParameters; i++) {
             typeArguments.add(operations.getWildcardType(null, null));
         }
         TypeMirror[] typeArgumentArray = new TypeMirror[typeArguments.size()];
