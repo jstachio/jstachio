@@ -39,21 +39,30 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
         int [][] array = new int[][] {new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5},new int[] {1,2,3,4,5}};
-        List<User.Item<String>> list1 = new ArrayList<User.Item<String>>();
-        list1.add(new User.Item<String>("abc"));
-        list1.add(new User.Item<String>("def"));
+        List<User1.Item<String>> list1 = new ArrayList<User1.Item<String>>();
+        list1.add(new User1.Item<String>("abc"));
+        list1.add(new User1.Item<String>("def"));
 
-        User user = new User("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
-        Renderable<Text> renderable = new RenderableTextUserAdapter(user);
-        Renderer renderer = renderable.createRenderer(System.out);
-        renderer.render();
-        User user1 = new User("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);
-        Renderable<Html> renderable1 = new RenderableHtmlUserAdapter(user1);
+        User1 user2 = new User1("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
+        Renderable<Text> renderable2 = new RenderableTextUser1Adapter(user2);
+        Renderer renderer3 = renderable2.createRenderer(System.out);
+        renderer3.render();
+        User1 user1 = new User1("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);
+        Renderable<Html> renderable1 = new RenderableHtmlUser1Adapter(user1);
         Renderer renderer1 = renderable1.createRenderer(System.out);
         renderer1.render();
         Settings settings = new Settings(renderable1, true);
-        Renderable<Html> renderable2 = new RenderableSettingsAdapter(settings);
-        Renderer renderer2 = renderable2.createRenderer(System.out);
+        Renderable<Html> renderable3 = new RenderableSettingsAdapter(settings);
+        Renderer renderer2 = renderable3.createRenderer(System.out);
         renderer2.render();
+
+        List<User.Item<String>> list = new ArrayList<User.Item<String>>();
+        list.add(new User.Item<String>("helmet"));
+        list.add(new User.Item<String>("shower"));
+
+        User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list);
+        Renderable<Html> renderable = new RenderableHtmlUserAdapter(user);
+        Renderer renderer = renderable.createRenderer(System.out);
+        renderer.render();
     }
 }

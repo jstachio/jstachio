@@ -1,18 +1,25 @@
 {{#name}}
-Name: {{.}}, Name Length is {{length}}
+<p>Name: {{.}}, Name Length is {{length}}</p>
 {{/name}}
-Age: {{  age  }}
 
-Name HTML: {{& name }}
+<p>Age: {{  age  }}</p>
 
-{{#array1}}
- . {{.}}{{/array1}}
+<p>Achievements:</p>
 
+<ul>
 {{#array}}
- * {{.}}{{/array}}
-{{^array}}
- No data in array{{/array}}
+  <li>{{.}}</li>
+{{/array}}
+</ul>
 
+{{^array}}
+<p>No achievements</p>
+{{/array}}
+
+<p>Items:</p>
+
+<ol>
 {{#list1}}
-  * {{value}}
+  <li>{{value}}</li>
 {{/list1}}
+</ol>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -30,28 +30,30 @@
 package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
+import com.github.sviperll.staticmustache.Html;
 import java.util.List;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(
-    // points to src/main/resources/user.mustache file
-    template = "user.mustache",
-
-    // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
-    adapterName = "RenderableHtmlUserAdapter")
-public class User {
+@GenerateRenderableAdapters({
+    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Text.class, adapterName = "RenderableTextUser1Adapter"),
+    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
+})
+public class User1 {
     final String name;
     final int age;
     final String[] array;
-    final List<Item<String>> list1;
+    final int[][] array1;
+    final List<? extends Item<? extends String>> list1;
 
-    public User(String name, int age, String[] array, List<Item<String>> list1) {
+    public User1(String name, int age, String[] array, int[][] array1, List<? extends Item<? extends String>> list1) {
         this.name = name;
         this.age = age;
         this.array = array;
+        this.array1 = array1;
         this.list1 = list1;
     }
 

@@ -30,6 +30,8 @@
 package com.github.sviperll.staticmustache;
 
 /**
+ * Can be rendered.
+ * <p>
  * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
  * html output.
  * 
@@ -38,5 +40,14 @@ package com.github.sviperll.staticmustache;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public interface Renderable<T> {
+
+    /**
+     * Creates Renderer object that can be called to write out actual rendered text.
+     * <p>
+     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
+     * 
+     * @param appendable appendable to write rendered text to
+     * @return Renderer object
+     */
     Renderer createRenderer(Appendable appendable);
 }

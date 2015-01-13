@@ -46,19 +46,31 @@ public @interface GenerateRenderableAdapter {
     /**
       * @return Path to mustache template */
     String template();
+
     /**
-      * @return Name of generated class */
+     * Name of generated class.
+     * <p>
+     * adapterName can be omitted.
+     * "Renderable{{className}}Adapter" name is used by default.
+     * 
+     * @return Name of generated class */
     String adapterName() default ":auto";
 
     /**
+     * Class representing template format.
+     * <p>
      * You can create custom formats using
-     * @TemplateFormat annotation
+     * @TemplateFormat annotation.
      *
      * @return format of given template (HTML is default)
      */
     Class<?> templateFormat() default Html.class;
 
     /**
-     * @return encoding of given template file */
+     * Encoding of given template file.
+     * <p>
+     * charset can be omitted. Default system charset is used by default.
+     * @return encoding of given template file
+     */
     String charset() default ":default";
 }
