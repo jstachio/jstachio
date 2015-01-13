@@ -19,7 +19,7 @@ Features
  * Friendly error messages with context.
 
  * Zero configuration. No plugins or tweaks are required.
-   Everything is done with standard javac with any IDE or build-system.
+   Everything is done with standard javac with any IDE and/or build-system.
 
  * Non-HTML templates are supported. Set of supported formats is extensible.
 
@@ -93,7 +93,7 @@ public class User {
 
 ### Rendering ###
 
-To render template following code can be used:
+New class `RenderableHtmlUserAdapter` will be mechanically generated with the above code. This class can be used to render template filled with actual data. To render template following code can be used:
 
 ```java
 class Main {
@@ -138,16 +138,17 @@ The result of running this code will be
 
 </ol>
 ```
+/TODO: Examples of compilation error messages: field not found, unable to render type, etc/
 
 Design
 ------
 
 The idea is to create templating engine combining [mustache](http://mustache.github.io/) logicless philosophy
 with Java's single responsibility and static-typing.
-Full compile-time check of syntax and data-binding is main requirement.
+Full compile-time check of syntax and data-binding is the main requirement.
 
-Currently Java-code is generated from templates. Generated Java-code should never fail to compile.
-If it is impossible to generate valid Java-code from template,
+Currently Java-code is generated for templates. Generated Java-code should never fail to compile.
+If it is impossible to generate valid Java-code from some template,
 friendly compile-time error pointing to template file should be generated.
 Users should never be exposed to generated Java-code.
 
@@ -184,6 +185,8 @@ Names are looked up in innermost context first.
 If name is not found in current context, parent context is inspected.
 This process continues up to root context.
 
+/TODO: Detailed description of name lookup: method first, then getter, then field/
+
 Primitive types and strings can be used in mustache-variables.
 
 Escaping is always performed for mustache-variables.
@@ -193,7 +196,7 @@ Unescaped variables are supported analogues to original mustache.
 Any boxed or unboxed primitive type is rendered with toString method.
 Strings are rendered as is.
 
-Rendering of other Java-types as mustache-variable is compile-time error.
+Rendering of other Java-types as mustache-variable is currently compile-time error.
 
 License
 -------
