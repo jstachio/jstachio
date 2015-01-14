@@ -101,7 +101,7 @@ public class RenderingCodeGenerator {
         else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Float)))
             return variables.writer() + ".append(" + text + ".toString()); ";
         else
-            throw new TypeException(MessageFormat.format("Can't render {0} expression of {1} type", text, type));
+            throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
     }
 
     /**
@@ -165,7 +165,7 @@ public class RenderingCodeGenerator {
         } else if (expression.type() instanceof ArrayType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
         } else
-            throw new TypeException(MessageFormat.format("Can't invert {0} expression of {1} type",
+            throw new TypeException(MessageFormat.format("Can''t invert {0} expression of {1} type",
                                                          expression.text(),
                                                          expression.type()));
     }

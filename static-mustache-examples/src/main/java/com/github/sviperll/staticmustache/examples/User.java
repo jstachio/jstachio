@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+import java.util.Date;
 import java.util.List;
 
 /**

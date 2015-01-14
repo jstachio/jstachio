@@ -83,12 +83,12 @@ public class TemplateCompilerContext {
         } else {
             JavaExpression entry = context.getDataOrDefault(name, null);
             if (entry == null)
-                throw new ContextException(MessageFormat.format("Field not found in current context: {0}", name));
+                throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
             RenderingContext enclosedField;
             try {
                 enclosedField = generator.createRenderingContext(entry, new OwnedRenderingContext(context));
             } catch (TypeException ex) {
-                throw new ContextException(MessageFormat.format("Can't use {0} field for rendering", name), ex);
+                throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
             }
             return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
         }
@@ -100,12 +100,12 @@ public class TemplateCompilerContext {
         } else {
             JavaExpression entry = context.getDataOrDefault(name, null);
             if (entry == null)
-                throw new ContextException(MessageFormat.format("Field not found in current context: {0}", name));
+                throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
             RenderingContext enclosedField;
             try {
                 enclosedField = generator.createInvertedRenderingContext(entry, new OwnedRenderingContext(context));
             } catch (TypeException ex) {
-                throw new ContextException(MessageFormat.format("Can't use {0} field for rendering", name), ex);
+                throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
             }
             return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
         }

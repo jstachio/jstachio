@@ -80,38 +80,45 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {
+        boolean nameFound = false;
         for (Element element: elements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
+                nameFound = true;
                 ExecutableType method = expression.methodSignature(element);
                 if (method.getParameterTypes().isEmpty()) {
                     if (element.getModifiers().contains(Modifier.PRIVATE)) {
-                        throw new ContextException(MessageFormat.format("Refence to private method: '{0}': use package (default) access modifier to access method instead",
+                        throw new ContextException(MessageFormat.format("Refence to private method: ''{0}'': use package (default) access modifier to access method instead",
                                                                         methodName));
                     }
                     if (element.getModifiers().contains(Modifier.STATIC)) {
-                        throw new ContextException(MessageFormat.format("Refence to static method: '{0}': only instance methods are accessible",
+                        throw new ContextException(MessageFormat.format("Refence to static method: ''{0}'': only instance methods are accessible",
                                                                         methodName));
                     }
                     if (!areUnchecked(method.getThrownTypes())) {
-                        throw new ContextException(MessageFormat.format("Refence to method throwing checked exceptions: '{0}': only unchecked exceptions are allowed",
+                        throw new ContextException(MessageFormat.format("Refence to method throwing checked exceptions: ''{0}'': only unchecked exceptions are allowed",
                                                                         methodName));
                     }
                     return expression.methodCall(element);
                 }
             }
         }
-        return defaultValue;
+        if (!nameFound)
+            return defaultValue;
+        else {
+            throw new ContextException(MessageFormat.format("Refence to method with non-empty list of parameters: ''{0}'': only methods without parameters are supported",
+                                                            methodName));
+        }
     }
 
     private JavaExpression getFieldEntryOrDefault(List<? extends Element> enclosedElements, String name, JavaExpression defaultValue) throws ContextException {
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
                 if (element.getModifiers().contains(Modifier.PRIVATE)) {
-                    throw new ContextException(MessageFormat.format("Refence to private field: '{0}': use package (default) access modifier to access field instead",
+                    throw new ContextException(MessageFormat.format("Refence to private field: ''{0}'': use package (default) access modifier to access field instead",
                                                                     name));
                 }
                 if (element.getModifiers().contains(Modifier.STATIC)) {
-                    throw new ContextException(MessageFormat.format("Refence to static field: '{0}': only instance fields are accessible",
+                    throw new ContextException(MessageFormat.format("Refence to static field: ''{0}'': only instance fields are accessible",
                                                                     name));
                 }
                 return expression.fieldAccess(element);

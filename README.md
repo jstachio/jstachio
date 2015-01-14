@@ -16,6 +16,8 @@ Features
 
  * Value bindings are statically checked.
 
+ * Methods, fields and getter-methods can be referenced in templates.
+
  * Friendly error messages with context.
 
  * Zero configuration. No plugins or tweaks are required.
@@ -138,7 +140,39 @@ The result of running this code will be
 
 </ol>
 ```
-/TODO: Examples of compilation error messages: field not found, unable to render type, etc/
+
+Referencing non existent fields, or fields with non renderable type all result in compile time errors:
+
+```
+target/classes/user.mustache:5: error: Field not found in current context: 'age1'
+  <p>Age: {{  age1  }} ({{birthdate}}) </p>
+                  ^
+  symbol: mustache directive
+  location: mustache template
+```
+
+```
+target/classes/user.mustache:5: error: Unable to render field: type error: Can't render data.birthdate expression of java.util.Date type
+  <p>Age: {{  age  }} ({{birthdate}}) </p>
+                                    ^
+  symbol: mustache directive
+  location: mustache template
+```
+
+See `static-mustache-examples` project for more examples.
+
+Installation
+------------
+
+Use maven dependency to use ADT4J:
+
+```xml
+    <dependency>
+        <groupId>com.github.sviperll</groupId>
+        <artifactId>static-mustache</artifactId>
+        <version>0.1</version>
+    </dependency>
+```
 
 Design
 ------
@@ -185,13 +219,32 @@ Names are looked up in innermost context first.
 If name is not found in current context, parent context is inspected.
 This process continues up to root context.
 
-/TODO: Detailed description of name lookup: method first, then getter, then field/
+In each rendering context name lookup is performed as following.
+Lookup is performed in Java-class serving as a rendering context.
+
+ 1. Method with requested name is looked up.
+    Method should have no arguments and should throw no checked exceptions.
+    If there is such method it is used to fetch actual data to render.
+    Compile-time error is raised if there is method with given name, but
+    it is not accessible, has parameters or throws checked exceptions.
+
+ 2. Method with getter-name for requested name is looked up.
+    (For example, if 'age' is requested, 'getAge' method is looked up.)
+    Method should have no arguments and should throw no checked exceptions.
+    If there is such method it is used to fetch actual data to render.
+    Compile-time error is raised if there is method with such name, but
+    it is not accessible, has parameters or throws checked exceptions.
+
+ 3. Field with requested name is looked up.
+    Compile-time error is raised if there is field with such name but it's not accessible.
+
+ 4. Search continues in parent-context if all of the above failed.
 
 Primitive types and strings can be used in mustache-variables.
 
 Escaping is always performed for mustache-variables.
 
-Unescaped variables are supported analogues to original mustache.
+Unescaped variables are supported as in original mustache.
 
 Any boxed or unboxed primitive type is rendered with toString method.
 Strings are rendered as is.
