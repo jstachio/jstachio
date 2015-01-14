@@ -47,7 +47,6 @@ public class User {
         this.name = name;
         this.age = age;
         this.array = array;
-        this.array1 = array1;
         this.list1 = list1;
     }
 
@@ -164,7 +163,7 @@ See `static-mustache-examples` project for more examples.
 Installation
 ------------
 
-Use maven dependency to use ADT4J:
+Use maven dependency:
 
 ```xml
     <dependency>
