@@ -28,7 +28,38 @@ Features
 Example
 -------
 
+### user.mustache ###
+
+```
+{{#name}}
+<p>Name: {{.}}, Name Length is {{length}}</p>
+{{/name}}
+
+<p>Age: {{  age  }}</p>
+
+<p>Achievements:</p>
+
+<ul>
+{{#array}}
+  <li>{{.}}</li>
+{{/array}}
+</ul>
+
+{{^array}}
+<p>No achievements</p>
+{{/array}}
+
+<p>Items:</p>
+
+<ol>
+{{#list1}}
+  <li>{{value}}</li>
+{{/list1}}
+</ol>
+```
 ### User.java ###
+
+Following class can be used to provide actual data to fill into above template.
 
 ```java
 @GenerateRenderableAdapter(
@@ -62,35 +93,6 @@ public class User {
 }
 ```
 
-### user.mustache ###
-
-```
-{{#name}}
-<p>Name: {{.}}, Name Length is {{length}}</p>
-{{/name}}
-
-<p>Age: {{  age  }}</p>
-
-<p>Achievements:</p>
-
-<ul>
-{{#array}}
-  <li>{{.}}</li>
-{{/array}}
-</ul>
-
-{{^array}}
-<p>No achievements</p>
-{{/array}}
-
-<p>Items:</p>
-
-<ol>
-{{#list1}}
-  <li>{{value}}</li>
-{{/list1}}
-</ol>
-```
 
 ### Rendering ###
 
@@ -140,7 +142,7 @@ The result of running this code will be
 </ol>
 ```
 
-Referencing non existent fields, or fields with non renderable type all result in compile time errors:
+Referencing non existent fields, or fields with non renderable type, all result in compile-time errors. These errors are reported at your project's compile-time alone with other possible errors in java sources.
 
 ```
 target/classes/user.mustache:5: error: Field not found in current context: 'age1'
