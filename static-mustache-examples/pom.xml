@@ -14,11 +14,6 @@
             <artifactId>static-mustache</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>text-templates</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
 

@@ -29,9 +29,10 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
+import com.github.sviperll.textformats.PlainText;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.Html;
+import com.github.sviperll.textformats.Html;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ import java.util.List;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @GenerateRenderableAdapters({
-    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Text.class, adapterName = "RenderableTextUser1Adapter"),
+    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
     @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
 })
 public class User1 {

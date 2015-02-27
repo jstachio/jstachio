@@ -29,7 +29,8 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.staticmustache.Html;
+import com.github.sviperll.textformats.PlainText;
+import com.github.sviperll.textformats.Html;
 import com.github.sviperll.staticmustache.Renderable;
 import com.github.sviperll.staticmustache.Renderer;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class Main {
         list1.add(new User1.Item<String>("def"));
 
         User1 user2 = new User1("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
-        Renderable<Text> renderable2 = new RenderableTextUser1Adapter(user2);
+        Renderable<PlainText> renderable2 = new RenderableTextUser1Adapter(user2);
         Renderer renderer3 = renderable2.createRenderer(System.out);
         renderer3.render();
         User1 user1 = new User1("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);

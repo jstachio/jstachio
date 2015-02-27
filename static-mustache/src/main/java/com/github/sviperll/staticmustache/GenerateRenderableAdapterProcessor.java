@@ -33,7 +33,7 @@ import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
-import com.github.sviperll.texttemplates.TemplateFormat;
+import com.github.sviperll.metachicory.TextFormat;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -189,9 +189,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         String adapterRendererClassName = adapterClassName + "." + adapterRendererClassSimpleName;
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
-            TemplateFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TemplateFormat.class);
+            TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
             if (templateFormatAnnotation == null) {
-                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TemplateFormat.class.getName() + " annotation");
+                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TextFormat.class.getName() + " annotation");
             }
             if (!element.getTypeParameters().isEmpty()) {
                 throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
