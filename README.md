@@ -25,6 +25,17 @@ Features
 
  * Non-HTML templates are supported. Set of supported formats is extensible.
 
+Changelog
+---------
+
+ * Since 0.3
+
+   Switch to metachicory version 0.18. Replace text-formats dependency with chicory-text 0.18.
+
+ * Since 0.2
+
+   Introduce metachicory 0.17 and text-formats 0.17 dependencies
+
 Example
 -------
 

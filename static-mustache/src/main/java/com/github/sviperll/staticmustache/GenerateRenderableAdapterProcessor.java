@@ -33,7 +33,7 @@ import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
-import com.github.sviperll.metachicory.TextFormat;
+import com.github.sviperll.meta.TextFormat;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;

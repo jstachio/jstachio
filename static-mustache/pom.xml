@@ -12,12 +12,12 @@
         <dependency>
             <groupId>com.github.sviperll</groupId>
             <artifactId>metachicory</artifactId>
-            <version>0.17</version>
+            <version>0.18</version>
         </dependency>
         <dependency>
             <groupId>com.github.sviperll</groupId>
-            <artifactId>text-formats</artifactId>
-            <version>0.17</version>
+            <artifactId>chicory-text</artifactId>
+            <version>0.18</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

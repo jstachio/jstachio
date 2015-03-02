@@ -29,7 +29,7 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.textformats.Html;
+import com.github.sviperll.text.formats.Html;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
