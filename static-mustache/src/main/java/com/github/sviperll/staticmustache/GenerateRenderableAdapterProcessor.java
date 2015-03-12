@@ -161,6 +161,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             if (entry.getKey().getSimpleName().contentEquals(templateFormatMethod.getName())) {
                 AnnotationValue value = entry.getValue();
                 Object templateFormatValue = value.getValue();
+                if (!(templateFormatValue instanceof DeclaredType))
+                    throw new ClassCastException("Expecting DeclaredType got " + templateFormatValue.getClass().getName() + ": " + templateFormatValue);
                 DeclaredType templateFormatType = (DeclaredType)templateFormatValue;
                 templateFormatElement = (TypeElement)templateFormatType.asElement();
             } else if (entry.getKey().getSimpleName().contentEquals(adapterNameMethod.getName())) {

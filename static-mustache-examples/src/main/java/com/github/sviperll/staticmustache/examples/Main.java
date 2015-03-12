@@ -29,8 +29,8 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.textformats.PlainText;
-import com.github.sviperll.textformats.Html;
+import com.github.sviperll.text.formats.PlainText;
+import com.github.sviperll.text.formats.Html;
 import com.github.sviperll.staticmustache.Renderable;
 import com.github.sviperll.staticmustache.Renderer;
 import java.io.IOException;

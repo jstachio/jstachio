@@ -30,7 +30,7 @@
 package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.textformats.Html;
+import com.github.sviperll.text.formats.Html;
 import com.github.sviperll.staticmustache.Renderable;
 
 /**
