@@ -36,7 +36,7 @@ Use maven dependency:
     <dependency>
         <groupId>com.github.sviperll</groupId>
         <artifactId>static-mustache</artifactId>
-        <version>0.1</version>
+        <version>0.3</version>
     </dependency>
 ```
 
