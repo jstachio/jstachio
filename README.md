@@ -41,6 +41,9 @@ Use maven dependency:
 ```
 
 
+
+
+
 Changelog
 ---------
 
@@ -59,21 +62,33 @@ Example
 ### user.mustache ###
 
 ```
+{{#name}}
+<p>Name: {{.}}, Name Length is {{length}}</p>
+{{/name}}
 
-<p>Age: </p>
+<p>Age: {{  age  }}</p>
 
 <p>Achievements:</p>
 
 <ul>
+{{#array}}
+  <li>{{.}}</li>
+{{/array}}
 </ul>
 
+{{^array}}
 <p>No achievements</p>
+{{/array}}
 
 <p>Items:</p>
 
 <ol>
+{{#list1}}
+  <li>{{value}}</li>
+{{/list1}}
 </ol>
 ```
+
 ### User.java ###
 
 Following class can be used to provide actual data to fill into above template.
@@ -83,7 +98,7 @@ Following class can be used to provide actual data to fill into above template.
     // points to src/main/resources/user.mustache file
     template = "user.mustache",
 
-    // adapterName can be omitted. "RenderableAdapter" name is used by default
+    // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
     adapterName = "RenderableHtmlUserAdapter")
 public class User {
     final String name;
@@ -163,7 +178,7 @@ Referencing non existent fields, or fields with non renderable type, all result 
 
 ```
 target/classes/user.mustache:5: error: Field not found in current context: 'age1'
-  <p>Age:  () </p>
+  <p>Age: {{  age1  }} ({{birthdate}}) </p>
                   ^
   symbol: mustache directive
   location: mustache template
@@ -171,7 +186,7 @@ target/classes/user.mustache:5: error: Field not found in current context: 'age1
 
 ```
 target/classes/user.mustache:5: error: Unable to render field: type error: Can't render data.birthdate expression of java.util.Date type
-  <p>Age:  () </p>
+  <p>Age: {{  age  }} ({{birthdate}}) </p>
                                     ^
   symbol: mustache directive
   location: mustache template
