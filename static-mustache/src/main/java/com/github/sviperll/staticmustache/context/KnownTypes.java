@@ -29,7 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import com.github.sviperll.staticmustache.Renderable;
+import com.github.sviperll.text.Layoutable;
+import com.github.sviperll.text.Renderable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -66,6 +67,7 @@ class KnownTypes {
     public final TypeElement _String;
     public final TypeElement _Boolean;
     public final TypeElement _Iterable;
+    public final TypeElement _Layoutable;
 
     private KnownTypes(Elements declarations, Types types) {
         _Renderable = declarations.getTypeElement(Renderable.class.getName());
@@ -89,5 +91,6 @@ class KnownTypes {
         _Error = declarations.getTypeElement(Error.class.getName());
         _RuntimeException = declarations.getTypeElement(RuntimeException.class.getName());
         _Iterable = declarations.getTypeElement(Iterable.class.getName());
+        _Layoutable = declarations.getTypeElement(Layoutable.class.getName());
     }
 }

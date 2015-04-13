@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,14 +27,18 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
+package com.github.sviperll.staticmustache.examples;
 
-import java.io.IOException;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public interface Renderer {
-    void render() throws IOException;
+@GenerateRenderableAdapter(template = "layout.mustache", isLayout = true)
+public class Html5Layout {
+    final String title;
+    public Html5Layout(String title) {
+        this.title = title;
+    }
 }

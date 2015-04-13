@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,53 +27,46 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
-
-import com.github.sviperll.text.formats.Html;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.github.sviperll.staticmustache.context;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Documented
-public @interface GenerateRenderableAdapter {
-    /**
-      * @return Path to mustache template */
-    String template();
+class LayoutableRenderingContext implements RenderingContext {
+    private final JavaExpression expression;
+    private final VariableContext context;
+    private final RenderingContext enclosing;
 
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
+    public LayoutableRenderingContext(JavaExpression expression, VariableContext context, RenderingContext enclosing) {
+        this.expression = expression;
+        this.context = context;
+        this.enclosing = enclosing;
+    }
 
-    /**
-     * Class representing template format.
-     * <p>
-     * You can create custom formats using
-     * @TemplateFormat annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> templateFormat() default Html.class;
+    @Override
+    public String beginSectionRenderingCode() {
+        return enclosing.beginSectionRenderingCode() + " " + expression.text() + ".createHeaderRenderer(" + context.unescapedWriter() + ").render(); ";
+    }
 
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
+    @Override
+    public String endSectionRenderingCode() {
+        return  " " + expression.text() + ".createFooterRenderer(" + context.unescapedWriter() + ").render(); " + enclosing.endSectionRenderingCode();
+    }
 
-    boolean isLayout() default false;
+    @Override
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+        return enclosing.getDataOrDefault(name, defaultValue);
+    }
+
+    @Override
+    public JavaExpression currentExpression() {
+        return enclosing.currentExpression();
+    }
+
+    @Override
+    public VariableContext createEnclosedVariableContext() {
+        return context.createEnclosedContext();
+    }
+
 }

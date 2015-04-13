@@ -33,8 +33,6 @@ import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
 import javax.annotation.Nonnull;
 
 /**
@@ -42,28 +40,69 @@ import javax.annotation.Nonnull;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>> {
-    private final Reader inputReader;
-    private final PrintWriter writer;
-    private TemplateCompilerContext context;
-
-    TemplateCompiler(Reader inputReader, PrintWriter writer, TemplateCompilerContext context) {
-        this.inputReader = inputReader;
-        this.writer = writer;
-        this.context = context;
+    public static Factory compilerFactory() {
+        return new Factory() {
+            @Override
+            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
+                                                           TemplateCompilerContext context) {
+                return TemplateCompiler.createCompiler(reader, writer, context);
+            }
+        };
     }
 
-    public void run(String fileName) throws ProcessingException, IOException {
-        TokenProcessor<Character> processor = MustacheTokenizer.createInstance(fileName, this);
+    public static Factory headerCompilerFactory() {
+        return new Factory() {
+            @Override
+            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
+                                                           TemplateCompilerContext context) {
+                return TemplateCompiler.createHeaderCompiler(reader, writer, context);
+            }
+        };
+    }
+
+    public static Factory footerCompilerFactory() {
+        return new Factory() {
+            @Override
+            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
+                                                           TemplateCompilerContext context) {
+                return TemplateCompiler.createFooterCompiler(reader, writer, context);
+            }
+        };
+    }
+
+    public static TemplateCompiler createCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+        return new SimpleTemplateCompiler(reader, writer, context);
+    }
+
+    public static TemplateCompiler createHeaderCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+        return new HeaderTemplateCompiler(reader, writer, context);
+    }
+
+    public static TemplateCompiler createFooterCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+        return new FooterTemplateCompiler(reader, writer, context);
+    }
+
+    private final NamedReader reader;
+    private final boolean expectsYield;
+    final SwitchablePrintWriter writer;
+    private TemplateCompilerContext context;
+    boolean foundYield = false;
+
+    private TemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context, boolean expectsYield) {
+        this.reader = reader;
+        this.writer = writer;
+        this.context = context;
+        this.expectsYield = expectsYield;
+    }
+
+    void run() throws ProcessingException, IOException {
+        TokenProcessor<Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
         int readResult;
-        while ((readResult = inputReader.read()) >= 0) {
+        while ((readResult = reader.read()) >= 0) {
             processor.processToken((char)readResult);
         }
         processor.processToken(TokenProcessor.EOF);
         writer.println();
-    }
-
-    public void append(String s) {
-        writer.print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
     }
 
     @Override
@@ -82,7 +121,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public Void beginSection(String name) throws ProcessingException {
             try {
                 context = context.getChild(name);
-                writer.print(context.beginSectionRenderingCode());
+                print(context.beginSectionRenderingCode());
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -93,7 +132,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public Void beginInvertedSection(String name) throws ProcessingException {
             try {
                 context = context.getInvertedChild(name);
-                writer.print(context.beginSectionRenderingCode());
+                print(context.beginSectionRenderingCode());
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -107,7 +146,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             else if (!context.currentEnclosedContextName().equals(name))
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             else {
-                writer.print(context.endSectionRenderingCode());
+                print(context.endSectionRenderingCode());
                 context = context.parentContext();
                 return null;
             }
@@ -116,8 +155,18 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public Void variable(String name) throws ProcessingException {
             try {
-                TemplateCompilerContext variable = context.getChild(name);
-                writer.print(variable.renderingCode());
+                if (!expectsYield || !name.equals("yield")) {
+                    TemplateCompilerContext variable = context.getChild(name);
+                    writer.print(variable.renderingCode());
+                } else {
+                    if (foundYield)
+                        throw new ProcessingException(position, "Yield can be used only once");
+                    else if (context.isEnclosed())
+                        throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
+                    else {
+                        throw new ProcessingException(position, "Yield should be unescaped variable");
+                    }
+                }
                 return null;
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
@@ -127,8 +176,22 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public Void unescapedVariable(String name) throws ProcessingException {
             try {
-                TemplateCompilerContext variable = context.getChild(name);
-                writer.print(variable.unescapedRenderingCode());
+                if (!expectsYield || !name.equals("yield")) {
+                    TemplateCompilerContext variable = context.getChild(name);
+                    writer.print(variable.unescapedRenderingCode());
+                } else {
+                    if (foundYield)
+                        throw new ProcessingException(position, "Yield can be used only once");
+                    if (context.isEnclosed())
+                        throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
+                    else {
+                        foundYield = true;
+                        if (writer.suppressesOutput())
+                            writer.enableOutput();
+                        else
+                            writer.disableOutput();
+                    }
+                }
                 return null;
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
@@ -138,24 +201,98 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public Void specialCharacter(char c) throws ProcessingException {
             if (c == '\n') {
-                append("\\n");
-                writer.println();
+                printCodeToWrite("\\n");
+                println();
             } else if (c == '"') {
-                append("\\\"");
+                printCodeToWrite("\\\"");
             } else
-                append("" + c);
+                printCodeToWrite("" + c);
             return null;
         }
 
         @Override
         public Void text(String s) throws ProcessingException {
-            append(s);
+            printCodeToWrite(s);
             return null;
         }
 
         @Override
         public Void endOfFile() throws ProcessingException {
-            return null;
+            if (!context.isEnclosed())
+                return null;
+            else {
+                throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block at end of file");
+            }
         }
+
+        private void printCodeToWrite(String s) {
+            print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
+        }
+
+        private void print(String s) {
+            writer.print(s);
+        }
+
+        private void println() {
+            writer.println();
+        }
+
+    }
+
+    static class SimpleTemplateCompiler extends TemplateCompiler {
+        private SimpleTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+            super(inputReader, writer, context, false);
+        }
+
+        @Override
+        void run() throws ProcessingException, IOException {
+            boolean suppressesOutput = writer.suppressesOutput();
+            writer.enableOutput();
+            super.run();
+            if (suppressesOutput)
+                writer.disableOutput();
+            else
+                writer.enableOutput();
+        }
+    }
+
+    static class HeaderTemplateCompiler extends TemplateCompiler {
+        private HeaderTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+            super(inputReader, writer, context, true);
+        }
+
+        @Override
+        void run() throws ProcessingException, IOException {
+            boolean suppressesOutput = writer.suppressesOutput();
+            foundYield = false;
+            writer.enableOutput();
+            super.run();
+            if (suppressesOutput)
+                writer.disableOutput();
+            else
+                writer.enableOutput();
+        }
+    }
+
+    static class FooterTemplateCompiler extends TemplateCompiler {
+        private FooterTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
+            super(inputReader, writer, context, true);
+        }
+
+        @Override
+        void run() throws ProcessingException, IOException {
+            boolean suppressesOutput = writer.suppressesOutput();
+            foundYield = false;
+            writer.disableOutput();
+            super.run();
+            if (suppressesOutput)
+                writer.disableOutput();
+            else
+                writer.enableOutput();
+        }
+    }
+
+    interface Factory {
+        TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context);
     }
 }

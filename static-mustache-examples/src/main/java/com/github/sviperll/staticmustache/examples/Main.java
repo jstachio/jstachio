@@ -29,10 +29,11 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
+import com.github.sviperll.text.Layoutable;
 import com.github.sviperll.text.formats.PlainText;
 import com.github.sviperll.text.formats.Html;
-import com.github.sviperll.staticmustache.Renderable;
-import com.github.sviperll.staticmustache.Renderer;
+import com.github.sviperll.text.Renderable;
+import com.github.sviperll.text.Renderer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,9 +62,16 @@ public class Main {
         list.add(new User.Item<String>("helmet"));
         list.add(new User.Item<String>("shower"));
 
-        User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list);
+        Html5Layout layout = new Html5Layout("John Doe page");
+        Layoutable<Html> layoutable = new LayoutableHtml5LayoutAdapter(layout);
+        User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list, new LayoutableLiLayoutAdapter(new LiLayout()));
         Renderable<Html> renderable = new RenderableHtmlUserAdapter(user);
-        Renderer renderer = renderable.createRenderer(System.out);
+        Renderer renderer = layoutable.createHeaderRenderer(System.out);
+        renderer = renderer.andThen(renderable.createRenderer(System.out));
+        renderer = renderer.andThen(layoutable.createFooterRenderer(System.out));
         renderer.render();
+
+        Layouted layouted = new Layouted(renderable, layoutable);
+        new RenderableLayoutedAdapter(layouted).createRenderer(System.out).render();
     }
 }

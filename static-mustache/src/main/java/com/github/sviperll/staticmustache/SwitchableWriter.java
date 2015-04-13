@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,25 +29,46 @@
  */
 package com.github.sviperll.staticmustache;
 
+import java.io.IOException;
+import java.io.Writer;
+
 /**
- * Can be rendered.
- * <p>
- * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
- * html output.
- * 
- * @param <T> marks given renderable with it's format
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public interface Renderable<T> {
+class SwitchableWriter extends Writer {
+    private final Writer writer;
+    private boolean suppressesOutput = false;
 
-    /**
-     * Creates Renderer object that can be called to write out actual rendered text.
-     * <p>
-     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
-     * 
-     * @param appendable appendable to write rendered text to
-     * @return Renderer object
-     */
-    Renderer createRenderer(Appendable appendable);
+    public SwitchableWriter(Writer writer) {
+        this.writer = writer;
+    }
+
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        if (!suppressesOutput)
+            writer.write(cbuf, off, len);
+    }
+
+    public boolean suppressesOutput() {
+        return suppressesOutput;
+    }
+
+    public void enableOutput() {
+        suppressesOutput = false;
+    }
+
+    public void disableOutput() {
+        suppressesOutput = true;
+    }
+
+    @Override
+    public void flush() throws IOException {
+        writer.flush();
+    }
+
+    @Override
+    public void close() throws IOException {
+        writer.close();
+    }
 }

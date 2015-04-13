@@ -68,9 +68,13 @@ public class RenderingCodeGenerator {
         String text = expression.text();
         if (type instanceof WildcardType)
             return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement))))
-            return text + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
-        else if (javaModel.isSameType(type, knownTypes._int))
+        else if (javaModel.isSubtype(type, javaModel.getGenericDeclaredType(knownTypes._Renderable))) {
+            if (!javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement)))) {
+                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Renderable, but wrong format", text, type));
+            } else {
+                return text + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
+            }
+        } else if (javaModel.isSameType(type, knownTypes._int))
             return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._short))
             return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + text + ")); ";
@@ -123,6 +127,13 @@ public class RenderingCodeGenerator {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
             return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable))) {
+            if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable, javaModel.getDeclaredType(templateFormatElement)))) {
+                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Layoutable, but wrong format", expression.text(), expression.type()));
+            } else {
+                VariableContext context = enclosing.createEnclosedVariableContext();
+                return new LayoutableRenderingContext(expression, context, enclosing);
+            }
         } else if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext(expression.text(), enclosing);
         } else if (javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {

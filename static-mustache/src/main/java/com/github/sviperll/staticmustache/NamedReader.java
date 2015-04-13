@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,51 +29,32 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.text.formats.Html;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Documented
-public @interface GenerateRenderableAdapter {
-    /**
-      * @return Path to mustache template */
-    String template();
+class NamedReader extends Reader {
+    private final Reader reader;
+    private final String name;
+    public NamedReader(Reader reader, String name) {
+        this.reader = reader;
+        this.name = name;
+    }
 
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        return reader.read(cbuf, off, len);
+    }
 
-    /**
-     * Class representing template format.
-     * <p>
-     * You can create custom formats using
-     * @TemplateFormat annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> templateFormat() default Html.class;
+    @Override
+    public void close() throws IOException {
+        reader.close();
+    }
 
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
-
-    boolean isLayout() default false;
+    public String name() {
+        return name;
+    }
 }

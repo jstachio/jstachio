@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,51 +29,37 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.text.formats.Html;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Documented
-public @interface GenerateRenderableAdapter {
-    /**
-      * @return Path to mustache template */
-    String template();
+class SwitchablePrintWriter extends PrintWriter {
+    static SwitchablePrintWriter createInstance(Writer writer) {
+        if (writer instanceof SwitchableWriter)
+            return new SwitchablePrintWriter((SwitchableWriter)writer);
+        else
+            return new SwitchablePrintWriter(new SwitchableWriter(writer));
+    }
 
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
+    private final SwitchableWriter out;
 
-    /**
-     * Class representing template format.
-     * <p>
-     * You can create custom formats using
-     * @TemplateFormat annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> templateFormat() default Html.class;
+    private SwitchablePrintWriter(SwitchableWriter out) {
+        super(out);
+        this.out = out;
+    }
 
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
+    public boolean suppressesOutput() {
+        return out.suppressesOutput();
+    }
 
-    boolean isLayout() default false;
+    public void enableOutput() {
+        out.enableOutput();
+    }
+
+    public void disableOutput() {
+        out.disableOutput();
+    }
 }

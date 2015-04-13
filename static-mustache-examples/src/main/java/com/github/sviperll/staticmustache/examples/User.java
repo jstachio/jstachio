@@ -30,7 +30,8 @@
 package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import java.util.Date;
+import com.github.sviperll.text.Layoutable;
+import com.github.sviperll.text.formats.Html;
 import java.util.List;
 
 /**
@@ -48,12 +49,14 @@ public class User {
     final int age;
     final String[] array;
     final List<Item<String>> list1;
+    final Layoutable<Html> liLayout;
 
-    public User(String name, int age, String[] array, List<Item<String>> list1) {
+    public User(String name, int age, String[] array, List<Item<String>> list1, Layoutable<Html> liLayout) {
         this.name = name;
         this.age = age;
         this.array = array;
         this.list1 = list1;
+        this.liLayout = liLayout;
     }
 
     public static class Item<T> {
