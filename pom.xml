@@ -31,17 +31,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <tagNameFormat>static-mustache-@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <developers>
         <developer>
             <id>sviperll</id>
@@ -57,5 +46,131 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.sviperll</groupId>
+                <artifactId>mustache-maven-plugin</artifactId>
+                <version>0.2</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <contexts>
+                        <context>
+                            <file>project.properties</file>
+                            <type>properties</type>
+                            <templates>
+                                <template>
+                                    <inputFile>README.md.mustache</inputFile>
+                                    <outputFile>README.md</outputFile>
+                                </template>
+                            </templates>
+                        </context>
+                    </contexts>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>render-readme</id>
+                        <goals>
+                            <goal>render</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.sviperll</groupId>
+                <artifactId>versioning-maven-plugin</artifactId>
+                <version>0.3</version>
+                <configuration>
+                    <version>${project.version}</version>
+                    <decidedVersionPropertyName>release.version</decidedVersionPropertyName>
+                    <versionFile>
+                        <file>project.properties</file>
+                        <stability>
+                            <defaultStability>unstable</defaultStability>
+                            <stableKinds>
+                                <stableKind>final</stableKind>
+                            </stableKinds>
+                        </stability>
+                    </versionFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.5</version>
+                <configuration>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <serverId>oss-sonatype-nexus</serverId>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <!-- By default, this is the phase deploy goal will bind to -->
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <releaseVersion>${release.version}</releaseVersion>
+                    <developmentVersion>${release.version}-successor-SNAPSHOT</developmentVersion>
+                    <!-- <pushChanges>false</pushChanges> -->
+                    <!-- <localCheckout>true</localCheckout> -->
+                    <tagNameFormat>static-mustache-@{project.version}</tagNameFormat>
+                    <preparationGoals>-DdoReleasePreparation=true clean versioning:update-file verify scm:checkin</preparationGoals>
+                    <!-- <goals>deploy site-deploy</goals> -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.2</version>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>release-preparation</id>
+            <activation>
+                <property>
+                    <name>doReleasePreparation</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <configuration>
+                                    <!-- <pushChanges>false</pushChanges> -->
+                                    <includes>project.properties,README.md</includes>
+                                    <message>[maven-release-plugin] update release version information</message>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
 
