@@ -84,7 +84,12 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         for (Element element: elements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
                 nameFound = true;
-                ExecutableType method = expression.methodSignature(element);
+                ExecutableType method;
+                try {
+                    method = expression.methodSignature(element);
+                } catch (IllegalArgumentException ex) {
+                    throw new IllegalArgumentException("Unable to get " + element + " method signature for " + expression.type() + " type, defined at " + definitionElement, ex);
+                }
                 if (method.getParameterTypes().isEmpty()) {
                     if (element.getModifiers().contains(Modifier.PRIVATE)) {
                         throw new ContextException(MessageFormat.format("Refence to private method: ''{0}'': use package (default) access modifier to access method instead",

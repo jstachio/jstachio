@@ -29,6 +29,9 @@
  */
 package com.github.sviperll.staticmustache;
 
+import com.github.sviperll.Throwables;
+import com.github.sviperll.meta.ElementMessage;
+import com.github.sviperll.meta.ElementMessager;
 import com.github.sviperll.text.Renderable;
 import com.github.sviperll.text.Renderer;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
@@ -41,7 +44,6 @@ import com.github.sviperll.text.RendererDefinition;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
@@ -91,14 +93,15 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         return builder.toString();
     }
 
-    private final List<String> errors = new ArrayList<String>();
+    private final List<ElementMessage> errors = new ArrayList<ElementMessage>();
 
     @Override
     public boolean process(Set<? extends TypeElement> processEnnotations,
                            RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
-            for (String error: errors) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error);
+            for (ElementMessage error: errors) {
+                TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
             }
         } else {
             Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapter.class.getName());
@@ -205,11 +208,11 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             StringWriter stringWriter = new StringWriter();
             SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter);
             try {
-                FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_PATH, "", templatePath);
-                TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset);
+                FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
+                TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset, templatePath);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, templateFormatElement);
-                CodeWriter codeWriter = new CodeWriter(processingEnv.getMessager(), switchablePrintWriter, codeGenerator);
+                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement);
@@ -229,15 +232,21 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                     outputWriter.close();
                 }
             } finally {
-                stream.close();
+                try {
+                    stream.close();
+                } catch (Exception ex) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
+                }
             }
         } catch (ProcessingException ex) {
             String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
-            errors.add(errorMessage);
+            errors.add(ElementMessage.of(element, errorMessage));
         } catch (DeclarationException ex) {
-            errors.add(ex.getMessage());
+            errors.add(ElementMessage.of(element, ex.toString()));
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            errors.add(ElementMessage.of(element, Throwables.render(ex)));
+        } catch (RuntimeException ex) {
+            errors.add(ElementMessage.of(element, Throwables.render(ex)));
         }
     }
 

@@ -33,6 +33,7 @@ import java.text.MessageFormat;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 
@@ -147,18 +148,18 @@ public class RenderingCodeGenerator {
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
             IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
             return createRenderingContext(iterable.elementExpession(), iterable);
-        } else if (expression.type() instanceof DeclaredType) {
-            DeclaredType declaredType = (DeclaredType)expression.type();
-            RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
-            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, (TypeElement)declaredType.asElement(), nullableContext);
-            return declaredContext;
-        } else if (expression.type() instanceof ArrayType) {
+        } else if (expression.type().getKind() == TypeKind.ARRAY) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String indexVariableName = variableContext.introduceNewNameLike("i");
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
             ArrayRenderingContext array = new ArrayRenderingContext(expression, indexVariableName, variables);
             return createRenderingContext(array.componentExpession(), array);
+        } else if (expression.type().getKind() == TypeKind.DECLARED) {
+            DeclaredType declaredType = (DeclaredType)expression.type();
+            RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
+            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(declaredType), nullableContext);
+            return declaredContext;
         } else
             return new NoDataContext(expression, enclosing);
     }

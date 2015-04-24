@@ -41,9 +41,11 @@ import javax.tools.FileObject;
 class TextFileObject {
     private final FileObject resource;
     private final Charset charset;
-    TextFileObject(FileObject resource, Charset charset) {
+    private final String name;
+    TextFileObject(FileObject resource, Charset charset, String name) {
         this.resource = resource;
         this.charset = charset;
+        this.name = name;
     }
 
     InputStream openInputStream() throws IOException {
@@ -51,7 +53,7 @@ class TextFileObject {
     }
 
     String getName() {
-        return resource.getName();
+        return name;
     }
 
     Charset charset() {

@@ -114,4 +114,8 @@ public class JavaLanguageModel {
             return null;
         }
     }
+
+    TypeElement asElement(DeclaredType declaredType) {
+        return (TypeElement)operations.asElement(declaredType);
+    }
 }
