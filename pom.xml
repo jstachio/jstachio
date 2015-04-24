@@ -9,7 +9,7 @@
     <artifactId>static-mustache-maven-parent</artifactId>
     <name>static-mustache-maven-parent</name>
     <packaging>pom</packaging>
-    <version>0.3-successor-SNAPSHOT</version>
+    <version>0.4</version>
     <url>http://maven.apache.org</url>
     <properties>
         <netbeans.hint.license>BSD3</netbeans.hint.license>
@@ -22,7 +22,7 @@
         <connection>scm:git:git://github.com/sviperll/static-mustache.git</connection>
         <developerConnection>scm:git:git@github.com:sviperll/static-mustache.git</developerConnection>
         <url>https://github.com/sviperll/static-mustache</url>
-      <tag>HEAD</tag>
+      <tag>static-mustache-0.4</tag>
   </scm>
     <licenses>
         <license>
