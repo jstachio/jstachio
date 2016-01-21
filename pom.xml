@@ -2,8 +2,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.sviperll</groupId>
-        <artifactId>sviperll-maven-parent-6</artifactId>
-        <version>4</version>
+        <artifactId>universal-maven-parent</artifactId>
+        <version>0.21</version>
     </parent>
     <groupId>com.github.sviperll</groupId>
     <artifactId>static-mustache-maven-parent</artifactId>
@@ -12,6 +12,7 @@
     <version>0.4-successor-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <properties>
+        <parent.profile.activate>!pitest-report,nexus-deploy</parent.profile.activate>
         <netbeans.hint.license>BSD3</netbeans.hint.license>
     </properties>
     <modules>
@@ -23,7 +24,7 @@
         <developerConnection>scm:git:git@github.com:sviperll/static-mustache.git</developerConnection>
         <url>https://github.com/sviperll/static-mustache</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     <licenses>
         <license>
             <name>The BSD 3-Clause License</name>
@@ -51,7 +52,7 @@
             <plugin>
                 <groupId>com.github.sviperll</groupId>
                 <artifactId>mustache-maven-plugin</artifactId>
-                <version>0.2</version>
+                <version>0.22</version>
                 <inherited>false</inherited>
                 <configuration>
                     <encoding>UTF-8</encoding>
@@ -80,7 +81,7 @@
             <plugin>
                 <groupId>com.github.sviperll</groupId>
                 <artifactId>versioning-maven-plugin</artifactId>
-                <version>0.3</version>
+                <version>0.22</version>
                 <configuration>
                     <version>${project.version}</version>
                     <decidedVersionPropertyName>release.version</decidedVersionPropertyName>
@@ -96,45 +97,22 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.5</version>
                 <configuration>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <serverId>oss-sonatype-nexus</serverId>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <!-- By default, this is the phase deploy goal will bind to -->
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.1</version>
                 <configuration>
                     <releaseVersion>${release.version}</releaseVersion>
                     <developmentVersion>${release.version}-successor-SNAPSHOT</developmentVersion>
-                    <!-- <pushChanges>false</pushChanges> -->
-                    <!-- <localCheckout>true</localCheckout> -->
-                    <tagNameFormat>static-mustache-@{project.version}</tagNameFormat>
-                    <preparationGoals>-DdoReleasePreparation=true clean versioning:update-file verify scm:checkin</preparationGoals>
-                    <!-- <goals>deploy site-deploy</goals> -->
+                    <tagNameFormat>adt4j-@{project.version}</tagNameFormat>
+                    <preparationGoals>-Pcommit-version-infromation clean versioning:update-file verify scm:checkin</preparationGoals>
                 </configuration>
             </plugin>
             <plugin>
@@ -146,12 +124,7 @@
     </build>
     <profiles>
         <profile>
-            <id>release-preparation</id>
-            <activation>
-                <property>
-                    <name>doReleasePreparation</name>
-                </property>
-            </activation>
+            <id>commit-version-infromation</id>
             <build>
                 <plugins>
                     <plugin>
@@ -161,7 +134,6 @@
                             <execution>
                                 <id>default-cli</id>
                                 <configuration>
-                                    <!-- <pushChanges>false</pushChanges> -->
                                     <includes>project.properties,README.md</includes>
                                     <message>[maven-release-plugin] update release version information</message>
                                 </configuration>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-coreext:install</actionName>
+            <displayName>coreext:install</displayName>
+            <goals>
+                <goal>com.github.sviperll:coreext-maven-plugin:install</goal>
+            </goals>
+        </action>
+    </actions>

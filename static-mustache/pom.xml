@@ -12,22 +12,17 @@
         <dependency>
             <groupId>com.github.sviperll</groupId>
             <artifactId>metachicory</artifactId>
-            <version>0.26</version>
+            <version>0.35</version>
         </dependency>
         <dependency>
             <groupId>com.github.sviperll</groupId>
             <artifactId>chicory-text</artifactId>
-            <version>0.26</version>
+            <version>0.35</version>
         </dependency>
         <dependency>
             <groupId>com.github.sviperll</groupId>
             <artifactId>chicory-core</artifactId>
-            <version>0.26</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.0</version>
+            <version>0.35</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>

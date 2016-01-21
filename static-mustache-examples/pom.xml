@@ -13,30 +13,13 @@
             <groupId>com.github.sviperll</groupId>
             <artifactId>static-mustache</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.sviperll</groupId>
             <artifactId>chicory-text</artifactId>
-            <version>0.26</version>
+            <version>0.35</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <!--
-                         This dependencies are used at compile time only.
-                         maven-dependency-plugin sees runtime dependencies only,
-                         so it consideres dependencies to be unused
-                      -->
-                    <ignoredUnusedDeclaredDependencies>
-                        <ignoredUnusedDeclaredDependency>com.github.sviperll:static-mustache:*:*</ignoredUnusedDeclaredDependency>
-                    </ignoredUnusedDeclaredDependencies>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 
