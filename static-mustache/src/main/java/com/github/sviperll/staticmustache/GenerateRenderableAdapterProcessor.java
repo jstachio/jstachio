@@ -29,18 +29,6 @@
  */
 package com.github.sviperll.staticmustache;
 
-import com.github.sviperll.Throwables;
-import com.github.sviperll.meta.ElementMessage;
-import com.github.sviperll.meta.ElementMessager;
-import com.github.sviperll.text.Renderable;
-import com.github.sviperll.text.Renderer;
-import com.github.sviperll.staticmustache.context.JavaLanguageModel;
-import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import com.github.sviperll.staticmustache.context.VariableContext;
-import com.github.sviperll.meta.TextFormat;
-import com.github.sviperll.text.Layoutable;
-import com.github.sviperll.text.RendererDefinition;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -53,10 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -70,9 +59,30 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
+import org.kohsuke.MetaInfServices;
+
+import com.github.sviperll.Throwables;
+import com.github.sviperll.meta.ElementMessage;
+import com.github.sviperll.meta.ElementMessager;
+import com.github.sviperll.meta.TextFormat;
+import com.github.sviperll.staticmustache.context.JavaLanguageModel;
+import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.context.VariableContext;
+import com.github.sviperll.text.Layoutable;
+import com.github.sviperll.text.Renderable;
+import com.github.sviperll.text.Renderer;
+import com.github.sviperll.text.RendererDefinition;
+
+@MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
+	
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latest();
+	}
+	
     private static String formatErrorMessage(Position position, String message) {
         String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
         Object[] fields = new Object[] {

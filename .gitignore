@@ -8,3 +8,7 @@
 /.nb-gradle
 /.gradle
 /text-templates/target/
+.project
+.settings
+.classpath
+.factorypath

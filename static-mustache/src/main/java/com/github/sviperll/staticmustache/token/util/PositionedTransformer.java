@@ -32,7 +32,6 @@ package com.github.sviperll.staticmustache.token.util;
 import com.github.sviperll.staticmustache.PositionedToken;
 import com.github.sviperll.staticmustache.ProcessingException;
 import com.github.sviperll.staticmustache.TokenProcessor;
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -54,7 +53,7 @@ class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> 
     }
 
     @Override
-    public void processToken(@Nonnull final PositionedToken<T> sourceToken) throws ProcessingException {
+    public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
         downstream.setPosition(sourceToken.position());
         processor.processToken(sourceToken.innerToken());
     }

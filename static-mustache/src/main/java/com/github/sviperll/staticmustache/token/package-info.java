@@ -32,5 +32,4 @@
  * <p>
  * MustacheTokenizer parses text file and invokes given TokenProcessor on each MustacheToken
  */
-@javax.annotation.ParametersAreNonnullByDefault
 package com.github.sviperll.staticmustache.token;

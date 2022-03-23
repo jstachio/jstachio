@@ -31,7 +31,8 @@ package com.github.sviperll.staticmustache.context;
 
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
+
+import org.jspecify.nullness.Nullable;
 
 /**
  *

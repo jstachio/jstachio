@@ -27,18 +27,27 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
-
-import org.jspecify.nullness.Nullable;
+package com.github.sviperll.text;
 
 /**
+ * Can be rendered.
+ * <p>
+ * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
+ * html output.
+ * 
+ * @param <T> marks given renderable with it's format
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
+public interface Renderable<T> {
+
+    /**
+     * Creates Renderer object that can be called to write out actual rendered text.
+     * <p>
+     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
+     * 
+     * @param appendable appendable to write rendered text to
+     * @return Renderer object
+     */
+    Renderer createRenderer(Appendable appendable);
 }

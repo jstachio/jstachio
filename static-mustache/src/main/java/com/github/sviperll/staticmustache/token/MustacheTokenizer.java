@@ -36,7 +36,6 @@ import com.github.sviperll.staticmustache.ProcessingException;
 import com.github.sviperll.staticmustache.TokenProcessor;
 import com.github.sviperll.staticmustache.token.util.BracesTokenizer;
 import com.github.sviperll.staticmustache.token.util.PositionHodingTokenProcessor;
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -64,7 +63,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
     }
 
     @Override
-    public void processToken(@Nonnull PositionedToken<BracesToken> positionedToken) throws ProcessingException {
+    public void processToken(PositionedToken<BracesToken> positionedToken) throws ProcessingException {
         position = positionedToken.position();
         downstream.setPosition(position);
         BracesToken token = positionedToken.innerToken();

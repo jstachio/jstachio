@@ -29,7 +29,7 @@
  */
 package com.github.sviperll.staticmustache;
 
-import javax.annotation.Nullable;
+import org.jspecify.nullness.Nullable;
 
 /**
  *

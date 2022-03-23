@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,43 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
+package com.github.sviperll.meta;
 
-import org.jspecify.nullness.Nullable;
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
+public class ElementMessager implements Messager {
+    private final Messager messager;
+    private final Element element;
+    public ElementMessager(Messager messager, Element element) {
+        this.messager = messager;
+        this.element = element;
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg) {
+        messager.printMessage(kind, msg, element);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e) {
+        messager.printMessage(kind, msg, e);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
+        messager.printMessage(kind, msg, e, a);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v) {
+        messager.printMessage(kind, msg, e, a, v);
+    }
 }

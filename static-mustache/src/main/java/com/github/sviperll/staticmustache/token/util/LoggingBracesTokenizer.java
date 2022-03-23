@@ -32,7 +32,6 @@ package com.github.sviperll.staticmustache.token.util;
 import com.github.sviperll.staticmustache.ProcessingException;
 import com.github.sviperll.staticmustache.TokenProcessor;
 import com.github.sviperll.staticmustache.token.BracesToken;
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -46,7 +45,7 @@ class LoggingBracesTokenizer implements TokenProcessor<BracesToken>, BracesToken
     }
 
     @Override
-    public void processToken(@Nonnull BracesToken token) throws ProcessingException {
+    public void processToken(BracesToken token) throws ProcessingException {
         token.accept(this);
         downstream.processToken(token);
     }

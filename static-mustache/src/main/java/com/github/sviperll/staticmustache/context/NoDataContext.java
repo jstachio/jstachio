@@ -29,7 +29,6 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import javax.annotation.Nonnull;
 
 /**
  *
@@ -39,7 +38,7 @@ class NoDataContext implements RenderingContext {
     private final JavaExpression expression;
     private final RenderingContext parent;
 
-    NoDataContext(JavaExpression expression, @Nonnull RenderingContext parent) {
+    NoDataContext(JavaExpression expression, RenderingContext parent) {
         this.expression = expression;
         this.parent = parent;
     }

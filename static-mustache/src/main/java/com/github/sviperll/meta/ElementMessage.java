@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,32 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
+package com.github.sviperll.meta;
 
-import org.jspecify.nullness.Nullable;
+import javax.lang.model.element.TypeElement;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
+
+public class ElementMessage {
+    public static ElementMessage of(TypeElement element, String message) {
+        return new ElementMessage(element.getQualifiedName().toString(), message);
+    }
+
+    private final String qualifiedElementName;
+    private final String message;
+    private ElementMessage(String qualifiedElementName, String message) {
+        this.qualifiedElementName = qualifiedElementName;
+        this.message = message;
+    }
+
+    public String qualifiedElementName() {
+        return qualifiedElementName;
+    }
+
+    public String message() {
+        return message;
+    }
 }

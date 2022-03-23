@@ -1,10 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
-        <groupId>com.github.sviperll</groupId>
-        <artifactId>universal-maven-parent</artifactId>
-        <version>0.21</version>
+       <groupId>com.snaphop</groupId>
+       <artifactId>snaphop-maven-parent</artifactId>
+       <version>0.2.0-SNAPSHOT</version>
     </parent>
+    
     <groupId>com.github.sviperll</groupId>
     <artifactId>static-mustache-maven-parent</artifactId>
     <name>static-mustache-maven-parent</name>
@@ -14,6 +16,7 @@
     <properties>
         <parent.profile.activate>!pitest-report,nexus-deploy</parent.profile.activate>
         <netbeans.hint.license>BSD3</netbeans.hint.license>
+        <java.version>17</java.version>
     </properties>
     <modules>
         <module>static-mustache</module>
@@ -49,7 +52,7 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
+<!--             <plugin>
                 <groupId>com.github.sviperll</groupId>
                 <artifactId>mustache-maven-plugin</artifactId>
                 <version>0.22</version>
@@ -77,8 +80,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
+            </plugin> -->
+<!--             <plugin>
                 <groupId>com.github.sviperll</groupId>
                 <artifactId>versioning-maven-plugin</artifactId>
                 <version>0.22</version>
@@ -119,7 +122,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
                 <version>1.9.2</version>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
     <profiles>

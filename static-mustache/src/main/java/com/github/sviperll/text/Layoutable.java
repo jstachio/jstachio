@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,20 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
-
-import org.jspecify.nullness.Nullable;
+package com.github.sviperll.text;
 
 /**
+ * Can be used as layout.
+ * <p>
+ * <tt>{@code Layoutable&lt;Html&gt; }</tt> is supposed to generate
+ * html output.
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @param <T> marks given renderable with it's format
+ *
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
+public interface Layoutable<T> {
+    Renderer createHeaderRenderer(Appendable appendable);
+    Renderer createFooterRenderer(Appendable appendable);
+
 }

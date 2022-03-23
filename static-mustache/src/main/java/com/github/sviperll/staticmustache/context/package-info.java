@@ -40,5 +40,5 @@
  * @see TemplateCompilerContext
  * @see RenderingCodeGenerator
  */
-@javax.annotation.ParametersAreNonnullByDefault
+@org.jspecify.nullness.NullMarked
 package com.github.sviperll.staticmustache.context;

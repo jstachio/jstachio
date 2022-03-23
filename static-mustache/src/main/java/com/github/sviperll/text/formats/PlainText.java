@@ -27,18 +27,20 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.context;
+package com.github.sviperll.text.formats;
 
-import org.jspecify.nullness.Nullable;
+import com.github.sviperll.meta.TextFormat;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
+@TextFormat
+public class PlainText {
+    public static Appendable createEscapingAppendable(Appendable appendable) {
+        return appendable;
+    }
+
+    private PlainText() {
+    }
 }
