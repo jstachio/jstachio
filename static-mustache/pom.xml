@@ -9,6 +9,16 @@
   <artifactId>static-mustache</artifactId>
   <name>static-mustache</name>
   <packaging>jar</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgument>-proc:none</compilerArgument>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>

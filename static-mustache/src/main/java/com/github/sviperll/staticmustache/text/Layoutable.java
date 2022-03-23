@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,27 +27,20 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.text;
+package com.github.sviperll.staticmustache.text;
 
 /**
- * Can be rendered.
+ * Can be used as layout.
  * <p>
- * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
+ * <tt>{@code Layoutable&lt;Html&gt; }</tt> is supposed to generate
  * html output.
- * 
+ *
  * @param <T> marks given renderable with it's format
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public interface Renderable<T> {
+public interface Layoutable<T> {
+    Renderer createHeaderRenderer(Appendable appendable);
+    Renderer createFooterRenderer(Appendable appendable);
 
-    /**
-     * Creates Renderer object that can be called to write out actual rendered text.
-     * <p>
-     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
-     * 
-     * @param appendable appendable to write rendered text to
-     * @return Renderer object
-     */
-    Renderer createRenderer(Appendable appendable);
 }

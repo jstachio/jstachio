@@ -29,14 +29,15 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.text.Layoutable;
-import com.github.sviperll.text.formats.PlainText;
-import com.github.sviperll.text.formats.Html;
-import com.github.sviperll.text.Renderable;
-import com.github.sviperll.text.Renderer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.sviperll.staticmustache.text.Layoutable;
+import com.github.sviperll.staticmustache.text.Renderable;
+import com.github.sviperll.staticmustache.text.Renderer;
+import com.github.sviperll.staticmustache.text.formats.Html;
+import com.github.sviperll.staticmustache.text.formats.PlainText;
 
 public class Main {
     public static void main(String[] args) throws IOException {

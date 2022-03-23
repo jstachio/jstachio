@@ -1,5 +1,3 @@
-package com.github.sviperll;
-
 /*
  * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
@@ -29,23 +27,43 @@ package com.github.sviperll;
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.github.sviperll.staticmustache.meta;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public class Throwables {
-	public static String render(
-			Throwable exception) {
-		StringWriter message = new StringWriter();
-		PrintWriter writer = new PrintWriter(message);
-		exception.printStackTrace(writer);
-		writer.flush();
-		return message.toString();
-	}
+public class ElementMessager implements Messager {
+    private final Messager messager;
+    private final Element element;
+    public ElementMessager(Messager messager, Element element) {
+        this.messager = messager;
+        this.element = element;
+    }
 
-	private Throwables() {}
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg) {
+        messager.printMessage(kind, msg, element);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e) {
+        messager.printMessage(kind, msg, e);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a) {
+        messager.printMessage(kind, msg, e, a);
+    }
+
+    @Override
+    public void printMessage(Diagnostic.Kind kind, CharSequence msg, Element e, AnnotationMirror a, AnnotationValue v) {
+        messager.printMessage(kind, msg, e, a, v);
+    }
 }

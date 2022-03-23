@@ -27,11 +27,11 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.text.formats;
+package com.github.sviperll.staticmustache.text.formats;
 
 import java.io.IOException;
 
-import com.github.sviperll.meta.TextFormat;
+import com.github.sviperll.staticmustache.meta.TextFormat;
 
 /**
  *

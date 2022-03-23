@@ -29,11 +29,12 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.text.formats.PlainText;
+import java.util.List;
+
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.text.formats.Html;
-import java.util.List;
+import com.github.sviperll.staticmustache.text.formats.Html;
+import com.github.sviperll.staticmustache.text.formats.PlainText;
 
 /**
  *

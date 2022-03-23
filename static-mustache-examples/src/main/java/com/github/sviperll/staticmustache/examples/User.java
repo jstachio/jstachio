@@ -29,10 +29,11 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.text.Layoutable;
-import com.github.sviperll.text.formats.Html;
 import java.util.List;
+
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+import com.github.sviperll.staticmustache.text.Layoutable;
+import com.github.sviperll.staticmustache.text.formats.Html;
 
 /**
  *

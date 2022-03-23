@@ -29,13 +29,14 @@
  */
 package com.github.sviperll.staticmustache.context;
 
-import com.github.sviperll.text.Layoutable;
-import com.github.sviperll.text.Renderable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import com.github.sviperll.staticmustache.text.Layoutable;
+import com.github.sviperll.staticmustache.text.Renderable;
 
 /**
  *

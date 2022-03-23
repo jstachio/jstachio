@@ -43,7 +43,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -59,22 +58,19 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
-import org.kohsuke.MetaInfServices;
-
-import com.github.sviperll.Throwables;
-import com.github.sviperll.meta.ElementMessage;
-import com.github.sviperll.meta.ElementMessager;
-import com.github.sviperll.meta.TextFormat;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
-import com.github.sviperll.text.Layoutable;
-import com.github.sviperll.text.Renderable;
-import com.github.sviperll.text.Renderer;
-import com.github.sviperll.text.RendererDefinition;
+import com.github.sviperll.staticmustache.meta.ElementMessage;
+import com.github.sviperll.staticmustache.meta.ElementMessager;
+import com.github.sviperll.staticmustache.meta.TextFormat;
+import com.github.sviperll.staticmustache.text.Layoutable;
+import com.github.sviperll.staticmustache.text.Renderable;
+import com.github.sviperll.staticmustache.text.Renderer;
+import com.github.sviperll.staticmustache.text.RendererDefinition;
 
-@MetaInfServices(value=Processor.class)
+//@MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
 public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 	
