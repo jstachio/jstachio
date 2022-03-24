@@ -17,8 +17,8 @@
     <module>static-mustache-examples</module>
   </modules>
   <scm>
-    <connection>scm:git:git://github.com/snaphop/static-mustache.git</connection>
-    <developerConnection>scm:git:git@github.com:snaphop/static-mustache.git</developerConnection>
+    <connection>scm:git:https://github.com/snaphop/static-mustache.git</connection>
+    <developerConnection>scm:git:https://github.com/snaphop/static-mustache.git</developerConnection>
     <url>https://github.com/snaphop/static-mustache</url>
     <tag>HEAD</tag>
   </scm>
