@@ -1,6 +1,6 @@
 import javax.annotation.processing.Processor;
 
-module com.github.sviperll.staticmustache {
+module com.snaphop.staticmustache {
 	exports com.github.sviperll.staticmustache;
 	exports com.github.sviperll.staticmustache.text;
 	exports com.github.sviperll.staticmustache.text.formats;

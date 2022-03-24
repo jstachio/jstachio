@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.github.sviperll</groupId>
+    <groupId>com.snaphop.staticmustache</groupId>
     <artifactId>static-mustache-maven-parent</artifactId>
-    <version>0.4-successor-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>static-mustache-examples</artifactId>
   <name>static-mustache-examples</name>
@@ -16,7 +16,7 @@
         <configuration>
           <annotationProcessorPaths>
             <annotationProcessorPath>
-              <groupId>com.github.sviperll</groupId>
+              <groupId>${project.groupId}</groupId>
               <artifactId>static-mustache</artifactId>
               <version>${project.version}</version>
             </annotationProcessorPath>
@@ -27,7 +27,7 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.github.sviperll</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>static-mustache</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

@@ -1,7 +1,7 @@
 import javax.annotation.processing.Processor;
 
-module com.github.sviperll.staticmustache.example {
-	requires com.github.sviperll.staticmustache;
+module com.snaphop.staticmustache.example {
+	requires com.snaphop.staticmustache;
 	requires java.annotation;
 	requires java.compiler;
 	

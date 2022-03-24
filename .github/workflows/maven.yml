@@ -1,0 +1,41 @@
+name: Build with Maven
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: "${{github.run_number}}"
+      MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --no-transfer-progress"
+      NEXUS_SNAPHOP_COM_PASSWORD: ${{ secrets.NEXUS_SNAPHOP_COM_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build and Test with Maven
+        run: mvn $MAVEN_CLI_OPTS clean test
+      - name: Publish Test Results
+        uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+        if: always()
+      - name: Deploy with Maven
+        run: mvn $MAVEN_CLI_OPTS -Dmaven.install.skip=true -DskipTests=true deploy 

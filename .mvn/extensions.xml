@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<extensions>
-    <extension>
-        <groupId>com.github.sviperll</groupId>
-        <artifactId>maven-profiledep-extension</artifactId>
-        <version>0.22</version>
-    </extension>
-</extensions>

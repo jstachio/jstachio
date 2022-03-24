@@ -1,50 +1,56 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>    
-    <groupId>com.github.sviperll</groupId>
-    <artifactId>static-mustache-maven-parent</artifactId>
-    <name>static-mustache-maven-parent</name>
-    <packaging>pom</packaging>
-    <version>0.4-successor-SNAPSHOT</version>
-    <url>http://maven.apache.org</url>
-    <properties>
-        <parent.profile.activate>!pitest-report,nexus-deploy</parent.profile.activate>
-        <netbeans.hint.license>BSD3</netbeans.hint.license>
-        <java.version>17</java.version>
-    </properties>
-    <modules>
-        <module>static-mustache</module>
-        <module>static-mustache-examples</module>
-    </modules>
-    <scm>
-        <connection>scm:git:git://github.com/sviperll/static-mustache.git</connection>
-        <developerConnection>scm:git:git@github.com:sviperll/static-mustache.git</developerConnection>
-        <url>https://github.com/sviperll/static-mustache</url>
-      <tag>HEAD</tag>
-    </scm>
-    <licenses>
-        <license>
-            <name>The BSD 3-Clause License</name>
-            <url>http://opensource.org/licenses/BSD-3-Clause</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <id>sviperll</id>
-            <name>Victor Nazarov</name>
-            <email>asviraspossible@gmail.com</email>
-        </developer>
-    </developers>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <build>
-    
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.snaphop.staticmustache</groupId>
+  <artifactId>static-mustache-maven-parent</artifactId>
+  <name>static-mustache-maven-parent</name>
+  <packaging>pom</packaging>
+  <version>0.6.0-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <netbeans.hint.license>BSD3</netbeans.hint.license>
+    <java.version>17</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <modules>
+    <module>static-mustache</module>
+    <module>static-mustache-examples</module>
+  </modules>
+  <scm>
+    <connection>scm:git:git://github.com/snaphop/static-mustache.git</connection>
+    <developerConnection>scm:git:git@github.com:snaphop/static-mustache.git</developerConnection>
+    <url>https://github.com/snaphop/static-mustache</url>
+    <tag>HEAD</tag>
+  </scm>
+  <licenses>
+    <license>
+      <name>The BSD 3-Clause License</name>
+      <url>http://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>sviperll</id>
+      <name>Victor Nazarov</name>
+      <email>asviraspossible@gmail.com</email>
+    </developer>
+    <developer>
+      <id>agentgt</id>
+      <name>Adam Gent</name>
+      <email>adam at snaphop dot com</email>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -166,102 +172,27 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    
-        <plugins>
-<!--             <plugin>
-                <groupId>com.github.sviperll</groupId>
-                <artifactId>mustache-maven-plugin</artifactId>
-                <version>0.22</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <contexts>
-                        <context>
-                            <file>project.properties</file>
-                            <type>properties</type>
-                            <templates>
-                                <template>
-                                    <inputFile>README.md.mustache</inputFile>
-                                    <outputFile>README.md</outputFile>
-                                </template>
-                            </templates>
-                        </context>
-                    </contexts>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>render-readme</id>
-                        <goals>
-                            <goal>render</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> -->
-<!--             <plugin>
-                <groupId>com.github.sviperll</groupId>
-                <artifactId>versioning-maven-plugin</artifactId>
-                <version>0.22</version>
-                <configuration>
-                    <version>${project.version}</version>
-                    <decidedVersionPropertyName>release.version</decidedVersionPropertyName>
-                    <versionFile>
-                        <file>project.properties</file>
-                        <stability>
-                            <defaultStability>unstable</defaultStability>
-                            <stableKinds>
-                                <stableKind>final</stableKind>
-                            </stableKinds>
-                        </stability>
-                    </versionFile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <configuration>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <serverId>oss-sonatype-nexus</serverId>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <releaseVersion>${release.version}</releaseVersion>
-                    <developmentVersion>${release.version}-successor-SNAPSHOT</developmentVersion>
-                    <tagNameFormat>adt4j-@{project.version}</tagNameFormat>
-                    <preparationGoals>-Pcommit-version-infromation clean versioning:update-file verify scm:checkin</preparationGoals>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.9.2</version>
-            </plugin> -->
-        </plugins>
-    </build>
-    <profiles>
-<!--         <profile>
-            <id>commit-version-infromation</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <configuration>
-                                    <includes>project.properties,README.md</includes>
-                                    <message>[maven-release-plugin] update release version information</message>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile> -->
-    </profiles>
+  </build>
+  <profiles>
+      <profile>
+      <id>snaphop</id>
+      <distributionManagement>
+        <repository>
+          <uniqueVersion>false</uniqueVersion>
+          <id>snaphop-deploy-public-release</id>
+          <name>SnapHop Public Release</name>
+          <url>${snaphop.deploy.url.public.release}</url>
+          <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+          <uniqueVersion>true</uniqueVersion>
+          <id>snaphop-deploy-public-snapshot</id>
+          <name>SnapHop Public Snapshot</name>
+          <url>${snaphop.deploy.url.public.snapshot}</url>
+          <layout>default</layout>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 </project>
 
