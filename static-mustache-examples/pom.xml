@@ -16,7 +16,7 @@
           <annotationProcessorPaths>
             <annotationProcessorPath>
               <groupId>${project.groupId}</groupId>
-              <artifactId>static-mustache</artifactId>
+              <artifactId>static-mustache-apt</artifactId>
               <version>${project.version}</version>
             </annotationProcessorPath>
           </annotationProcessorPaths>
@@ -30,6 +30,19 @@
       <artifactId>static-mustache</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>static-mustache-apt</artifactId>
+      <version>${project.version}</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>0.2.0</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>

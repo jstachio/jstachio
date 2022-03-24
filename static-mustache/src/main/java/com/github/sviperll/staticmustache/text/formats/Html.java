@@ -31,8 +31,6 @@ package com.github.sviperll.staticmustache.text.formats;
 
 import java.io.IOException;
 
-import com.github.sviperll.staticmustache.meta.TextFormat;
-
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;

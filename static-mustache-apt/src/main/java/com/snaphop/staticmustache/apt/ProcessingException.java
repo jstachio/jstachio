@@ -27,18 +27,32 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.snaphop.staticmustache.apt;
+
+import com.github.sviperll.staticmustache.context.ContextException;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+@SuppressWarnings("serial")
+public class ProcessingException extends Exception {
+    private final Position position;
+
+    private ProcessingException(Position position, String message, Throwable cause) {
+        super(message, cause);
+        this.position = position;
     }
 
-    private PlainText() {
+    public ProcessingException(Position position, String message) {
+        this(position, message, null);
+    }
+
+    public ProcessingException(Position position, ContextException contextException) {
+        this(position, contextException.getMessage(), contextException);
+    }
+
+    public Position position() {
+        return position;
     }
 }

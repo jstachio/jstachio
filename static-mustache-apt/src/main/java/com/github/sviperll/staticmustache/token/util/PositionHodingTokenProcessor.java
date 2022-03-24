@@ -27,18 +27,33 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.github.sviperll.staticmustache.token.util;
+
+import com.snaphop.staticmustache.apt.Position;
+import com.snaphop.staticmustache.apt.PositionedToken;
+import com.snaphop.staticmustache.apt.ProcessingException;
+import com.snaphop.staticmustache.apt.TokenProcessor;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @param <T>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
+    private final TokenProcessor<PositionedToken<T>> downstream;
+    private Position position = null;
+
+    public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
+        this.downstream = downstream;
     }
 
-    private PlainText() {
+    public void setPosition(Position position) {
+        this.position = position;
     }
+
+    @Override
+    public void processToken(T transformedToken) throws ProcessingException {
+        downstream.processToken(new PositionedToken<T>(position, transformedToken));
+    }
+
 }

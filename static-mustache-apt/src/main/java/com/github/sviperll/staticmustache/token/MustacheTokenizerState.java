@@ -27,18 +27,16 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.github.sviperll.staticmustache.token;
+
+import com.snaphop.staticmustache.apt.ProcessingException;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
-    }
+interface MustacheTokenizerState extends BracesToken.Visitor<Void, ProcessingException> {
 
-    private PlainText() {
-    }
+    void beforeStateChange() throws ProcessingException;
+
 }

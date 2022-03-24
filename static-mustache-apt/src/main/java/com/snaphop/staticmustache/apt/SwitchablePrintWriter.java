@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,39 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.snaphop.staticmustache.apt;
+
+import java.io.PrintWriter;
+import java.io.Writer;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+class SwitchablePrintWriter extends PrintWriter {
+    static SwitchablePrintWriter createInstance(Writer writer) {
+        if (writer instanceof SwitchableWriter)
+            return new SwitchablePrintWriter((SwitchableWriter)writer);
+        else
+            return new SwitchablePrintWriter(new SwitchableWriter(writer));
     }
 
-    private PlainText() {
+    private final SwitchableWriter out;
+
+    private SwitchablePrintWriter(SwitchableWriter out) {
+        super(out);
+        this.out = out;
+    }
+
+    public boolean suppressesOutput() {
+        return out.suppressesOutput();
+    }
+
+    public void enableOutput() {
+        out.enableOutput();
+    }
+
+    public void disableOutput() {
+        out.disableOutput();
     }
 }

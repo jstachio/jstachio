@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,36 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.snaphop.staticmustache.apt;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import javax.tools.FileObject;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+class TextFileObject {
+    private final FileObject resource;
+    private final Charset charset;
+    private final String name;
+    TextFileObject(FileObject resource, Charset charset, String name) {
+        this.resource = resource;
+        this.charset = charset;
+        this.name = name;
     }
 
-    private PlainText() {
+    InputStream openInputStream() throws IOException {
+        return resource.openInputStream();
+    }
+
+    String getName() {
+        return name;
+    }
+
+    Charset charset() {
+        return charset;
     }
 }

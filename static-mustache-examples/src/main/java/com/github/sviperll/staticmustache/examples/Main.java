@@ -29,7 +29,10 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,17 +49,18 @@ public class Main {
         list1.add(new User1.Item<String>("abc"));
         list1.add(new User1.Item<String>("def"));
 
+        PrintStream out = requireNonNull(System.out);
         User1 user2 = new User1("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
         Renderable<PlainText> renderable2 = new RenderableTextUser1Adapter(user2);
-        Renderer renderer3 = renderable2.createRenderer(System.out);
+        Renderer renderer3 = renderable2.createRenderer(out);
         renderer3.render();
         User1 user1 = new User1("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);
         Renderable<Html> renderable1 = new RenderableHtmlUser1Adapter(user1);
-        Renderer renderer1 = renderable1.createRenderer(System.out);
+        Renderer renderer1 = renderable1.createRenderer(out);
         renderer1.render();
         Settings settings = new Settings(renderable1, true);
         Renderable<Html> renderable3 = new RenderableSettingsAdapter(settings);
-        Renderer renderer2 = renderable3.createRenderer(System.out);
+        Renderer renderer2 = renderable3.createRenderer(out);
         renderer2.render();
 
         List<User.Item<String>> list = new ArrayList<User.Item<String>>();
@@ -67,12 +71,12 @@ public class Main {
         Layoutable<Html> layoutable = new LayoutableHtml5LayoutAdapter(layout);
         User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list, new LayoutableLiLayoutAdapter(new LiLayout()));
         Renderable<Html> renderable = new RenderableHtmlUserAdapter(user);
-        Renderer renderer = layoutable.createHeaderRenderer(System.out);
-        renderer = renderer.andThen(renderable.createRenderer(System.out));
-        renderer = renderer.andThen(layoutable.createFooterRenderer(System.out));
+        Renderer renderer = layoutable.createHeaderRenderer(out);
+        renderer = renderer.andThen(renderable.createRenderer(out));
+        renderer = renderer.andThen(layoutable.createFooterRenderer(out));
         renderer.render();
 
         Layouted layouted = new Layouted(renderable, layoutable);
-        new RenderableLayoutedAdapter(layouted).createRenderer(System.out).render();
+        new RenderableLayoutedAdapter(layouted).createRenderer(out).render();
     }
 }

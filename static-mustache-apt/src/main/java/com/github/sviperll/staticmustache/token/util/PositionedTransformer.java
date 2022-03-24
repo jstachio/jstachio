@@ -27,18 +27,34 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.github.sviperll.staticmustache.token.util;
+
+import com.snaphop.staticmustache.apt.PositionedToken;
+import com.snaphop.staticmustache.apt.ProcessingException;
+import com.snaphop.staticmustache.apt.TokenProcessor;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> {
+    public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(final TokenProcessorDecorator<T, U> decorator, final TokenProcessor<PositionedToken<U>> positionedDownstream) {
+        PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
+        TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
+        return new PositionedTransformer<T, U>(downstream, processor);
     }
 
-    private PlainText() {
+    private final PositionHodingTokenProcessor<U> downstream;
+    private final TokenProcessor<T> processor;
+
+    private PositionedTransformer(PositionHodingTokenProcessor<U> downstream, TokenProcessor<T> processor) {
+        this.downstream = downstream;
+        this.processor = processor;
+    }
+
+    @Override
+    public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
+        downstream.setPosition(sourceToken.position());
+        processor.processToken(sourceToken.innerToken());
     }
 }

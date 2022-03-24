@@ -27,18 +27,40 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.github.sviperll.staticmustache.token.util;
+
+import com.snaphop.staticmustache.apt.Position;
+import com.snaphop.staticmustache.apt.PositionedToken;
+import com.snaphop.staticmustache.apt.ProcessingException;
+import com.snaphop.staticmustache.apt.TokenProcessor;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+class PositionAnnotator implements TokenProcessor<Character>{
+    private final String fileName;
+    private final TokenProcessor<PositionedToken<Character>> processor;
+    private int row = 1;
+    private StringBuilder currentLine = new StringBuilder();
+    public PositionAnnotator(String fileName, TokenProcessor<PositionedToken<Character>> processor) {
+        this.fileName = fileName;
+        this.processor = processor;
     }
 
-    private PlainText() {
+    @Override
+    public void processToken(Character token) throws ProcessingException {
+        if (token != null && token != '\n') {
+            currentLine.append(token.charValue());
+        } else {
+            String line = currentLine.toString();
+            char[] chars = line.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                processor.processToken(new PositionedToken<Character>(new Position(fileName, row, line, i + 1), chars[i]));
+            }
+            processor.processToken(new PositionedToken<Character>(new Position(fileName, row, line, chars.length + 1), token));
+            currentLine = new StringBuilder();
+            row++;
+        }
     }
 }

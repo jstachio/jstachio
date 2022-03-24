@@ -27,18 +27,41 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.snaphop.staticmustache.apt;
+
+import java.io.Serializable;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+@SuppressWarnings("serial")
+public class Position implements Serializable {
+    private final String fileName;
+    private final int row;
+    private final String currentLine;
+    private final int col;
+    public Position(String fileName, int row, String currentLine, int col) {
+        this.fileName = fileName;
+        this.row = row;
+        this.currentLine = currentLine;
+        this.col = col;
     }
 
-    private PlainText() {
+    public String fileName() {
+        return fileName;
     }
+
+    public String currentLine() {
+        return currentLine;
+    }
+
+    public int row() {
+        return row;
+    }
+
+    public int col() {
+        return col;
+    }
+
 }

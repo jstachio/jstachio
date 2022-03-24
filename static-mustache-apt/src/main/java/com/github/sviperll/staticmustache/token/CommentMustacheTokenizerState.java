@@ -27,18 +27,51 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.github.sviperll.staticmustache.token;
 
-/**
- *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
- */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+import com.snaphop.staticmustache.apt.ProcessingException;
+
+class CommentMustacheTokenizerState implements MustacheTokenizerState {
+    private final MustacheTokenizer tokenizer;
+
+    CommentMustacheTokenizerState(MustacheTokenizer tokenizer) {
+        this.tokenizer = tokenizer;
     }
 
-    private PlainText() {
+    @Override
+    public void beforeStateChange() throws ProcessingException {
     }
+
+    @Override
+    public Void twoOpenBraces() throws ProcessingException {
+        return null;
+    }
+
+    @Override
+    public Void threeOpenBraces() throws ProcessingException {
+        return null;
+    }
+
+    @Override
+    public Void twoClosingBraces() throws ProcessingException {
+        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+        return null;
+    }
+
+    @Override
+    public Void threeClosingBraces() throws ProcessingException {
+        tokenizer.error("Two closing braces should close comment, not three");
+        return null;
+    }
+    @Override
+    public Void character(char c) throws ProcessingException {
+        return null;
+    }
+
+    @Override
+    public Void endOfFile() throws ProcessingException {
+        tokenizer.error("Unexpected end of file: comment not closed");
+        return null;
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,18 +27,48 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.text.formats;
+package com.snaphop.staticmustache.apt;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@TextFormat
-public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
+class SwitchableWriter extends Writer {
+    private final Writer writer;
+    private boolean suppressesOutput = false;
+
+    public SwitchableWriter(Writer writer) {
+        this.writer = writer;
     }
 
-    private PlainText() {
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        if (!suppressesOutput)
+            writer.write(cbuf, off, len);
+    }
+
+    public boolean suppressesOutput() {
+        return suppressesOutput;
+    }
+
+    public void enableOutput() {
+        suppressesOutput = false;
+    }
+
+    public void disableOutput() {
+        suppressesOutput = true;
+    }
+
+    @Override
+    public void flush() throws IOException {
+        writer.flush();
+    }
+
+    @Override
+    public void close() throws IOException {
+        writer.close();
     }
 }
