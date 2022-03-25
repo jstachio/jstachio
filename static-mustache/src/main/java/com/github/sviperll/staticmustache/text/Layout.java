@@ -90,12 +90,16 @@ public class Layout<T> implements Layoutable<T> {
 
         @Override
         public Renderer createHeaderRenderer(Appendable appendable) {
-            return header.apply(appendable);
+            var r =  header.apply(appendable);
+            if (r == null) throw new NullPointerException();
+            return r;
         }
 
         @Override
         public Renderer createFooterRenderer(Appendable appendable) {
-            return footer.apply(appendable);
+            var r = footer.apply(appendable);
+            if (r == null) throw new NullPointerException();
+            return r;
         }
     }
 

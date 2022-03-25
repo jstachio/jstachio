@@ -49,7 +49,9 @@ public class Main {
         list1.add(new User1.Item<String>("abc"));
         list1.add(new User1.Item<String>("def"));
 
+        
         PrintStream out = requireNonNull(System.out);
+        if (out == null) throw new IllegalStateException();
         User1 user2 = new User1("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
         Renderable<PlainText> renderable2 = new RenderableTextUser1Adapter(user2);
         Renderer renderer3 = renderable2.createRenderer(out);

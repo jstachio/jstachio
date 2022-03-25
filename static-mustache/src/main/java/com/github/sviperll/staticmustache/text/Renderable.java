@@ -29,13 +29,16 @@
  */
 package com.github.sviperll.staticmustache.text;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 /**
  * Can be rendered.
  * <p>
- * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate
- * html output.
+ * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate html output.
  * 
- * @param <T> marks given renderable with it's format
+ * @param <T>
+ *                marks given renderable with it's format
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
@@ -46,8 +49,24 @@ public interface Renderable<T> {
      * <p>
      * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
      * 
-     * @param appendable appendable to write rendered text to
+     * @param appendable
+     *                       appendable to write rendered text to
      * @return Renderer object
      */
     Renderer createRenderer(Appendable appendable);
+
+    default StringBuilder render(StringBuilder sb) {
+        try {
+            createRenderer(sb).render();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return sb;
+    }
+
+    @SuppressWarnings("null")
+    default String render() {
+        return render(new StringBuilder()).toString();
+    }
+
 }

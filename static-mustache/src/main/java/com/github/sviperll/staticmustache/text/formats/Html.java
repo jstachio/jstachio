@@ -31,17 +31,21 @@ package com.github.sviperll.staticmustache.text.formats;
 
 import java.io.IOException;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 @TextFormat
 public class Html {
+
     public static Appendable createEscapingAppendable(Appendable appendable) {
         return new HtmlAppendale(appendable);
     }
 
     private static class HtmlAppendale implements Appendable {
+
         private final Appendable appendable;
 
         public HtmlAppendale(Appendable appendable) {
@@ -49,12 +53,14 @@ public class Html {
         }
 
         @Override
-        public Appendable append(CharSequence csq) throws IOException {
+        public Appendable append(@Nullable CharSequence csq) throws IOException {
+            csq = csq == null ? "null" : csq;
             return append(csq, 0, csq.length());
         }
 
         @Override
-        public Appendable append(CharSequence csq, int start, int end) throws IOException {
+        public Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
+            csq = csq == null ? "null" : csq;
             for (int i = start; i < end; i++) {
                 char c = csq.charAt(i);
                 if (c == '&') {
