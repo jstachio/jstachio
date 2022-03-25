@@ -40,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -57,9 +57,9 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
+import com.github.sviperll.staticmustache.TemplateBasePath;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -147,7 +147,35 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         }
         return true;
     }
-
+    
+    
+    private String resolveBasePath(TypeElement element) {
+        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+        List<? extends AnnotationMirror> ams = packageElement.getAnnotationMirrors();
+        Optional<? extends AnnotationMirror> a = ams.stream().filter(am -> TemplateBasePath.class.getName().equals(getTypeName(am))).findFirst();
+        
+        String basePath = "";
+        if (a.isPresent()) {
+            AnnotationMirror am = a.get();
+            for (var e : am.getElementValues().entrySet()) {
+               if (e.getKey().getSimpleName().contentEquals("value")) {
+                   basePath = (String) e.getValue().getValue();
+                   break;
+               }
+            }
+            if (basePath.equals("")) {
+                basePath = packageElement.getQualifiedName().toString().replace(".", "/");
+            }
+        }
+        return basePath;
+    }
+    
+    private String getTypeName(AnnotationMirror am) {
+        Element e = am.getAnnotationType().asElement();
+        TypeElement te = (TypeElement) e;
+       return  te.getQualifiedName().toString();
+    }
+    
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws RuntimeException {
         Method templateFormatMethod;
         Method adapterNameMethod;
@@ -218,8 +246,10 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
             }
             StringWriter stringWriter = new StringWriter();
-            SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter);
-            try {
+            
+            String basePath = resolveBasePath(templateFormatElement);
+            templatePath = basePath + templatePath;
+            try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
                 TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset, templatePath);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
@@ -228,8 +258,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement);
-            } finally {
-                switchablePrintWriter.close();
             }
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
@@ -286,6 +314,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("package " + packageName + ";");
             println("@javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
             println("class " + adapterClassSimpleName + (isLayout ? " implements " + Layoutable.class.getName() : " extends " + Renderable.class.getName()) + "<" + templateFormatElement.getQualifiedName() + "> {");
+            println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
             println("    private final " + className + " data;");
             String constructorModifier = isLayout ? "public" : "private";
             println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
