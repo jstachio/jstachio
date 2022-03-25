@@ -164,7 +164,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                }
             }
             if (basePath.equals("")) {
-                basePath = packageElement.getQualifiedName().toString().replace(".", "/");
+                basePath = packageElement.getQualifiedName().toString().replace(".", "/") + "/";
             }
         }
         return basePath;
@@ -248,7 +248,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             StringWriter stringWriter = new StringWriter();
             
             String basePath = resolveBasePath(templateFormatElement);
-            templatePath = basePath + templatePath;
+            if (! templatePath.startsWith("/")) {
+                templatePath = basePath + templatePath;
+            }
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
                 TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset, templatePath);
