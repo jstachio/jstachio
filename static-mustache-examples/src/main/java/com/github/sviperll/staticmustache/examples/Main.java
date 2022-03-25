@@ -37,10 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.Renderable;
-import com.github.sviperll.staticmustache.text.Renderer;
 import com.github.sviperll.staticmustache.text.formats.Html;
-import com.github.sviperll.staticmustache.text.formats.PlainText;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -53,32 +50,33 @@ public class Main {
         PrintStream out = requireNonNull(System.out);
         if (out == null) throw new IllegalStateException();
         User1 user2 = new User1("Victor", 29, new String[] {"aaa", "bbb", "ccc"}, array, list1);
-        Renderable<PlainText> renderable2 = new RenderableTextUser1Adapter(user2);
-        Renderer renderer3 = renderable2.createRenderer(out);
-        renderer3.render();
+        var renderable2 =  RenderableTextUser1Adapter.of(user2);
+        renderable2.render(out);
         User1 user1 = new User1("Victor <asviraspossible@gmail.com>", 29, new String[] {}, array, list1);
-        Renderable<Html> renderable1 = new RenderableHtmlUser1Adapter(user1);
-        Renderer renderer1 = renderable1.createRenderer(out);
-        renderer1.render();
+        var renderable1 = RenderableHtmlUser1Adapter.of(user1);
+        renderable1.render(out);
+
         Settings settings = new Settings(renderable1, true);
-        Renderable<Html> renderable3 = new RenderableSettingsAdapter(settings);
-        Renderer renderer2 = renderable3.createRenderer(out);
-        renderer2.render();
+        var renderable3 = SettingsRenderable.of(settings);
+        renderable3.render(out);
 
         List<User.Item<String>> list = new ArrayList<User.Item<String>>();
         list.add(new User.Item<String>("helmet"));
         list.add(new User.Item<String>("shower"));
 
         Html5Layout layout = new Html5Layout("John Doe page");
-        Layoutable<Html> layoutable = new LayoutableHtml5LayoutAdapter(layout);
-        User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list, new LayoutableLiLayoutAdapter(new LiLayout()));
-        Renderable<Html> renderable = new RenderableHtmlUserAdapter(user);
-        Renderer renderer = layoutable.createHeaderRenderer(out);
-        renderer = renderer.andThen(renderable.createRenderer(out));
-        renderer = renderer.andThen(layoutable.createFooterRenderer(out));
-        renderer.render();
+        Layoutable<Html> layoutable = new Html5LayoutLayoutable(layout);
+        User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list, new LiLayoutLayoutable(new LiLayout()));
+//        var renderable = new  UserRenderable(user);
+//        Renderer renderer = layoutable.createHeaderRenderer(out);
+//        renderer = renderer.andThen(renderable.createRenderer(out));
+//        renderer = renderer.andThen(layoutable.createFooterRenderer(out));
+//        renderer.render();
+        
+        var renderable = UserRenderable.of(user);
+        renderable.withLayout(layoutable).render(out);
 
-        Layouted layouted = new Layouted(renderable, layoutable);
-        new RenderableLayoutedAdapter(layouted).createRenderer(out).render();
+        Layouted layouted = new Layouted(UserRenderable.of(user), layoutable);
+        LayoutedRenderable.of(layouted).render(out);
     }
 }

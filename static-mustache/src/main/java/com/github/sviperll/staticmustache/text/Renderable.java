@@ -30,7 +30,6 @@
 package com.github.sviperll.staticmustache.text;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 /**
  * Can be rendered.
@@ -42,7 +41,7 @@ import java.io.UncheckedIOException;
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public interface Renderable<T> {
+public abstract class Renderable<T> implements RenderFunction {
 
     /**
      * Creates Renderer object that can be called to write out actual rendered text.
@@ -53,20 +52,12 @@ public interface Renderable<T> {
      *                       appendable to write rendered text to
      * @return Renderer object
      */
-    Renderer createRenderer(Appendable appendable);
-
-    default StringBuilder render(StringBuilder sb) {
-        try {
-            createRenderer(sb).render();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return sb;
-    }
-
-    @SuppressWarnings("null")
-    default String render() {
-        return render(new StringBuilder()).toString();
+    protected abstract RendererDefinition createRenderer(Appendable appendable);
+    
+    @Override
+    public void render(Appendable a) throws IOException {
+        var r = createRenderer(a);
+        r.render();
     }
 
 }

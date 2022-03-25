@@ -31,7 +31,7 @@ package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.Renderable;
+import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.github.sviperll.staticmustache.text.formats.Html;
 
 /**
@@ -44,9 +44,9 @@ import com.github.sviperll.staticmustache.text.formats.Html;
  */
 @GenerateRenderableAdapter(template = "layouted.mustache")
 public class Layouted {
-    final Renderable<Html> body;
+    final RenderFunction body;
     final Layoutable<Html> layout;
-    public Layouted(Renderable<Html> body, Layoutable<Html> layout) {
+    public Layouted(RenderFunction body, Layoutable<Html> layout) {
         this.body = body;
         this.layout = layout;
     }

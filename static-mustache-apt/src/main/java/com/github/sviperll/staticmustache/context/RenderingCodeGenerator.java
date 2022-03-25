@@ -70,11 +70,11 @@ public class RenderingCodeGenerator {
         if (type instanceof WildcardType)
             return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
         else if (javaModel.isSubtype(type, javaModel.getGenericDeclaredType(knownTypes._Renderable))) {
-            if (!javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement)))) {
-                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Renderable, but wrong format", text, type));
-            } else {
-                return text + ".createRenderer(" + variables.unescapedWriter() + ").render(); ";
-            }
+//            if (!javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement)))) {
+//                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Renderable, but wrong format", text, type));
+//            } else {
+                return text + ".render(" + variables.unescapedWriter()  + "); ";
+//            }
         } else if (javaModel.isSameType(type, knownTypes._int))
             return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + text + ")); ";
         else if (javaModel.isSameType(type, knownTypes._short))

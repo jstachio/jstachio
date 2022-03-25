@@ -66,9 +66,10 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.meta.ElementMessage;
 import com.github.sviperll.staticmustache.meta.ElementMessager;
+import com.github.sviperll.staticmustache.text.LayoutFunction;
 import com.github.sviperll.staticmustache.text.Layoutable;
+import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.github.sviperll.staticmustache.text.Renderable;
-import com.github.sviperll.staticmustache.text.Renderer;
 import com.github.sviperll.staticmustache.text.RendererDefinition;
 import com.github.sviperll.staticmustache.text.formats.TextFormat;
 
@@ -202,8 +203,11 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         String adapterClassSimpleName;
         if (!directiveAdapterName.equals(":auto"))
             adapterClassSimpleName = directiveAdapterName;
-        else
-            adapterClassSimpleName = (isLayout ? "Layoutable" : "Renderable") + element.getSimpleName().toString() + "Adapter";
+        else {
+            //adapterClassSimpleName = (isLayout ? "Layoutable" : "Renderable") + element.getSimpleName().toString() + "Adapter";
+            adapterClassSimpleName = element.getSimpleName().toString() + (isLayout ? "Layoutable" : "Renderable");
+
+        }
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
             TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
@@ -281,37 +285,50 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 
             println("package " + packageName + ";");
             println("@javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
-            println("class " + adapterClassSimpleName + " implements " + (isLayout ? Layoutable.class : Renderable.class).getName() + "<" + templateFormatElement.getQualifiedName() + "> {");
+            println("class " + adapterClassSimpleName + (isLayout ? " implements " + Layoutable.class.getName() : " extends " + Renderable.class.getName()) + "<" + templateFormatElement.getQualifiedName() + "> {");
             println("    private final " + className + " data;");
-            println("    public " + adapterClassSimpleName + "(" + className + " data) {");
+            String constructorModifier = isLayout ? "public" : "private";
+            println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
             println("        this.data = data;");
             println("    }");
+            
+
 
             if (!isLayout) {
+            	
+                println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
+                println("        return new " + adapterClassSimpleName + "(data);");
+                println("    }");
+                
                 String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
                 String adapterRendererClassName = adapterClassSimpleName + "." + adapterRendererClassSimpleName;
 
                 println("    @Override");
-                println("    public " + Renderer.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
+                println("    protected " + RendererDefinition.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
                 println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + Renderer.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
+                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
                 println("    }");
 
                 writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompiler.compilerFactory());
             } else {
+            	
+                println("    public static " + LayoutFunction.class.getName() + " of(" + className + " data) {");
+                println("        return new " + adapterClassSimpleName + "(data);");
+                println("    }");
+                
                 String adapterHeaderRendererClassSimpleName = adapterClassSimpleName + "HeaderRenderer";
                 String adapterHeaderRendererClassName = adapterClassSimpleName + "." + adapterHeaderRendererClassSimpleName;
                 String adapterFooterRendererClassSimpleName = adapterClassSimpleName + "FooterRenderer";
                 String adapterFooterRendererClassName = adapterClassSimpleName + "." + adapterFooterRendererClassSimpleName;
                 println("    @Override");
-                println("    public " + Renderer.class.getName() + " createHeaderRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
+                println("    public " + RendererDefinition.class.getName() + " createHeaderRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
                 println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + Renderer.class.getName() + ".of(new " + adapterHeaderRendererClassName + "(data, writer, unescapedWriter));");
+                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterHeaderRendererClassName + "(data, writer, unescapedWriter));");
                 println("    }");
                 println("    @Override");
-                println("    public " + Renderer.class.getName() + " createFooterRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
+                println("    public " + RendererDefinition.class.getName() + " createFooterRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
                 println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + Renderer.class.getName() + ".of(new " + adapterFooterRendererClassName + "(data, writer, unescapedWriter));");
+                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterFooterRendererClassName + "(data, writer, unescapedWriter));");
                 println("    }");
 
                 writeRendererDefinitionClass(adapterHeaderRendererClassSimpleName, TemplateCompiler.headerCompilerFactory());

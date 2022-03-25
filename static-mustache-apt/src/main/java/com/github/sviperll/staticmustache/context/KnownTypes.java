@@ -36,7 +36,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.Renderable;
+import com.github.sviperll.staticmustache.text.RenderFunction;
 
 /**
  *
@@ -71,7 +71,7 @@ class KnownTypes {
     public final TypeElement _Layoutable;
 
     private KnownTypes(Elements declarations, Types types) {
-        _Renderable = declarations.getTypeElement(Renderable.class.getName());
+        _Renderable = declarations.getTypeElement(RenderFunction.class.getName());
         _String = declarations.getTypeElement(String.class.getName());
         _int = types.getPrimitiveType(TypeKind.INT);
         _short = types.getPrimitiveType(TypeKind.SHORT);

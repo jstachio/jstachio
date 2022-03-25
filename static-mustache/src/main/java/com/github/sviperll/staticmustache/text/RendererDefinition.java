@@ -37,4 +37,8 @@ import java.io.IOException;
  */
 public interface RendererDefinition {
     void render() throws IOException;
+    
+    public static RendererDefinition of(RendererDefinition definition) {
+        return definition;
+    }
 }

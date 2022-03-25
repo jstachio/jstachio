@@ -41,10 +41,10 @@ import com.github.sviperll.staticmustache.text.formats.Html;
  */
 @GenerateRenderableAdapter(
     // points to src/main/resources/user.mustache file
-    template = "user.mustache",
+    template = "user.mustache"
 
     // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
-    adapterName = "RenderableHtmlUserAdapter")
+    )
 public class User {
     final String name;
     final int age;

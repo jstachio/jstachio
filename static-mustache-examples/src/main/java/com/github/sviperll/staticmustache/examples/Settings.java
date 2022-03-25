@@ -30,7 +30,7 @@
 package com.github.sviperll.staticmustache.examples;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.text.Renderable;
+import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.github.sviperll.staticmustache.text.formats.Html;
 
 /**
@@ -39,9 +39,9 @@ import com.github.sviperll.staticmustache.text.formats.Html;
  */
 @GenerateRenderableAdapter(template = "settings.mustache", templateFormat = Html.class)
 public class Settings {
-    final Renderable<Html> info;
+    final RenderFunction info;
     final boolean isEnabled;
-    public Settings(Renderable<Html> info, boolean isEnabled) {
+    public Settings(RenderFunction info, boolean isEnabled) {
         this.info = info;
         this.isEnabled = isEnabled;
     }
