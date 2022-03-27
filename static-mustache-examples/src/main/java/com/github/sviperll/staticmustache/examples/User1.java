@@ -45,11 +45,11 @@ import com.github.sviperll.staticmustache.text.formats.PlainText;
     @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
 })
 public class User1 {
-    final String name;
-    final int age;
-    final String[] array;
-    final int[][] array1;
-    final List<? extends Item<? extends String>> list1;
+    public final String name;
+    public final int age;
+    public final String[] array;
+    public final int[][] array1;
+    public final List<? extends Item<? extends String>> list1;
 
     public User1(String name, int age, String[] array, int[][] array1, List<? extends Item<? extends String>> list1) {
         this.name = name;

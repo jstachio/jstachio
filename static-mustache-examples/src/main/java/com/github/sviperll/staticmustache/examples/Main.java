@@ -57,7 +57,7 @@ public class Main {
         renderable1.render(out);
 
         Settings settings = new Settings(renderable1, true);
-        var renderable3 = SettingsRenderable.of(settings);
+        var renderable3 = SettingsRenderer.of(settings);
         renderable3.render(out);
 
         List<User.Item<String>> list = new ArrayList<User.Item<String>>();
@@ -73,10 +73,10 @@ public class Main {
 //        renderer = renderer.andThen(layoutable.createFooterRenderer(out));
 //        renderer.render();
         
-        var renderable = UserRenderable.of(user);
+        var renderable = UserRenderer.of(user);
         renderable.withLayout(layoutable).render(out);
 
-        Layouted layouted = new Layouted(UserRenderable.of(user), layoutable);
-        LayoutedRenderable.of(layouted).render(out);
+        Layouted layouted = new Layouted(UserRenderer.of(user), layoutable);
+        LayoutedRenderer.of(layouted).render(out);
     }
 }

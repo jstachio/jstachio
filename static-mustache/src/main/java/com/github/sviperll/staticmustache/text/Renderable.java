@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.text;
 
 import java.io.IOException;
+import com.github.sviperll.staticmustache.spi.RenderService;
 
 /**
  * Can be rendered.
@@ -54,10 +55,17 @@ public abstract class Renderable<T> implements RenderFunction {
      */
     protected abstract RendererDefinition createRenderer(Appendable appendable);
     
+    public abstract String getTemplate();
+    
+    public abstract Object getContext();
+    
     @Override
-    public void render(Appendable a) throws IOException {
-        var r = createRenderer(a);
-        r.render();
+    public final void render(Appendable a) throws IOException {
+        boolean stop = RenderService.findService().render(getTemplate(), getContext(), a);
+        if (! stop) {
+            var r = createRenderer(a);
+            r.render();
+        }
     }
 
 }

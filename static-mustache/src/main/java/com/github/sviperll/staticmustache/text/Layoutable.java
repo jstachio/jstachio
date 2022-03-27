@@ -48,6 +48,10 @@ public interface Layoutable<T> extends LayoutFunction {
     default RenderFunction footer() {
         return a -> createFooterRenderer(a).render();
     }
+    
+    String getTemplate();
+    
+    public abstract Object getContext();
 
     @SuppressWarnings("null")
     @Override

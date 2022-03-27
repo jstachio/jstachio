@@ -233,7 +233,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             adapterClassSimpleName = directiveAdapterName;
         else {
             //adapterClassSimpleName = (isLayout ? "Layoutable" : "Renderable") + element.getSimpleName().toString() + "Adapter";
-            adapterClassSimpleName = element.getSimpleName().toString() + (isLayout ? "Layoutable" : "Renderable");
+            adapterClassSimpleName = element.getSimpleName().toString() + (isLayout ? "Layoutable" : "Renderer");
 
         }
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
@@ -323,8 +323,15 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("        this.data = data;");
             println("    }");
             
-
-
+            println("    @Override");
+            println("    public String " + "getTemplate() {");
+            println("        return TEMPLATE;");
+            println("    }");
+            
+            println("    @Override");
+            println("    public Object " + "getContext() {");
+            println("        return this.data;");
+            println("    }");
             if (!isLayout) {
             	
                 println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.snaphop.staticmustache</groupId>
@@ -15,6 +16,11 @@
         <configuration>
           <annotationProcessorPaths>
             <annotationProcessorPath>
+              <groupId>org.kohsuke.metainf-services</groupId>
+              <artifactId>metainf-services</artifactId>
+              <version>${metainf-services.version}</version>
+            </annotationProcessorPath>
+            <annotationProcessorPath>
               <groupId>${project.groupId}</groupId>
               <artifactId>static-mustache-apt</artifactId>
               <version>${project.version}</version>
@@ -25,6 +31,12 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.kohsuke.metainf-services</groupId>
+      <artifactId>metainf-services</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>static-mustache</artifactId>
@@ -41,8 +53,11 @@
     <dependency>
       <groupId>org.jspecify</groupId>
       <artifactId>jspecify</artifactId>
-      <version>0.2.0</version>
       <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.samskivert</groupId>
+      <artifactId>jmustache</artifactId>
     </dependency>
   </dependencies>
 </project>

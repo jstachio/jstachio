@@ -27,51 +27,5 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.examples;
-
-import java.util.List;
-
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.formats.Html;
-
-/**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
- */
-@GenerateRenderableAdapter(
-    // points to src/main/resources/user.mustache file
-    template = "user.mustache"
-
-    // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
-    )
-public class User {
-    public final String name;
-    public final int age;
-    public final String[] array;
-    public final List<Item<String>> list1;
-    public final Layoutable<Html> liLayout;
-
-    public User(String name, int age, String[] array, List<Item<String>> list1, Layoutable<Html> liLayout) {
-        this.name = name;
-        this.age = age;
-        this.array = array;
-        this.list1 = list1;
-        this.liLayout = liLayout;
-    }
-
-    public static class Item<T> {
-        private final T value;
-        public Item(T value) {
-            this.value = value;
-        }
-        T value() {
-            return value;
-        }
-        
-        @Override
-        public String toString() {
-            return value().toString();
-        }
-    }
-}
+@org.jspecify.nullness.NullMarked
+package com.github.sviperll.staticmustache.spi;
