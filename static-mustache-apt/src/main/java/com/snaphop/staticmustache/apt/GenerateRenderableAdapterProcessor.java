@@ -29,6 +29,7 @@
  */
 package com.snaphop.staticmustache.apt;
 
+import static java.lang.System.out;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -247,7 +248,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             }
             StringWriter stringWriter = new StringWriter();
             
-            String basePath = resolveBasePath(templateFormatElement);
+            String basePath = resolveBasePath(element);
             if (! templatePath.startsWith("/")) {
                 templatePath = basePath + templatePath;
             }
