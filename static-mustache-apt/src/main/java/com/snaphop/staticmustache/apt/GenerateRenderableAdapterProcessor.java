@@ -29,7 +29,6 @@
  */
 package com.snaphop.staticmustache.apt;
 
-import static java.lang.System.out;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -43,6 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -54,6 +54,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -61,6 +62,7 @@ import javax.tools.StandardLocation;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
 import com.github.sviperll.staticmustache.TemplateBasePath;
+import com.github.sviperll.staticmustache.TemplateInterface;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -171,6 +173,30 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         return basePath;
     }
     
+    private List<String> resolveBaseInterface(TypeElement element) {
+        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+        List<? extends AnnotationMirror> ams = packageElement.getAnnotationMirrors();
+        Optional<? extends AnnotationMirror> a = ams.stream().filter(am -> TemplateInterface.class.getName().equals(getTypeName(am))).findFirst();
+        
+        if (a.isPresent()) {
+            AnnotationMirror am = a.get();
+            for (var e : am.getElementValues().entrySet()) {
+               if (e.getKey().getSimpleName().contentEquals("value")) {
+                   var t = (DeclaredType) e.getValue().getValue();
+                   return List.of(getTypeName(t));
+                }
+            }
+
+        }
+        return List.of();
+    }
+    
+    private String getTypeName(TypeMirror tm) {
+       var e = ((DeclaredType) tm).asElement();
+       var te = (TypeElement) e;
+       return te.getQualifiedName().toString();
+    }
+    
     private String getTypeName(AnnotationMirror am) {
         Element e = am.getAnnotationType().asElement();
         TypeElement te = (TypeElement) e;
@@ -252,6 +278,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             if (! templatePath.startsWith("/")) {
                 templatePath = basePath + templatePath;
             }
+            List<String> ifaces = resolveBaseInterface(element);
+            
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
                 TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset, templatePath);
@@ -260,7 +288,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource);
 
-                writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement);
+                writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);
             }
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
@@ -308,15 +336,26 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         }
 
         private void writeRenderableAdapterClass(String adapterClassSimpleName, Boolean isLayout,
-                       TypeElement templateFormatElement) throws IOException, ProcessingException {
+                       TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException {
             String className = element.getQualifiedName().toString();
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
             TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
 
+            List<String> ifaceStrings = new ArrayList<String>(ifaces);
+            //ifaces.stream().map(c -> c.getName()).forEach(ifaceStrings::add);
+            
+            if (isLayout) ifaceStrings.add(Layoutable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">");
+            
+            String implementsString = ifaceStrings.isEmpty() ? "" : " implements " +
+                    ifaceStrings.stream().collect(Collectors.joining(", "));
+            
+            String extendsString = isLayout ? "" :  " extends " 
+                    + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
+            
             println("package " + packageName + ";");
             println("@javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
-            println("class " + adapterClassSimpleName + (isLayout ? " implements " + Layoutable.class.getName() : " extends " + Renderable.class.getName()) + "<" + templateFormatElement.getQualifiedName() + "> {");
+            println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
             println("    private final " + className + " data;");
             String constructorModifier = isLayout ? "public" : "private";
