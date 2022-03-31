@@ -32,23 +32,49 @@ package com.snaphop.staticmustache.apt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TextFileObject {
-    private final FileObject resource;
+  //  private final FileObject resource;
+    private final ProcessingEnvironment env;
     private final Charset charset;
     private final String name;
-    TextFileObject(FileObject resource, Charset charset, String name) {
-        this.resource = resource;
+    TextFileObject(ProcessingEnvironment env, Charset charset, String name) {
+        //this.resource = resource;
+        this.env = env;
         this.charset = charset;
         this.name = name;
     }
+    
 
     InputStream openInputStream() throws IOException {
+        FileObject resource = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", name);
+        if (resource.getLastModified() > 0) {
+            return resource.openInputStream();
+        }
+        
+        if (resource.getClass().getName().contains("eclipse")) {
+            FileObject dummy = 
+                    env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
+            // target/classes/dummy
+            Path projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
+            
+            Path filePath = Path.of("src/main/resources", name);
+            
+            Path fullPath = projectPath.resolve(filePath);
+            
+            return Files.newInputStream(fullPath);
+        }
+        
         return resource.openInputStream();
     }
 

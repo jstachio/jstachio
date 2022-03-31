@@ -281,8 +281,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             List<String> ifaces = resolveBaseInterface(element);
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
-                FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
-                TextFileObject templateResource = new TextFileObject(templateBinaryResource, templateCharset, templatePath);
+                //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
+                TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset, templatePath);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, templateFormatElement);
                 CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
