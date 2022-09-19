@@ -31,14 +31,24 @@ package com.github.sviperll.staticmustache.text;
 
 import java.io.IOException;
 
+import org.jspecify.nullness.Nullable;
+
+import com.github.sviperll.staticmustache.spi.Formatter;
+import com.github.sviperll.staticmustache.spi.RenderService;
+
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public interface RendererDefinition {
+public interface RendererDefinition extends Formatter {
     void render() throws IOException;
     
     public static RendererDefinition of(RendererDefinition definition) {
         return definition;
     }
+    
+    default boolean format(Appendable appendable, String path, @Nullable Object context) throws IOException {
+        return RenderService.findService().format(appendable, path, context);
+    }
+    
 }

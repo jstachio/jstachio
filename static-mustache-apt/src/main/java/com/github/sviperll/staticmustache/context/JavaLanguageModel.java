@@ -31,13 +31,23 @@ package com.github.sviperll.staticmustache.context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import org.jspecify.nullness.Nullable;
+
+import com.github.sviperll.staticmustache.context.types.KnownType;
+import com.github.sviperll.staticmustache.context.types.KnownTypes;
+import com.github.sviperll.staticmustache.context.types.NativeType;
+import com.github.sviperll.staticmustache.context.types.ObjectType;
 
 /**
  *
@@ -73,8 +83,8 @@ public class JavaLanguageModel {
     }
 
     boolean isUncheckedException(TypeMirror exceptionType) {
-        return operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._Error))
-               || operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._RuntimeException));
+        return operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._Error.typeElement()))
+               || operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._RuntimeException.typeElement()));
     }
 
     TypeMirror getArrayType(TypeMirror elementType) {
@@ -85,8 +95,16 @@ public class JavaLanguageModel {
         return operations.asMemberOf(containing, element);
     }
 
+    JavaExpression expression(String text, NativeType type) {
+        return new JavaExpression(this, text, type.typeMirror());
+    }
+    
     JavaExpression expression(String text, TypeMirror type) {
         return new JavaExpression(this, text, type);
+    }
+    
+    String eraseType(DeclaredType dt) {
+       return operations.erasure(dt).toString();
     }
 
     TypeMirror getGenericDeclaredType(TypeElement element) {
@@ -101,7 +119,11 @@ public class JavaLanguageModel {
         return getDeclaredType(element, typeArgumentArray);
     }
 
-    DeclaredType getSupertype(DeclaredType type, TypeElement supertypeDeclaration) {
+    @Nullable DeclaredType getSupertype(DeclaredType type, ObjectType supertypeDeclaration) {
+        return getSupertype(type, supertypeDeclaration.typeElement());
+    }
+    
+    @Nullable DeclaredType getSupertype(DeclaredType type, TypeElement supertypeDeclaration) {
         if (type.asElement().equals(supertypeDeclaration))
             return type;
         else {
@@ -117,5 +139,36 @@ public class JavaLanguageModel {
 
     TypeElement asElement(DeclaredType declaredType) {
         return (TypeElement)operations.asElement(declaredType);
+    }
+    
+    
+    boolean isType(TypeMirror type, KnownType knownType) {
+        if (knownType instanceof NativeType nativeType) {
+            return isSameType(type, nativeType.typeMirror());
+        }
+        if (knownType instanceof ObjectType objectType) {
+            return isSubtype(type, getDeclaredType(objectType.typeElement()));
+        }
+        throw new IllegalStateException();
+        
+    }
+    public Optional<KnownType> resolvetype(TypeMirror type) throws TypeException {
+        if (type instanceof WildcardType) {
+            return resolvetype(((WildcardType)type).getExtendsBound());
+        }
+        else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
+            return  Optional.of(knownTypes._Renderable);
+        } 
+        for (var nt : knownTypes.getNativeTypes()) {
+            if (isType(type, nt)) {
+                return Optional.of(nt);
+            }
+        }
+        for (var ot : knownTypes.getObjectTypes()) {
+            if (isType(type, ot)) {
+                return Optional.of(ot);
+            }
+        }
+        return Optional.empty();
     }
 }

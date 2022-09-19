@@ -65,6 +65,10 @@ public class VariableContext {
     public String unescapedWriter() {
         return unescapedWriter;
     }
+    
+    public String getFormatter() {
+        return "formatter";
+    }
 
     VariableContext unescaped() {
         return new VariableContext(unescapedWriter, unescapedWriter, variables, parent);

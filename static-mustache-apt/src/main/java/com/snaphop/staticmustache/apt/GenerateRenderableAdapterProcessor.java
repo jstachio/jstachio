@@ -69,6 +69,7 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.meta.ElementMessage;
 import com.github.sviperll.staticmustache.meta.ElementMessager;
+import com.github.sviperll.staticmustache.spi.Formatter;
 import com.github.sviperll.staticmustache.text.LayoutFunction;
 import com.github.sviperll.staticmustache.text.Layoutable;
 import com.github.sviperll.staticmustache.text.RenderFunction;
@@ -422,11 +423,13 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             VariableContext variables = VariableContext.createDefaultContext();
             String dataName = variables.introduceNewNameLike("data");
             TemplateCompilerContext context = codeWriter.createTemplateContext(element, dataName, variables);
-
             println("        private final " + Appendable.class.getName() + " " + variables.unescapedWriter() + ";");
             println("        private final " + Appendable.class.getName() + " " + variables.writer() + ";");
             println("        private final " + className + " " + dataName + ";");
-            println("        public " + adapterRendererClassSimpleName + "(" + className + " data, " + Appendable.class.getName() + " writer, " + Appendable.class.getName() + " unescapedWriter) {");
+            println("        public " + adapterRendererClassSimpleName 
+                    + "(" + className + " data, " 
+                    + Appendable.class.getName() + " writer, " 
+                    + Appendable.class.getName() + " unescapedWriter) {");
             println("            this." + variables.writer() + " = writer;");
             println("            this." + variables.unescapedWriter() + " = unescapedWriter;");
             println("            this." + dataName + " = data;");

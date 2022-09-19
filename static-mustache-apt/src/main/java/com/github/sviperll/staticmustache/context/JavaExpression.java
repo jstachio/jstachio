@@ -61,7 +61,7 @@ class JavaExpression {
     }
 
     JavaExpression arrayLength() {
-        return new JavaExpression(model, text + ".length", model.knownTypes()._int);
+        return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror());
     }
 
     public JavaExpression subscript(JavaExpression indexExpression) {

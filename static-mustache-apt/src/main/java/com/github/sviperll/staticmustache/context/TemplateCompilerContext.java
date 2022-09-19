@@ -30,6 +30,11 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
@@ -77,21 +82,49 @@ public class TemplateCompilerContext {
         return context.endSectionRenderingCode();
     }
 
-    public TemplateCompilerContext getChild(String name) throws ContextException {
-        if (name.equals(".")) {
-            return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(name, this));
-        } else {
-            JavaExpression entry = context.getDataOrDefault(name, null);
-            if (entry == null)
-                throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
-            RenderingContext enclosedField;
-            try {
-                enclosedField = generator.createRenderingContext(entry, new OwnedRenderingContext(context));
-            } catch (TypeException ex) {
-                throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
-            }
-            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+    public interface Printer {
+        void print(TemplateCompilerContext c, State state);
+        enum State {
+            BEGIN,END
         }
+    }
+    
+    public List<TemplateCompilerContext> getChildren(String name) throws ContextException {
+        if (name.equals(".")) {
+            return List.of(getChild(name));
+        }
+        List<String> names = splitNames(name);
+        
+        if (names.size() == 0) {
+            throw new IllegalStateException("names");
+        }
+        List<TemplateCompilerContext> contexts = new ArrayList<>();
+        TemplateCompilerContext tc = this;
+        for (String n : names) {
+            tc = tc.getChild(n);
+            contexts.add(tc);
+        }
+        return contexts;
+    }
+    
+    public TemplateCompilerContext getChild(String n) throws ContextException {
+        if (n.equals(".")) {
+            return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(n, this));
+        }
+        JavaExpression entry = context.getDataOrDefault(n, null);
+        if (entry == null)
+            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", n));
+        RenderingContext enclosedField;
+        try {
+            enclosedField = generator.createRenderingContext(entry, new OwnedRenderingContext(context));
+        } catch (TypeException ex) {
+            throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", n), ex);
+        }
+        return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(n, this));
+    }
+    
+    List<String> splitNames(String name) {
+        return List.of(name.split("\\."));
     }
 
     public TemplateCompilerContext getInvertedChild(String name) throws ContextException {

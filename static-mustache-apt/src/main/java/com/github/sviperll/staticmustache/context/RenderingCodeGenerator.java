@@ -30,12 +30,16 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
+
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
+
+import com.github.sviperll.staticmustache.context.types.KnownType;
+import com.github.sviperll.staticmustache.context.types.KnownTypes;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -67,46 +71,32 @@ public class RenderingCodeGenerator {
     String generateRenderingCode(JavaExpression expression, VariableContext variables) throws TypeException {
         TypeMirror type = expression.type();
         String text = expression.text();
-        if (type instanceof WildcardType)
+        if (type instanceof WildcardType) {
             return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
-        else if (javaModel.isSubtype(type, javaModel.getGenericDeclaredType(knownTypes._Renderable))) {
-//            if (!javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Renderable, javaModel.getDeclaredType(templateFormatElement)))) {
-//                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Renderable, but wrong format", text, type));
-//            } else {
-                return text + ".render(" + variables.unescapedWriter()  + "); ";
-//            }
-        } else if (javaModel.isSameType(type, knownTypes._int))
-            return variables.writer() + ".append(" + Integer.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._short))
-            return variables.writer() + ".append(" + Short.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._long))
-            return variables.writer() + ".append(" + Long.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._byte))
-            return variables.writer() + ".append(" + Byte.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._char))
-            return variables.writer() + ".append(" + Character.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._float))
-            return variables.writer() + ".append(" + Float.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSameType(type, knownTypes._double))
-            return variables.writer() + ".append(" + Double.class.getName() + ".toString(" + text + ")); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._String)))
-            return variables.writer() + ".append(" + text + "); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Integer)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Long)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Short)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Byte)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Character)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Double)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else if (javaModel.isSubtype(type, javaModel.getDeclaredType(knownTypes._Float)))
-            return variables.writer() + ".append(" + text + ".toString()); ";
-        else
-            throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
+        }
+        
+        
+        if (javaModel.isSubtype(type, javaModel.getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
+            return text + ".render(" + variables.unescapedWriter()  + "); ";
+        }
+        
+        KnownType knownType = javaModel.resolvetype(type).orElse(null);
+        
+        if (knownType != null) {
+            //return variables.writer() + ".append(" + knownType.renderToString(text) + ");";
+            return "format(" + variables.writer() + "," + "\"" + text + "\"" + ", " + text + ");"; 
+
+        }
+        else if (type instanceof DeclaredType dt) {
+            String cname = javaModel.eraseType(dt)  + ".class";
+            return "format(" + variables.writer() //
+                    + ", " + "\"" + text + "\"" //
+                    + ", " + cname //
+                    + ", " + text + ");";
+            //return variables.writer() + ".append((" + text + ").toString());";
+        }
+        
+        throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
     }
 
     /**
@@ -128,20 +118,20 @@ public class RenderingCodeGenerator {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
             return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
-        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable))) {
-            if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable, javaModel.getDeclaredType(templateFormatElement)))) {
+        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable.typeElement()))) {
+            if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable.typeElement(), javaModel.getDeclaredType(templateFormatElement)))) {
                 throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Layoutable, but wrong format", expression.text(), expression.type()));
             } else {
                 VariableContext context = enclosing.createEnclosedVariableContext();
                 return new LayoutableRenderingContext(expression, context, enclosing);
             }
-        } else if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+        } else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext(expression.text(), enclosing);
-        } else if (javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
+        } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
             BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression.text(), nullableContext);
             return booleanContext;
-        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Iterable))) {
+        } else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String elementVariableName = variableContext.introduceNewNameLike("element");
@@ -168,9 +158,9 @@ public class RenderingCodeGenerator {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
             return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
-        } else if (javaModel.isSameType(expression.type(), knownTypes._boolean)) {
+        } else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
-        } else if (javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Boolean))) {
+        } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || !(" + expression.text() + ")", enclosing);
         } else if (expression.type() instanceof DeclaredType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null", enclosing);

@@ -30,6 +30,11 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -156,8 +161,26 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public Void variable(String name) throws ProcessingException {
             try {
                 if (!expectsYield || !name.equals("yield")) {
-                    TemplateCompilerContext variable = context.getChild(name);
-                    writer.print(variable.renderingCode());
+                    //TemplateCompilerContext variable = context.getChild(name);
+                    List<TemplateCompilerContext> children = context.getChildren(name);
+                    if (children.size() == 1) {
+                        writer.print(children.get(0).renderingCode());
+                    }
+                    else {
+                        List<TemplateCompilerContext> reversed = new ArrayList<>(children);
+                        Collections.reverse(reversed);
+                        
+                        TemplateCompilerContext leaf = null;
+                        for (var c : children) {
+                            writer.print(c.beginSectionRenderingCode());
+                            leaf = c;
+                        }
+                        Objects.requireNonNull(leaf);
+                        writer.print(leaf.renderingCode());
+                        for (var c : reversed) {
+                            writer.print(c.endSectionRenderingCode());
+                        }
+                    }
                 } else {
                     if (foundYield)
                         throw new ProcessingException(position, "Yield can be used only once");
