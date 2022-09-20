@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,16 +45,25 @@ public class TemplateCompilerContext {
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
+    private final ArrayDeque<TemplateCompilerContext> pathStack;
 
     TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field) {
-        this(processor, variables, field, null);
+        this(processor, variables, field, new ArrayDeque<>(), null);
+    }
+    
+    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
+            @Nullable EnclosedRelation parent) {
+        this(processor, variables, field, new ArrayDeque<>(), parent);
     }
 
-    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, @Nullable EnclosedRelation parent) {
+    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
+            ArrayDeque<TemplateCompilerContext> pathStack,  @Nullable EnclosedRelation parent) {
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
         this.variables = variables;
+        this.pathStack = pathStack;
+        this.pathStack.add(this);
     }
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
@@ -74,67 +84,82 @@ public class TemplateCompilerContext {
     }
 
     public String beginSectionRenderingCode() {
-        return context.beginSectionRenderingCode();
+        StringBuilder sb = new StringBuilder();
+        var it = pathStack.iterator();
+        while (it.hasNext()) {
+            var i = it.next();
+            sb.append(i.context.beginSectionRenderingCode());
+        }
+        return sb.toString();
     }
 
     public String endSectionRenderingCode() {
-        return context.endSectionRenderingCode();
+        StringBuilder sb = new StringBuilder();
+        var it = pathStack.descendingIterator();
+        while (it.hasNext()) {
+            var i = it.next();
+            sb.append(i.context.endSectionRenderingCode());
+        }
+        return sb.toString();
     }
 
     
-    public List<TemplateCompilerContext> getChildren(String name) throws ContextException {
+    public TemplateCompilerContext getChild(String name, ChildType childType) throws ContextException {
         if (name.equals(".")) {
-            return List.of(getChild(name));
+            return _getChild(name, childType);
         }
         List<String> names = splitNames(name);
         
         if (names.size() == 0) {
             throw new IllegalStateException("names");
         }
-        List<TemplateCompilerContext> contexts = new ArrayList<>();
+        ArrayList<TemplateCompilerContext> contexts = new ArrayList<>();
         TemplateCompilerContext tc = this;
         for (String n : names) {
-            tc = tc.getChild(n);
+            tc = tc._getChild(n, childType);
             contexts.add(tc);
         }
-        return contexts;
+        tc.pathStack.clear();
+        tc.pathStack.addAll(contexts);
+        
+        return tc;
     }
-    
-    public TemplateCompilerContext getChild(String n) throws ContextException {
-        if (n.equals(".")) {
-            return new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context), new EnclosedRelation(n, this));
-        }
-        JavaExpression entry = context.getDataOrDefault(n, null);
-        if (entry == null)
-            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", n));
-        RenderingContext enclosedField;
-        try {
-            enclosedField = generator.createRenderingContext(entry, new OwnedRenderingContext(context));
-        } catch (TypeException ex) {
-            throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", n), ex);
-        }
-        return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(n, this));
-    }
-    
+
     List<String> splitNames(String name) {
         return List.of(name.split("\\."));
     }
 
-    public TemplateCompilerContext getInvertedChild(String name) throws ContextException {
+    
+    public enum ChildType {
+        NORMAL,
+        INVERTED;
+    }
+    
+    private TemplateCompilerContext _getChild(String name, ChildType childType) throws ContextException {
         if (name.equals(".")) {
-            throw new ContextException("Current section can't be inverted");
-        } else {
-            JavaExpression entry = context.getDataOrDefault(name, null);
-            if (entry == null)
-                throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
-            RenderingContext enclosedField;
-            try {
-                enclosedField = generator.createInvertedRenderingContext(entry, new OwnedRenderingContext(context));
-            } catch (TypeException ex) {
-                throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
-            }
-            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+            return switch (childType) {
+            case NORMAL -> new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context),
+                    new ArrayDeque<>(),
+                    new EnclosedRelation(name, this));
+            case INVERTED -> throw new ContextException("Current section can't be inverted");
+            };
         }
+        if (name.contains(".")) {
+            throw new IllegalStateException("dotted path not allowed here");
+        }
+        JavaExpression entry = context.getDataOrDefault(name, null);
+        if (entry == null)
+            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
+        RenderingContext enclosedField;
+        try {
+            enclosedField = switch (childType) {
+            case NORMAL -> generator.createRenderingContext(entry, new OwnedRenderingContext(context));
+            case INVERTED -> generator.createInvertedRenderingContext(entry, new OwnedRenderingContext(context));
+            };
+        } catch (TypeException ex) {
+            throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
+        }
+        return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
     }
 
     public boolean isEnclosed() {
@@ -142,11 +167,18 @@ public class TemplateCompilerContext {
     }
 
     public String currentEnclosedContextName() {
-        return enclosedRelation.name();
+        StringBuilder sb = new StringBuilder();
+        for (var tc : pathStack) {
+            if (! sb.isEmpty()) {
+                sb.append(".");
+            }
+            sb.append(tc.enclosedRelation.name());
+        }
+        return sb.toString();
     }
 
     public TemplateCompilerContext parentContext() {
-        return enclosedRelation.parentContext();
+        return pathStack.getFirst().enclosedRelation.parentContext();
     }
 
     public String unescapedWriterExpression() {

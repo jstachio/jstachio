@@ -1,7 +1,17 @@
+
+
+{{container}}
+
 {{container.id}}
 
-{{#posts}}
+{{#blog.posts}}
+<post>
 {{title}}
 
 {{meta.id}}
-{{/posts}}
+
+<version>
+{{meta.id.version}}
+</version>
+</post>
+{{/blog.posts}}

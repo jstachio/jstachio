@@ -30,15 +30,12 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 import org.jspecify.nullness.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 
 /**
@@ -93,6 +90,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
     final SwitchablePrintWriter writer;
     private TemplateCompilerContext context;
     boolean foundYield = false;
+    int depth = 0;
 
     private TemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context, boolean expectsYield) {
         this.reader = reader;
@@ -126,8 +124,13 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public @Nullable Void beginSection(String name) throws ProcessingException {
             try {
-                context = context.getChild(name);
+                context = context.getChild(name, ChildType.NORMAL);
+                print("// section: " + context.currentEnclosedContextName());
+                println();
                 print(context.beginSectionRenderingCode());
+                println();
+                depth++;
+                
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -137,8 +140,12 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
             try {
-                context = context.getInvertedChild(name);
+                context = context.getChild(name, ChildType.NORMAL);
+                print("// inverted section: " + context.currentEnclosedContextName());
+                println();
                 print(context.beginSectionRenderingCode());
+                println();
+                depth++;
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
@@ -152,7 +159,9 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             else if (!context.currentEnclosedContextName().equals(name))
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             else {
+                depth--;
                 print(context.endSectionRenderingCode());
+                println();
                 context = context.parentContext();
                 return null;
             }
@@ -163,26 +172,11 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     //TemplateCompilerContext variable = context.getChild(name);
-                    List<TemplateCompilerContext> children = context.getChildren(name);
-                    if (children.size() == 1) {
-                        writer.print(children.get(0).renderingCode());
-                    }
-                    else {
-                    	TemplateCompilerContext leaf =
-                    	children.remove(children.size() - 1);
-                        List<TemplateCompilerContext> reversed = new ArrayList<>(children);
-                        Collections.reverse(reversed);
-                        
-                        for (var c : children) {
-                            writer.print(c.beginSectionRenderingCode());
-                            //leaf = c;
-                        }
-                        Objects.requireNonNull(leaf);
-                        writer.print(leaf.renderingCode());
-                        for (var c : reversed) {
-                            writer.print(c.endSectionRenderingCode());
-                        }
-                    }
+                    TemplateCompilerContext variable = context.getChild(name, ChildType.NORMAL);
+                    print("// variable: " + variable.currentEnclosedContextName());
+                    println();
+                    print(variable.renderingCode());
+                    println();
                 } else {
                     if (foundYield)
                         throw new ProcessingException(position, "Yield can be used only once");
@@ -202,8 +196,11 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
             try {
                 if (!expectsYield || !name.equals("yield")) {
-                    TemplateCompilerContext variable = context.getChild(name);
-                    writer.print(variable.unescapedRenderingCode());
+                    TemplateCompilerContext variable = context.getChild(name, ChildType.NORMAL);
+                    print("// unescaped variable: " + variable.currentEnclosedContextName());
+                    println();
+                    print(variable.unescapedRenderingCode());
+                    println();
                 } else {
                     if (foundYield)
                         throw new ProcessingException(position, "Yield can be used only once");
@@ -227,7 +224,6 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public @Nullable Void specialCharacter(char c) throws ProcessingException {
             if (c == '\n') {
                 printCodeToWrite("\\n");
-                println();
             } else if (c == '"') {
                 printCodeToWrite("\\\"");
             } else
@@ -252,9 +248,13 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         private void printCodeToWrite(String s) {
             print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
+            println();
         }
 
         private void print(String s) {
+            for (int i = 0; i <= depth + 2; i++) {
+                writer.print("    ");
+            }
             writer.print(s);
         }
 

@@ -49,7 +49,7 @@ class BooleanRenderingContext implements RenderingContext {
 
     @Override
     public String endSectionRenderingCode() {
-        return "} " + parent.endSectionRenderingCode();
+        return " }" + parent.endSectionRenderingCode();
     }
 
     @Override
