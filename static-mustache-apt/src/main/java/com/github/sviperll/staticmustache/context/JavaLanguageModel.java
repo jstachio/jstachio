@@ -96,11 +96,11 @@ public class JavaLanguageModel {
     }
 
     JavaExpression expression(String text, NativeType type) {
-        return new JavaExpression(this, text, type.typeMirror());
+        return new JavaExpression(this, text, type.typeMirror(), List.of());
     }
     
     JavaExpression expression(String text, TypeMirror type) {
-        return new JavaExpression(this, text, type);
+        return new JavaExpression(this, text, type, List.of());
     }
     
     String eraseType(DeclaredType dt) {

@@ -29,6 +29,9 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -45,10 +48,12 @@ class JavaExpression {
     private final JavaLanguageModel model;
     private final String text;
     private final TypeMirror type;
-    JavaExpression(JavaLanguageModel model, String text, TypeMirror type) {
+    private final List<String> path;
+    JavaExpression(JavaLanguageModel model, String text, TypeMirror type, List<String> path) {
         this.model = model;
         this.text = text;
         this.type = type;
+        this.path = path;
     }
     String text() {
         return text;
@@ -60,18 +65,27 @@ class JavaExpression {
         return model;
     }
 
+    private static List<String> concat(List<String> list, String a) {
+    	list = new ArrayList<>(list);
+    	list.add(a);
+    	return List.copyOf(list);
+    }
+    
+    private List<String> concatPath(String a) {
+    	return concat(this.path, a);
+    }
     JavaExpression arrayLength() {
-        return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror());
+        return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror(), concatPath("length"));
     }
 
     public JavaExpression subscript(JavaExpression indexExpression) {
-        return new JavaExpression(model, text + "[" + indexExpression.text() + "]", ((ArrayType)type).getComponentType());
+        return new JavaExpression(model, text + "[" + indexExpression.text() + "]", ((ArrayType)type).getComponentType(), concatPath(indexExpression.text));
     }
 
     public JavaExpression fieldAccess(Element element) {
         VariableElement fieldElement = (VariableElement)element;
         TypeMirror memberType = model.asMemberOf((DeclaredType)type, fieldElement);
-        return new JavaExpression(model, text + "." + fieldElement.getSimpleName(), memberType);
+        return new JavaExpression(model, text + "." + fieldElement.getSimpleName(), memberType, concatPath(fieldElement.getSimpleName().toString()));
     }
 
     public JavaExpression methodCall(Element element, JavaExpression... arguments) {
@@ -87,7 +101,7 @@ class JavaExpression {
             }
         }
         result.append(")");
-        return new JavaExpression(model, result.toString(), executableType.getReturnType());
+        return new JavaExpression(model, result.toString(), executableType.getReturnType(), concatPath(executableElement.getSimpleName().toString()));
     }
 
     public ExecutableType methodSignature(Element element) {

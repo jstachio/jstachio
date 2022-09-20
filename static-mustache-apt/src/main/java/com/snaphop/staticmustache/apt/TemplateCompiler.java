@@ -30,11 +30,12 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import org.jspecify.nullness.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -115,7 +116,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
     }
 
-    private class CompilingTokenProcessor implements MustacheToken.Visitor<Void, ProcessingException> {
+    private class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, ProcessingException> {
         private final Position position;
 
         public CompilingTokenProcessor(Position position) {
@@ -123,7 +124,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void beginSection(String name) throws ProcessingException {
+        public @Nullable Void beginSection(String name) throws ProcessingException {
             try {
                 context = context.getChild(name);
                 print(context.beginSectionRenderingCode());
@@ -134,7 +135,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void beginInvertedSection(String name) throws ProcessingException {
+        public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
             try {
                 context = context.getInvertedChild(name);
                 print(context.beginSectionRenderingCode());
@@ -145,7 +146,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void endSection(String name) throws ProcessingException {
+        public @Nullable Void endSection(String name) throws ProcessingException {
             if (!context.isEnclosed())
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             else if (!context.currentEnclosedContextName().equals(name))
@@ -158,7 +159,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void variable(String name) throws ProcessingException {
+        public @Nullable Void variable(String name) throws ProcessingException {
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     //TemplateCompilerContext variable = context.getChild(name);
@@ -167,13 +168,14 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
                         writer.print(children.get(0).renderingCode());
                     }
                     else {
+                    	TemplateCompilerContext leaf =
+                    	children.remove(children.size() - 1);
                         List<TemplateCompilerContext> reversed = new ArrayList<>(children);
                         Collections.reverse(reversed);
                         
-                        TemplateCompilerContext leaf = null;
                         for (var c : children) {
                             writer.print(c.beginSectionRenderingCode());
-                            leaf = c;
+                            //leaf = c;
                         }
                         Objects.requireNonNull(leaf);
                         writer.print(leaf.renderingCode());
@@ -197,7 +199,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void unescapedVariable(String name) throws ProcessingException {
+        public @Nullable Void unescapedVariable(String name) throws ProcessingException {
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     TemplateCompilerContext variable = context.getChild(name);
@@ -222,7 +224,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void specialCharacter(char c) throws ProcessingException {
+        public @Nullable Void specialCharacter(char c) throws ProcessingException {
             if (c == '\n') {
                 printCodeToWrite("\\n");
                 println();
@@ -234,13 +236,13 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         @Override
-        public Void text(String s) throws ProcessingException {
+        public @Nullable Void text(String s) throws ProcessingException {
             printCodeToWrite(s);
             return null;
         }
 
         @Override
-        public Void endOfFile() throws ProcessingException {
+        public @Nullable Void endOfFile() throws ProcessingException {
             if (!context.isEnclosed())
                 return null;
             else {

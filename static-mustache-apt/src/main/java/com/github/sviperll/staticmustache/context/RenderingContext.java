@@ -38,7 +38,7 @@ import org.jspecify.nullness.Nullable;
 interface RenderingContext {
     String beginSectionRenderingCode();
     String endSectionRenderingCode();
-    JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
+    @Nullable JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
 }

@@ -30,18 +30,17 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
+
+import org.jspecify.nullness.Nullable;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class TemplateCompilerContext {
-    private final EnclosedRelation enclosedRelation;
+    private final @Nullable EnclosedRelation enclosedRelation;
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
@@ -50,7 +49,7 @@ public class TemplateCompilerContext {
         this(processor, variables, field, null);
     }
 
-    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, EnclosedRelation parent) {
+    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, @Nullable EnclosedRelation parent) {
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
@@ -82,12 +81,6 @@ public class TemplateCompilerContext {
         return context.endSectionRenderingCode();
     }
 
-    public interface Printer {
-        void print(TemplateCompilerContext c, State state);
-        enum State {
-            BEGIN,END
-        }
-    }
     
     public List<TemplateCompilerContext> getChildren(String name) throws ContextException {
         if (name.equals(".")) {
