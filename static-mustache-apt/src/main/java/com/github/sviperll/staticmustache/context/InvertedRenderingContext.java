@@ -62,7 +62,7 @@ class InvertedRenderingContext implements BooleanExpressionContext {
         Collections.reverse(expressions);
         
         StringBuilder sb = new StringBuilder();
-        sb.append("/* inverted */ ");
+        //sb.append("/* inverted */ ");
         sb.append("if (");
         boolean first = true;
         for (var e : expressions) {

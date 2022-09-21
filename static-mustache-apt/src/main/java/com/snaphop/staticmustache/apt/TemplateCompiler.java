@@ -252,10 +252,21 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         private void print(String s) {
+            int i = 0;
+            for (String line : s.split("\n")) {
+                if (i > 0) {
+                    println();
+                }
+                printIndent();
+                writer.print(line);
+                i++;
+            }
+        }
+        
+        private void printIndent() {
             for (int i = 0; i <= depth + 2; i++) {
                 writer.print("    ");
             }
-            writer.print(s);
         }
 
         private void println() {
