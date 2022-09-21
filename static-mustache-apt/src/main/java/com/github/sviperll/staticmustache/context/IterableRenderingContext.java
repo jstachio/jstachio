@@ -33,6 +33,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -85,5 +87,10 @@ class IterableRenderingContext implements RenderingContext {
             elementType = wildcardType.getExtendsBound();
         }
         return expression.model().expression(elementVariableName, elementType);
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return parent;
     }
 }

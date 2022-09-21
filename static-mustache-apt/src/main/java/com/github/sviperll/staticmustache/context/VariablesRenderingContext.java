@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -64,5 +66,10 @@ class VariablesRenderingContext implements RenderingContext {
     @Override
     public VariableContext createEnclosedVariableContext() {
         return variables.createEnclosedContext();
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return this.parent;
     }
 }

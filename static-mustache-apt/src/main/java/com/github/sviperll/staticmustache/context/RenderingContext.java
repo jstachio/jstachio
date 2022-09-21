@@ -41,4 +41,5 @@ interface RenderingContext {
     @Nullable JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
+    @Nullable RenderingContext getParent();
 }

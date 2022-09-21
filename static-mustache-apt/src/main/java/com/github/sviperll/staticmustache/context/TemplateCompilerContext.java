@@ -74,7 +74,11 @@ public class TemplateCompilerContext {
     }
 
     public String beginSectionRenderingCode() {
-        return context.beginSectionRenderingCode();
+        return  debugComment() +  context.beginSectionRenderingCode();
+    }
+    
+    private String debugComment() {
+        return "/* RenderingContext: " + context.getClass() + " */ ";
     }
 
     public String endSectionRenderingCode() {
@@ -83,10 +87,7 @@ public class TemplateCompilerContext {
 
     
     public TemplateCompilerContext getChild(String name, ChildType childType) throws ContextException {
-        if (name.equals(".")) {
-            return _getChild(name, childType);
-        }
-        return this._getChild(name, childType);
+        return _getChild(name, childType);
     }
 
     List<String> splitNames(String name) {
@@ -137,7 +138,7 @@ public class TemplateCompilerContext {
         try {
             enclosedField = switch (childType) {
             case NORMAL -> generator.createRenderingContext(entry, enclosing);
-            case INVERTED -> generator.createInvertedRenderingContext(entry, enclosing);
+            case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
             };
         } catch (TypeException ex) {
             throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);

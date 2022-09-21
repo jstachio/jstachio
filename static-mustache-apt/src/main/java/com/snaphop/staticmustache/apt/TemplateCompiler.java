@@ -140,7 +140,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
             try {
-                context = context.getChild(name, ChildType.NORMAL);
+                context = context.getChild(name, ChildType.INVERTED);
                 print("// inverted section: " + context.currentEnclosedContextName());
                 println();
                 print(context.beginSectionRenderingCode());

@@ -4,6 +4,10 @@
 
 {{container.id}}
 
+{{^container.id}}
+Hello missing id
+{{/container.id}}
+
 {{#blog.posts}}
 <post>
 {{title}}

@@ -29,29 +29,53 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author vir
  */
-class InvertedRenderingContext implements RenderingContext {
-    private final String expression;
-    private final BooleanRenderingContext parent;
+class InvertedRenderingContext implements BooleanExpressionContext {
+    private final @Nullable BooleanExpressionContext parent;
 
-    InvertedRenderingContext(String expression, BooleanRenderingContext parent) {
-        this.expression = expression;
-        this.parent = parent;
+    InvertedRenderingContext(@Nullable RenderingContext parent) {
+        this.parent = (BooleanExpressionContext) parent;
     }
 
     @Override
     public String beginSectionRenderingCode() {
+        RenderingContext p = getParent();
+        List<BooleanExpressionContext> expressions = new ArrayList<>();
+        while (p != null) {
+            if (p instanceof BooleanExpressionContext be) {
+                if (! be.getExpression().isBlank()) {
+                    expressions.add(be);
+                }
+            }
+            p = p.getParent();
+        }
+        
+        Collections.reverse(expressions);
+        
         StringBuilder sb = new StringBuilder();
         sb.append("/* inverted */ ");
         sb.append("if (");
-        sb.append(parent.getExpression());
-        sb.append(" || " );
-        sb.append(expression);
+        boolean first = true;
+        for (var e : expressions) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append(" || ");
+            }
+            sb.append(e.getExpression());
+        }
         sb.append(") {");
-        return "/* inverted */";
+        return sb.toString();
     }
 
     @Override
@@ -61,7 +85,12 @@ class InvertedRenderingContext implements RenderingContext {
     
     
     public String getExpression() {
-        return expression;
+        return "";
+    }
+    
+    @Override
+    public @Nullable BooleanExpressionContext getParentExpression() {
+        return parent;
     }
 
     @Override
@@ -77,5 +106,10 @@ class InvertedRenderingContext implements RenderingContext {
     @Override
     public VariableContext createEnclosedVariableContext() {
         return parent.createEnclosedVariableContext();
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return parent;
     }
 }

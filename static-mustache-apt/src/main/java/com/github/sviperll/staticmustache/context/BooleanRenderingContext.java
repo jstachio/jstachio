@@ -29,11 +29,13 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author vir
  */
-class BooleanRenderingContext implements RenderingContext {
+class BooleanRenderingContext implements BooleanExpressionContext {
     private final String expression;
     private final RenderingContext parent;
 
@@ -56,6 +58,14 @@ class BooleanRenderingContext implements RenderingContext {
     public String getExpression() {
         return expression;
     }
+    
+    @Override
+    public @Nullable BooleanExpressionContext getParentExpression() {
+        if (parent instanceof BooleanExpressionContext be) {
+            return be;
+        }
+        return null;
+    }
 
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
@@ -70,5 +80,10 @@ class BooleanRenderingContext implements RenderingContext {
     @Override
     public VariableContext createEnclosedVariableContext() {
         return parent.createEnclosedVariableContext();
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return parent;
     }
 }

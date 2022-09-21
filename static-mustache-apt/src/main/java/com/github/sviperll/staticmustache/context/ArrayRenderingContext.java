@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -80,6 +82,11 @@ class ArrayRenderingContext implements RenderingContext {
 
     private JavaExpression indexExpression() {
         return arrayExpression.model().expression(indexVariableName, arrayExpression.model().knownTypes()._int);
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return parent;
     }
 
 }

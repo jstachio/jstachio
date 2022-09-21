@@ -162,8 +162,9 @@ public class RenderingCodeGenerator {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || !(" + expression.text() + ")", enclosing);
-        } else if (expression.type() instanceof DeclaredType) {
-            return new BooleanRenderingContext("(" + expression.text() + ") == null", enclosing);
+        } else if (expression.type() instanceof DeclaredType dt) {
+            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
+            return new BooleanRenderingContext("(" + expression.text() + ") == null", declaredContext);
         } else if (expression.type() instanceof ArrayType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
         } else

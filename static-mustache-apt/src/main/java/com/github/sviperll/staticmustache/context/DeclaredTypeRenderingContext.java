@@ -39,6 +39,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
+import org.jspecify.nullness.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -152,5 +154,10 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     @Override
     public VariableContext createEnclosedVariableContext() {
         return parent.createEnclosedVariableContext();
+    }
+    
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return this.parent;
     }
 }

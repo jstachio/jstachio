@@ -29,6 +29,7 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import org.jspecify.nullness.Nullable;
 
 /**
  *
@@ -68,4 +69,8 @@ class NoDataContext implements RenderingContext {
         return parent.createEnclosedVariableContext();
     }
 
+    @Override
+    public @Nullable RenderingContext getParent() {
+        return parent;
+    }
 }
