@@ -33,23 +33,30 @@ package com.github.sviperll.staticmustache.context;
  *
  * @author vir
  */
-class BooleanRenderingContext implements RenderingContext {
+class InvertedRenderingContext implements RenderingContext {
     private final String expression;
-    private final RenderingContext parent;
+    private final BooleanRenderingContext parent;
 
-    BooleanRenderingContext(String expression, RenderingContext parent) {
+    InvertedRenderingContext(String expression, BooleanRenderingContext parent) {
         this.expression = expression;
         this.parent = parent;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "if (" + expression + ") { ";
+        StringBuilder sb = new StringBuilder();
+        sb.append("/* inverted */ ");
+        sb.append("if (");
+        sb.append(parent.getExpression());
+        sb.append(" || " );
+        sb.append(expression);
+        sb.append(") {");
+        return "/* inverted */";
     }
 
     @Override
     public String endSectionRenderingCode() {
-        return " }" + parent.endSectionRenderingCode();
+        return "}";
     }
     
     

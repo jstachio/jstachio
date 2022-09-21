@@ -30,8 +30,6 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jspecify.nullness.Nullable;
@@ -45,25 +43,17 @@ public class TemplateCompilerContext {
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
-    private final ArrayDeque<TemplateCompilerContext> pathStack;
 
     TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field) {
-        this(processor, variables, field, new ArrayDeque<>(), null);
-    }
-    
-    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
-            @Nullable EnclosedRelation parent) {
-        this(processor, variables, field, new ArrayDeque<>(), parent);
+        this(processor, variables, field, null);
     }
 
     private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
-            ArrayDeque<TemplateCompilerContext> pathStack,  @Nullable EnclosedRelation parent) {
+             @Nullable EnclosedRelation parent) {
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
         this.variables = variables;
-        this.pathStack = pathStack;
-        this.pathStack.add(this);
     }
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
@@ -84,23 +74,11 @@ public class TemplateCompilerContext {
     }
 
     public String beginSectionRenderingCode() {
-        StringBuilder sb = new StringBuilder();
-        var it = pathStack.iterator();
-        while (it.hasNext()) {
-            var i = it.next();
-            sb.append(i.context.beginSectionRenderingCode());
-        }
-        return sb.toString();
+        return context.beginSectionRenderingCode();
     }
 
     public String endSectionRenderingCode() {
-        StringBuilder sb = new StringBuilder();
-        var it = pathStack.descendingIterator();
-        while (it.hasNext()) {
-            var i = it.next();
-            sb.append(i.context.endSectionRenderingCode());
-        }
-        return sb.toString();
+        return context.endSectionRenderingCode();
     }
 
     
@@ -108,21 +86,7 @@ public class TemplateCompilerContext {
         if (name.equals(".")) {
             return _getChild(name, childType);
         }
-        List<String> names = splitNames(name);
-        
-        if (names.size() == 0) {
-            throw new IllegalStateException("names");
-        }
-        ArrayList<TemplateCompilerContext> contexts = new ArrayList<>();
-        TemplateCompilerContext tc = this;
-        for (String n : names) {
-            tc = tc._getChild(n, childType);
-            contexts.add(tc);
-        }
-        tc.pathStack.clear();
-        tc.pathStack.addAll(contexts);
-        
-        return tc;
+        return this._getChild(name, childType);
     }
 
     List<String> splitNames(String name) {
@@ -137,29 +101,48 @@ public class TemplateCompilerContext {
     
     private TemplateCompilerContext _getChild(String name, ChildType childType) throws ContextException {
         if (name.equals(".")) {
+            RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
+            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+        }
+        
+        List<String> names = splitNames(name);
+        
+        if (names.size() == 0) {
+            throw new IllegalStateException("names");
+        }
+        
+        RenderingContext enclosing = new OwnedRenderingContext(context);
+        
+        for (String n : names) {
+            enclosing = _getChildRender(n, childType, enclosing);
+        }
+        return new TemplateCompilerContext(generator, variables, enclosing, new EnclosedRelation(name, this));
+
+    }
+    
+    private RenderingContext _getChildRender(String name, ChildType childType, RenderingContext enclosing) throws ContextException {
+        if (name.equals(".")) {
             return switch (childType) {
-            case NORMAL -> new TemplateCompilerContext(generator, variables, new OwnedRenderingContext(context),
-                    new ArrayDeque<>(),
-                    new EnclosedRelation(name, this));
+            case NORMAL ->  enclosing;
             case INVERTED -> throw new ContextException("Current section can't be inverted");
             };
         }
         if (name.contains(".")) {
             throw new IllegalStateException("dotted path not allowed here");
         }
-        JavaExpression entry = context.getDataOrDefault(name, null);
+        JavaExpression entry = enclosing.getDataOrDefault(name, null);
         if (entry == null)
             throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
         RenderingContext enclosedField;
         try {
             enclosedField = switch (childType) {
-            case NORMAL -> generator.createRenderingContext(entry, new OwnedRenderingContext(context));
-            case INVERTED -> generator.createInvertedRenderingContext(entry, new OwnedRenderingContext(context));
+            case NORMAL -> generator.createRenderingContext(entry, enclosing);
+            case INVERTED -> generator.createInvertedRenderingContext(entry, enclosing);
             };
         } catch (TypeException ex) {
             throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
         }
-        return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+        return enclosedField;
     }
 
     public boolean isEnclosed() {
@@ -167,18 +150,11 @@ public class TemplateCompilerContext {
     }
 
     public String currentEnclosedContextName() {
-        StringBuilder sb = new StringBuilder();
-        for (var tc : pathStack) {
-            if (! sb.isEmpty()) {
-                sb.append(".");
-            }
-            sb.append(tc.enclosedRelation.name());
-        }
-        return sb.toString();
+        return enclosedRelation.name();
     }
 
     public TemplateCompilerContext parentContext() {
-        return pathStack.getFirst().enclosedRelation.parentContext();
+        return enclosedRelation.parentContext();
     }
 
     public String unescapedWriterExpression() {
