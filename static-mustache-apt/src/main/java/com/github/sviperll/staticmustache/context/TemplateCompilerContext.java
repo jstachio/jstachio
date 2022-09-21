@@ -96,8 +96,20 @@ public class TemplateCompilerContext {
 
     
     public enum ChildType {
-        NORMAL,
-        INVERTED;
+        ESCAPED_VAR,
+        UNESCAPED_VAR,
+        SECTION,
+        INVERTED {
+          @Override
+        public ChildType pathType() {
+              return INVERTED;
+        }  
+        },
+        PATH;
+        
+        public ChildType pathType() {
+            return PATH;
+        }
     }
     
     private TemplateCompilerContext _getChild(String name, ChildType childType) throws ContextException {
@@ -114,8 +126,10 @@ public class TemplateCompilerContext {
         
         RenderingContext enclosing = new OwnedRenderingContext(context);
         
-        for (String n : names) {
-            enclosing = _getChildRender(n, childType, enclosing);
+        var it = names.iterator();
+        while (it.hasNext()) {
+            String n = it.next();
+            enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing);
         }
         return new TemplateCompilerContext(generator, variables, enclosing, new EnclosedRelation(name, this));
 
@@ -124,7 +138,7 @@ public class TemplateCompilerContext {
     private RenderingContext _getChildRender(String name, ChildType childType, RenderingContext enclosing) throws ContextException {
         if (name.equals(".")) {
             return switch (childType) {
-            case NORMAL ->  enclosing;
+            case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
             case INVERTED -> throw new ContextException("Current section can't be inverted");
             };
         }
@@ -137,7 +151,7 @@ public class TemplateCompilerContext {
         RenderingContext enclosedField;
         try {
             enclosedField = switch (childType) {
-            case NORMAL -> generator.createRenderingContext(entry, enclosing);
+            case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
             case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
             };
         } catch (TypeException ex) {

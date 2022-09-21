@@ -124,7 +124,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public @Nullable Void beginSection(String name) throws ProcessingException {
             try {
-                context = context.getChild(name, ChildType.NORMAL);
+                context = context.getChild(name, ChildType.SECTION);
                 print("// section: " + context.currentEnclosedContextName());
                 println();
                 print(context.beginSectionRenderingCode());
@@ -172,7 +172,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     //TemplateCompilerContext variable = context.getChild(name);
-                    TemplateCompilerContext variable = context.getChild(name, ChildType.NORMAL);
+                    TemplateCompilerContext variable = context.getChild(name, ChildType.ESCAPED_VAR);
                     print("// variable: " + variable.currentEnclosedContextName());
                     println();
                     print(variable.renderingCode());
@@ -196,7 +196,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
             try {
                 if (!expectsYield || !name.equals("yield")) {
-                    TemplateCompilerContext variable = context.getChild(name, ChildType.NORMAL);
+                    TemplateCompilerContext variable = context.getChild(name, ChildType.UNESCAPED_VAR);
                     print("// unescaped variable: " + variable.currentEnclosedContextName());
                     println();
                     print(variable.unescapedRenderingCode());

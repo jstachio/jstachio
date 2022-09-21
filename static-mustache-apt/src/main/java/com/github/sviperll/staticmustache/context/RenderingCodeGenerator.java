@@ -38,6 +38,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
 import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
 
@@ -114,10 +115,10 @@ public class RenderingCodeGenerator {
         return new TemplateCompilerContext(this, variables, rootRenderingContext);
     }
 
-    RenderingContext createRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
+    RenderingContext createRenderingContext(ChildType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
-            return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+            return createRenderingContext(childType, javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
         } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable.typeElement()))) {
             if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable.typeElement(), javaModel.getDeclaredType(templateFormatElement)))) {
                 throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Layoutable, but wrong format", expression.text(), expression.type()));
@@ -137,27 +138,31 @@ public class RenderingCodeGenerator {
             String elementVariableName = variableContext.introduceNewNameLike("element");
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
             IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
-            return createRenderingContext(iterable.elementExpession(), iterable);
+            return createRenderingContext(childType, iterable.elementExpession(), iterable);
         } else if (expression.type().getKind() == TypeKind.ARRAY) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
             String indexVariableName = variableContext.introduceNewNameLike("i");
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
             ArrayRenderingContext array = new ArrayRenderingContext(expression, indexVariableName, variables);
-            return createRenderingContext(array.componentExpession(), array);
+            return createRenderingContext(childType,array.componentExpession(), array);
         } else if (expression.type().getKind() == TypeKind.DECLARED) {
             DeclaredType declaredType = (DeclaredType)expression.type();
-            RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
-            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(declaredType), nullableContext);
+            RenderingContext ctx = switch (childType) {
+            case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
+            case PATH, INVERTED, SECTION -> nullableRenderingContext(expression, enclosing);
+            };
+            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(declaredType), ctx);
             return declaredContext;
-        } else
+        } else {
             return new NoDataContext(expression, enclosing);
+        }
     }
 
     RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
-            return createRenderingContext(javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+            return createRenderingContext(ChildType.INVERTED, javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
