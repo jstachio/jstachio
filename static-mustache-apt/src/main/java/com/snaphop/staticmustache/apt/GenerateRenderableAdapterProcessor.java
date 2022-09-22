@@ -359,7 +359,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             
             println("package " + packageName + ";");
             println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
-            println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
+            println("public class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
             println("    private final " + className + " data;");
             String constructorModifier = isLayout ? "public" : "private";
