@@ -116,6 +116,10 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
             }
         } else {
+            /*
+             * Lets just bind the damn utils so that we do not have to pass them around everywhere
+             */
+            JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
             Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapter.class.getName());
             for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapter.class)) {
                 TypeElement classElement = (TypeElement)element;

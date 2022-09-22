@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +39,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -70,10 +73,30 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
-        JavaExpression result = getMethodEntryOrDefault(enclosedElements, name, null);
+        
+        var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
+        
+        var methods = ElementFilter.methodsIn(all).stream()
+                .filter(e -> e.getModifiers().contains(Modifier.PUBLIC) 
+                        && ! e.getModifiers().contains(Modifier.STATIC)
+                        && e.getReturnType().getKind() != TypeKind.VOID
+                        && e.getParameters().isEmpty()).toList();
+        
+        List<Element> allMethods = new ArrayList<>();
+        /*
+         * We add the enclosed methods which may include protected methods first.
+         */
+        allMethods.addAll(ElementFilter.methodsIn(enclosedElements));
+        /*
+         * Then we add all the other inherited methods that are public and not static
+         */
+        allMethods.addAll(methods);
+        
+        
+        JavaExpression result = getMethodEntryOrDefault(allMethods, name, null);
         if (result != null)
             return result;
-        result = getMethodEntryOrDefault(enclosedElements, getterName(name), null);
+        result = getMethodEntryOrDefault(allMethods, getterName(name), null);
         if (result != null)
             return result;
         result = getFieldEntryOrDefault(enclosedElements, name, null);

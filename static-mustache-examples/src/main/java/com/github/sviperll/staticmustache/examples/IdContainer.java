@@ -2,9 +2,7 @@ package com.github.sviperll.staticmustache.examples;
 
 import java.util.UUID;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-
-public class IdContainer {
+public class IdContainer implements Mixin {
 	
 	private final UUID id;
 

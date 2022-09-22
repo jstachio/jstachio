@@ -54,16 +54,37 @@ import com.github.sviperll.staticmustache.context.types.ObjectType;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class JavaLanguageModel {
+    
+    private static JavaLanguageModel INSTANCE;
+    
     public static JavaLanguageModel createInstance(Types types, Elements elements) {
         KnownTypes knownTypes = KnownTypes.createInstace(elements, types);
-        return new JavaLanguageModel(types, knownTypes);
+        var self = new JavaLanguageModel(types, elements, knownTypes);
+        INSTANCE = self;
+        return self;
+    }
+    
+    public static JavaLanguageModel getInstance() {
+        return INSTANCE;
     }
 
     private final Types operations;
+    private final Elements elements;
+    
     private final KnownTypes knownTypes;
-    JavaLanguageModel(Types operations, KnownTypes knownTypes) {
+    JavaLanguageModel(Types operations, Elements elements, KnownTypes knownTypes) {
         this.operations = operations;
         this.knownTypes = knownTypes;
+        this.elements = elements;
+    }
+    
+    
+    public Types getTypes() {
+        return operations;
+    }
+    
+    public Elements getElements() {
+        return this.elements;
     }
 
     KnownTypes knownTypes() {
@@ -171,4 +192,5 @@ public class JavaLanguageModel {
         }
         return Optional.empty();
     }
+    
 }

@@ -3,7 +3,7 @@ package com.github.sviperll.staticmustache.examples;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template = "page.mustache")
-public class PageContainer {
+public class PageContainer implements Mixin {
 
 	private final IdContainer container;
 	private final Blog blog;
