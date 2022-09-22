@@ -2,6 +2,8 @@ package com.github.sviperll.staticmustache.spi;
 
 import java.io.IOException;
 
+import org.jspecify.nullness.Nullable;
+
 import com.github.sviperll.staticmustache.text.RenderFunction;
 
 public interface RenderService {
@@ -10,11 +12,11 @@ public interface RenderService {
         return previous;
     }
     
-    default Formatter formatter(String path, Object context, Formatter previous) throws IOException {
+    default Formatter formatter(String path, @Nullable Object context, Formatter previous) throws IOException {
     	return previous;
     }
     
-    default Formatter formatter(String path, Object context) throws IOException {
+    default Formatter formatter(String path, @Nullable Object context) throws IOException {
         return formatter(path, context, Formatter.DefaultFormatter.INSTANCE);
     }
     
