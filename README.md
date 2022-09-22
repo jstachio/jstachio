@@ -26,7 +26,7 @@ Features
  * Non-HTML templates are supported. Set of supported formats is extensible.
 
  * Layouts are supported, i. e. generation of header and footer from one template.
-
+ 
 Installation
 ------------
 
@@ -43,18 +43,13 @@ Use maven dependency:
 
 
 
+SnapHop additions
+-----------------
 
-Changelog
----------
-
- * Since 0.3
-
-   Switch to metachicory version 0.24. Replace text-formats dependency with chicory-text 0.24.
-   Add support for layouts, see `Html5Layout` example.
-
- * Since 0.2
-
-   Introduce metachicory 0.17 and text-formats 0.17 dependencies
+ * RenderService extension point via ServiceLoader
+ * Formatter for custom `toString` of variables
+ * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
+ * Compound dotted path like variables similar to Handlebars. 
 
 Example
 -------
@@ -134,7 +129,7 @@ New class `RenderableHtmlUserAdapter` will be mechanically generated with the ab
 class Main {
     public static void main(String[] args) throws IOException {
         User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list);
-        Renderable<Html> renderable = new RenderableHtmlUserAdapter(user);
+        Renderable<Html> renderable = RenderableHtmlUserAdapter.of(user);
 
         // Any appendable will do: StringBuilder, Writer, OutputStream
         Renderer renderer = renderable.createRenderer(System.out);
@@ -194,6 +189,15 @@ target/classes/user.mustache:5: error: Unable to render field: type error: Can't
 
 See `static-mustache-examples` project for more examples.
 
+Current differences from mustache
+---------------------------------
+
+ * Lambdas are not supported
+ * Partials are not supported
+ * Delimiter redefinition is not supported
+ * (snaphop) [Compound variables aka Handlebars path expressions are supported](https://github.com/samskivert/jmustache#compound-variables)
+ 
+
 Design
 ------
 
@@ -212,13 +216,7 @@ Fields of selected Javascript-objects are binded with template fields.
 Static mustache uses Java-objects to define rendering context.
 Binding of template fields is defined and checked at compile-time.
 Missing fields are compile-time error.
-
-Current differences from mustache
----------------------------------
-
- * Lambdas are not supported
- * Partials are not supported
- * Delimiter redefinition is not supported
+ 
 
 Interpretation of Java-types and values
 ---------------------------------------
