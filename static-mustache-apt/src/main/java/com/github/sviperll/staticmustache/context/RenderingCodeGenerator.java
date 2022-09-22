@@ -41,6 +41,8 @@ import javax.lang.model.type.WildcardType;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
 import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
+import com.github.sviperll.staticmustache.context.types.NativeType;
+import com.github.sviperll.staticmustache.context.types.ObjectType;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -83,21 +85,27 @@ public class RenderingCodeGenerator {
         
         KnownType knownType = javaModel.resolvetype(type).orElse(null);
         
-        if (knownType != null) {
-            //return variables.writer() + ".append(" + knownType.renderToString(text) + ");";
-            return "format(" + variables.writer() + "," + "\"" + text + "\"" + ", " + text + ");"; 
+        if (knownType != null && knownType instanceof ObjectType) {
+            String cname = knownType.renderClassName() + ".class";
+            return renderFormatCall(variables, text, cname);
 
+        }
+        else if (knownType != null && knownType instanceof NativeType) {
+            return "format(" + variables.writer() + ", " + "\"" + text + "\"" + ", " + text + ");"; 
         }
         else if (type instanceof DeclaredType dt) {
             String cname = javaModel.eraseType(dt)  + ".class";
-            return "format(" + variables.writer() //
-                    + ", " + "\"" + text + "\"" //
-                    + ", " + cname //
-                    + ", " + text + ");";
+            return renderFormatCall(variables, text, cname);
             //return variables.writer() + ".append((" + text + ").toString());";
         }
         
         throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
+    }
+    private String renderFormatCall(VariableContext variables, String text, String cname) {
+        return "format(" + variables.writer() //
+                + ", " + "\"" + text + "\"" //
+                + ", " + cname //
+                + ", " + text + ");";
     }
 
     /**

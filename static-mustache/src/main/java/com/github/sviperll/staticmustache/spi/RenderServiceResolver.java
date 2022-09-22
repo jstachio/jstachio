@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import com.github.sviperll.staticmustache.text.RenderFunction;
+
 enum RenderServiceResolver implements RenderService {
 
     INSTANCE;
@@ -30,29 +32,21 @@ enum RenderServiceResolver implements RenderService {
     }
 
     @Override
-    public boolean render(String template, Object context, Appendable a) throws IOException {
+    public RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
+        RenderFunction current = previous;
         for (var rs : Holder.INSTANCE.renderServices) {
-            var stop = rs.render(template, context, a);
-            if (stop) {
-                return true;
-            }
+            current = rs.renderer(template, context, current);
         }
-        return false;
+        return current;
     }
 
     @Override
-    public boolean format(Appendable a, String path, Object context) throws IOException {
+    public Formatter formatter(String path, Object context, Formatter formatter) throws IOException {
+        Formatter current = formatter;
         for (var rs : Holder.INSTANCE.renderServices) {
-            var stop = rs.format(a, path, context);
-            if (stop) {
-                return true;
-            }
+            current = rs.formatter(path, context, current);
         }
-        if (context == null) {
-            throw new NullPointerException("null at: " + path);
-        }
-        a.append(String.valueOf(context));
-        return true;
+        return current;
     }
 
 }

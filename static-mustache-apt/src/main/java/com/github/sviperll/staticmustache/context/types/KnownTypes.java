@@ -31,7 +31,6 @@ package com.github.sviperll.staticmustache.context.types;
 
 import java.util.List;
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -80,30 +79,30 @@ public class KnownTypes {
     private KnownTypes(Elements declarations, Types types) {
 
         
-        _int =  nativeType((types.getPrimitiveType(TypeKind.INT)), Integer.class);
-        _short = nativeType(types.getPrimitiveType(TypeKind.SHORT), Short.class);
-        _long = nativeType(types.getPrimitiveType(TypeKind.LONG), Long.class);
-        _char = nativeType(types.getPrimitiveType(TypeKind.CHAR), Character.class);
-        _byte = nativeType(types.getPrimitiveType(TypeKind.BYTE), Byte.class);
-        _float = nativeType(types.getPrimitiveType(TypeKind.FLOAT), Float.class);
-        _double = nativeType(types.getPrimitiveType(TypeKind.DOUBLE), Double.class);
-        _boolean = nativeType(types.getPrimitiveType(TypeKind.BOOLEAN), Boolean.class);
+        _int =  nativeType(types.getPrimitiveType(TypeKind.INT), Integer.class, int.class);
+        _short = nativeType(types.getPrimitiveType(TypeKind.SHORT), Short.class, short.class);
+        _long = nativeType(types.getPrimitiveType(TypeKind.LONG), Long.class, long.class);
+        _char = nativeType(types.getPrimitiveType(TypeKind.CHAR), Character.class, char.class);
+        _byte = nativeType(types.getPrimitiveType(TypeKind.BYTE), Byte.class, byte.class);
+        _float = nativeType(types.getPrimitiveType(TypeKind.FLOAT), Float.class, float.class);
+        _double = nativeType(types.getPrimitiveType(TypeKind.DOUBLE), Double.class, double.class);
+        _boolean = nativeType(types.getPrimitiveType(TypeKind.BOOLEAN), Boolean.class, boolean.class);
         
-        _Renderable = objectType(declarations.getTypeElement(RenderFunction.class.getName()));
-        _String = objectType(declarations.getTypeElement(String.class.getName()));
+        _Renderable = objectType(declarations,RenderFunction.class);
+        _String = objectType(declarations,String.class);
         
-        _Integer = objectType(declarations.getTypeElement(Integer.class.getName()));
-        _Short = objectType(declarations.getTypeElement(Short.class.getName()));
-        _Long = objectType(declarations.getTypeElement(Long.class.getName()));
-        _Character = objectType(declarations.getTypeElement(Character.class.getName()));
-        _Byte = objectType(declarations.getTypeElement(Byte.class.getName()));
-        _Float = objectType(declarations.getTypeElement(Float.class.getName()));
-        _Double = objectType(declarations.getTypeElement(Double.class.getName()));
-        _Boolean = objectType(declarations.getTypeElement(Boolean.class.getName()));
-        _Error = objectType(declarations.getTypeElement(Error.class.getName()));
-        _RuntimeException = objectType(declarations.getTypeElement(RuntimeException.class.getName()));
-        _Iterable = objectType(declarations.getTypeElement(Iterable.class.getName()));
-        _Layoutable = objectType(declarations.getTypeElement(Layoutable.class.getName()));
+        _Integer = objectType(declarations,Integer.class);
+        _Short = objectType(declarations,Short.class);
+        _Long = objectType(declarations,Long.class);
+        _Character = objectType(declarations,Character.class);
+        _Byte = objectType(declarations,Byte.class);
+        _Float = objectType(declarations,Float.class);
+        _Double = objectType(declarations,Double.class);
+        _Boolean = objectType(declarations,Boolean.class);
+        _Error = objectType(declarations,Error.class);
+        _RuntimeException = objectType(declarations,RuntimeException.class);
+        _Iterable = objectType(declarations,Iterable.class);
+        _Layoutable = objectType(declarations,Layoutable.class);
         
         List<NativeType> nativeTypes = List.of(_int, _short, _long, _char, _byte, _float, _double, _boolean);
         List<ObjectType> objectTypes = List.of(_Renderable, _String, _Integer, _Short, _Long, _Character, _Byte, _Float,
@@ -122,11 +121,12 @@ public class KnownTypes {
         return objectTypes;
     }
     
-    private NativeType nativeType(TypeMirror typeMirror, Class<?> boxedType) {
-        return new NativeType(typeMirror, boxedType);
+    private NativeType nativeType(TypeMirror typeMirror, Class<?> boxedType, Class<?> unboxedType) {
+        return new NativeType(typeMirror, boxedType, unboxedType);
     }
     
-    private ObjectType objectType(TypeElement typeElement) {
-        return new ObjectType(typeElement);
+    private ObjectType objectType(Elements declarations, Class<?> type) {
+        var typeElement = declarations.getTypeElement(type.getName());
+        return new ObjectType(typeElement, type);
     }
 }

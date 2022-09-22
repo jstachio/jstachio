@@ -39,5 +39,18 @@ public interface Formatter {
     default boolean format(Appendable a, String path, String s) throws IOException {
         return format(a, path, String.class, s);
     }
+    
+    public enum DefaultFormatter implements Formatter {
+        INSTANCE;
+        
+        @Override
+        public boolean format(Appendable a, String path, @Nullable Object o) throws IOException {
+            if (o == null) {
+                throw new NullPointerException("null at: " + path);
+            }
+            a.append(String.valueOf(o));
+            return true;
+        }
+    }
 
 }

@@ -2,9 +2,14 @@ package com.github.sviperll.staticmustache.context.types;
 
 import javax.lang.model.element.TypeElement;
 
-public record ObjectType(TypeElement typeElement) implements KnownType {
+public record ObjectType(TypeElement typeElement, Class<?> type) implements KnownType {
     @Override
     public String renderToString(String expression) {
-        return "(" + expression + ")".toString();
+        return "(" + expression + ")";
+    }
+    
+    @Override
+    public String renderClassName() {
+        return type.getName();
     }
 }

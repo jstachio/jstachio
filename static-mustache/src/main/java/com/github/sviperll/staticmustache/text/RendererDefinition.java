@@ -48,7 +48,7 @@ public interface RendererDefinition extends Formatter {
     }
     
     default boolean format(Appendable appendable, String path, @Nullable Object context) throws IOException {
-        return RenderService.findService().format(appendable, path, context);
+        return RenderService.findService().formatter(path, context).format(appendable, path, context);
     }
     
 }

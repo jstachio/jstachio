@@ -2,14 +2,20 @@ package com.github.sviperll.staticmustache.spi;
 
 import java.io.IOException;
 
-public interface RenderService extends Formatter {
+import com.github.sviperll.staticmustache.text.RenderFunction;
+
+public interface RenderService {
     
-    default boolean render(String template, Object context, Appendable a) throws IOException {
-    	return false;
+    default RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
+        return previous;
     }
     
-    default boolean format(Appendable a, String path, Object context) throws IOException {
-    	return false;
+    default Formatter formatter(String path, Object context, Formatter previous) throws IOException {
+    	return previous;
+    }
+    
+    default Formatter formatter(String path, Object context) throws IOException {
+        return formatter(path, context, Formatter.DefaultFormatter.INSTANCE);
     }
     
     public static RenderService findService() {

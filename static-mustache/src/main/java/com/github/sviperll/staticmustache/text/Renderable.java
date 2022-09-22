@@ -63,11 +63,10 @@ public abstract class Renderable<T> implements RenderFunction {
     @Override
     public final void render(Appendable a) throws IOException {
         RenderService rs = RenderService.findService();
-        boolean stop = rs.render(getTemplate(), getContext(), a);
-        if (! stop) {
-            var r = createRenderer(a);
+        var rf = rs.renderer(getTemplate(), getContext(), (writer) -> {
+            var r = createRenderer(writer);
             r.render();
-        }
+        });
+        rf.render(a);
     }
-
 }
