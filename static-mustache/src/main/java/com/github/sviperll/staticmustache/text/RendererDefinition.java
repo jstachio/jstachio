@@ -31,7 +31,7 @@ package com.github.sviperll.staticmustache.text;
 
 import java.io.IOException;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.spi.Formatter;
 import com.github.sviperll.staticmustache.spi.RenderService;

@@ -40,5 +40,5 @@
  * @see TemplateCompilerContext
  * @see RenderingCodeGenerator
  */
-@org.jspecify.nullness.NullMarked
+@org.eclipse.jdt.annotation.NonNullByDefault
 package com.github.sviperll.staticmustache.context;

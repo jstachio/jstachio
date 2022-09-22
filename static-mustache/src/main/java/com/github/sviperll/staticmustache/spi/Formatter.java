@@ -2,7 +2,7 @@ package com.github.sviperll.staticmustache.spi;
 
 import java.io.IOException;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public interface Formatter {
 

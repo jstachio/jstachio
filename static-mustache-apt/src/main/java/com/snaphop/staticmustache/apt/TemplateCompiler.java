@@ -31,7 +31,7 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;

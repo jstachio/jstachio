@@ -43,6 +43,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -56,9 +57,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
+
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
 import com.github.sviperll.staticmustache.TemplateBasePath;
@@ -69,7 +69,6 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.meta.ElementMessage;
 import com.github.sviperll.staticmustache.meta.ElementMessager;
-import com.github.sviperll.staticmustache.spi.Formatter;
 import com.github.sviperll.staticmustache.text.LayoutFunction;
 import com.github.sviperll.staticmustache.text.Layoutable;
 import com.github.sviperll.staticmustache.text.RenderFunction;
@@ -355,7 +354,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                     + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
             
             println("package " + packageName + ";");
-            println("@javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
+            println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
             println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
             println("    private final " + className + " data;");

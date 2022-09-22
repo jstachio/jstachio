@@ -29,7 +29,7 @@
  */
 package com.snaphop.staticmustache.apt;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *

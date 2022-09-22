@@ -42,7 +42,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;

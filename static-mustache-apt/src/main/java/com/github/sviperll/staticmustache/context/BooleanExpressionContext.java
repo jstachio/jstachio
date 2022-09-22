@@ -1,6 +1,6 @@
 package com.github.sviperll.staticmustache.context;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 public interface BooleanExpressionContext extends RenderingContext {
 

@@ -7,9 +7,7 @@ module com.snaphop.staticmustache {
 	exports com.github.sviperll.staticmustache.text;
 	exports com.github.sviperll.staticmustache.text.formats;
 
-	
-	requires java.annotation;
-	requires org.jspecify;
+	requires static org.eclipse.jdt.annotation;
 	
 	uses RenderService;
 	

@@ -32,7 +32,7 @@ package com.github.sviperll.staticmustache.context;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext

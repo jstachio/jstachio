@@ -32,6 +32,7 @@ package com.github.sviperll.staticmustache.context;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -39,7 +40,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
-import org.jspecify.nullness.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *

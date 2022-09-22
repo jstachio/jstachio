@@ -2,11 +2,10 @@ import javax.annotation.processing.Processor;
 
 module com.snaphop.staticmustache.apt {
 	
-	requires java.annotation;
 	requires java.compiler;
 	//requires static metainf.services;
-	requires org.jspecify;
 	requires com.snaphop.staticmustache;
+	requires static org.eclipse.jdt.annotation;
 	
 	
 	provides Processor with com.snaphop.staticmustache.apt.GenerateRenderableAdapterProcessor;
