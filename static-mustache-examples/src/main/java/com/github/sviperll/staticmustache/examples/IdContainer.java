@@ -12,7 +12,7 @@ public class IdContainer implements Mixin {
 		this.id = id;
 	}
 	
-	public UUID getId() {
+	public UUID id() {
 		return id;
 	}
 	

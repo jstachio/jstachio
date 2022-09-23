@@ -38,22 +38,6 @@ public class MainTest {
         RenderableHtmlUser1Adapter.of(user2).render(out);
     }
 
-    @Test
-    public void testUserJMustache() throws Exception {
-
-        JMustacheRenderService.setEnabled(true);
-        try {
-            PrintStream out = requireNonNull(System.out);
-            if (out == null)
-                throw new IllegalStateException();
-            User1 user2 = new User1("Victor", 29, new String[] { "aaa", "bbb", "ccc" }, array, list1);
-
-            RenderableHtmlUser1Adapter.of(user2).render(out);
-        } finally {
-            JMustacheRenderService.setEnabled(false);
-        }
-
-    }
 
     @Test
     public void testPage() throws Exception {

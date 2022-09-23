@@ -31,7 +31,7 @@ public class JMustacheRenderService implements RenderService {
             try (InputStream is = loader.getResourceAsStream(template);
                     BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
                 out.println("Using JMustache");
-                Template t = Mustache.compiler().standardsMode(true).compile(br);
+                Template t = Mustache.compiler().standardsMode(false).compile(br);
                 String results = t.execute(context);
                 a.append(results);
             }
