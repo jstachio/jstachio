@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.context.types;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -71,6 +72,7 @@ public class KnownTypes {
     public final ObjectType _String;
     public final ObjectType _Boolean;
     public final ObjectType _Iterable;
+    public final ObjectType _Map;
     public final ObjectType _Layoutable;
     
     private final List<NativeType> nativeTypes;
@@ -102,6 +104,7 @@ public class KnownTypes {
         _Error = objectType(declarations,Error.class);
         _RuntimeException = objectType(declarations,RuntimeException.class);
         _Iterable = objectType(declarations,Iterable.class);
+        _Map = objectType(declarations, Map.class);
         _Layoutable = objectType(declarations,Layoutable.class);
         
         List<NativeType> nativeTypes = List.of(_int, _short, _long, _char, _byte, _float, _double, _boolean);

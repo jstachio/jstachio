@@ -73,7 +73,8 @@ public class RenderingCodeGenerator {
     }
     String generateRenderingCode(JavaExpression expression, VariableContext variables) throws TypeException {
         TypeMirror type = expression.type();
-        String text = expression.text();
+        final String text = expression.text();
+        String path = expression.path();
         if (type instanceof WildcardType) {
             return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
         }
@@ -87,23 +88,23 @@ public class RenderingCodeGenerator {
         
         if (knownType != null && knownType instanceof ObjectType) {
             String cname = knownType.renderClassName() + ".class";
-            return renderFormatCall(variables, text, cname);
+            return renderFormatCall(variables, path, text, cname);
 
         }
         else if (knownType != null && knownType instanceof NativeType) {
-            return "format(" + variables.writer() + ", " + "\"" + text + "\"" + ", " + text + ");"; 
+            return "format(" + variables.writer() + ", " + "\"" + path + "\"" + ", " + text + ");"; 
         }
         else if (type instanceof DeclaredType dt) {
             String cname = javaModel.eraseType(dt)  + ".class";
-            return renderFormatCall(variables, text, cname);
+            return renderFormatCall(variables, path, text, cname);
             //return variables.writer() + ".append((" + text + ").toString());";
         }
         
         throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
     }
-    private String renderFormatCall(VariableContext variables, String text, String cname) {
+    private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
         return "format(" + variables.writer() //
-                + ", " + "\"" + text + "\"" //
+                + ", " + "\"" + path + "\"" //
                 + ", " + cname //
                 + ", " + text + ");";
     }
@@ -147,6 +148,12 @@ public class RenderingCodeGenerator {
             RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
             IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
             return createRenderingContext(childType, iterable.elementExpession(), iterable);
+        } else if (javaModel.isType(expression.type(), knownTypes._Map)) {
+            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+            DeclaredType mapType = (DeclaredType) expression.type();
+            MapRenderingContext map = new MapRenderingContext(expression, javaModel.asElement(mapType), nullable);
+            return map;
+            
         } else if (expression.type().getKind() == TypeKind.ARRAY) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();

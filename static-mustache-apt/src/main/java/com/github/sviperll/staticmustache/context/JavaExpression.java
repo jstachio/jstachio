@@ -31,6 +31,7 @@ package com.github.sviperll.staticmustache.context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -74,8 +75,17 @@ class JavaExpression {
     private List<String> concatPath(String a) {
     	return concat(this.path, a);
     }
+    
+    public String path() {
+        return path.stream().collect(Collectors.joining("."));
+    }
     JavaExpression arrayLength() {
         return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror(), concatPath("length"));
+    }
+    
+    JavaExpression mapGet(ExecutableElement getMethod, String key) {
+        JavaExpression keyExpression = new JavaExpression(model, "\"" + key + "\"", model.knownTypes()._String.typeElement().asType(), concatPath(key));
+        return methodCall(getMethod, keyExpression);
     }
 
     public JavaExpression subscript(JavaExpression indexExpression) {
