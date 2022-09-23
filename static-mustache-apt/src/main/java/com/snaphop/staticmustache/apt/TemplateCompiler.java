@@ -153,6 +153,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             flushUnescaped();
             try {
                 context = context.getChild(name, ChildType.INVERTED);
+                println();
                 print("// inverted section: " + context.currentEnclosedContextName());
                 println();
                 print(context.beginSectionRenderingCode());
@@ -167,8 +168,6 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
             flushUnescaped();
-            print("// end section: " + context.currentEnclosedContextName());
-            println();
             if (!context.isEnclosed())
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             else if (!context.currentEnclosedContextName().equals(name))
@@ -176,6 +175,8 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             else {
                 depth--;
                 print(context.endSectionRenderingCode());
+                println();
+                print("// end section: " + context.currentEnclosedContextName());
                 println();
                 context = context.parentContext();
                 return null;
@@ -267,8 +268,6 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         private void printCodeToWrite(String s) {
-            //print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
-            //println();
             currentUnescaped.append(s);
         }
         
@@ -286,6 +285,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
                 code.append("\"");
                 i++;
             }
+            println();
             print(context.unescapedWriterExpression() + ".append(" + code.toString() + "); ");
             println();
         }
