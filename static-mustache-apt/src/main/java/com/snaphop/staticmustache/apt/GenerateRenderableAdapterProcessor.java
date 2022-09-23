@@ -52,6 +52,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -357,9 +358,11 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             String extendsString = isLayout ? "" :  " extends " 
                     + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
             
+            String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
+            
             println("package " + packageName + ";");
             println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
-            println("public class " + adapterClassSimpleName + extendsString + implementsString +" {");
+            println(modifier + "class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
             println("    private final " + className + " data;");
             String constructorModifier = isLayout ? "public" : "private";
