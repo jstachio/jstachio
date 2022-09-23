@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.snaphop.staticmustache</groupId>
     <artifactId>static-mustache-maven-parent</artifactId>
-    <version>0.5.12</version>
+    <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>static-mustache-apt</artifactId>
   <build>
