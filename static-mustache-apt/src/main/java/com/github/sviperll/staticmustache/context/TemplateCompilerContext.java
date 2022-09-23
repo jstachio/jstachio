@@ -78,7 +78,9 @@ public class TemplateCompilerContext {
     }
     
     private String debugComment() {
-        return "/* RenderingContext: " + context.getClass() + " */\n";
+        return "/* RenderingContext: " + context.getClass() + " */\n" + //
+                "/* TypeMirror: " + context.currentExpression().type() + " */\n";
+
     }
 
     public String endSectionRenderingCode() {

@@ -91,6 +91,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
     private TemplateCompilerContext context;
     boolean foundYield = false;
     int depth = 0;
+    StringBuilder currentUnescaped = new StringBuilder();
 
     private TemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context, boolean expectsYield) {
         this.reader = reader;
@@ -120,11 +121,21 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         public CompilingTokenProcessor(Position position) {
             this.position = position;
         }
+        
+        void flushUnescaped() {
+            var code = currentUnescaped.toString();
+            if (! code.isEmpty()) {
+                _printCodeToWrite(code);
+            }
+            currentUnescaped.setLength(0);
+        }
 
         @Override
         public @Nullable Void beginSection(String name) throws ProcessingException {
+            flushUnescaped();
             try {
                 context = context.getChild(name, ChildType.SECTION);
+                println();
                 print("// section: " + context.currentEnclosedContextName());
                 println();
                 print(context.beginSectionRenderingCode());
@@ -139,6 +150,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
+            flushUnescaped();
             try {
                 context = context.getChild(name, ChildType.INVERTED);
                 print("// inverted section: " + context.currentEnclosedContextName());
@@ -154,6 +166,9 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
+            flushUnescaped();
+            print("// end section: " + context.currentEnclosedContextName());
+            println();
             if (!context.isEnclosed())
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             else if (!context.currentEnclosedContextName().equals(name))
@@ -169,6 +184,8 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         public @Nullable Void variable(String name) throws ProcessingException {
+            flushUnescaped();
+            println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     //TemplateCompilerContext variable = context.getChild(name);
@@ -194,6 +211,8 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
+            flushUnescaped();
+            println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     TemplateCompilerContext variable = context.getChild(name, ChildType.UNESCAPED_VAR);
@@ -239,6 +258,7 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         public @Nullable Void endOfFile() throws ProcessingException {
+            flushUnescaped();
             if (!context.isEnclosed())
                 return null;
             else {
@@ -247,7 +267,26 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
         }
 
         private void printCodeToWrite(String s) {
-            print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
+            //print(context.unescapedWriterExpression() + ".append(\"" + s + "\"); ");
+            //println();
+            currentUnescaped.append(s);
+        }
+        
+        
+        private void _printCodeToWrite(String s) {
+            if (s.isEmpty()) return;
+            int i = 0;
+            StringBuilder code = new StringBuilder();
+            for (String line : CodeNewLineSplitter.split(s, "\\n")) {
+                if (i > 0) {
+                    code.append(" +");
+                }
+                code.append("\n    \"");
+                code.append(line);
+                code.append("\"");
+                i++;
+            }
+            print(context.unescapedWriterExpression() + ".append(" + code.toString() + "); ");
             println();
         }
 

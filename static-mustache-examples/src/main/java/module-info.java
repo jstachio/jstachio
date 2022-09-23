@@ -8,8 +8,6 @@ module com.snaphop.staticmustache.example {
     requires org.kohsuke.metainf_services;
     requires com.samskivert.jmustache;
     
-    opens com.github.sviperll.staticmustache.examples;
-    
     uses Processor;
     uses RenderService;
     provides RenderService with JMustacheRenderService;

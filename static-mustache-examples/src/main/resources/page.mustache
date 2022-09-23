@@ -1,11 +1,15 @@
-
+<html>
+  <head>
+  <title>Blog</title>
+  </head>
+  <body>
 
 {{container}}
 
-{{container.id}}
+<id>{{container.id}}</id>
 
 {{^container.id}}
-Hello missing id
+<h1>Hello missing id</h1>
 {{/container.id}}
 
 {{container.csrf}}
@@ -14,10 +18,13 @@ Hello missing id
 <post>
 {{title}}
 
-{{meta.id}}
+<id>{{meta.id}}</id>
 
 <version>
 {{meta.id.version}}
 </version>
 </post>
 {{/blog.posts}}
+
+  </body>
+</html>
