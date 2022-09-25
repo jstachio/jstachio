@@ -107,7 +107,7 @@ public class RenderingCodeGenerator {
         }
         
         throw new TypeException(MessageFormat
-                .format("Can''t render {0} expression of {1} type as it is not an allowed type", text, type));
+                .format("Can''t render {0} expression of {1} type as it is not an allowed type. ", text, type));
     }
     private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
         return "format(" + variables.writer() //
@@ -142,12 +142,17 @@ public class RenderingCodeGenerator {
                 VariableContext context = enclosing.createEnclosedVariableContext();
                 return new LayoutableRenderingContext(expression, context, enclosing);
             }
-        } else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
+        } else if (javaModel.isType(expression.type(), knownTypes._boolean) && ! childType.isVar()) {
             return new BooleanRenderingContext(expression.text(), enclosing);
-        } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
+        } else if (javaModel.isType(expression.type(), knownTypes._Boolean) && ! childType.isVar()) {
             RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
             BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression.text(), nullableContext);
             return booleanContext;
+        } else if (javaModel.isType(expression.type(), knownTypes._Optional)) {
+            DeclaredType declaredType = (DeclaredType)expression.type();
+            return new OptionalRenderingContext(expression, javaModel.asElement(declaredType), enclosing);
+            //RenderingContext nullableContext = nullableRenderingContext(expression.methodCall(templateFormatElement, null), enclosing);
+
         } else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
@@ -189,6 +194,10 @@ public class RenderingCodeGenerator {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || !(" + expression.text() + ")", enclosing);
+        } else if (javaModel.isType(expression.type(), knownTypes._Optional)) {
+            DeclaredType dt = (DeclaredType) expression.type();
+            OptionalRenderingContext declaredContext = new OptionalRenderingContext(expression, javaModel.asElement(dt), enclosing);
+            return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null", declaredContext);
         } else if (expression.type() instanceof DeclaredType dt) {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + expression.text() + ") == null", declaredContext);

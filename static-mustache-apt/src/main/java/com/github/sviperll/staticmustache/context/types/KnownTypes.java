@@ -34,6 +34,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.lang.model.type.TypeKind;
@@ -64,6 +65,7 @@ public class KnownTypes {
     public final ObjectType _Renderable;
     public final ObjectType _Error;
     public final ObjectType _RuntimeException;
+    public final ObjectType _Optional;
     
     public final ObjectType _Integer;
     public final ObjectType _Short;
@@ -114,6 +116,7 @@ public class KnownTypes {
         _Boolean = b.objectType(Boolean.class);
         _Error = b.objectType(Error.class);
         _RuntimeException = b.objectType(RuntimeException.class);
+        _Optional = b.objectType(Optional.class);
         _Iterable = b.objectType(Iterable.class);
         _Map = b.objectType(Map.class);
         _UUID = b.objectType(UUID.class);

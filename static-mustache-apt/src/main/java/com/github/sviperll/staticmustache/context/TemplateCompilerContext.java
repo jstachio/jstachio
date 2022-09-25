@@ -112,6 +112,13 @@ public class TemplateCompilerContext {
         public ChildType pathType() {
             return PATH;
         }
+        
+        public boolean isVar() {
+            if (this == ESCAPED_VAR || this == UNESCAPED_VAR) {
+                return true;
+            }
+            return false;
+        }
     }
     
     private TemplateCompilerContext _getChild(String name, ChildType childType) throws ContextException {

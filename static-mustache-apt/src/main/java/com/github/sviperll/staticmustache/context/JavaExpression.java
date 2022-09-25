@@ -87,6 +87,11 @@ class JavaExpression {
         JavaExpression keyExpression = new JavaExpression(model, "\"" + key + "\"", model.knownTypes()._String.typeElement().asType(), concatPath(key));
         return methodCall(getMethod, keyExpression);
     }
+    
+    JavaExpression optionalOrElseNull(ExecutableElement getMethod) {
+        JavaExpression keyExpression = new JavaExpression(model, "null", model.knownTypes()._String.typeElement().asType(), path);
+        return methodCall(getMethod, keyExpression);
+    }
 
     public JavaExpression subscript(JavaExpression indexExpression) {
         return new JavaExpression(model, text + "[" + indexExpression.text() + "]", ((ArrayType)type).getComponentType(), concatPath(indexExpression.text));
