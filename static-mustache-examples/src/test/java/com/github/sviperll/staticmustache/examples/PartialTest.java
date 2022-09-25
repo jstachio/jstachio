@@ -118,13 +118,48 @@ public class PartialTest {
          * or a default is inferred (e.g. null for declared types). This would be analagous to a
          * pure function call aka static method. However this is totally against the mustache spec
          * of partials and thus a different syntax should be used. A good alternative would be
-         * handlebars helpers syntax. However resolving the parameters to pass to the generate the 
+         * handlebars helpers syntax. However resolving the parameters to pass to generate the 
          * renderable would be nontrivial as it is objected based.
          * 
          * 2. Just expand the partial like the real mustache spec but this adds little value.
          * 
          * 3. Don't support partials and just decorate the model.
          * 
+         * 4. Use new mustache blocks and inheritances https://jgonggrijp.gitlab.io/wontache/mustache.5.html
+         * 
+         */
+        
+        /*
+         * Let us assume we use the new mustache parent blocks and inheritances:
+         * https://jgonggrijp.gitlab.io/wontache/mustache.5.html
+         * 
+         */
+        String inputName = "input.mustache";
+        String partialBlocks = """
+                <input name="{{$name}}{{/name}}" value="{{$value}}defaultValue{{/value}}" />
+                """;
+        
+        String personTemplateName2 = "person.mustache";
+
+        String personTemplate2 = """
+                <form>
+                {{<input}}
+                    {{$name}}firstNamme{{/name}}
+                    {{$value}}{{lastName}}{{/$value}}
+                {{/input}}
+                {{<input}}
+                    {{$name}}lastName{{/name}}
+                    {{$value}}{{lastName}}{{/value}}
+                {{/input}}
+                </form>
+                """;
+        /*
+         * Not as nice as the handlebars parameterized partials but not bad.
+         * 
+         * The only issue is jmustache does not support this syntax and neither does handlebars.
+         * 
+         * The other question is if the parent template ({{<input}} input in this calse) gets the context
+         * of the calling template.
          */
         
     }

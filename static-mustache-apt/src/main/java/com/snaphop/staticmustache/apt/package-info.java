@@ -28,4 +28,14 @@
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
+@net.java.dev.hickory.prism.GeneratePrisms({ //
+    @GeneratePrism(com.github.sviperll.staticmustache.GenerateRenderableAdapters.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.GenerateRenderableAdapter.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.TemplateBasePath.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.TemplateInterface.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.TemplateFormatterTypes.class), //
+})
 package com.snaphop.staticmustache.apt;
+
+import net.java.dev.hickory.prism.GeneratePrism;
+

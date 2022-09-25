@@ -40,11 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
@@ -60,10 +60,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import org.kohsuke.MetaInfServices;
+
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.TemplateBasePath;
-import com.github.sviperll.staticmustache.TemplateInterface;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -77,7 +77,7 @@ import com.github.sviperll.staticmustache.text.Renderable;
 import com.github.sviperll.staticmustache.text.RendererDefinition;
 import com.github.sviperll.staticmustache.text.formats.TextFormat;
 
-//@MetaInfServices(value=Processor.class)
+@MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
 public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 	
@@ -159,39 +159,23 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     
     private String resolveBasePath(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        List<? extends AnnotationMirror> ams = packageElement.getAnnotationMirrors();
-        Optional<? extends AnnotationMirror> a = ams.stream().filter(am -> TemplateBasePath.class.getName().equals(getTypeName(am))).findFirst();
-        
-        String basePath = "";
-        if (a.isPresent()) {
-            AnnotationMirror am = a.get();
-            for (var e : am.getElementValues().entrySet()) {
-               if (e.getKey().getSimpleName().contentEquals("value")) {
-                   basePath = (String) e.getValue().getValue();
-                   break;
-               }
-            }
-            if (basePath.equals("")) {
-                basePath = packageElement.getQualifiedName().toString().replace(".", "/") + "/";
-            }
+        TemplateBasePathPrism prism = TemplateBasePathPrism.getInstanceOn(packageElement);
+        if (prism == null) {
+            return "";
+        }
+        String basePath = prism.value();
+        if (basePath.equals("")) {
+            basePath = packageElement.getQualifiedName().toString().replace(".", "/") + "/";
         }
         return basePath;
     }
     
     private List<String> resolveBaseInterface(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        List<? extends AnnotationMirror> ams = packageElement.getAnnotationMirrors();
-        Optional<? extends AnnotationMirror> a = ams.stream().filter(am -> TemplateInterface.class.getName().equals(getTypeName(am))).findFirst();
-        
-        if (a.isPresent()) {
-            AnnotationMirror am = a.get();
-            for (var e : am.getElementValues().entrySet()) {
-               if (e.getKey().getSimpleName().contentEquals("value")) {
-                   var t = (DeclaredType) e.getValue().getValue();
-                   return List.of(getTypeName(t));
-                }
-            }
-
+        TemplateInterfacePrism prism = TemplateInterfacePrism.getInstanceOn(packageElement);
+        if (prism != null) {
+            var tm = prism.value();
+            return List.of(getTypeName(tm));
         }
         return List.of();
     }
@@ -202,11 +186,17 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
        return te.getQualifiedName().toString();
     }
     
-    private String getTypeName(AnnotationMirror am) {
-        Element e = am.getAnnotationType().asElement();
-        TypeElement te = (TypeElement) e;
-       return  te.getQualifiedName().toString();
+    private FormatterTypes getFormatterTypes(TypeElement element) {
+        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+        TemplateFormatterTypesPrism prism = TemplateFormatterTypesPrism.getInstanceOn(packageElement);
+        if (prism == null) {
+            return FormatterTypes.acceptOnlyKnownTypes();
+        }
+        List<String> classNames = prism.types().stream().map(tm -> getTypeName(tm)).toList();
+        List<String> patterns = prism.patterns().stream().toList();
+        return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
     }
+    
     
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws RuntimeException {
         Method templateFormatMethod;
@@ -284,12 +274,13 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 templatePath = basePath + templatePath;
             }
             List<String> ifaces = resolveBaseInterface(element);
+            FormatterTypes formatterTypes = getFormatterTypes(element);
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
                 TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset, templatePath);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
-                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, templateFormatElement);
+                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
                 CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource);
 

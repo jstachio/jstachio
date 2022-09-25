@@ -43,6 +43,7 @@ import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
 import com.github.sviperll.staticmustache.context.types.NativeType;
 import com.github.sviperll.staticmustache.context.types.ObjectType;
+import com.snaphop.staticmustache.apt.FormatterTypes;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -57,17 +58,20 @@ public class RenderingCodeGenerator {
      * @param formatClass type declaration denoting text format. formatClass should not contain type variables.
      * @return
      */
-    public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, TypeElement formatClass) {
-        return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatClass);
+    public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes, TypeElement formatClass
+            ) {
+        return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes, formatClass);
     }
 
     private final KnownTypes knownTypes;
     private final JavaLanguageModel javaModel;
+    private final FormatterTypes formatterTypes;
     private final TypeElement templateFormatElement;
 
-    private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, TypeElement formatClass) {
+    private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes, TypeElement formatClass) {
         this.knownTypes = types;
         this.javaModel = javaModel;
+        this.formatterTypes = formatterTypes;
         this.templateFormatElement = formatClass;
 
     }
@@ -95,12 +99,15 @@ public class RenderingCodeGenerator {
             return "format(" + variables.writer() + ", " + "\"" + path + "\"" + ", " + text + ");"; 
         }
         else if (type instanceof DeclaredType dt) {
-            String cname = javaModel.eraseType(dt)  + ".class";
-            return renderFormatCall(variables, path, text, cname);
+            String cname = javaModel.eraseType(dt);
+            if (formatterTypes.isMatch(cname)) {
+                return renderFormatCall(variables, path, text, cname + ".class");
+            }
             //return variables.writer() + ".append((" + text + ").toString());";
         }
         
-        throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type", text, type));
+        throw new TypeException(MessageFormat
+                .format("Can''t render {0} expression of {1} type as it is not an allowed type", text, type));
     }
     private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
         return "format(" + variables.writer() //

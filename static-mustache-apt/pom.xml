@@ -10,9 +10,11 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <!--
         <configuration>
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
+        -->
       </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
@@ -20,16 +22,26 @@
     </plugins>
   </build>
   <dependencies>
+  
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>static-mustache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>
       <artifactId>metainf-services</artifactId>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>static-mustache</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.jolira</groupId>
+      <artifactId>hickory</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
+
   </dependencies>
 </project>

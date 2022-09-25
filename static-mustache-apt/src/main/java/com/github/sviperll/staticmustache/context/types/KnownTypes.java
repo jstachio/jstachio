@@ -29,11 +29,14 @@
  */
 package com.github.sviperll.staticmustache.context.types;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -73,48 +76,58 @@ public class KnownTypes {
     public final ObjectType _Boolean;
     public final ObjectType _Iterable;
     public final ObjectType _Map;
+    public final ObjectType _UUID;
+    public final ObjectType _URI;
+    public final ObjectType _URL;
+
+    
     public final ObjectType _Layoutable;
     
     private final List<NativeType> nativeTypes;
     private final List<ObjectType> objectTypes;
 
+    
     private KnownTypes(Elements declarations, Types types) {
 
         
-        _int =  nativeType(types.getPrimitiveType(TypeKind.INT), Integer.class, int.class);
-        _short = nativeType(types.getPrimitiveType(TypeKind.SHORT), Short.class, short.class);
-        _long = nativeType(types.getPrimitiveType(TypeKind.LONG), Long.class, long.class);
-        _char = nativeType(types.getPrimitiveType(TypeKind.CHAR), Character.class, char.class);
-        _byte = nativeType(types.getPrimitiveType(TypeKind.BYTE), Byte.class, byte.class);
-        _float = nativeType(types.getPrimitiveType(TypeKind.FLOAT), Float.class, float.class);
-        _double = nativeType(types.getPrimitiveType(TypeKind.DOUBLE), Double.class, double.class);
-        _boolean = nativeType(types.getPrimitiveType(TypeKind.BOOLEAN), Boolean.class, boolean.class);
+        var b = new Builder(declarations, types);
         
-        _Renderable = objectType(declarations,RenderFunction.class);
-        _String = objectType(declarations,String.class);
+        _int =  b.nativeType(TypeKind.INT, Integer.class, int.class);
+        _short = b.nativeType(TypeKind.SHORT, Short.class, short.class);
+        _long = b.nativeType(TypeKind.LONG, Long.class, long.class);
+        _char = b.nativeType(TypeKind.CHAR, Character.class, char.class);
+        _byte = b.nativeType(TypeKind.BYTE, Byte.class, byte.class);
+        _float = b.nativeType(TypeKind.FLOAT, Float.class, float.class);
+        _double = b.nativeType(TypeKind.DOUBLE, Double.class, double.class);
+        _boolean = b.nativeType(TypeKind.BOOLEAN, Boolean.class, boolean.class);
         
-        _Integer = objectType(declarations,Integer.class);
-        _Short = objectType(declarations,Short.class);
-        _Long = objectType(declarations,Long.class);
-        _Character = objectType(declarations,Character.class);
-        _Byte = objectType(declarations,Byte.class);
-        _Float = objectType(declarations,Float.class);
-        _Double = objectType(declarations,Double.class);
-        _Boolean = objectType(declarations,Boolean.class);
-        _Error = objectType(declarations,Error.class);
-        _RuntimeException = objectType(declarations,RuntimeException.class);
-        _Iterable = objectType(declarations,Iterable.class);
-        _Map = objectType(declarations, Map.class);
-        _Layoutable = objectType(declarations,Layoutable.class);
+        _Renderable = b.objectType(RenderFunction.class);
+        _String = b.objectType(String.class);
         
-        List<NativeType> nativeTypes = List.of(_int, _short, _long, _char, _byte, _float, _double, _boolean);
-        List<ObjectType> objectTypes = List.of(_Renderable, _String, _Integer, _Short, _Long, _Character, _Byte, _Float,
-                _Double, _Boolean, _Error, _RuntimeException, _Iterable, _Layoutable);
-        this.nativeTypes = nativeTypes;
-        this.objectTypes = objectTypes;
+        _Integer = b.objectType(Integer.class);
+        _Short = b.objectType(Short.class);
+        _Long = b.objectType(Long.class);
+        _Character = b.objectType(Character.class);
+        _Byte = b.objectType(Byte.class);
+        _Float = b.objectType(Float.class);
+        _Double = b.objectType(Double.class);
+        _Boolean = b.objectType(Boolean.class);
+        _Error = b.objectType(Error.class);
+        _RuntimeException = b.objectType(RuntimeException.class);
+        _Iterable = b.objectType(Iterable.class);
+        _Map = b.objectType(Map.class);
+        _UUID = b.objectType(UUID.class);
+        _URI = b.objectType(URI.class);
+        _URL = b.objectType(URL.class);
+
+
+        
+        _Layoutable = b.objectType(Layoutable.class);
+        
+        this.nativeTypes = List.copyOf(b.nativeTypes);
+        this.objectTypes = List.copyOf(b.objectTypes);
         
     }
-    
     
     public List<NativeType> getNativeTypes() {
         return nativeTypes;
@@ -124,12 +137,30 @@ public class KnownTypes {
         return objectTypes;
     }
     
-    private NativeType nativeType(TypeMirror typeMirror, Class<?> boxedType, Class<?> unboxedType) {
-        return new NativeType(typeMirror, boxedType, unboxedType);
-    }
-    
-    private ObjectType objectType(Elements declarations, Class<?> type) {
-        var typeElement = declarations.getTypeElement(type.getName());
-        return new ObjectType(typeElement, type);
+    private static class Builder  {
+        private final List<NativeType> nativeTypes = new ArrayList<>();
+        private final List<ObjectType> objectTypes = new ArrayList<>();
+        private final Elements elements;
+        private final Types types;
+        
+        public Builder(Elements elements, Types types) {
+            super();
+            this.elements = elements;
+            this.types = types;
+        }
+
+        private NativeType nativeType(TypeKind kind, Class<?> boxedType, Class<?> unboxedType) {
+            var typeMirror = types.getPrimitiveType(kind);
+            var nt = new NativeType(typeMirror, boxedType, unboxedType);
+            nativeTypes.add(nt);
+            return nt;
+        }
+        
+        private ObjectType objectType(Class<?> type) {
+            var typeElement = elements.getTypeElement(type.getName());
+            var ot = new ObjectType(typeElement, type);
+            objectTypes.add(ot);
+            return ot;
+        }
     }
 }
