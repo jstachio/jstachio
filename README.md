@@ -1,6 +1,8 @@
 Static mustache
 ===============
 
+* N.B. this is the SnapHop fork *
+
 Logicless text templating engine.
 Templates are compiled alone with Java-sources.
 Value bindings are statically checked.
@@ -49,7 +51,10 @@ SnapHop additions
  * RenderService extension point via ServiceLoader
  * Formatter for custom `toString` of variables
  * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
- * Compound dotted path like variables similar to Handlebars. 
+ * Compound dotted path like variables similar to Handlebars.
+ * `Map<String, ?>` support
+ * `Optional<?>` support
+ * Customize allowed types that can be outputted otherwise compiler error (to avoid toString on classes that do not have a friendly toString).
 
 Example
 -------
