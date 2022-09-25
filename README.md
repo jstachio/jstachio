@@ -1,7 +1,7 @@
 Static mustache
 ===============
 
-* N.B. this is the SnapHop fork *
+*N.B. this is the SnapHop fork*
 
 Logicless text templating engine.
 Templates are compiled alone with Java-sources.
