@@ -36,7 +36,7 @@ import java.io.Writer;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class SwitchablePrintWriter extends PrintWriter {
+class SwitchablePrintWriter extends PrintWriter implements CodeAppendable {
     static SwitchablePrintWriter createInstance(Writer writer) {
         if (writer instanceof SwitchableWriter)
             return new SwitchablePrintWriter((SwitchableWriter)writer);

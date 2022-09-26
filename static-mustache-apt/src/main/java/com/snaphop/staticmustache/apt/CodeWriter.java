@@ -32,6 +32,8 @@ package com.snaphop.staticmustache.apt;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
+import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateLoader;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,16 +66,20 @@ class CodeWriter {
         writer.println(s);
     }
 
-    void compileTemplate(TextFileObject resource, TemplateCompilerContext context, TemplateCompiler.Factory factory) throws IOException, ProcessingException {
-        InputStream inputStream = resource.openInputStream();
-        try {
+    void compileTemplate(TextFileObject resource, String templateName, TemplateCompilerContext context, TemplateCompiler.Factory factory) 
+            throws IOException, ProcessingException {
+        
+        TemplateLoader templateLoader = (name) -> new NamedReader(
+                new InputStreamReader(resource.openInputStream(name), resource.charset()), name);
+        
+        try(InputStream inputStream = resource.openInputStream(templateName)) {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             try {
                 Reader inputReader = new InputStreamReader(inputStream, resource.charset());
                 try {
-                    NamedReader reader = new NamedReader(inputReader, resource.getName());
+                    NamedReader reader = new NamedReader(inputReader, templateName);
                     try {
-                        TemplateCompiler templateCompiler = factory.createTemplateCompiler(reader, writer, context);
+                        TemplateCompiler templateCompiler = factory.createTemplateCompiler(templateLoader, templateName, writer, context);
                         templateCompiler.run();
                     } finally {
                         reader.close();
@@ -87,12 +93,6 @@ class CodeWriter {
                 } catch (Exception ex) {
                     messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
                 }
-            }
-        } finally {
-            try {
-                inputStream.close();
-            } catch (Exception ex) {
-                messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
             }
         }
     }

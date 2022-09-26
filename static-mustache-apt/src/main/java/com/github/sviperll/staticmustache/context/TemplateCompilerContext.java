@@ -87,6 +87,10 @@ public class TemplateCompilerContext {
         return context.endSectionRenderingCode();
     }
 
+    public TemplateCompilerContext createForPartial() {
+        // No enclosing relation for new partials
+        return new TemplateCompilerContext(generator, variables, context);
+    }
     
     public TemplateCompilerContext getChild(String name, ChildType childType) throws ContextException {
         return _getChild(name, childType);
@@ -107,6 +111,7 @@ public class TemplateCompilerContext {
               return INVERTED;
         }  
         },
+        PARENT,
         PATH;
         
         public ChildType pathType() {
@@ -126,6 +131,12 @@ public class TemplateCompilerContext {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
             return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
         }
+        
+        if (childType == ChildType.PARENT) {
+            RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
+            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+        }
+        
         
         List<String> names = splitNames(name);
         
@@ -149,7 +160,12 @@ public class TemplateCompilerContext {
             return switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
             case INVERTED -> throw new ContextException("Current section can't be inverted");
+            case PARENT -> throw new ContextException("Current section can't be parent");
+
             };
+        }
+        if (childType == ChildType.PARENT) {
+            return enclosing;
         }
         if (name.contains(".")) {
             throw new IllegalStateException("dotted path not allowed here");
@@ -162,6 +178,7 @@ public class TemplateCompilerContext {
             enclosedField = switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
             case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
+            case PARENT -> throw new IllegalStateException("parent not allowed here");
             };
         } catch (TypeException ex) {
             throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);

@@ -51,6 +51,11 @@ public class ProcessingException extends Exception {
     public ProcessingException(Position position, ContextException contextException) {
         this(position, contextException.getMessage(), contextException);
     }
+    
+
+    public ProcessingException(Position position, Exception contextException) {
+        this(position, contextException.getMessage(), contextException);
+    }
 
     public Position position() {
         return position;

@@ -278,11 +278,13 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
-                TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset, templatePath);
+                
+                //TODO pass basepath
+                TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
                 CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
-                ClassWriter writer = new ClassWriter(codeWriter, element, templateResource);
+                ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);
             }
@@ -320,11 +322,13 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     private class ClassWriter {
         private final CodeWriter codeWriter;
         private final TypeElement element;
-        private final TextFileObject template;
-        ClassWriter(CodeWriter compilerManager, TypeElement element, TextFileObject template) {
+        private final TextFileObject templateLoader;
+        private final String templateName;
+        ClassWriter(CodeWriter compilerManager, TypeElement element, TextFileObject templateLoader, String templateName) {
             this.codeWriter = compilerManager;
             this.element = element;
-            this.template = template;
+            this.templateName = templateName;
+            this.templateLoader = templateLoader;
         }
 
         void println(String s) {
@@ -354,7 +358,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("package " + packageName + ";");
             println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
             println(modifier + "class " + adapterClassSimpleName + extendsString + implementsString +" {");
-            println("    public static final String TEMPLATE = \"" + template.getName() + "\";");
+            println("    public static final String TEMPLATE = \"" + templateName + "\";");
             println("    private final " + className + " data;");
             String constructorModifier = isLayout ? "public" : "private";
             println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
@@ -433,7 +437,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("        }");
             println("        @Override");
             println("        public void render() throws " + IOException.class.getName() + " {");
-            codeWriter.compileTemplate(template, context, templateCompilerFactory);
+            codeWriter.compileTemplate(templateLoader, templateName, context, templateCompilerFactory);
             println("        }");
             println("    }");
         }

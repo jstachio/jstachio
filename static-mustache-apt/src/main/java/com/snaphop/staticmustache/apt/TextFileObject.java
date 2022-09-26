@@ -47,16 +47,15 @@ class TextFileObject {
   //  private final FileObject resource;
     private final ProcessingEnvironment env;
     private final Charset charset;
-    private final String name;
-    TextFileObject(ProcessingEnvironment env, Charset charset, String name) {
+    
+    TextFileObject(ProcessingEnvironment env, Charset charset) {
         //this.resource = resource;
         this.env = env;
         this.charset = charset;
-        this.name = name;
     }
     
 
-    InputStream openInputStream() throws IOException {
+    InputStream openInputStream(String name) throws IOException {
         FileObject resource = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", name);
         if (resource.getLastModified() > 0) {
             return resource.openInputStream();
@@ -76,10 +75,6 @@ class TextFileObject {
         }
         
         return resource.openInputStream();
-    }
-
-    String getName() {
-        return name;
     }
 
     Charset charset() {

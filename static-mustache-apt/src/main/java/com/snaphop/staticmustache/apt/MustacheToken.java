@@ -50,6 +50,22 @@ public abstract class MustacheToken {
             }
         };
     }
+    public static MustacheToken beginParentSection(final String name) {
+        return new MustacheToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.beginInvertedSection(name);
+            }
+        };
+    }
+    public static MustacheToken beginBlockSection(final String name) {
+        return new MustacheToken() {
+            @Override
+            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+                return visitor.beginInvertedSection(name);
+            }
+        };
+    }
     public static MustacheToken endSection(final String name) {
         return new MustacheToken() {
             @Override
@@ -106,6 +122,8 @@ public abstract class MustacheToken {
     public interface Visitor<R, E extends Exception> {
         R beginSection(String name) throws E;
         R beginInvertedSection(String name) throws E;
+        R beginParentSection(String name) throws E;
+        R beginBlockSection(String name) throws E;
         R endSection(String name) throws E;
         R variable(String name) throws E;
         R unescapedVariable(String name) throws E;

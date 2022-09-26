@@ -42,7 +42,7 @@ import com.github.sviperll.staticmustache.token.MustacheTokenizer;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>> {
+class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
     public static Factory compilerFactory() {
         return new Factory() {
             @Override
@@ -87,32 +87,55 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
     private final NamedReader reader;
     private final boolean expectsYield;
-    final SwitchablePrintWriter writer;
     private TemplateCompilerContext context;
     boolean foundYield = false;
     int depth = 0;
     StringBuilder currentUnescaped = new StringBuilder();
+    private final TemplateCompilerLike parent;
+    private @Nullable PartialTemplateCompiler partial;
+    //Map<String,String> blockArgs
 
-    private TemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context, boolean expectsYield) {
+    private TemplateCompiler(NamedReader reader, 
+            TemplateCompilerLike parent, 
+            TemplateCompilerContext context,
+            boolean expectsYield) {
         this.reader = reader;
-        this.writer = writer;
+        this.parent = parent;
         this.context = context;
         this.expectsYield = expectsYield;
     }
 
-    void run() throws ProcessingException, IOException {
+    public void run() throws ProcessingException, IOException {
         TokenProcessor<Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
         int readResult;
         while ((readResult = reader.read()) >= 0) {
             processor.processToken((char)readResult);
         }
         processor.processToken(TokenProcessor.EOF);
-        writer.println();
+        getWriter().println();
+    }
+    
+    @Override
+    public @Nullable TemplateCompilerLike getParent() {
+        return this.parent;
+    }
+    
+    @Override
+    public PartialTemplateCompiler createPartialCompiler(String templateName) throws IOException {
+        var reader = getTemplateLoader().open(templateName);
+        TemplateCompilerContext context = this.context.createForPartial();
+        var c = new TemplateCompiler(reader, this, context, expectsYield);
+        return new PartialTemplateCompiler(c);
     }
 
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
+    }
+    
+    @Override
+    public void close() throws IOException {
+        reader.close();
     }
 
     private class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, ProcessingException> {
@@ -165,13 +188,45 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
             return null;
         }
 
+
+        @Override
+        public @Nullable Void beginParentSection(String name) throws ProcessingException {
+            flushUnescaped();
+            try {
+                context = context.getChild(name, ChildType.PARENT);
+                println();
+                print("// section: " + context.currentEnclosedContextName());
+                println();
+                //print(context.beginSectionRenderingCode());
+                //println()
+                depth++;
+                if (partial != null) {
+                    throw new IllegalStateException("partial is already started for this context");
+                }
+                partial = createPartialCompiler(name);
+                
+            } catch (ContextException | IOException ex) {
+                throw new ProcessingException(position, ex);
+            }
+            return null;
+        }
+
+        @Override
+        public @Nullable Void beginBlockSection(String name) throws ProcessingException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
             flushUnescaped();
-            if (!context.isEnclosed())
+            if (!context.isEnclosed()) {
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
-            else if (!context.currentEnclosedContextName().equals(name))
+            }
+            else if (!context.currentEnclosedContextName().equals(name)) {
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
+            }
             else {
                 depth--;
                 print(context.endSectionRenderingCode());
@@ -228,10 +283,10 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
                         throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
                     else {
                         foundYield = true;
-                        if (writer.suppressesOutput())
-                            writer.enableOutput();
+                        if (getWriter().suppressesOutput())
+                            getWriter().enableOutput();
                         else
-                            writer.disableOutput();
+                            getWriter().disableOutput();
                     }
                 }
                 return null;
@@ -297,19 +352,19 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
                     println();
                 }
                 printIndent();
-                writer.print(line);
+                getWriter().print(line);
                 i++;
             }
         }
         
         private void printIndent() {
             for (int i = 0; i <= depth + 2; i++) {
-                writer.print("    ");
+                getWriter().print("    ");
             }
         }
 
         private void println() {
-            writer.println();
+            getWriter().println();
         }
 
     }
@@ -321,13 +376,13 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         void run() throws ProcessingException, IOException {
-            boolean suppressesOutput = writer.suppressesOutput();
-            writer.enableOutput();
+            boolean suppressesOutput = getWriter().suppressesOutput();
+            getWriter().enableOutput();
             super.run();
             if (suppressesOutput)
-                writer.disableOutput();
+                getWriter().disableOutput();
             else
-                writer.enableOutput();
+                getWriter().enableOutput();
         }
     }
 
@@ -338,14 +393,14 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         void run() throws ProcessingException, IOException {
-            boolean suppressesOutput = writer.suppressesOutput();
+            boolean suppressesOutput = getWriter().suppressesOutput();
             foundYield = false;
-            writer.enableOutput();
+            getWriter().enableOutput();
             super.run();
             if (suppressesOutput)
-                writer.disableOutput();
+                getWriter().disableOutput();
             else
-                writer.enableOutput();
+                getWriter().enableOutput();
         }
     }
 
@@ -356,14 +411,14 @@ class TemplateCompiler implements TokenProcessor<PositionedToken<MustacheToken>>
 
         @Override
         void run() throws ProcessingException, IOException {
-            boolean suppressesOutput = writer.suppressesOutput();
+            boolean suppressesOutput = getWriter().suppressesOutput();
             foundYield = false;
-            writer.disableOutput();
+            getWriter().disableOutput();
             super.run();
             if (suppressesOutput)
-                writer.disableOutput();
+                getWriter().disableOutput();
             else
-                writer.enableOutput();
+                getWriter().enableOutput();
         }
     }
 

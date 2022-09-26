@@ -68,23 +68,32 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
 
     @Override
     public Void character(char c) throws ProcessingException {
-        if (c == '#')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
-        else if (c == '^')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
-        else if (c == '/')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
-        else if (c == '&')
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
-        else if (c == '!')
-            tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
-        else if (Character.isWhitespace(c))
-            tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
-        else {
-            StringBuilder fieldName = new StringBuilder();
-            fieldName.append(c);
-            tokenizer.setState(new IdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, fieldName, tokenizer));
+        switch (c) {
+        case '#' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
+        case '^' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
+        case '<' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_PARENT_SECTION, tokenizer));
+        case '$' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_BLOCK_SECTION, tokenizer));
+        case '/' -> tokenizer.setState(
+                new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
+        case '&' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
+        case '!' -> tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
+        default -> {
+            if (Character.isWhitespace(c))
+                tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
+            else {
+                StringBuilder fieldName = new StringBuilder();
+                fieldName.append(c);
+                tokenizer
+                        .setState(new IdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, fieldName, tokenizer));
+            }
         }
+        }
+        ;
         return null;
     }
 

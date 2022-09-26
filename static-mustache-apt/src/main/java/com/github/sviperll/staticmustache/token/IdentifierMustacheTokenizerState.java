@@ -100,24 +100,14 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     public void beforeStateChange() throws ProcessingException {
         String nameString = name.toString();
         switch (kind) {
-            case VARIABLE:
-                tokenizer.emitToken(MustacheToken.variable(nameString));
-                break;
-            case UNESCAPED_VARIABLE_TWO_BRACES:
-            case UNESCAPED_VARIABLE_THREE_BRACES:
-                tokenizer.emitToken(MustacheToken.unescapedVariable(nameString));
-                break;
-            case BEGIN_SECTION:
-                tokenizer.emitToken(MustacheToken.beginSection(nameString));
-                break;
-            case BEGIN_INVERTED_SECTION:
-                tokenizer.emitToken(MustacheToken.beginInvertedSection(nameString));
-                break;
-            case END_SECTION:
-                tokenizer.emitToken(MustacheToken.endSection(nameString));
-                break;
-            default:
-                throw new IllegalStateException("Wrong kind in parser: " + kind);
+        case VARIABLE -> tokenizer.emitToken(MustacheToken.variable(nameString));
+        case UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES -> tokenizer
+                .emitToken(MustacheToken.unescapedVariable(nameString));
+        case BEGIN_SECTION -> tokenizer.emitToken(MustacheToken.beginSection(nameString));
+        case BEGIN_INVERTED_SECTION -> tokenizer.emitToken(MustacheToken.beginInvertedSection(nameString));
+        case BEGIN_PARENT_SECTION -> tokenizer.emitToken(MustacheToken.beginParentSection(nameString));
+        case BEGIN_BLOCK_SECTION -> tokenizer.emitToken(MustacheToken.beginBlockSection(nameString));
+        case END_SECTION -> tokenizer.emitToken(MustacheToken.endSection(nameString));
         }
     }
 
