@@ -76,7 +76,7 @@ import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.github.sviperll.staticmustache.text.Renderable;
 import com.github.sviperll.staticmustache.text.RendererDefinition;
 import com.github.sviperll.staticmustache.text.formats.TextFormat;
-import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateCompilerType;
+import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateCompilerType;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")

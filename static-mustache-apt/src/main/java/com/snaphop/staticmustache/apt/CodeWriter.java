@@ -31,16 +31,15 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
+
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
-import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateCompilerType;
+import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateCompilerType;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateLoader;
 
 /**

@@ -37,6 +37,8 @@ import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
+import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
+import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
 
 /**
  *
@@ -44,12 +46,7 @@ import com.github.sviperll.staticmustache.token.MustacheTokenizer;
  */
 class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
     
-    public enum TemplateCompilerType {
-        SIMPLE,
-        HEADER,
-        FOOTER
-    }
-    public static TemplateCompiler createCompiler(                
+    public static TemplateCompiler createCompiler(
             String templateName,
             TemplateLoader templateLoader,
             CodeAppendable writer,
@@ -60,6 +57,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
         case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
         case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context);
+        case PARAM_PARTIAL_TEMPLATE -> throw new IllegalArgumentException("Cannot create parent template as root");
         };
     }
 
@@ -71,7 +69,13 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     int depth = 0;
     StringBuilder currentUnescaped = new StringBuilder();
     private final TemplateCompilerLike parent;
-    private @Nullable PartialTemplateCompiler partial;
+    //TODO we probably need this as a stack as parent sections can include other parents or partials
+    private @Nullable PartialTemplateCompiler _partial;
+    //TODO fix content not in blocks in parent section
+    protected @Nullable StringCodeAppendable _currentBlockOutput;
+    
+    protected @Nullable HiddenCodeAppendable _parentBlockOutput;
+    
     //Map<String,String> blockArgs
 
     private TemplateCompiler(NamedReader reader, 
@@ -91,7 +95,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             processor.processToken((char)readResult);
         }
         processor.processToken(TokenProcessor.EOF);
-        getWriter().println();
+        currentWriter().println();
     }
     
     @Override
@@ -99,11 +103,48 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         return this.parent;
     }
     
+    public @Nullable PartialTemplateCompiler currentPartial() {
+        return this._partial;
+    }
+    
+    void popPartial() {
+        this._partial = null;
+    }
+    
+    void pushPartial(PartialTemplateCompiler partial) {
+        this._partial = partial;
+    }
+    
+    @Override
+    public TemplateCompilerType getCompilerType() {
+        return TemplateCompilerType.SIMPLE;
+    }
+    
+    @Override
+    public String getTemplateName() {
+        return reader.name();
+    }
+    
+    public CodeAppendable currentWriter() {
+        if (_currentBlockOutput != null) {
+            return _currentBlockOutput;
+        }
+        if (_parentBlockOutput != null) {
+            return _parentBlockOutput;
+        }
+        return getWriter();
+    }
+    
     @Override
     public PartialTemplateCompiler createPartialCompiler(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
         TemplateCompilerContext context = this.context.createForPartial();
-        var c = new TemplateCompiler(reader, this, context, expectsYield);
+        var c = new TemplateCompiler(reader, this, context, expectsYield) {
+            @Override
+            public TemplateCompilerType getCompilerType() {
+                return TemplateCompilerType.PARAM_PARTIAL_TEMPLATE;
+            }
+        };
         return new PartialTemplateCompiler(c);
     }
 
@@ -172,17 +213,20 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
             flushUnescaped();
             try {
-                context = context.getChild(name, ChildType.PARENT);
+                context = context.getChild(name, ChildType.PARENT_PARTIAL);
                 println();
-                print("// parent: " + context.currentEnclosedContextName());
+                print("// parent section: " + context.currentEnclosedContextName());
                 println();
                 //print(context.beginSectionRenderingCode());
                 //println()
                 depth++;
-                if (partial != null) {
+                var p = currentPartial();
+                if (p != null) {
                     throw new IllegalStateException("partial is already started for this context");
                 }
-                partial = createPartialCompiler(name);
+                p = createPartialCompiler(name);
+                pushPartial(p);
+                _parentBlockOutput = HiddenCodeAppendable.INSTANCE;
                 
             } catch (ContextException | IOException ex) {
                 throw new ProcessingException(position, ex);
@@ -192,10 +236,82 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void beginBlockSection(String name) throws ProcessingException {
-            // TODO Auto-generated method stub
+            flushUnescaped();
+            try {
+                context = context.getChild(name, ChildType.BLOCK);
+                println();
+                print("// block section: " + context.currentEnclosedContextName());
+                println();
+                depth++;
+            } catch (ContextException e) {
+                throw new ProcessingException(position, e);
+            }
+            var p = currentPartial();
+            switch (getCompilerType()) {
+            case SIMPLE, HEADER, FOOTER -> {
+                if (p != null) {
+                    /*
+                     * {{< parent}}
+                     * {{$block}} <-- We are here
+                     * some content
+                     * {{/block}} 
+                     * {{/parent}}
+                     */
+                    if (p.getBlockArgs().containsKey(name)) {
+                        throw new ProcessingException(position, "parameter block was defined earlier. block = " + name);
+                    }
+                    var writer = new StringCodeAppendable();
+                    p.getBlockArgs().put(name, writer);
+                    if (_currentBlockOutput != null) {
+                        throw new IllegalStateException("existing block output");
+                    }
+                    _currentBlockOutput = writer;
+                    if (currentWriter() != _currentBlockOutput) {
+                        throw new IllegalStateException("unexpected current writer");
+                    }
+                    println();
+                    print("// calling block: " + name);
+                    println();
+                }
+                else {
+                    /*
+                     * {{$block}}{{/block}}
+                     */
+                    // Apparently this root template has block parameters
+                    // We do nothing for now
+                    println();
+                    print("// unused block: " + name);
+                    println();
+                }
+            }
+            case PARAM_PARTIAL_TEMPLATE -> {
+                /*
+                 * We are in a block in a partial template
+                 * e.g. partial.mustache
+                 * {{$block}}{{/block}}
+                 */
+                var callingTemplate = getParent();
+                if (callingTemplate == null) {
+                    throw new IllegalStateException("missing calling template");
+                }
+                var callingPartial = callingTemplate.currentPartial();
+                if (callingPartial == null) {
+                    throw new IllegalStateException("missing partial info");
+                }
+                if (_currentBlockOutput != null) {
+                    throw new IllegalStateException("existing block output");
+                }
+                /*
+                 * We will reconcile at the endSection if we actually need the output
+                 */
+                _currentBlockOutput = new StringCodeAppendable();
+                println();
+                print("// local block : " + name);
+                println();
+                
+            }};
             return null;
         }
-
 
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
@@ -208,19 +324,89 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             }
             else {
-                if (context.getType() == ChildType.PARENT) {
-                    var p = partial;
+                switch(context.getType()) {
+                case PARENT_PARTIAL -> {
+                    /*
+                     * We are at the end of a parent partial
+                     * {{< parent}}
+                     * {{/parent}} <-- we are here
+                     */
+                    _parentBlockOutput = null;
+                    var p = currentPartial();
                     if (p == null) {
-                        throw new IllegalStateException("partial is already started for this context");
+                        throw new IllegalStateException("partial is has not started for this context");
                     }
                     try (p) {
                         p.run();
-                        partial = null;
+                        popPartial();
                     } catch (IOException e) {
                         throw new ProcessingException(position, e);
                     }
-                    
                 }
+                case BLOCK -> {
+                    // Block END
+                    switch(getCompilerType()) {
+                    case PARAM_PARTIAL_TEMPLATE -> {
+                        /*
+                         * We are in a partial template at the end of a block
+                         * {{$block}}
+                         * {{/block}} <-- we are here
+                         */
+                        var callingTemplate = getParent();
+                        if (callingTemplate == null) {
+                            throw new IllegalStateException("missing calling template");
+                        }
+                        StringCodeAppendable output = _currentBlockOutput;
+                        if (output == null) {
+                            throw new IllegalStateException("Missing block output");
+                        }
+                        
+                        PartialTemplateCompiler callingPartial = callingTemplate.currentPartial();
+                        if (callingPartial == null) {
+                            throw new IllegalStateException("missing partial info");
+                        }
+                        var callingBlock = callingPartial.getBlockArgs().get(name);
+                        if (callingBlock != null) {
+                            output = callingBlock;
+                        }
+                        _currentBlockOutput = null;
+                        /*
+                         * We dump the generated code to the
+                         * class file being generated.
+                         */
+                        print("// dumping: " + name);
+                        currentWriter().print(output.toString());
+                    }
+                    case HEADER,FOOTER,SIMPLE -> {
+                        /*
+                         * We are in a calling template at the end of a block
+                         * {{$block}}
+                         * {{/block}} <-- we are here
+                         */
+                        var p = currentPartial();
+                        if (p != null) {
+                            /*
+                             * We are inside of some {{< parent }}
+                             * and the block is done so we can restore
+                             * output
+                             */
+                            if (_currentBlockOutput == null) {
+                                throw new IllegalStateException("should be capturing for the block");
+                            }
+                            if (_currentBlockOutput != p.getBlockArgs().get(name)) {
+                                throw new IllegalStateException();
+                            }
+                            println();
+                            print("// end calling block: " + name);
+                            println();
+                            _currentBlockOutput = null;
+                        }
+                    }
+                    }
+                }
+                case PATH, ESCAPED_VAR, UNESCAPED_VAR -> { throw new IllegalStateException("Context Type is wrong. " + context.getType());}
+                case ROOT, SECTION, INVERTED -> {}
+                };
                 depth--;
                 print(context.endSectionRenderingCode());
                 println();
@@ -276,10 +462,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                         throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
                     else {
                         foundYield = true;
-                        if (getWriter().suppressesOutput())
-                            getWriter().enableOutput();
+                        if (currentWriter().suppressesOutput())
+                            currentWriter().enableOutput();
                         else
-                            getWriter().disableOutput();
+                            currentWriter().disableOutput();
                     }
                 }
                 return null;
@@ -345,19 +531,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     println();
                 }
                 printIndent();
-                getWriter().print(line);
+                currentWriter().print(line);
                 i++;
             }
         }
         
         private void printIndent() {
             for (int i = 0; i <= depth + 2; i++) {
-                getWriter().print("    ");
+                currentWriter().print("    ");
             }
         }
 
         private void println() {
-            getWriter().println();
+            currentWriter().println();
         }
 
     }
@@ -414,6 +600,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             else
                 getWriter().enableOutput();
         }
+        
     }
 
     static class HeaderTemplateCompiler extends RootTemplateCompiler {
@@ -438,6 +625,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             else
                 getWriter().enableOutput();
         }
+        
+        @Override
+        public TemplateCompilerType getCompilerType() {
+            return TemplateCompilerType.HEADER;
+        }
     }
 
     static class FooterTemplateCompiler extends RootTemplateCompiler {
@@ -460,6 +652,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 getWriter().disableOutput();
             else
                 getWriter().enableOutput();
+        }
+        
+        @Override
+        public TemplateCompilerType getCompilerType() {
+            return TemplateCompilerType.FOOTER;
         }
     }
 

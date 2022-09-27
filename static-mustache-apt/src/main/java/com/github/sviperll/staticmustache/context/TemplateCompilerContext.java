@@ -93,11 +93,11 @@ public class TemplateCompilerContext {
 
     public TemplateCompilerContext createForPartial() {
         // No enclosing relation for new partials
-        return new TemplateCompilerContext(generator, variables, context, ChildType.PARENT);
+        return new TemplateCompilerContext(generator, variables, context, ChildType.PARENT_PARTIAL);
     }
     
-    public TemplateCompilerContext getChild(String name, ChildType childType) throws ContextException {
-        return _getChild(name, childType);
+    public TemplateCompilerContext getChild(String path, ChildType childType) throws ContextException {
+        return _getChild(path, childType);
     }
 
     List<String> splitNames(String name) {
@@ -105,18 +105,20 @@ public class TemplateCompilerContext {
     }
 
     
+    //TODO rename to ContextType
     public enum ChildType {
         ROOT,
         ESCAPED_VAR,
         UNESCAPED_VAR,
-        SECTION,
-        INVERTED {
+        SECTION, // #
+        INVERTED { // ^
           @Override
         public ChildType pathType() {
               return INVERTED;
         }  
         },
-        PARENT,
+        BLOCK, // $
+        PARENT_PARTIAL, // <
         PATH;
         
         public ChildType pathType() {
@@ -137,11 +139,10 @@ public class TemplateCompilerContext {
             return new TemplateCompilerContext(generator, variables, enclosedField, childType, new EnclosedRelation(name, this));
         }
         
-        if (childType == ChildType.PARENT) {
+        if (childType == ChildType.PARENT_PARTIAL || childType == ChildType.BLOCK) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
             return new TemplateCompilerContext(generator, variables, enclosedField, childType, new EnclosedRelation(name, this));
         }
-        
         
         List<String> names = splitNames(name);
         
@@ -165,15 +166,21 @@ public class TemplateCompilerContext {
             return switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
             case INVERTED -> throw new ContextException("Current section can't be inverted");
-            case PARENT, ROOT -> throw new ContextException("Current section can't be parent");
-
+            case PARENT_PARTIAL, ROOT -> throw new ContextException("Current section can't be parent");
+            case BLOCK -> throw new ContextException("Current section can't be block");
             };
         }
-        if (childType == ChildType.PARENT) {
+        /*
+         * dots are allowed in parent partials since they are file names
+         */
+        if (childType == ChildType.PARENT_PARTIAL) {
             return enclosing;
         }
         if (name.contains(".")) {
             throw new IllegalStateException("dotted path not allowed here");
+        }
+        if (childType == ChildType.BLOCK) {
+            return enclosing;
         }
         JavaExpression entry = enclosing.getDataOrDefault(name, null);
         if (entry == null)
@@ -183,7 +190,8 @@ public class TemplateCompilerContext {
             enclosedField = switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
             case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
-            case PARENT, ROOT -> throw new IllegalStateException("parent not allowed here");
+            case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
+            case BLOCK -> throw new IllegalStateException("block not allowed here");
             };
         } catch (TypeException ex) {
             throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);

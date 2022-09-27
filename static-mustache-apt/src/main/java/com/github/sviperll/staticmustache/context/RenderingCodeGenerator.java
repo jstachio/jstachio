@@ -177,7 +177,7 @@ public class RenderingCodeGenerator {
             DeclaredType declaredType = (DeclaredType)expression.type();
             RenderingContext ctx = switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
-            case PATH, INVERTED, PARENT, SECTION -> nullableRenderingContext(expression, enclosing);
+            case PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
             case ROOT -> throw new UnsupportedOperationException("Unimplemented case: " + childType);
             default -> throw new IllegalArgumentException("Unexpected value: " + childType);
             
