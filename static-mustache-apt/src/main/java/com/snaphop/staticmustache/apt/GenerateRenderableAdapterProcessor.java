@@ -76,6 +76,7 @@ import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.github.sviperll.staticmustache.text.Renderable;
 import com.github.sviperll.staticmustache.text.RendererDefinition;
 import com.github.sviperll.staticmustache.text.formats.TextFormat;
+import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateCompilerType;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
@@ -389,7 +390,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
                 println("    }");
 
-                writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompiler.compilerFactory());
+                writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompilerType.SIMPLE);
             } else {
             	
                 println("    public static " + LayoutFunction.class.getName() + " of(" + className + " data) {");
@@ -411,13 +412,13 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterFooterRendererClassName + "(data, writer, unescapedWriter));");
                 println("    }");
 
-                writeRendererDefinitionClass(adapterHeaderRendererClassSimpleName, TemplateCompiler.headerCompilerFactory());
-                writeRendererDefinitionClass(adapterFooterRendererClassSimpleName, TemplateCompiler.footerCompilerFactory());
+                writeRendererDefinitionClass(adapterHeaderRendererClassSimpleName, TemplateCompilerType.HEADER);
+                writeRendererDefinitionClass(adapterFooterRendererClassSimpleName, TemplateCompilerType.FOOTER);
             }
             println("}");
         }
 
-        private void writeRendererDefinitionClass(String adapterRendererClassSimpleName, TemplateCompiler.Factory templateCompilerFactory) throws IOException, ProcessingException {
+        private void writeRendererDefinitionClass(String adapterRendererClassSimpleName, TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException {
             String className = element.getQualifiedName().toString();
             println("    private static class " + adapterRendererClassSimpleName + " implements " + RendererDefinition.class.getName() + " {");
 
@@ -437,7 +438,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("        }");
             println("        @Override");
             println("        public void render() throws " + IOException.class.getName() + " {");
-            codeWriter.compileTemplate(templateLoader, templateName, context, templateCompilerFactory);
+            codeWriter.compileTemplate(templateLoader, templateName, context, templateCompilerType);
             println("        }");
             println("    }");
         }

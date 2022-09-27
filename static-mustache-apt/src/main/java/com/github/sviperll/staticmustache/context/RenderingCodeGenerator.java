@@ -128,7 +128,7 @@ public class RenderingCodeGenerator {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
         DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
-        return new TemplateCompilerContext(this, variables, rootRenderingContext);
+        return new TemplateCompilerContext(this, variables, rootRenderingContext, ChildType.ROOT);
     }
 
     RenderingContext createRenderingContext(ChildType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
@@ -177,7 +177,10 @@ public class RenderingCodeGenerator {
             DeclaredType declaredType = (DeclaredType)expression.type();
             RenderingContext ctx = switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
-            case PATH, INVERTED, SECTION -> nullableRenderingContext(expression, enclosing);
+            case PATH, INVERTED, PARENT, SECTION -> nullableRenderingContext(expression, enclosing);
+            case ROOT -> throw new UnsupportedOperationException("Unimplemented case: " + childType);
+            default -> throw new IllegalArgumentException("Unexpected value: " + childType);
+            
             };
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(declaredType), ctx);
             return declaredContext;

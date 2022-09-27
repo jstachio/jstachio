@@ -43,47 +43,26 @@ import com.github.sviperll.staticmustache.token.MustacheTokenizer;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
-    public static Factory compilerFactory() {
-        return new Factory() {
-            @Override
-            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
-                                                           TemplateCompilerContext context) {
-                return TemplateCompiler.createCompiler(reader, writer, context);
-            }
+    
+    public enum TemplateCompilerType {
+        SIMPLE,
+        HEADER,
+        FOOTER
+    }
+    public static TemplateCompiler createCompiler(                
+            String templateName,
+            TemplateLoader templateLoader,
+            CodeAppendable writer,
+            TemplateCompilerContext context,
+            TemplateCompilerType compilerType) throws IOException {
+        
+       return switch (compilerType) {
+        case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
+        case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
+        case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context);
         };
     }
 
-    public static Factory headerCompilerFactory() {
-        return new Factory() {
-            @Override
-            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
-                                                           TemplateCompilerContext context) {
-                return TemplateCompiler.createHeaderCompiler(reader, writer, context);
-            }
-        };
-    }
-
-    public static Factory footerCompilerFactory() {
-        return new Factory() {
-            @Override
-            public TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
-                                                           TemplateCompilerContext context) {
-                return TemplateCompiler.createFooterCompiler(reader, writer, context);
-            }
-        };
-    }
-
-    public static TemplateCompiler createCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-        return new SimpleTemplateCompiler(reader, writer, context);
-    }
-
-    public static TemplateCompiler createHeaderCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-        return new HeaderTemplateCompiler(reader, writer, context);
-    }
-
-    public static TemplateCompiler createFooterCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-        return new FooterTemplateCompiler(reader, writer, context);
-    }
 
     private final NamedReader reader;
     private final boolean expectsYield;
@@ -191,6 +170,8 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
+            System.out.println("beginParent: " + context.currentEnclosedContextName());
+
             flushUnescaped();
             try {
                 context = context.getChild(name, ChildType.PARENT);
@@ -220,6 +201,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
+
             flushUnescaped();
             if (!context.isEnclosed()) {
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
@@ -228,6 +210,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 throw new ProcessingException(position, "Closing " + name + " block instead of " + context.currentEnclosedContextName());
             }
             else {
+                if (context.getType() == ChildType.PARENT) {
+                    var p = partial;
+                    if (p == null) {
+                        throw new IllegalStateException("partial is already started for this context");
+                    }
+                    try {
+                        p.run();
+                        partial = null;
+                    } catch (IOException e) {
+                        throw new ProcessingException(position, e);
+                    }
+                    
+                }
                 depth--;
                 print(context.endSectionRenderingCode());
                 println();
@@ -369,13 +364,50 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
     }
 
-    static class SimpleTemplateCompiler extends TemplateCompiler {
-        private SimpleTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-            super(inputReader, writer, context, false);
+    static class RootTemplateCompiler extends TemplateCompiler {
+        
+        private final TemplateLoader templateLoader;
+        private final CodeAppendable writer;
+        
+        public RootTemplateCompiler(
+                String templateName,
+                TemplateLoader templateLoader,
+                CodeAppendable writer,
+                TemplateCompilerContext context, 
+                boolean expectsYield) throws IOException {
+            super(templateLoader.open(templateName), null, context, expectsYield);
+            this.templateLoader = templateLoader;
+            this.writer = writer;
         }
 
         @Override
-        void run() throws ProcessingException, IOException {
+        public @Nullable TemplateCompilerLike getParent() {
+            return null;
+        }
+        
+        @Override
+        public TemplateLoader getTemplateLoader() {
+            return this.templateLoader;
+        }
+        
+        @Override
+        public CodeAppendable getWriter() {
+            return this.writer;
+        }
+        
+    }
+    
+    static class SimpleTemplateCompiler extends RootTemplateCompiler {
+        
+        private SimpleTemplateCompiler(String templateName,
+                TemplateLoader templateLoader,
+                CodeAppendable writer,
+                TemplateCompilerContext context) throws IOException {
+            super(templateName, templateLoader, writer, context, false);
+        }
+
+        @Override
+        public void run() throws ProcessingException, IOException {
             boolean suppressesOutput = getWriter().suppressesOutput();
             getWriter().enableOutput();
             super.run();
@@ -386,13 +418,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
     }
 
-    static class HeaderTemplateCompiler extends TemplateCompiler {
-        private HeaderTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-            super(inputReader, writer, context, true);
+    static class HeaderTemplateCompiler extends RootTemplateCompiler {
+        private HeaderTemplateCompiler(
+                String templateName,
+                TemplateLoader templateLoader,
+                CodeAppendable writer,
+                TemplateCompilerContext context
+                ) throws IOException {
+            super(templateName, templateLoader, writer, context, true);
+
         }
 
         @Override
-        void run() throws ProcessingException, IOException {
+        public void run() throws ProcessingException, IOException {
             boolean suppressesOutput = getWriter().suppressesOutput();
             foundYield = false;
             getWriter().enableOutput();
@@ -404,13 +442,18 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
     }
 
-    static class FooterTemplateCompiler extends TemplateCompiler {
-        private FooterTemplateCompiler(NamedReader inputReader, SwitchablePrintWriter writer, TemplateCompilerContext context) {
-            super(inputReader, writer, context, true);
+    static class FooterTemplateCompiler extends RootTemplateCompiler {
+        private FooterTemplateCompiler(
+                String templateName,
+                TemplateLoader templateLoader,
+                CodeAppendable writer,
+                TemplateCompilerContext context
+                ) throws IOException {
+            super(templateName, templateLoader, writer, context, true);
         }
 
         @Override
-        void run() throws ProcessingException, IOException {
+        public void run() throws ProcessingException, IOException {
             boolean suppressesOutput = getWriter().suppressesOutput();
             foundYield = false;
             getWriter().disableOutput();

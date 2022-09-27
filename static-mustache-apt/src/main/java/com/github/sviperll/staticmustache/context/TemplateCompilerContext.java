@@ -43,17 +43,21 @@ public class TemplateCompilerContext {
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
+    private final ChildType childType;
 
-    TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field) {
-        this(processor, variables, field, null);
+    TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field,
+            ChildType childType) {
+        this(processor, variables, field, childType, null);
     }
 
     private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
+            ChildType childType,
              @Nullable EnclosedRelation parent) {
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
         this.variables = variables;
+        this.childType = childType;
     }
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
@@ -89,7 +93,7 @@ public class TemplateCompilerContext {
 
     public TemplateCompilerContext createForPartial() {
         // No enclosing relation for new partials
-        return new TemplateCompilerContext(generator, variables, context);
+        return new TemplateCompilerContext(generator, variables, context, ChildType.PARENT);
     }
     
     public TemplateCompilerContext getChild(String name, ChildType childType) throws ContextException {
@@ -102,6 +106,7 @@ public class TemplateCompilerContext {
 
     
     public enum ChildType {
+        ROOT,
         ESCAPED_VAR,
         UNESCAPED_VAR,
         SECTION,
@@ -129,12 +134,12 @@ public class TemplateCompilerContext {
     private TemplateCompilerContext _getChild(String name, ChildType childType) throws ContextException {
         if (name.equals(".")) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+            return new TemplateCompilerContext(generator, variables, enclosedField, childType, new EnclosedRelation(name, this));
         }
         
         if (childType == ChildType.PARENT) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(generator, variables, enclosedField, new EnclosedRelation(name, this));
+            return new TemplateCompilerContext(generator, variables, enclosedField, childType, new EnclosedRelation(name, this));
         }
         
         
@@ -151,7 +156,7 @@ public class TemplateCompilerContext {
             String n = it.next();
             enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing);
         }
-        return new TemplateCompilerContext(generator, variables, enclosing, new EnclosedRelation(name, this));
+        return new TemplateCompilerContext(generator, variables, enclosing, childType, new EnclosedRelation(name, this));
 
     }
     
@@ -160,7 +165,7 @@ public class TemplateCompilerContext {
             return switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
             case INVERTED -> throw new ContextException("Current section can't be inverted");
-            case PARENT -> throw new ContextException("Current section can't be parent");
+            case PARENT, ROOT -> throw new ContextException("Current section can't be parent");
 
             };
         }
@@ -178,7 +183,7 @@ public class TemplateCompilerContext {
             enclosedField = switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
             case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
-            case PARENT -> throw new IllegalStateException("parent not allowed here");
+            case PARENT, ROOT -> throw new IllegalStateException("parent not allowed here");
             };
         } catch (TypeException ex) {
             throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
@@ -200,5 +205,9 @@ public class TemplateCompilerContext {
 
     public String unescapedWriterExpression() {
         return variables.unescapedWriter();
+    }
+    
+    public ChildType getType() {
+        return childType;
     }
 }

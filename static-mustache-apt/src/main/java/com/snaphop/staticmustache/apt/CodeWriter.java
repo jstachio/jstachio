@@ -29,11 +29,6 @@
  */
 package com.snaphop.staticmustache.apt;
 
-import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import com.github.sviperll.staticmustache.context.VariableContext;
-import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateLoader;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +37,11 @@ import java.io.Reader;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
+import com.github.sviperll.staticmustache.context.VariableContext;
+import com.snaphop.staticmustache.apt.TemplateCompiler.TemplateCompilerType;
+import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateLoader;
 
 /**
  *
@@ -66,35 +66,40 @@ class CodeWriter {
         writer.println(s);
     }
 
-    void compileTemplate(TextFileObject resource, String templateName, TemplateCompilerContext context, TemplateCompiler.Factory factory) 
+    void compileTemplate(TextFileObject resource, String templateName, TemplateCompilerContext context, TemplateCompilerType templateCompilerType) 
             throws IOException, ProcessingException {
         
         TemplateLoader templateLoader = (name) -> new NamedReader(
-                new InputStreamReader(resource.openInputStream(name), resource.charset()), name);
+                new InputStreamReader(new BufferedInputStream(resource.openInputStream(name)), resource.charset()), name);
         
-        try(InputStream inputStream = resource.openInputStream(templateName)) {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-            try {
-                Reader inputReader = new InputStreamReader(inputStream, resource.charset());
-                try {
-                    NamedReader reader = new NamedReader(inputReader, templateName);
-                    try {
-                        TemplateCompiler templateCompiler = factory.createTemplateCompiler(templateLoader, templateName, writer, context);
-                        templateCompiler.run();
-                    } finally {
-                        reader.close();
-                    }
-                } finally {
-                    inputReader.close();
-                }
-            } finally {
-                try {
-                    bufferedInputStream.close();
-                } catch (Exception ex) {
-                    messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
-                }
-            }
+        try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType)) {
+            templateCompiler.run();
         }
+        
+//        try(InputStream inputStream = resource.openInputStream(templateName)) {
+//            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+//            try {
+//                Reader inputReader = new InputStreamReader(inputStream, resource.charset());
+//                try {
+//                    NamedReader reader = new NamedReader(inputReader, templateName);
+//                    try {
+//                        //      factory.createTemplateCompiler(templateLoader, templateName, writer, context);
+//                        TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType);
+//                        templateCompiler.run();
+//                    } finally {
+//                        reader.close();
+//                    }
+//                } finally {
+//                    inputReader.close();
+//                }
+//            } finally {
+//                try {
+//                    bufferedInputStream.close();
+//                } catch (Exception ex) {
+//                    messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
+//                }
+//            }
+//        }
     }
 
 

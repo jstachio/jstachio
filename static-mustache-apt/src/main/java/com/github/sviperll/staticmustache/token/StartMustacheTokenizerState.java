@@ -72,15 +72,15 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
         case '#' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
         case '^' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
         case '<' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_PARENT_SECTION, tokenizer));
         case '$' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_BLOCK_SECTION, tokenizer));
         case '/' -> tokenizer.setState(
-                new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
+                new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
         case '&' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
         case '!' -> tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
         default -> {
             if (Character.isWhitespace(c))
