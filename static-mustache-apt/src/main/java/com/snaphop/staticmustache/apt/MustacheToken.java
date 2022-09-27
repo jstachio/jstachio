@@ -54,7 +54,7 @@ public abstract class MustacheToken {
         return new MustacheToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginInvertedSection(name);
+                return visitor.beginParentSection(name);
             }
         };
     }
@@ -62,7 +62,7 @@ public abstract class MustacheToken {
         return new MustacheToken() {
             @Override
             public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginInvertedSection(name);
+                return visitor.beginBlockSection(name);
             }
         };
     }

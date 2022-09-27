@@ -170,7 +170,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
-            System.out.println("beginParent: " + context.currentEnclosedContextName());
+            System.out.println("beginParent: " + name);
 
             flushUnescaped();
             try {
