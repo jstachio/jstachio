@@ -170,13 +170,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
-            System.out.println("beginParent: " + name);
-
             flushUnescaped();
             try {
                 context = context.getChild(name, ChildType.PARENT);
                 println();
-                print("// section: " + context.currentEnclosedContextName());
+                print("// parent: " + context.currentEnclosedContextName());
                 println();
                 //print(context.beginSectionRenderingCode());
                 //println()
@@ -215,7 +213,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (p == null) {
                         throw new IllegalStateException("partial is already started for this context");
                     }
-                    try {
+                    try (p) {
                         p.run();
                         partial = null;
                     } catch (IOException e) {

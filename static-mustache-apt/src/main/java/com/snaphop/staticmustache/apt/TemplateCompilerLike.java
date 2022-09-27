@@ -39,6 +39,7 @@ interface TemplateCompilerLike extends AutoCloseable {
         }
         
         void run() throws ProcessingException, IOException {
+            templateCompiler.run();
         }
         
         @Override
