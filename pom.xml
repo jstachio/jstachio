@@ -16,6 +16,7 @@
     <module>static-mustache</module>
     <module>static-mustache-examples</module>
     <module>static-mustache-apt</module>
+    <module>static-mustache-spec</module>
   </modules>
   <scm>
     <connection>scm:git:https://github.com/snaphop/static-mustache.git</connection>

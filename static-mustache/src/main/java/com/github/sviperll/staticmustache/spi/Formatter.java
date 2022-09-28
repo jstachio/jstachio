@@ -48,7 +48,9 @@ public interface Formatter {
             if (o == null) {
                 throw new NullPointerException("null at: " + path);
             }
-            a.append(String.valueOf(o));
+            else {
+                a.append(String.valueOf(o));
+            }
             return true;
         }
     }

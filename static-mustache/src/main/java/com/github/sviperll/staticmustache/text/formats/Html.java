@@ -63,6 +63,8 @@ public class Html {
             csq = csq == null ? "null" : csq;
             for (int i = start; i < end; i++) {
                 char c = csq.charAt(i);
+                //TODO use switch here
+                //TODO better yet get rid of this class for something better
                 if (c == '&') {
                     appendable.append(csq, start, i);
                     start = i + 1;
@@ -75,7 +77,12 @@ public class Html {
                     appendable.append(csq, start, i);
                     start = i + 1;
                     appendable.append("&gt;");
+                } else if (c == '"') {
+                    appendable.append(csq, start, i);
+                    start = i + 1;
+                    appendable.append("&quot;");
                 }
+                
             }
             appendable.append(csq, start, end);
             return this;

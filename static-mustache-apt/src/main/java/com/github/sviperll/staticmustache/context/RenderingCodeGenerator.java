@@ -127,7 +127,14 @@ public class RenderingCodeGenerator {
     public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
-        DeclaredTypeRenderingContext rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
+        RenderingContext rootRenderingContext;
+        // A special case scenario where the root is a java.util.Map ... not recommended but useful for spec tests
+        if (javaModel.isType(element.asType(), knownTypes._Map)) {
+             rootRenderingContext = new MapRenderingContext(javaExpression, element, root);
+        }
+        else {
+             rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
+        }
         return new TemplateCompilerContext(this, variables, rootRenderingContext, ChildType.ROOT);
     }
 
