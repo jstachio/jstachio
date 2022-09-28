@@ -19,7 +19,6 @@ public class ParentTest {
                 PARAM message from parent: Surprise hello 1!
                 no replace
                 CHILD end
-                
                 after child""";
         assertEquals(expected, actual);
     }
@@ -37,7 +36,6 @@ public class ParentTest {
                 CHILD local message
                 no replace
                 CHILD end
-
                 after child""";
         assertEquals(expected, actual);
     }
