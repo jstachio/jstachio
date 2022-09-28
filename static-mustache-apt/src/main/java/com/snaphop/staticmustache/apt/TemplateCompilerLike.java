@@ -20,20 +20,20 @@ interface TemplateCompilerLike extends AutoCloseable {
     String getTemplateName();
 
     @Nullable
-    TemplateCompilerLike getParent();
+    TemplateCompilerLike getCaller();
 
     default TemplateLoader getTemplateLoader() {
-        return Objects.requireNonNull(getParent()).getTemplateLoader();
+        return Objects.requireNonNull(getCaller()).getTemplateLoader();
     }
 
     default CodeAppendable getWriter() {
-        return Objects.requireNonNull(getParent()).getWriter();
+        return Objects.requireNonNull(getCaller()).getWriter();
 
     }
     
-    @Nullable PartialTemplateCompiler currentPartial();
+    @Nullable ParameterPartial currentParameterPartial();
 
-    PartialTemplateCompiler createPartialCompiler(String templateName) throws ProcessingException, IOException;
+    ParameterPartial createParameterPartial(String templateName) throws ProcessingException, IOException;
 
     /*
      * TODO rename to TemplateType
@@ -50,15 +50,13 @@ interface TemplateCompilerLike extends AutoCloseable {
         NamedReader open(String name) throws IOException;
     }
 
-    class PartialTemplateCompiler implements AutoCloseable {
+    class ParameterPartial implements AutoCloseable {
 
         private final TemplateCompilerLike templateCompiler;
 
         private final Map<String, StringCodeAppendable> blockArgs = new LinkedHashMap<>();
 
-        private final Map<String, StringCodeAppendable> blocks = new LinkedHashMap<>();
-
-        public PartialTemplateCompiler(TemplateCompilerLike templateCompiler) {
+        public ParameterPartial(TemplateCompilerLike templateCompiler) {
             super();
             this.templateCompiler = templateCompiler;
         }
@@ -76,8 +74,8 @@ interface TemplateCompilerLike extends AutoCloseable {
             return blockArgs;
         }
         
-        public Map<String, StringCodeAppendable> getBlocks() {
-            return blocks;
+        public String getTemplateName() {
+            return templateCompiler.getTemplateName();
         }
         
         @Override

@@ -12,8 +12,14 @@ public class ParentTest {
         String actual = ParentRenderer.of(parent).renderString();
         String expected = """
                 before child
-                GREETINGS FROM CHILD with:
-                Surprise hello 1!
+                CHILD start
+                GRAND CHILD start
+                PARAM message from child.mustache
+                GRAND CHILD end
+                PARAM message from parent: Surprise hello 1!
+                no replace
+                CHILD end
+                
                 after child""";
         assertEquals(expected, actual);
     }
@@ -24,8 +30,14 @@ public class ParentTest {
         String actual = Parent2Renderer.of(parent2).renderString();
         String expected = """
                 before child
-                GREETINGS FROM CHILD with:
-                Oh you are being quiet!
+                CHILD start
+                GRAND CHILD start
+                PARAM message from child.mustache
+                GRAND CHILD end
+                CHILD local message
+                no replace
+                CHILD end
+
                 after child""";
         assertEquals(expected, actual);
     }

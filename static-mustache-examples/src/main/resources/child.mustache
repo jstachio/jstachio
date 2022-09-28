@@ -1,2 +1,7 @@
-GREETINGS FROM CHILD with:
-{{$message}}Oh you are being quiet!{{/message}}
+CHILD start
+{{< grand-child.mustache}}
+{{$message}}PARAM message from child.mustache{{/message}}
+{{/grand-child.mustache}}
+{{$message}}CHILD local message{{/message}}
+{{$noreplace}}no replace{{/noreplace}}
+CHILD end
