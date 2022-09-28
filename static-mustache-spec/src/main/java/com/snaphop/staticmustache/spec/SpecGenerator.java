@@ -94,6 +94,8 @@ public class SpecGenerator {
 
     public void generateAll() throws IOException {
         generate("interpolation");
+        generate("sections");
+
     }
     
     public void generate(String group) throws IOException {
