@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -14,7 +15,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,11 +27,19 @@ import com.samskivert.mustache.Mustache.Escaper;
 import com.samskivert.mustache.Template;
 
 /**
- * Specification tests
+ * Specification generator
  */
 public class SpecGenerator {
     
     PrintStream out = System.out;
+    
+    public static void main(String[] args) {
+        try {
+            new SpecGenerator().generateAll();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
     
     interface JavaItem {
         
@@ -84,12 +92,8 @@ public class SpecGenerator {
         
     }
 
-    //TODO render somewhere else
-    //@Ignore
-    @Test
     public void generateAll() throws IOException {
         generate("interpolation");
-        //generate("sections");
     }
     
     public void generate(String group) throws IOException {
@@ -255,6 +259,7 @@ public class SpecGenerator {
 
 
 
+    @SuppressWarnings("unchecked")
     private List<SpecItem> toSpecItems(String group, JsonNode spec) throws IOException {
 
         List<SpecItem> list = new ArrayList<>();
@@ -271,7 +276,7 @@ public class SpecGenerator {
                  list.add(new SpecItem(name, group, desc, template, json, _data, expected));
              } 
              else {
-                 String s = new ObjectMapper().readValue(json, String.class);
+                 //String s = new ObjectMapper().readValue(json, String.class);
              }
         }
         return list;

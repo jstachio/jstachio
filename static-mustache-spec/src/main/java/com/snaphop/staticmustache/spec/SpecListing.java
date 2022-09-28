@@ -20,6 +20,7 @@ public interface SpecListing {
         return render(createContext());
     }
     
+    @SuppressWarnings("unchecked")
     default Map<String, Object> createContext() {
         try {
             return (Map<String,Object>) new ObjectMapper().readValue(json(), Map.class);
