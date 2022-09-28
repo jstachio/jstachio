@@ -70,7 +70,7 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
 
     @Override
     public Void character(char c) throws ProcessingException {
-        if (c != '\n' && c != '"') {
+        if (c != '\n' && c != '"' && c != '\r') {
             text.append(c);
         } else {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));

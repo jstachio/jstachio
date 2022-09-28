@@ -492,8 +492,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 printCodeToWrite("\\n");
             } else if (c == '"') {
                 printCodeToWrite("\\\"");
-            } else
+            } else if (c == '\r') {
+                printCodeToWrite("\\r");
+            } else {
                 printCodeToWrite("" + c);
+            }
+            
             return null;
         }
 
