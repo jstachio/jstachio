@@ -5,11 +5,17 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.snaphop.staticmustache.spec.custom.Custom;
+import com.snaphop.staticmustache.spec.custom.Custom.Person;
+import com.snaphop.staticmustache.spec.custom.DottedNamesAmpersandInterpolationRenderer;
+import com.snaphop.staticmustache.spec.custom.DottedNamesBasicInterpolationRenderer;
+import com.snaphop.staticmustache.spec.custom.DottedNamesTripleMustacheInterpolationRenderer;
 import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
 
 @RunWith(Parameterized.class)
@@ -28,14 +34,25 @@ public class SpecInterpolationTest {
     
     @Test
     public void testRender() throws Exception {
-        String actual = specItem.render();
         String expected = specItem.expected();
-        assertEquals(expected, actual);
+        String json = specItem.json();
+        String actual = render(specItem);
+        assertEquals(json, expected, actual);
     }
     
-    SpecListing replaceIfNeeded(InterpolationSpecTemplate specTemplate) {
+    String render(InterpolationSpecTemplate specTemplate) {
         return switch(specTemplate) {
-        default -> specTemplate;
+        case DOTTED_NAMES___BASIC_INTERPOLATION -> 
+            DottedNamesBasicInterpolationRenderer.of(new Custom.DottedNamesBasicInterpolation(Person.Joe)).renderString();
+        case DOTTED_NAMES___AMPERSAND_INTERPOLATION ->
+           DottedNamesAmpersandInterpolationRenderer.of(new Custom.DottedNamesAmpersandInterpolation(Person.Joe)).renderString();
+        case DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION -> 
+           DottedNamesTripleMustacheInterpolationRenderer.of(new Custom.DottedNamesTripleMustacheInterpolation(Person.Joe)).renderString();
+        case DOTTED_NAMES___ARBITRARY_DEPTH ->
+            throw new AssumptionViolatedException("Test not written yet");
+        case DOTTED_NAMES___INITIAL_RESOLUTION ->
+            throw new AssumptionViolatedException("Test not written yet");
+        default -> specTemplate.render();
         };
     }
     

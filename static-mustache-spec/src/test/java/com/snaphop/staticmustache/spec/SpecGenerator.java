@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -82,6 +83,8 @@ public class SpecGenerator {
         
     }
 
+    //TODO render somewhere else
+    @Ignore
     @Test
     public void interpolations() throws IOException {
         
