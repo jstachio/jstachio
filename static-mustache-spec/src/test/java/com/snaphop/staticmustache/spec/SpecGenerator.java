@@ -1,5 +1,6 @@
 package com.snaphop.staticmustache.spec;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -7,12 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,7 +40,7 @@ public class SpecGenerator {
         String group();
         
         default String className() {
-            return name().replaceAll("-", "").replaceAll(" ", "");
+            return name().replaceAll("[- \\(\\)]", "");
         }
         default String packageName() {
             return SpecModel.class.getPackageName() + "." + group();
@@ -71,7 +72,7 @@ public class SpecGenerator {
             return "src/main/resources/" + templateFileName();
         }
         String enumName() {
-            return name().replaceAll("-", "_").replaceAll(" ", "_").toUpperCase();
+            return name().replaceAll("[- \\(\\)]", "_").toUpperCase();
         }
     }
     
@@ -84,11 +85,15 @@ public class SpecGenerator {
     }
 
     //TODO render somewhere else
-    @Ignore
+    //@Ignore
     @Test
-    public void interpolations() throws IOException {
+    public void generateAll() throws IOException {
+        generate("interpolation");
+        //generate("sections");
+    }
+    
+    public void generate(String group) throws IOException {
         
-        String group = "interpolation";
         String specFile = group + ".yml";
         
         var items = toSpecItems(group, getSpec(specFile));
@@ -108,13 +113,19 @@ public class SpecGenerator {
                 .escapeHTML(false)
                 .compile(javaTemplate);
         
+        int j = 0;
         for (var i : items) {
             out.println(i);
+            if (j == 0) {
+                File javaDir = Path.of(i.javaFilePath()).toFile().getParentFile();
+                File templateDir = Path.of(i.templateFilePath()).toFile().getParentFile();
+                cleanDirectory(javaDir);
+                cleanDirectory(templateDir);
+            }
             String javaCode = template.execute(i);
-            Path.of(i.javaFilePath()).toFile().getParentFile().mkdir();
-            Path.of(i.templateFilePath()).toFile().getParentFile().mkdir();
             Files.writeString(Path.of(i.javaFilePath()), javaCode, StandardOpenOption.CREATE);
             Files.writeString(Path.of(i.templateFilePath()), i.template());
+            j++;
         }
         
         String enumTemplate = """
@@ -198,7 +209,15 @@ public class SpecGenerator {
 
         String packageInfoCode = Mustache.compiler().escapeHTML(false).compile(packageInfoTemplate).execute(model);
         Files.writeString(Path.of(templateList.packageInfoFilePath()), packageInfoCode);
-        
+    }
+    
+    void cleanDirectory(File directory) throws IOException {
+        if (directory.exists()) {
+            try (var s = Files.walk(directory.toPath())) {
+                s.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            }
+        }
+        directory.mkdirs();
     }
 
 //    @Ignore
