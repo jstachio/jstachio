@@ -8,25 +8,56 @@ import java.util.stream.StreamSupport;
 import org.eclipse.jdt.annotation.Nullable;
 
 
+/**
+ * This interface is to allow you to simulate JSON node like trees
+ * without being coupled to a particularly JSON lib.
+ * 
+ * It is not recommended you use this extension point as it generally avoids the type checking safty of this library.
+ * 
+ * It is mainly used for the spec test.
+ * 
+ * @author agentgt
+ *
+ */
 public interface MapNode extends Iterable<MapNode> {
 
-    public static @Nullable MapNode ofNullable(@Nullable Object o) {
+    public static @Nullable MapNode ofRoot(@Nullable Object o) {
         if (o == null) {
             return null;
         }
         if (o instanceof MapNode n) {
             return n;
         }
-        return new DefaultMapNode(o);
+        return new RootMapNode(o);
         
     }
     
-    default @Nullable MapNode get(String field) {
-        Object o = object();
-        if (o instanceof Map<?,?> m) {
-            return ofNullable(m.get(field));
+    default @Nullable MapNode ofChild(@Nullable Object o) {
+        if (o == null) {
+            return null;
         }
-        return null;
+        return new ChildMapNode(this, o);
+    }
+    
+    default @Nullable MapNode get(String field) {
+        /*
+         * In theory we could make a special RenderingContext for MapNode
+         * to go up the stack (generated code) but it would probably should look similar
+         * to the following.
+         */
+        Object o = object();
+        MapNode child = null;
+        if (o instanceof Map<?,?> m) {
+            child = ofChild(m.get(field));
+        }
+        if (child != null) {
+            return child;
+        }
+        var parent = parent();
+        if (parent != null && parent != this) {
+            child = parent.get(field);
+        }
+        return child;
     }
     
     public Object object();
@@ -35,11 +66,15 @@ public interface MapNode extends Iterable<MapNode> {
         return String.valueOf(object());
     }
     
+    default @Nullable MapNode parent() {
+        return null;
+    }
+    
     @Override
     default Iterator<MapNode> iterator() {
         Object o = object();
         if (o instanceof Iterable<?> it) {
-            return StreamSupport.stream(it.spliterator(), false).map(MapNode::ofNullable).iterator();
+            return StreamSupport.stream(it.spliterator(), false).map(this::ofChild).iterator();
         }
         else if (isFalsey()) {
             return Collections.emptyIterator();
@@ -52,7 +87,14 @@ public interface MapNode extends Iterable<MapNode> {
         return Boolean.FALSE.equals(o);
     }
     
-    public record DefaultMapNode(Object object) implements MapNode {
+    public record RootMapNode(Object object) implements MapNode {
+        @Override
+        public String toString() {
+            return renderString();
+        }
+    }
+    
+    public record ChildMapNode(MapNode parent, Object object) implements MapNode {
         @Override
         public String toString() {
             return renderString();

@@ -40,18 +40,8 @@ public class SpecSectionsTest {
             failed = false;
         } finally {
             if (failed) {
-                String message = String.format("""
-                        Error.
-                        <name>%s</name>
-                        <template>
-                        %s
-                        </template>
-                        <json>
-                        %s
-                        </json>
-                        """, specItem.name(), "", json);
-                
-                System.out.println(message);
+                System.out.print(specItem.describe());
+                System.out.println("<actual>" + actual + "</actual>\n");
             }
         }
 

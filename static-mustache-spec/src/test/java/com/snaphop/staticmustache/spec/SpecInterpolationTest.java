@@ -43,18 +43,7 @@ public class SpecInterpolationTest {
             failed = false;
         } finally {
             if (failed) {
-                String message = String.format("""
-                        Error.
-                        <name>%s</name>
-                        <template>
-                        %s
-                        </template>
-                        <json>
-                        %s
-                        </json>
-                        """, specItem.name(), "", json);
-
-                System.out.println(message);
+                System.out.println(specItem.describe());
             }
         }
     }

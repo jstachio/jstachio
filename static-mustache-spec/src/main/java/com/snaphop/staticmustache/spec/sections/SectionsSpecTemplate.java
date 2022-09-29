@@ -6,8 +6,11 @@ import java.util.Map;
 public enum SectionsSpecTemplate implements SpecListing {
     TRUTHY(
         Truthy.class,
+        "sections",
         "Truthy",
+        "Truthy sections should have their contents rendered.",
         "{\"boolean\":true}",
+        "\"{{#boolean}}This should be rendered.{{/boolean}}\"",
         "\"This should be rendered.\""){
         public String render(Map<String, Object> o) {
             var m = new Truthy();
@@ -18,8 +21,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     FALSEY(
         Falsey.class,
+        "sections",
         "Falsey",
+        "Falsey sections should have their contents omitted.",
         "{\"boolean\":false}",
+        "\"{{#boolean}}This should not be rendered.{{/boolean}}\"",
         "\"\""){
         public String render(Map<String, Object> o) {
             var m = new Falsey();
@@ -30,8 +36,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     NULL_IS_FALSEY(
         Nullisfalsey.class,
+        "sections",
         "Null is falsey",
+        "Null is falsey.",
         "{\"null\":null}",
+        "\"{{#null}}This should not be rendered.{{/null}}\"",
         "\"\""){
         public String render(Map<String, Object> o) {
             var m = new Nullisfalsey();
@@ -42,8 +51,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     CONTEXT(
         Context.class,
+        "sections",
         "Context",
+        "Objects and hashes should be pushed onto the context stack.",
         "{\"context\":{\"name\":\"Joe\"}}",
+        "\"{{#context}}Hi {{name}}.{{/context}}\"",
         "\"Hi Joe.\""){
         public String render(Map<String, Object> o) {
             var m = new Context();
@@ -54,8 +66,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     PARENT_CONTEXTS(
         Parentcontexts.class,
+        "sections",
         "Parent contexts",
+        "Names missing in the current context are looked up in the stack.",
         "{\"a\":\"foo\",\"b\":\"wrong\",\"sec\":{\"b\":\"bar\"},\"c\":{\"d\":\"baz\"}}",
+        "\"{{#sec}}{{a}}, {{b}}, {{c.d}}{{/sec}}\"",
         "\"foo, bar, baz\""){
         public String render(Map<String, Object> o) {
             var m = new Parentcontexts();
@@ -66,8 +81,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     VARIABLE_TEST(
         Variabletest.class,
+        "sections",
         "Variable test",
+        "Non-false sections have their value at the top of context,\naccessible as {{.}} or through the parent context. This gives\na simple way to display content conditionally if a variable exists.\n",
         "{\"foo\":\"bar\"}",
+        "\"{{#foo}}{{.}} is {{foo}}{{/foo}}\"",
         "\"bar is bar\""){
         public String render(Map<String, Object> o) {
             var m = new Variabletest();
@@ -78,8 +96,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     LIST_CONTEXTS(
         ListContexts.class,
+        "sections",
         "List Contexts",
+        "All elements on the context stack should be accessible within lists.",
         "{\"tops\":[{\"tname\":{\"upper\":\"A\",\"lower\":\"a\"},\"middles\":[{\"mname\":\"1\",\"bottoms\":[{\"bname\":\"x\"},{\"bname\":\"y\"}]}]}]}",
+        "{{#tops}}{{#middles}}{{tname.lower}}{{mname}}.{{#bottoms}}{{tname.upper}}{{mname}}{{bname}}.{{/bottoms}}{{/middles}}{{/tops}}",
         "a1.A1x.A1y."){
         public String render(Map<String, Object> o) {
             var m = new ListContexts();
@@ -90,8 +111,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     DEEPLY_NESTED_CONTEXTS(
         DeeplyNestedContexts.class,
+        "sections",
         "Deeply Nested Contexts",
+        "All elements on the context stack should be accessible.",
         "{\"a\":{\"one\":1},\"b\":{\"two\":2},\"c\":{\"three\":3,\"d\":{\"four\":4,\"five\":5}}}",
+        "{{#a}}\n{{one}}\n{{#b}}\n{{one}}{{two}}{{one}}\n{{#c}}\n{{one}}{{two}}{{three}}{{two}}{{one}}\n{{#d}}\n{{one}}{{two}}{{three}}{{four}}{{three}}{{two}}{{one}}\n{{#five}}\n{{one}}{{two}}{{three}}{{four}}{{five}}{{four}}{{three}}{{two}}{{one}}\n{{one}}{{two}}{{three}}{{four}}{{.}}6{{.}}{{four}}{{three}}{{two}}{{one}}\n{{one}}{{two}}{{three}}{{four}}{{five}}{{four}}{{three}}{{two}}{{one}}\n{{/five}}\n{{one}}{{two}}{{three}}{{four}}{{three}}{{two}}{{one}}\n{{/d}}\n{{one}}{{two}}{{three}}{{two}}{{one}}\n{{/c}}\n{{one}}{{two}}{{one}}\n{{/b}}\n{{one}}\n{{/a}}\n",
         "1\n121\n12321\n1234321\n123454321\n12345654321\n123454321\n1234321\n12321\n121\n1\n"){
         public String render(Map<String, Object> o) {
             var m = new DeeplyNestedContexts();
@@ -102,8 +126,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     LIST(
         List.class,
+        "sections",
         "List",
+        "Lists should be iterated; list items should visit the context stack.",
         "{\"list\":[{\"item\":1},{\"item\":2},{\"item\":3}]}",
+        "\"{{#list}}{{item}}{{/list}}\"",
         "\"123\""){
         public String render(Map<String, Object> o) {
             var m = new List();
@@ -114,8 +141,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     EMPTY_LIST(
         EmptyList.class,
+        "sections",
         "Empty List",
+        "Empty lists should behave like falsey values.",
         "{\"list\":[]}",
+        "\"{{#list}}Yay lists!{{/list}}\"",
         "\"\""){
         public String render(Map<String, Object> o) {
             var m = new EmptyList();
@@ -126,8 +156,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     DOUBLED(
         Doubled.class,
+        "sections",
         "Doubled",
+        "Multiple sections per template should be permitted.",
         "{\"bool\":true,\"two\":\"second\"}",
+        "{{#bool}}\n* first\n{{/bool}}\n* {{two}}\n{{#bool}}\n* third\n{{/bool}}\n",
         "* first\n* second\n* third\n"){
         public String render(Map<String, Object> o) {
             var m = new Doubled();
@@ -138,8 +171,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     NESTED__TRUTHY_(
         NestedTruthy.class,
+        "sections",
         "Nested (Truthy)",
+        "Nested truthy sections should have their contents rendered.",
         "{\"bool\":true}",
+        "| A {{#bool}}B {{#bool}}C{{/bool}} D{{/bool}} E |",
         "| A B C D E |"){
         public String render(Map<String, Object> o) {
             var m = new NestedTruthy();
@@ -150,8 +186,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     NESTED__FALSEY_(
         NestedFalsey.class,
+        "sections",
         "Nested (Falsey)",
+        "Nested falsey sections should be omitted.",
         "{\"bool\":false}",
+        "| A {{#bool}}B {{#bool}}C{{/bool}} D{{/bool}} E |",
         "| A  E |"){
         public String render(Map<String, Object> o) {
             var m = new NestedFalsey();
@@ -162,8 +201,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     CONTEXT_MISSES(
         ContextMisses.class,
+        "sections",
         "Context Misses",
+        "Failed context lookups should be considered falsey.",
         "{}",
+        "[{{#missing}}Found key 'missing'!{{/missing}}]",
         "[]"){
         public String render(Map<String, Object> o) {
             var m = new ContextMisses();
@@ -174,8 +216,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     IMPLICIT_ITERATOR___STRING(
         ImplicitIteratorString.class,
+        "sections",
         "Implicit Iterator - String",
+        "Implicit iterators should directly interpolate strings.",
         "{\"list\":[\"a\",\"b\",\"c\",\"d\",\"e\"]}",
+        "\"{{#list}}({{.}}){{/list}}\"",
         "\"(a)(b)(c)(d)(e)\""){
         public String render(Map<String, Object> o) {
             var m = new ImplicitIteratorString();
@@ -186,8 +231,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     IMPLICIT_ITERATOR___INTEGER(
         ImplicitIteratorInteger.class,
+        "sections",
         "Implicit Iterator - Integer",
+        "Implicit iterators should cast integers to strings and interpolate.",
         "{\"list\":[1,2,3,4,5]}",
+        "\"{{#list}}({{.}}){{/list}}\"",
         "\"(1)(2)(3)(4)(5)\""){
         public String render(Map<String, Object> o) {
             var m = new ImplicitIteratorInteger();
@@ -198,8 +246,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     IMPLICIT_ITERATOR___DECIMAL(
         ImplicitIteratorDecimal.class,
+        "sections",
         "Implicit Iterator - Decimal",
+        "Implicit iterators should cast decimals to strings and interpolate.",
         "{\"list\":[1.1,2.2,3.3,4.4,5.5]}",
+        "\"{{#list}}({{.}}){{/list}}\"",
         "\"(1.1)(2.2)(3.3)(4.4)(5.5)\""){
         public String render(Map<String, Object> o) {
             var m = new ImplicitIteratorDecimal();
@@ -210,8 +261,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     IMPLICIT_ITERATOR___ARRAY(
         ImplicitIteratorArray.class,
+        "sections",
         "Implicit Iterator - Array",
+        "Implicit iterators should allow iterating over nested arrays.",
         "{\"list\":[[1,2,3],[\"a\",\"b\",\"c\"]]}",
+        "\"{{#list}}({{#.}}{{.}}{{/.}}){{/list}}\"",
         "\"(123)(abc)\""){
         public String render(Map<String, Object> o) {
             var m = new ImplicitIteratorArray();
@@ -222,8 +276,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___TRUTHY(
         DottedNamesTruthy.class,
+        "sections",
         "Dotted Names - Truthy",
+        "Dotted names should be valid for Section tags.",
         "{\"a\":{\"b\":{\"c\":true}}}",
+        "\"{{#a.b.c}}Here{{/a.b.c}}\" == \"Here\"",
         "\"Here\" == \"Here\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesTruthy();
@@ -234,8 +291,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___FALSEY(
         DottedNamesFalsey.class,
+        "sections",
         "Dotted Names - Falsey",
+        "Dotted names should be valid for Section tags.",
         "{\"a\":{\"b\":{\"c\":false}}}",
+        "\"{{#a.b.c}}Here{{/a.b.c}}\" == \"\"",
         "\"\" == \"\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesFalsey();
@@ -246,8 +306,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___BROKEN_CHAINS(
         DottedNamesBrokenChains.class,
+        "sections",
         "Dotted Names - Broken Chains",
+        "Dotted names that cannot be resolved should be considered falsey.",
         "{\"a\":{}}",
+        "\"{{#a.b.c}}Here{{/a.b.c}}\" == \"\"",
         "\"\" == \"\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChains();
@@ -258,8 +321,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     SURROUNDING_WHITESPACE(
         SurroundingWhitespace.class,
+        "sections",
         "Surrounding Whitespace",
+        "Sections should not alter surrounding whitespace.",
         "{\"boolean\":true}",
+        " | {{#boolean}}\t|\t{{/boolean}} | \n",
         " | \t|\t | \n"){
         public String render(Map<String, Object> o) {
             var m = new SurroundingWhitespace();
@@ -270,8 +336,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     INTERNAL_WHITESPACE(
         InternalWhitespace.class,
+        "sections",
         "Internal Whitespace",
+        "Sections should not alter internal whitespace.",
         "{\"boolean\":true}",
+        " | {{#boolean}} {{! Important Whitespace }}\n {{/boolean}} | \n",
         " |  \n  | \n"){
         public String render(Map<String, Object> o) {
             var m = new InternalWhitespace();
@@ -282,8 +351,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     INDENTED_INLINE_SECTIONS(
         IndentedInlineSections.class,
+        "sections",
         "Indented Inline Sections",
+        "Single-line sections should not alter surrounding whitespace.",
         "{\"boolean\":true}",
+        " {{#boolean}}YES{{/boolean}}\n {{#boolean}}GOOD{{/boolean}}\n",
         " YES\n GOOD\n"){
         public String render(Map<String, Object> o) {
             var m = new IndentedInlineSections();
@@ -294,8 +366,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     STANDALONE_LINES(
         StandaloneLines.class,
+        "sections",
         "Standalone Lines",
+        "Standalone lines should be removed from the template.",
         "{\"boolean\":true}",
+        "| This Is\n{{#boolean}}\n|\n{{/boolean}}\n| A Line\n",
         "| This Is\n|\n| A Line\n"){
         public String render(Map<String, Object> o) {
             var m = new StandaloneLines();
@@ -306,8 +381,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     INDENTED_STANDALONE_LINES(
         IndentedStandaloneLines.class,
+        "sections",
         "Indented Standalone Lines",
+        "Indented standalone lines should be removed from the template.",
         "{\"boolean\":true}",
+        "| This Is\n  {{#boolean}}\n|\n  {{/boolean}}\n| A Line\n",
         "| This Is\n|\n| A Line\n"){
         public String render(Map<String, Object> o) {
             var m = new IndentedStandaloneLines();
@@ -318,8 +396,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     STANDALONE_LINE_ENDINGS(
         StandaloneLineEndings.class,
+        "sections",
         "Standalone Line Endings",
+        "\"\\r\\n\" should be considered a newline for standalone tags.",
         "{\"boolean\":true}",
+        "|\r\n{{#boolean}}\r\n{{/boolean}}\r\n|",
         "|\r\n|"){
         public String render(Map<String, Object> o) {
             var m = new StandaloneLineEndings();
@@ -330,8 +411,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     STANDALONE_WITHOUT_PREVIOUS_LINE(
         StandaloneWithoutPreviousLine.class,
+        "sections",
         "Standalone Without Previous Line",
+        "Standalone tags should not require a newline to precede them.",
         "{\"boolean\":true}",
+        "  {{#boolean}}\n#{{/boolean}}\n/",
         "#\n/"){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutPreviousLine();
@@ -342,8 +426,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     STANDALONE_WITHOUT_NEWLINE(
         StandaloneWithoutNewline.class,
+        "sections",
         "Standalone Without Newline",
+        "Standalone tags should not require a newline to follow them.",
         "{\"boolean\":true}",
+        "#{{#boolean}}\n/\n  {{/boolean}}",
         "#\n/\n"){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutNewline();
@@ -354,8 +441,11 @@ public enum SectionsSpecTemplate implements SpecListing {
     },
     PADDING(
         Padding.class,
+        "sections",
         "Padding",
+        "Superfluous in-tag whitespace should be ignored.",
         "{\"boolean\":true}",
+        "|{{# boolean }}={{/ boolean }}|",
         "|=|"){
         public String render(Map<String, Object> o) {
             var m = new Padding();
@@ -365,26 +455,44 @@ public enum SectionsSpecTemplate implements SpecListing {
         }
     },
     ;
-    private final Class<?> templateClass;
-    private final String json;
+    private final Class<?> modelClass;
+    private final String group;
     private final String title;
+    private final String description;
+    private final String json;
+    private final String template;
     private final String expected;
 
     private SectionsSpecTemplate(
-        Class<?> templateClass,
+        Class<?> modelClass,
+        String group,
         String title,
+        String description,
         String json,
+        String template,
         String expected) {
-        this.templateClass = templateClass;
+        this.modelClass = modelClass;
+        this.group = group;
         this.title = title;
+        this.description = description;
         this.json = json;
+        this.template = template;
         this.expected = expected;
     }
-    public Class<?> templateClass() {
-        return templateClass;
+    public Class<?> modelClass() {
+        return modelClass;
+    }
+    public String group() {
+        return this.group;
     }
     public String title() {
         return this.title;
+    }
+    public String description() {
+        return this.description;
+    }
+    public String template() {
+        return this.template;
     }
     public String json() {
         return this.json;

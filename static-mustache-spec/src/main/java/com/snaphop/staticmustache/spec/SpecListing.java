@@ -5,8 +5,14 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Template;
 
 public interface SpecListing {
+    
+    String name();
+    
+    String group();
     
     String json();
     
@@ -15,6 +21,12 @@ public interface SpecListing {
     String render(Map<String, Object> o);
     
     String title();
+    
+    String description();
+    
+    String template();
+    
+    Class<?> modelClass();
     
     default String render() {
         return render(createContext());
@@ -27,6 +39,30 @@ public interface SpecListing {
         } catch (JsonProcessingException e) {
             throw new UncheckedIOException(e);
         } 
+    }
+    
+
+    
+    default String describe() {
+        
+        String message = """
+                ---
+                Group: {{group}}
+                Name: {{name}}
+                Title: {{title}}
+                
+                Desc: {{description}}
+                
+                json: {{json}}
+                
+                template: {{template}}
+                
+                <expected>{{expected}}</expected>
+                """;
+        return Mustache.compiler()
+                .escapeHTML(false)
+                .compile(message).execute(this);
+        
     }
 
 }

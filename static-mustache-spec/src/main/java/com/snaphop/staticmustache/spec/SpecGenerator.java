@@ -142,7 +142,8 @@ public class SpecGenerator {
                 public enum {{className}} implements SpecListing {
                     {{#items}}
                     {{enumName}}(
-                        {{className}}.class, 
+                        {{className}}.class,
+                        "{{group}}",
                         "{{name}}",
                         "{{desc}}",
                         "{{json}}",
@@ -157,7 +158,8 @@ public class SpecGenerator {
                     },
                     {{/items}}
                     ;
-                    private final Class<?> templateClass;
+                    private final Class<?> modelClass;
+                    private final String group;
                     private final String title;
                     private final String description;
                     private final String json;
@@ -165,29 +167,34 @@ public class SpecGenerator {
                     private final String expected;
                     
                     private {{className}}(
-                        Class<?> templateClass,
+                        Class<?> modelClass,
+                        String group,
                         String title,
                         String description,
                         String json,
                         String template,
                         String expected) {
-                        this.templateClass = templateClass;
+                        this.modelClass = modelClass;
+                        this.group = group;
                         this.title = title;
                         this.description = description;
                         this.json = json;
                         this.template = template;
                         this.expected = expected;
                     }
-                    public Class<?> templateClass() {
-                        return templateClass;
+                    public Class<?> modelClass() {
+                        return modelClass;
+                    }
+                    public String group() {
+                        return this.group;
                     }
                     public String title() {
                         return this.title;
                     }
-                    public String getDescription() {
+                    public String description() {
                         return this.description;
                     }
-                    public String getTemplate() {
+                    public String template() {
                         return this.template;
                     }
                     public String json() {

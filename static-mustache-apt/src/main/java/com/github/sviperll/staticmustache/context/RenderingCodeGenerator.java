@@ -139,7 +139,16 @@ public class RenderingCodeGenerator {
     }
 
     RenderingContext createRenderingContext(ChildType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
-        if (expression.type() instanceof WildcardType) {
+        if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
+            return switch(childType) {
+            case SECTION: {
+                yield createIterableContext(childType, expression, enclosing);
+            }
+            default: {
+                yield createMapContext(expression, enclosing);
+            }
+            };
+        } else if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
             var extendsBound = wildcardType.getExtendsBound();
             return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
@@ -160,17 +169,7 @@ public class RenderingCodeGenerator {
             DeclaredType declaredType = (DeclaredType)expression.type();
             // We do not give optional a nullable rendering context. If you make optional nullable your are dumb.
             return new OptionalRenderingContext(expression, javaModel.asElement(declaredType), enclosing);
-        } else if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
-            return switch(childType) {
-            case SECTION: {
-                yield createIterableContext(childType, expression, enclosing);
-            }
-            default: {
-                yield createMapContext(expression, enclosing);
-            }
-            };
-        } 
-        else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
+        } else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
             return createIterableContext(childType, expression, enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Map)) {
             return createMapContext(expression, enclosing);
@@ -210,7 +209,7 @@ public class RenderingCodeGenerator {
         RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
         IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
         if (expression.model().isType(expression.type(), knownTypes._MapNode)) {
-            return iterable;
+            return createMapContext(iterable.elementExpession(), iterable);
         }
         return createRenderingContext(childType, iterable.elementExpession(), iterable);
     }

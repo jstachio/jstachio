@@ -6,8 +6,11 @@ import java.util.Map;
 public enum InterpolationSpecTemplate implements SpecListing {
     NO_INTERPOLATION(
         NoInterpolation.class,
+        "interpolation",
         "No Interpolation",
+        "Mustache-free templates should render as-is.",
         "{}",
+        "Hello from {Mustache}!\n",
         "Hello from {Mustache}!\n"){
         public String render(Map<String, Object> o) {
             var m = new NoInterpolation();
@@ -18,8 +21,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     BASIC_INTERPOLATION(
         BasicInterpolation.class,
+        "interpolation",
         "Basic Interpolation",
+        "Unadorned tags should interpolate content into the template.",
         "{\"subject\":\"world\"}",
+        "Hello, {{subject}}!\n",
         "Hello, world!\n"){
         public String render(Map<String, Object> o) {
             var m = new BasicInterpolation();
@@ -30,8 +36,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     HTML_ESCAPING(
         HTMLEscaping.class,
+        "interpolation",
         "HTML Escaping",
+        "Basic interpolation should be HTML escaped.",
         "{\"forbidden\":\"& \\\" < >\"}",
+        "These characters should be HTML escaped: {{forbidden}}\n",
         "These characters should be HTML escaped: &amp; &quot; &lt; &gt;\n"){
         public String render(Map<String, Object> o) {
             var m = new HTMLEscaping();
@@ -42,8 +51,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE(
         TripleMustache.class,
+        "interpolation",
         "Triple Mustache",
+        "Triple mustaches should interpolate without HTML escaping.",
         "{\"forbidden\":\"& \\\" < >\"}",
+        "These characters should not be HTML escaped: {{{forbidden}}}\n",
         "These characters should not be HTML escaped: & \" < >\n"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustache();
@@ -54,8 +66,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND(
         Ampersand.class,
+        "interpolation",
         "Ampersand",
+        "Ampersand should interpolate without HTML escaping.",
         "{\"forbidden\":\"& \\\" < >\"}",
+        "These characters should not be HTML escaped: {{&forbidden}}\n",
         "These characters should not be HTML escaped: & \" < >\n"){
         public String render(Map<String, Object> o) {
             var m = new Ampersand();
@@ -66,8 +81,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     BASIC_INTEGER_INTERPOLATION(
         BasicIntegerInterpolation.class,
+        "interpolation",
         "Basic Integer Interpolation",
+        "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
+        "\"{{mph}} miles an hour!\"",
         "\"85 miles an hour!\""){
         public String render(Map<String, Object> o) {
             var m = new BasicIntegerInterpolation();
@@ -78,8 +96,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE_INTEGER_INTERPOLATION(
         TripleMustacheIntegerInterpolation.class,
+        "interpolation",
         "Triple Mustache Integer Interpolation",
+        "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
+        "\"{{{mph}}} miles an hour!\"",
         "\"85 miles an hour!\""){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheIntegerInterpolation();
@@ -90,8 +111,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND_INTEGER_INTERPOLATION(
         AmpersandIntegerInterpolation.class,
+        "interpolation",
         "Ampersand Integer Interpolation",
+        "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
+        "\"{{&mph}} miles an hour!\"",
         "\"85 miles an hour!\""){
         public String render(Map<String, Object> o) {
             var m = new AmpersandIntegerInterpolation();
@@ -102,8 +126,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     BASIC_DECIMAL_INTERPOLATION(
         BasicDecimalInterpolation.class,
+        "interpolation",
         "Basic Decimal Interpolation",
+        "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
+        "\"{{power}} jiggawatts!\"",
         "\"1.21 jiggawatts!\""){
         public String render(Map<String, Object> o) {
             var m = new BasicDecimalInterpolation();
@@ -114,8 +141,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE_DECIMAL_INTERPOLATION(
         TripleMustacheDecimalInterpolation.class,
+        "interpolation",
         "Triple Mustache Decimal Interpolation",
+        "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
+        "\"{{{power}}} jiggawatts!\"",
         "\"1.21 jiggawatts!\""){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheDecimalInterpolation();
@@ -126,8 +156,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND_DECIMAL_INTERPOLATION(
         AmpersandDecimalInterpolation.class,
+        "interpolation",
         "Ampersand Decimal Interpolation",
+        "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
+        "\"{{&power}} jiggawatts!\"",
         "\"1.21 jiggawatts!\""){
         public String render(Map<String, Object> o) {
             var m = new AmpersandDecimalInterpolation();
@@ -138,8 +171,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     BASIC_NULL_INTERPOLATION(
         BasicNullInterpolation.class,
+        "interpolation",
         "Basic Null Interpolation",
+        "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
+        "I ({{cannot}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new BasicNullInterpolation();
@@ -150,8 +186,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE_NULL_INTERPOLATION(
         TripleMustacheNullInterpolation.class,
+        "interpolation",
         "Triple Mustache Null Interpolation",
+        "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
+        "I ({{{cannot}}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheNullInterpolation();
@@ -162,8 +201,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND_NULL_INTERPOLATION(
         AmpersandNullInterpolation.class,
+        "interpolation",
         "Ampersand Null Interpolation",
+        "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
+        "I ({{&cannot}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new AmpersandNullInterpolation();
@@ -174,8 +216,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     BASIC_CONTEXT_MISS_INTERPOLATION(
         BasicContextMissInterpolation.class,
+        "interpolation",
         "Basic Context Miss Interpolation",
+        "Failed context lookups should default to empty strings.",
         "{}",
+        "I ({{cannot}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new BasicContextMissInterpolation();
@@ -186,8 +231,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE_CONTEXT_MISS_INTERPOLATION(
         TripleMustacheContextMissInterpolation.class,
+        "interpolation",
         "Triple Mustache Context Miss Interpolation",
+        "Failed context lookups should default to empty strings.",
         "{}",
+        "I ({{{cannot}}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheContextMissInterpolation();
@@ -198,8 +246,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND_CONTEXT_MISS_INTERPOLATION(
         AmpersandContextMissInterpolation.class,
+        "interpolation",
         "Ampersand Context Miss Interpolation",
+        "Failed context lookups should default to empty strings.",
         "{}",
+        "I ({{&cannot}}) be seen!",
         "I () be seen!"){
         public String render(Map<String, Object> o) {
             var m = new AmpersandContextMissInterpolation();
@@ -210,8 +261,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___BASIC_INTERPOLATION(
         DottedNamesBasicInterpolation.class,
+        "interpolation",
         "Dotted Names - Basic Interpolation",
+        "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
+        "\"{{person.name}}\" == \"{{#person}}{{name}}{{/person}}\"",
         "\"Joe\" == \"Joe\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBasicInterpolation();
@@ -222,8 +276,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION(
         DottedNamesTripleMustacheInterpolation.class,
+        "interpolation",
         "Dotted Names - Triple Mustache Interpolation",
+        "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
+        "\"{{{person.name}}}\" == \"{{#person}}{{{name}}}{{/person}}\"",
         "\"Joe\" == \"Joe\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesTripleMustacheInterpolation();
@@ -234,8 +291,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___AMPERSAND_INTERPOLATION(
         DottedNamesAmpersandInterpolation.class,
+        "interpolation",
         "Dotted Names - Ampersand Interpolation",
+        "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
+        "\"{{&person.name}}\" == \"{{#person}}{{&name}}{{/person}}\"",
         "\"Joe\" == \"Joe\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesAmpersandInterpolation();
@@ -246,8 +306,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___ARBITRARY_DEPTH(
         DottedNamesArbitraryDepth.class,
+        "interpolation",
         "Dotted Names - Arbitrary Depth",
+        "Dotted names should be functional to any level of nesting.",
         "{\"a\":{\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Phil\"}}}}}}",
+        "\"{{a.b.c.d.e.name}}\" == \"Phil\"",
         "\"Phil\" == \"Phil\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesArbitraryDepth();
@@ -258,8 +321,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___BROKEN_CHAINS(
         DottedNamesBrokenChains.class,
+        "interpolation",
         "Dotted Names - Broken Chains",
+        "Any falsey value prior to the last part of the name should yield ''.",
         "{\"a\":{}}",
+        "\"{{a.b.c}}\" == \"\"",
         "\"\" == \"\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChains();
@@ -270,8 +336,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___BROKEN_CHAIN_RESOLUTION(
         DottedNamesBrokenChainResolution.class,
+        "interpolation",
         "Dotted Names - Broken Chain Resolution",
+        "Each part of a dotted name should resolve only against its parent.",
         "{\"a\":{\"b\":{}},\"c\":{\"name\":\"Jim\"}}",
+        "\"{{a.b.c.name}}\" == \"\"",
         "\"\" == \"\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChainResolution();
@@ -282,8 +351,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___INITIAL_RESOLUTION(
         DottedNamesInitialResolution.class,
+        "interpolation",
         "Dotted Names - Initial Resolution",
+        "The first part of a dotted name should resolve as any other name.",
         "{\"a\":{\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Phil\"}}}}},\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Wrong\"}}}}}",
+        "\"{{#a}}{{b.c.d.e.name}}{{/a}}\" == \"Phil\"",
         "\"Phil\" == \"Phil\""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesInitialResolution();
@@ -294,8 +366,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     DOTTED_NAMES___CONTEXT_PRECEDENCE(
         DottedNamesContextPrecedence.class,
+        "interpolation",
         "Dotted Names - Context Precedence",
+        "Dotted names should be resolved against former resolutions.",
         "{\"a\":{\"b\":{}},\"b\":{\"c\":\"ERROR\"}}",
+        "{{#a}}{{b.c}}{{/a}}",
         ""){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesContextPrecedence();
@@ -306,8 +381,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     INTERPOLATION___SURROUNDING_WHITESPACE(
         InterpolationSurroundingWhitespace.class,
+        "interpolation",
         "Interpolation - Surrounding Whitespace",
+        "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "| {{string}} |",
         "| --- |"){
         public String render(Map<String, Object> o) {
             var m = new InterpolationSurroundingWhitespace();
@@ -318,8 +396,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE___SURROUNDING_WHITESPACE(
         TripleMustacheSurroundingWhitespace.class,
+        "interpolation",
         "Triple Mustache - Surrounding Whitespace",
+        "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "| {{{string}}} |",
         "| --- |"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheSurroundingWhitespace();
@@ -330,8 +411,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND___SURROUNDING_WHITESPACE(
         AmpersandSurroundingWhitespace.class,
+        "interpolation",
         "Ampersand - Surrounding Whitespace",
+        "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "| {{&string}} |",
         "| --- |"){
         public String render(Map<String, Object> o) {
             var m = new AmpersandSurroundingWhitespace();
@@ -342,8 +426,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     INTERPOLATION___STANDALONE(
         InterpolationStandalone.class,
+        "interpolation",
         "Interpolation - Standalone",
+        "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "  {{string}}\n",
         "  ---\n"){
         public String render(Map<String, Object> o) {
             var m = new InterpolationStandalone();
@@ -354,8 +441,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE___STANDALONE(
         TripleMustacheStandalone.class,
+        "interpolation",
         "Triple Mustache - Standalone",
+        "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "  {{{string}}}\n",
         "  ---\n"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheStandalone();
@@ -366,8 +456,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND___STANDALONE(
         AmpersandStandalone.class,
+        "interpolation",
         "Ampersand - Standalone",
+        "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
+        "  {{&string}}\n",
         "  ---\n"){
         public String render(Map<String, Object> o) {
             var m = new AmpersandStandalone();
@@ -378,8 +471,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     INTERPOLATION_WITH_PADDING(
         InterpolationWithPadding.class,
+        "interpolation",
         "Interpolation With Padding",
+        "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
+        "|{{ string }}|",
         "|---|"){
         public String render(Map<String, Object> o) {
             var m = new InterpolationWithPadding();
@@ -390,8 +486,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     TRIPLE_MUSTACHE_WITH_PADDING(
         TripleMustacheWithPadding.class,
+        "interpolation",
         "Triple Mustache With Padding",
+        "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
+        "|{{{ string }}}|",
         "|---|"){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheWithPadding();
@@ -402,8 +501,11 @@ public enum InterpolationSpecTemplate implements SpecListing {
     },
     AMPERSAND_WITH_PADDING(
         AmpersandWithPadding.class,
+        "interpolation",
         "Ampersand With Padding",
+        "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
+        "|{{& string }}|",
         "|---|"){
         public String render(Map<String, Object> o) {
             var m = new AmpersandWithPadding();
@@ -413,26 +515,44 @@ public enum InterpolationSpecTemplate implements SpecListing {
         }
     },
     ;
-    private final Class<?> templateClass;
-    private final String json;
+    private final Class<?> modelClass;
+    private final String group;
     private final String title;
+    private final String description;
+    private final String json;
+    private final String template;
     private final String expected;
 
     private InterpolationSpecTemplate(
-        Class<?> templateClass,
+        Class<?> modelClass,
+        String group,
         String title,
+        String description,
         String json,
+        String template,
         String expected) {
-        this.templateClass = templateClass;
+        this.modelClass = modelClass;
+        this.group = group;
         this.title = title;
+        this.description = description;
         this.json = json;
+        this.template = template;
         this.expected = expected;
     }
-    public Class<?> templateClass() {
-        return templateClass;
+    public Class<?> modelClass() {
+        return modelClass;
+    }
+    public String group() {
+        return this.group;
     }
     public String title() {
         return this.title;
+    }
+    public String description() {
+        return this.description;
+    }
+    public String template() {
+        return this.template;
     }
     public String json() {
         return this.json;
