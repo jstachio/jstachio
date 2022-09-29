@@ -2,6 +2,7 @@ package com.snaphop.staticmustache.spec.custom;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
+import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
 
 public class Custom {
     
@@ -21,5 +22,13 @@ public class Custom {
     public record DottedNamesTripleMustacheInterpolation(Person person) {
     }
     
+    @GenerateRenderableAdapter(template = SectionsSpecTemplate.CONTEXT_FILE)
+    public record Context(Person context) {
+    }
+    
+    @GenerateRenderableAdapter(template = SectionsSpecTemplate.PARENT_CONTEXTS_FILE)
+    public record ParentContexts(Person person) {
+    	
+    }
 
 }
