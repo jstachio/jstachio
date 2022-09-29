@@ -207,12 +207,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             var section = currentSection;
             if (section != null) {
                 flushUnescaped(); // for now
-                switch(section.type()) {
-                case SECTION -> _beginSection(section.name());
-                case INVERTED -> _beginInvertedSection(section.name());
-                case PARENT -> _beginParentSection(section.name());
-                case BLOCK -> _beginBlockSection(section.name());
-                }
+                switch (section.mode()) {
+                    case BEGIN:
+                        switch (section.type()) {
+                            case SECTION -> _beginSection(section.name());
+                            case INVERTED -> _beginInvertedSection(section.name());
+                            case PARENT -> _beginParentSection(section.name());
+                            case BLOCK -> _beginBlockSection(section.name());
+                        };
+                        break;
+                    case END:
+                        _endSection(section.name());
+                        break;
+                };
             }
             else {
                 flushUnescaped();
@@ -225,8 +232,15 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             currentSection = new Section(name, type, SectionMode.BEGIN);
         }
         
-        private void queueEndSection(String name, SectionType type) throws ProcessingException {
+        private void queueEndSection(String name) throws ProcessingException {
             triggerSection();
+            SectionType type = switch (context.getType()) {
+                case SECTION -> SectionType.SECTION;
+                case BLOCK -> SectionType.BLOCK;
+                case PARENT_PARTIAL -> SectionType.PARENT;
+                case INVERTED -> SectionType.INVERTED;
+                default -> throw new IllegalStateException();
+            };
             currentSection = new Section(name, type, SectionMode.END);
         }
 
@@ -237,7 +251,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             
         }
         private void _beginSection(String name) throws ProcessingException {
-            flushUnescaped();
             var contextType = ChildType.SECTION;
             try {
                 context = context.getChild(name, contextType);
@@ -375,8 +388,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
-
-            flushUnescaped();
+            queueEndSection(name);
+            return null;
+        }
+        
+        private void _endSection(String name) throws ProcessingException {
+        	//queueEndSection(name, null);
             if (!context.isEnclosed()) {
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             }
@@ -485,12 +502,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             print(context.endSectionRenderingCode());
             printEndSectionComment();
             context = context.parentContext();
-            return null;
         }
 
         @Override
         public @Nullable Void variable(String name) throws ProcessingException {
-            flushUnescaped();
+        	triggerSection();
             println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
@@ -517,7 +533,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
-            flushUnescaped();
+        	triggerSection();
             println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
@@ -568,7 +584,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void endOfFile() throws ProcessingException {
-            flushUnescaped();
+        	triggerSection();
             if (!context.isEnclosed())
                 return null;
             else {
