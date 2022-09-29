@@ -87,6 +87,8 @@ public class KnownTypes {
     
     private final List<NativeType> nativeTypes;
     private final List<ObjectType> objectTypes;
+    
+    public final ObjectType _Object;
 
     
     private KnownTypes(Elements declarations, Types types) {
@@ -129,6 +131,11 @@ public class KnownTypes {
         
         this.nativeTypes = List.copyOf(b.nativeTypes);
         this.objectTypes = List.copyOf(b.objectTypes);
+        
+        var typeElement = declarations.getTypeElement(Object.class.getName());
+        var ot = new ObjectType(typeElement, Object.class);
+        
+        _Object = ot;
         
     }
     

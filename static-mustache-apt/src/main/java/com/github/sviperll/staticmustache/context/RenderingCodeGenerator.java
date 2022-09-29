@@ -220,6 +220,9 @@ public class RenderingCodeGenerator {
     }
 
     private RenderingContext nullableRenderingContext(JavaExpression expression, RenderingContext context) {
+        if (javaModel.isSameType(expression.type(), knownTypes._Object.typeElement().asType())) {
+            return new BooleanRenderingContext(expression.text() + " != null && ! Boolean.FALSE.equals(" + expression.text() + ")" , context);
+        }
         return new BooleanRenderingContext(expression.text() + " != null", context);
     }
 }
