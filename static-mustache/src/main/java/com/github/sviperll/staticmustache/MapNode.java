@@ -36,6 +36,9 @@ public interface MapNode extends Iterable<MapNode> {
         if (o == null) {
             return null;
         }
+        if ( o instanceof MapNode) {
+            throw new IllegalArgumentException("Cannot wrap MapNode around another MapNode");
+        }
         return new ChildMapNode(this, o);
     }
     
@@ -56,6 +59,9 @@ public interface MapNode extends Iterable<MapNode> {
         var parent = parent();
         if (parent != null && parent != this) {
             child = parent.get(field);
+            if (child != null) {
+                child = ofChild(child.object());
+            }
         }
         return child;
     }

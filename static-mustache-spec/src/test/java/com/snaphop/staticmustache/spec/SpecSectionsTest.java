@@ -36,7 +36,7 @@ public class SpecSectionsTest {
         String actual = render(specItem);
         boolean failed = true;
         try {
-            assertEquals(json, expected, actual);
+            assertEquals(specItem.description(), expected, actual);
             failed = false;
         } finally {
             if (failed) {
