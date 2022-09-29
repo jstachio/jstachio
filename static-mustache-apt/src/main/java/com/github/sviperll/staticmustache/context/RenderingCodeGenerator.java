@@ -128,8 +128,8 @@ public class RenderingCodeGenerator {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
         RenderingContext rootRenderingContext;
-        // A special case scenario where the root is a java.util.Map ... not recommended but useful for spec tests
-        if (javaModel.isType(element.asType(), knownTypes._Map)) {
+        // A special case scenario where the root is a java.util.Map or our custom MapNode... not recommended but useful for spec tests
+        if (javaModel.isType(element.asType(), knownTypes._Map) || javaModel.isType(element.asType(), knownTypes._MapNode)) {
              rootRenderingContext = new MapRenderingContext(javaExpression, element, root);
         }
         else {
@@ -141,7 +141,8 @@ public class RenderingCodeGenerator {
     RenderingContext createRenderingContext(ChildType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
-            return createRenderingContext(childType, javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+            var extendsBound = wildcardType.getExtendsBound();
+            return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
         } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable.typeElement()))) {
             if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable.typeElement(), javaModel.getDeclaredType(templateFormatElement)))) {
                 throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Layoutable, but wrong format", expression.text(), expression.type()));
@@ -157,22 +158,22 @@ public class RenderingCodeGenerator {
             return booleanContext;
         } else if (javaModel.isType(expression.type(), knownTypes._Optional)) {
             DeclaredType declaredType = (DeclaredType)expression.type();
+            // We do not give optional a nullable rendering context. If you make optional nullable your are dumb.
             return new OptionalRenderingContext(expression, javaModel.asElement(declaredType), enclosing);
-            //RenderingContext nullableContext = nullableRenderingContext(expression.methodCall(templateFormatElement, null), enclosing);
-
-        } else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
-            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
-            VariableContext variableContext = nullable.createEnclosedVariableContext();
-            String elementVariableName = variableContext.introduceNewNameLike("element");
-            RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
-            IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
-            return createRenderingContext(childType, iterable.elementExpession(), iterable);
+        } else if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
+            return switch(childType) {
+            case SECTION: {
+                yield createIterableContext(childType, expression, enclosing);
+            }
+            default: {
+                yield createMapContext(expression, enclosing);
+            }
+            };
+        } 
+        else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
+            return createIterableContext(childType, expression, enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Map)) {
-            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
-            DeclaredType mapType = (DeclaredType) expression.type();
-            MapRenderingContext map = new MapRenderingContext(expression, javaModel.asElement(mapType), nullable);
-            return map;
-            
+            return createMapContext(expression, enclosing);
         } else if (expression.type().getKind() == TypeKind.ARRAY) {
             RenderingContext nullable = nullableRenderingContext(expression, enclosing);
             VariableContext variableContext = nullable.createEnclosedVariableContext();
@@ -194,6 +195,24 @@ public class RenderingCodeGenerator {
         } else {
             return new NoDataContext(expression, enclosing);
         }
+    }
+    private RenderingContext createMapContext(JavaExpression expression, RenderingContext enclosing) {
+        RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+        DeclaredType mapType = (DeclaredType) expression.type();
+        MapRenderingContext map = new MapRenderingContext(expression, javaModel.asElement(mapType), nullable);
+        return map;
+    }
+    private RenderingContext createIterableContext(ChildType childType, JavaExpression expression,
+            RenderingContext enclosing) throws TypeException {
+        RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+        VariableContext variableContext = nullable.createEnclosedVariableContext();
+        String elementVariableName = variableContext.introduceNewNameLike("element");
+        RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
+        IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
+        if (expression.model().isType(expression.type(), knownTypes._MapNode)) {
+            return iterable;
+        }
+        return createRenderingContext(childType, iterable.elementExpession(), iterable);
     }
 
     RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {

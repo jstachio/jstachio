@@ -1,9 +1,26 @@
 package com.snaphop.staticmustache.spec;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class SpecModel extends LinkedHashMap<String, Object> {
+import com.github.sviperll.staticmustache.MapNode;
 
-    private static final long serialVersionUID = 1L;
+public class SpecModel implements MapNode {
+    
+    private final Map<String, Object> object = new LinkedHashMap<>();
+    
+    @Override
+    public Map<String, Object> object() {
+        return object;
+    }
+    
+    @Override
+    public String toString() {
+        return renderString();
+    }
+    
+    public void putAll(Map<? extends String, ? extends Object> m) {
+        object().putAll(m);
+    }
 
 }

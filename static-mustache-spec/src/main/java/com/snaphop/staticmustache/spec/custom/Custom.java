@@ -25,10 +25,5 @@ public class Custom {
     @GenerateRenderableAdapter(template = SectionsSpecTemplate.CONTEXT_FILE)
     public record Context(Person context) {
     }
-    
-    @GenerateRenderableAdapter(template = SectionsSpecTemplate.PARENT_CONTEXTS_FILE)
-    public record ParentContexts(Person person) {
-    	
-    }
 
 }

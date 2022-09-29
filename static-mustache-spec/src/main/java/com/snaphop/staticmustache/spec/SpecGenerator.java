@@ -111,7 +111,6 @@ public class SpecGenerator {
                 
                 @{{annotation}}(template = "{{templateFileName}}")
                 public class {{className}} extends SpecModel {
-                    private static final long serialVersionUID = 1L;
                 }
                 """;
         
@@ -144,8 +143,10 @@ public class SpecGenerator {
                     {{#items}}
                     {{enumName}}(
                         {{className}}.class, 
-                        "{{name}}", 
+                        "{{name}}",
+                        "{{desc}}",
                         "{{json}}",
+                        "{{template}}", 
                         "{{expected}}"){
                         public String render(Map<String, Object> o) {
                             var m = new {{className}}();
@@ -157,18 +158,24 @@ public class SpecGenerator {
                     {{/items}}
                     ;
                     private final Class<?> templateClass;
-                    private final String json;
                     private final String title;
+                    private final String description;
+                    private final String json;
+                    private final String template;
                     private final String expected;
                     
                     private {{className}}(
-                        Class<?> templateClass, 
-                        String title, 
-                        String json, 
+                        Class<?> templateClass,
+                        String title,
+                        String description,
+                        String json,
+                        String template,
                         String expected) {
                         this.templateClass = templateClass;
                         this.title = title;
+                        this.description = description;
                         this.json = json;
+                        this.template = template;
                         this.expected = expected;
                     }
                     public Class<?> templateClass() {
@@ -176,6 +183,12 @@ public class SpecGenerator {
                     }
                     public String title() {
                         return this.title;
+                    }
+                    public String getDescription() {
+                        return this.description;
+                    }
+                    public String getTemplate() {
+                        return this.template;
                     }
                     public String json() {
                         return this.json;

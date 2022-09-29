@@ -41,6 +41,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import com.github.sviperll.staticmustache.MapNode;
 import com.github.sviperll.staticmustache.text.Layoutable;
 import com.github.sviperll.staticmustache.text.RenderFunction;
 
@@ -78,6 +79,8 @@ public class KnownTypes {
     public final ObjectType _Boolean;
     public final ObjectType _Iterable;
     public final ObjectType _Map;
+    public final ObjectType _MapNode;
+
     public final ObjectType _UUID;
     public final ObjectType _URI;
     public final ObjectType _URL;
@@ -121,6 +124,7 @@ public class KnownTypes {
         _Optional = b.objectType(Optional.class);
         _Iterable = b.objectType(Iterable.class);
         _Map = b.objectType(Map.class);
+        _MapNode = b.objectType(MapNode.class);
         _UUID = b.objectType(UUID.class);
         _URI = b.objectType(URI.class);
         _URL = b.objectType(URL.class);

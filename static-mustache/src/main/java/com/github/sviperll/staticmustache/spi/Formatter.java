@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.github.sviperll.staticmustache.MapNode;
+
 public interface Formatter {
 
     public boolean format(Appendable a, String path, @Nullable Object o) throws IOException;
@@ -47,6 +49,9 @@ public interface Formatter {
         public boolean format(Appendable a, String path, @Nullable Object o) throws IOException {
             if (o == null) {
                 throw new NullPointerException("null at: " + path);
+            }
+            else if (o instanceof MapNode m) {
+                a.append(m.renderString());
             }
             else {
                 a.append(String.valueOf(o));

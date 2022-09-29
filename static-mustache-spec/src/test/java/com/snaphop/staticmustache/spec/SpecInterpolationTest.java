@@ -37,7 +37,26 @@ public class SpecInterpolationTest {
         String expected = specItem.expected();
         String json = specItem.json();
         String actual = render(specItem);
-        assertEquals(json, expected, actual);
+        boolean failed = true;
+        try {
+            assertEquals(json, expected, actual);
+            failed = false;
+        } finally {
+            if (failed) {
+                String message = String.format("""
+                        Error.
+                        <name>%s</name>
+                        <template>
+                        %s
+                        </template>
+                        <json>
+                        %s
+                        </json>
+                        """, specItem.name(), "", json);
+
+                System.out.println(message);
+            }
+        }
     }
     
     String render(InterpolationSpecTemplate specTemplate) {
