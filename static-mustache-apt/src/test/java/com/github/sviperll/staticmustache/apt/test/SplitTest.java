@@ -65,5 +65,13 @@ public class SplitTest {
         //assertEquals(4,actual.size());
         assertEquals(List.of("<div>\\n", "\\n", "<div>"), actual);
     }
+    
+    @Test
+    public void testReal3() {
+        String s = "<div>\\n\\n<div>\\n\\t  ";
+        List<String> actual = CodeNewLineSplitter.split(s, "\\n");
+        //assertEquals(4,actual.size());
+        assertEquals(List.of("<div>\\n", "\\n", "<div>\\n", "\\t  "), actual);
+    }
 
 }

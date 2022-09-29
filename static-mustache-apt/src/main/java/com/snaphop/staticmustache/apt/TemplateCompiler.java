@@ -68,13 +68,31 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     boolean foundYield = false;
     int depth = 0;
     StringBuilder currentUnescaped = new StringBuilder();
+    StringBuilder afterTagUnescaped = new StringBuilder();
+    
     private final TemplateCompilerLike parent;
     //TODO we probably need this as a stack as parent sections can include other parents or partials
     private @Nullable ParameterPartial _partial;
-    //TODO fix content not in blocks in parent section
+
     protected @Nullable StringCodeAppendable _currentBlockOutput;
     
     protected @Nullable HiddenCodeAppendable _parentBlockOutput;
+    
+    private @Nullable Section currentSection;
+    
+    private record Section(String name, SectionType type, SectionMode mode) {}
+    
+    private enum SectionType {
+        SECTION,
+        INVERTED,
+        PARENT,
+        BLOCK
+    }
+    
+    private enum SectionMode {
+        BEGIN,
+        END
+    }
     
     //Map<String,String> blockArgs
 
@@ -184,13 +202,49 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             print("// end " + context.getType() + ". name: " + context.currentEnclosedContextName() + ", template: " + getTemplateName());
             println();
         }
+        
+        private void triggerSection() throws ProcessingException {
+            var section = currentSection;
+            if (section != null) {
+                flushUnescaped(); // for now
+                switch(section.type()) {
+                case SECTION -> _beginSection(section.name());
+                case INVERTED -> _beginInvertedSection(section.name());
+                case PARENT -> _beginParentSection(section.name());
+                case BLOCK -> _beginBlockSection(section.name());
+                }
+            }
+            else {
+                flushUnescaped();
+            }
+            currentSection = null;
+        }
+        
+        private void queueSection(String name, SectionType type) throws ProcessingException {
+            triggerSection();
+            currentSection = new Section(name, type, SectionMode.BEGIN);
+        }
+        
+        private void queueEndSection(String name, SectionType type) throws ProcessingException {
+            triggerSection();
+            currentSection = new Section(name, type, SectionMode.END);
+        }
 
         @Override
         public @Nullable Void beginSection(String name) throws ProcessingException {
+            queueSection(name, SectionType.SECTION);
+            return null;
+            
+        }
+        private void _beginSection(String name) throws ProcessingException {
             flushUnescaped();
             var contextType = ChildType.SECTION;
             try {
                 context = context.getChild(name, contextType);
+                /*
+                 * For standalone lines we need to hold off on printing
+                 * to see if there is other things besides newlines
+                 */
                 printBeginSectionComment();
                 print(context.beginSectionRenderingCode());
                 println();
@@ -199,12 +253,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
-            return null;
         }
-
         @Override
         public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
-            flushUnescaped();
+            queueSection(name, SectionType.INVERTED);
+            return null;
+        }
+        
+        private void _beginInvertedSection(String name) throws ProcessingException {
             var contextType = ChildType.INVERTED;
             try {
                 context = context.getChild(name, contextType);
@@ -215,13 +271,15 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             } catch (ContextException ex) {
                 throw new ProcessingException(position, ex);
             }
-            return null;
         }
-
 
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
-            flushUnescaped();
+            queueSection(name, SectionType.PARENT);
+            return null;
+        }
+        
+        private void _beginParentSection(String name) throws ProcessingException {
             var contextType = ChildType.PARENT_PARTIAL;
             try {
                 context = context.getChild(name, contextType);
@@ -239,12 +297,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             } catch (ContextException | IOException ex) {
                 throw new ProcessingException(position, ex);
             }
-            return null;
         }
-
         @Override
         public @Nullable Void beginBlockSection(String name) throws ProcessingException {
-            flushUnescaped();
+            queueSection(name, SectionType.BLOCK);
+            return null;
+        }
+        
+        private void _beginBlockSection(String name) throws ProcessingException {
             var contextType = ChildType.BLOCK;
             try {
                 context = context.getChild(name, contextType);
@@ -311,7 +371,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 print("// unused block: " + name);
                 println();
             }
-            return null;
         }
 
         @Override
