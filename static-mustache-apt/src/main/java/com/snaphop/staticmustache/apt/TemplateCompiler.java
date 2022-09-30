@@ -191,6 +191,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             currentUnescaped.setLength(0);
         }
         
+        void flushAfter() {
+            var code = afterTagUnescaped.toString();
+            if (! code.isEmpty()) {
+                _printCodeToWrite(code);
+            }
+            afterTagUnescaped.setLength(0);
+        }
+        
         private void printBeginSectionComment() {
             println();
             print("// start " + context.getType() + ". name: " + context.currentEnclosedContextName() + ", template: " + getTemplateName());
@@ -220,9 +228,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                         _endSection(section.name());
                         break;
                 };
+                flushAfter();
             }
             else {
                 flushUnescaped();
+                flushAfter();
             }
             currentSection = null;
         }
@@ -289,6 +299,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
             queueSection(name, SectionType.PARENT);
+            triggerSection();
             return null;
         }
         
@@ -314,6 +325,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         @Override
         public @Nullable Void beginBlockSection(String name) throws ProcessingException {
             queueSection(name, SectionType.BLOCK);
+            triggerSection();
             return null;
         }
         
@@ -389,6 +401,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
             queueEndSection(name);
+            triggerSection();
+//            if (context.getType() == ChildType.BLOCK || context.getType() == ChildType.PARENT_PARTIAL) {
+//                triggerSection();
+//            }
             return null;
         }
         
@@ -593,7 +609,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
 
         private void printCodeToWrite(String s) {
-            currentUnescaped.append(s);
+            if (currentSection == null) {
+                currentUnescaped.append(s);
+            }
+            else {
+                afterTagUnescaped.append(s);
+            }
         }
         
         
