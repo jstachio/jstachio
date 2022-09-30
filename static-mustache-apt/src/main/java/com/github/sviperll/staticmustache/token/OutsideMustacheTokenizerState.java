@@ -70,11 +70,16 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
 
     @Override
     public Void character(char c) throws ProcessingException {
-        if (c != '\n' && c != '"' && c != '\r') {
-            text.append(c);
-        } else {
+        switch (c) {
+        case '\n', '\r' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(MustacheToken.specialCharacter(c));
+            tokenizer.emitToken(new MustacheToken.NewlineToken(c));
+        }
+        case '"' -> {
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(c));
+        }
+        default -> text.append(c);
         }
         return null;
     }
@@ -82,14 +87,14 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     @Override
     public Void endOfFile() throws ProcessingException {
         tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        tokenizer.emitToken(MustacheToken.endOfFile());
+        tokenizer.emitToken(new MustacheToken.EndOfFileToken());
         return null;
     }
 
     @Override
     public void beforeStateChange() throws ProcessingException {
         if (text.length() > 0) {
-            tokenizer.emitToken(MustacheToken.text(text.toString()));
+            tokenizer.emitToken(new MustacheToken.TextToken(text.toString()));
         }
     }
 

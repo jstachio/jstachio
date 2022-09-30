@@ -33,9 +33,16 @@ package com.github.sviperll.staticmustache.token;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-enum MustacheTagKind {
+public enum MustacheTagKind {
+
     VARIABLE, //
-    BEGIN_SECTION, END_SECTION, //
-    BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION, //
-    UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES
+    UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES, BEGIN_SECTION, END_SECTION, //
+    BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION;
+
+    public boolean isSection() {
+        return switch (this) {
+        case VARIABLE, UNESCAPED_VARIABLE_THREE_BRACES, UNESCAPED_VARIABLE_TWO_BRACES -> false;
+        default -> true;
+        };
+    }
 }

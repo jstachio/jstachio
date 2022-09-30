@@ -30,6 +30,9 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -39,6 +42,7 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildT
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
+import com.snaphop.staticmustache.apt.MustacheToken.EndOfFileToken;
 
 /**
  *
@@ -68,7 +72,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     boolean foundYield = false;
     int depth = 0;
     StringBuilder currentUnescaped = new StringBuilder();
-    StringBuilder afterTagUnescaped = new StringBuilder();
     
     private final TemplateCompilerLike parent;
     //TODO we probably need this as a stack as parent sections can include other parents or partials
@@ -77,24 +80,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     protected @Nullable StringCodeAppendable _currentBlockOutput;
     
     protected @Nullable HiddenCodeAppendable _parentBlockOutput;
-    
-    private @Nullable Section currentSection;
-    
-    private record Section(String name, SectionType type, SectionMode mode) {}
-    
-    private enum SectionType {
-        SECTION,
-        INVERTED,
-        PARENT,
-        BLOCK
-    }
-    
-    private enum SectionMode {
-        BEGIN,
-        END
-    }
-    
-    //Map<String,String> blockArgs
 
     private TemplateCompiler(NamedReader reader, 
             TemplateCompilerLike parent, 
@@ -166,10 +151,107 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         return new ParameterPartial(c);
     }
 
+    private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(4);
+
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+        previousTokens.offer(positionedToken);
+        
+        /*
+         * For standalone tag line support we need to see if blank space
+         * is around the tag.
+         * 
+         * That is four tokens max:
+         * 
+         * [ space* ] {{#some section}} [ space* ] [ newline ]
+         * 
+         * Beginning of the file case:
+         * {{#some section}} [ space* ] [ newline ]
+         */
+
+        int size = previousTokens.size();
+
+        if (size < 2) {
+            return; // we need more tokens
+        }
+        
+        var firstToken = previousTokens.poll();
+        var secondToken = previousTokens.poll();
+        
+        List<PositionedToken<MustacheToken>> buf = new ArrayList<>();
+        buf.add(firstToken);
+        buf.add(secondToken);
+        
+        try {
+            /*
+             * {{#some section}} [ newline ]
+             */
+            if (firstToken.innerToken().isSectionToken() && secondToken.innerToken().isNewlineToken()) {
+                _processToken(firstToken);
+                return;
+            }
+
+            if (size >= 3) {
+                var thirdToken = previousTokens.poll();
+                buf.add(thirdToken);
+
+                /*
+                 * {{#some section}} [white space] [ newline ]
+                 */
+                if (firstToken.innerToken().isSectionToken() //
+                        && secondToken.innerToken().isWhitespaceToken() && thirdToken.innerToken().isNewlineToken()) {
+                    _processToken(firstToken);
+                    return;
+                }
+
+                /*
+                 * [white space] {{#some section}} [ newline ]
+                 */
+                if (firstToken.innerToken().isWhitespaceToken() //
+                        && secondToken.innerToken().isSectionToken() && thirdToken.innerToken().isNewlineToken()) {
+                    _processToken(secondToken);
+                    return;
+                }
+
+                if (size >= 4) {
+                    var fourthToken = previousTokens.poll();
+                    buf.add(fourthToken);
+
+                    /*
+                     * [white space] {{#some section}} [white space] [ newline ]
+                     */
+                    if (firstToken.innerToken().isWhitespaceToken() //
+                            && secondToken.innerToken().isSectionToken() //
+                            && thirdToken.innerToken().isWhitespaceToken() //
+                            && fourthToken.innerToken().isNewlineToken()) {
+                        _processToken(secondToken);
+                        return;
+                    }
+                }
+            }
+            // We have to put the tokens back into the queue
+            buf.forEach(previousTokens::offer);
+
+            if (size >= 4) {
+                _processToken(previousTokens.poll());
+            }
+        } finally {
+            // We process the token queue now if we get an EOF no matter what hence
+            // the finally
+            if (positionedToken.innerToken() instanceof EndOfFileToken) {
+                PositionedToken<MustacheToken> current;
+                while ((current = previousTokens.poll()) != null) {
+                    _processToken(current);
+                }
+            }
+        }
+    }
+    
+    
+    void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
     }
+    
     
     @Override
     public void close() throws IOException {
@@ -178,6 +260,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
     private class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, ProcessingException> {
         private final Position position;
+
 
         public CompilingTokenProcessor(Position position) {
             this.position = position;
@@ -189,14 +272,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 _printCodeToWrite(code);
             }
             currentUnescaped.setLength(0);
-        }
-        
-        void flushAfter() {
-            var code = afterTagUnescaped.toString();
-            if (! code.isEmpty()) {
-                _printCodeToWrite(code);
-            }
-            afterTagUnescaped.setLength(0);
         }
         
         private void printBeginSectionComment() {
@@ -211,68 +286,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             println();
         }
         
-        private boolean isStandalone() {
-            var lines = CodeNewLineSplitter.split(currentUnescaped.toString(), "\\n");
-            boolean startClear = false;
-            if (lines.isEmpty()) {
-                startClear = true;
-            }
-            else {
-                String line = lines.get(lines.size() - 1);
-                if (line.endsWith("\\n") || line.isBlank()) {
-                    startClear = true;
-                }
-            }
-            var afterLines = CodeNewLineSplitter.split(currentUnescaped.toString(), "\\n");
-            return false;
-        }
-        
-        private void triggerSection() throws ProcessingException {
-            var section = currentSection;
-            if (section != null) {
-                flushUnescaped(); // for now
-                switch (section.mode()) {
-                    case BEGIN:
-                        switch (section.type()) {
-                            case SECTION -> _beginSection(section.name());
-                            case INVERTED -> _beginInvertedSection(section.name());
-                            case PARENT -> _beginParentSection(section.name());
-                            case BLOCK -> _beginBlockSection(section.name());
-                        };
-                        break;
-                    case END:
-                        _endSection(section.name());
-                        break;
-                };
-                flushAfter();
-            }
-            else {
-                flushUnescaped();
-                flushAfter();
-            }
-            currentSection = null;
-        }
-        
-        private void queueSection(String name, SectionType type) throws ProcessingException {
-            triggerSection();
-            currentSection = new Section(name, type, SectionMode.BEGIN);
-        }
-        
-        private void queueEndSection(String name) throws ProcessingException {
-            triggerSection();
-            SectionType type = switch (context.getType()) {
-                case SECTION -> SectionType.SECTION;
-                case BLOCK -> SectionType.BLOCK;
-                case PARENT_PARTIAL -> SectionType.PARENT;
-                case INVERTED -> SectionType.INVERTED;
-                default -> throw new IllegalStateException();
-            };
-            currentSection = new Section(name, type, SectionMode.END);
-        }
 
+        
         @Override
         public @Nullable Void beginSection(String name) throws ProcessingException {
-            queueSection(name, SectionType.SECTION);
+            flushUnescaped();
+            _beginSection(name);
             return null;
             
         }
@@ -295,7 +314,8 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         @Override
         public @Nullable Void beginInvertedSection(String name) throws ProcessingException {
-            queueSection(name, SectionType.INVERTED);
+            flushUnescaped();
+            _beginInvertedSection(name);
             return null;
         }
         
@@ -314,8 +334,8 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void beginParentSection(String name) throws ProcessingException {
-            queueSection(name, SectionType.PARENT);
-            triggerSection();
+            flushUnescaped();
+            _beginParentSection(name);
             return null;
         }
         
@@ -340,8 +360,8 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         @Override
         public @Nullable Void beginBlockSection(String name) throws ProcessingException {
-            queueSection(name, SectionType.BLOCK);
-            triggerSection();
+            flushUnescaped();
+            _beginBlockSection(name);
             return null;
         }
         
@@ -416,16 +436,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void endSection(String name) throws ProcessingException {
-            queueEndSection(name);
-            triggerSection();
-//            if (context.getType() == ChildType.BLOCK || context.getType() == ChildType.PARENT_PARTIAL) {
-//                triggerSection();
-//            }
+            flushUnescaped();
+            _endSection(name);
             return null;
         }
         
         private void _endSection(String name) throws ProcessingException {
-        	//queueEndSection(name, null);
             if (!context.isEnclosed()) {
                 throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
             }
@@ -538,7 +554,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void variable(String name) throws ProcessingException {
-        	triggerSection();
+            flushUnescaped();
             println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
@@ -565,7 +581,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
-        	triggerSection();
+            flushUnescaped();
             println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
@@ -607,6 +623,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             
             return null;
         }
+        
+        public Void newline(char c) throws ProcessingException {
+            specialCharacter(c);
+            return null;
+        };
 
         @Override
         public @Nullable Void text(String s) throws ProcessingException {
@@ -616,7 +637,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void endOfFile() throws ProcessingException {
-        	triggerSection();
+        	flushUnescaped();
             if (!context.isEnclosed())
                 return null;
             else {
@@ -625,12 +646,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
 
         private void printCodeToWrite(String s) {
-            if (currentSection == null) {
-                currentUnescaped.append(s);
-            }
-            else {
-                afterTagUnescaped.append(s);
-            }
+            currentUnescaped.append(s);
         }
         
         

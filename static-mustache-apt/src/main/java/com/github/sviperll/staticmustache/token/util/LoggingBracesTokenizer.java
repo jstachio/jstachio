@@ -37,10 +37,10 @@ import com.snaphop.staticmustache.apt.TokenProcessor;
  *
  * @author vir
  */
-class LoggingBracesTokenizer implements TokenProcessor<BracesToken>, BracesToken.Visitor<Void, RuntimeException> {
+public class LoggingBracesTokenizer implements TokenProcessor<BracesToken>, BracesToken.Visitor<Void, RuntimeException> {
     private final TokenProcessor<BracesToken> downstream;
 
-    LoggingBracesTokenizer(TokenProcessor<BracesToken> downstream) {
+    public LoggingBracesTokenizer(TokenProcessor<BracesToken> downstream) {
         this.downstream = downstream;
     }
 

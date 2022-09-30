@@ -29,96 +29,105 @@
  */
 package com.snaphop.staticmustache.apt;
 
+import com.github.sviperll.staticmustache.token.MustacheTagKind;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public abstract class MustacheToken {
-    public static MustacheToken beginSection(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginSection(name);
-            }
+public sealed interface MustacheToken {
+    
+    public record TagToken(MustacheTagKind tagKind, String name) implements MustacheToken {
+        @Override
+        public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+            return switch(tagKind()) {
+            case BEGIN_SECTION -> visitor.beginSection(name);
+            case BEGIN_BLOCK_SECTION -> visitor.beginBlockSection(name);
+            case BEGIN_INVERTED_SECTION -> visitor.beginInvertedSection(name);
+            case BEGIN_PARENT_SECTION -> visitor.beginParentSection(name);
+            case END_SECTION -> visitor.endSection(name);
+            case UNESCAPED_VARIABLE_THREE_BRACES -> visitor.unescapedVariable(name);
+            case UNESCAPED_VARIABLE_TWO_BRACES -> visitor.unescapedVariable(name);
+            case VARIABLE -> visitor.variable(name);
+            };
+        }
+        public boolean isTagToken() {
+            return true;
+        };
+        
+        public boolean isSectionToken() {
+            return tagKind().isSection();
         };
     }
-    public static MustacheToken beginInvertedSection(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginInvertedSection(name);
-            }
+    
+    public record TextToken(String text) implements MustacheToken {
+        @Override
+        public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
+            return visitor.text(text);
         };
     }
-    public static MustacheToken beginParentSection(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginParentSection(name);
-            }
+    
+    public record SpecialCharacterToken(char specialChar) implements MustacheToken {
+        @Override
+        public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
+            return visitor.specialCharacter(specialChar);
         };
     }
-    public static MustacheToken beginBlockSection(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.beginBlockSection(name);
-            }
+    
+    public record NewlineToken(char newlineChar) implements MustacheToken {
+        @Override
+        public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
+            return visitor.newline(newlineChar);
+        };
+        
+        @Override
+        public boolean isNewlineToken() {
+            return true;
         };
     }
-    public static MustacheToken endSection(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endSection(name);
-            }
-        };
+    
+    public record EndOfFileToken() implements MustacheToken {
+
+        @Override
+        public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+            return visitor.endOfFile();
+        }
+        
     }
-    public static MustacheToken variable(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.variable(name);
-            }
-        };
+    
+    /**
+     * N.B this does not include newline!
+     */
+    default boolean isWhitespaceToken() {
+        return isWhitespaceToken(this);
     }
-    public static MustacheToken unescapedVariable(final String name) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.unescapedVariable(name);
-            }
-        };
+    
+    default boolean isTagToken() {
+        return false;
     }
-    public static MustacheToken specialCharacter(final char c) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.specialCharacter(c);
-            }
-        };
+    
+    default boolean isSectionToken() {
+        return false;
     }
-    public static MustacheToken text(final String s) {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.text(s);
-            }
-        };
+    
+    default boolean isNewlineToken() {
+        return false;
     }
-    public static MustacheToken endOfFile() {
-        return new MustacheToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endOfFile();
-            }
-        };
+    
+    /**
+     * N.B this does not include newline!
+     */
+    public static boolean isWhitespaceToken(MustacheToken token) {
+        if (token instanceof TextToken tt) {
+            return tt.text().isBlank();
+        }
+        return false;
     }
+    
 
     public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
 
-    private MustacheToken() {
-    }
+
     public interface Visitor<R, E extends Exception> {
         R beginSection(String name) throws E;
         R beginInvertedSection(String name) throws E;
@@ -128,6 +137,7 @@ public abstract class MustacheToken {
         R variable(String name) throws E;
         R unescapedVariable(String name) throws E;
         R specialCharacter(char c) throws E;
+        R newline(char c) throws E;
         R text(String s) throws E;
         R endOfFile() throws E;
     }
