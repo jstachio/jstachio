@@ -153,10 +153,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
     private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(4);
 
+    boolean eof = false;
+    
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+        
         previousTokens.offer(positionedToken);
         
+        boolean eof = positionedToken.innerToken() instanceof EndOfFileToken;
         /*
          * For standalone tag line support we need to see if blank space
          * is around the tag.
@@ -170,23 +174,37 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
          */
 
         int size = previousTokens.size();
-
-        if (size < 2) {
-            return; // we need more tokens
+        
+        if (size == 1 && eof) {
+            _processToken(previousTokens.poll());
+            return;
         }
         
-        var firstToken = previousTokens.poll();
-        var secondToken = previousTokens.poll();
-        
-        List<PositionedToken<MustacheToken>> buf = new ArrayList<>();
-        buf.add(firstToken);
-        buf.add(secondToken);
-        
         try {
+            if (size < 2) {
+                return; // we need more tokens
+            }
+            
+            List<PositionedToken<MustacheToken>> buf = new ArrayList<>();
+            var firstToken = previousTokens.poll();
+            var secondToken = previousTokens.poll();
+            buf.add(firstToken);
+            buf.add(secondToken);
+            
+            /*
+             * Handle the easiest negative case
+             * [ not new line or space ] {{#somesection}}
+             */
+            if ( ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
+                    && secondToken.innerToken().isSectionToken()) {
+                _processToken(firstToken);
+                _processToken(secondToken);
+                return;
+            }
             /*
              * {{#some section}} [ newline ]
              */
-            if (firstToken.innerToken().isSectionToken() && secondToken.innerToken().isNewlineToken()) {
+            if (firstToken.innerToken().isSectionToken() && secondToken.innerToken().isNewlineOrEOF()) {
                 _processToken(firstToken);
                 return;
             }
@@ -199,7 +217,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                  * {{#some section}} [white space] [ newline ]
                  */
                 if (firstToken.innerToken().isSectionToken() //
-                        && secondToken.innerToken().isWhitespaceToken() && thirdToken.innerToken().isNewlineToken()) {
+                        && secondToken.innerToken().isWhitespaceToken() && thirdToken.innerToken().isNewlineOrEOF()) {
                     _processToken(firstToken);
                     return;
                 }
@@ -208,7 +226,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                  * [white space] {{#some section}} [ newline ]
                  */
                 if (firstToken.innerToken().isWhitespaceToken() //
-                        && secondToken.innerToken().isSectionToken() && thirdToken.innerToken().isNewlineToken()) {
+                        && secondToken.innerToken().isSectionToken() && thirdToken.innerToken().isNewlineOrEOF()) {
                     _processToken(secondToken);
                     return;
                 }
@@ -223,7 +241,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (firstToken.innerToken().isWhitespaceToken() //
                             && secondToken.innerToken().isSectionToken() //
                             && thirdToken.innerToken().isWhitespaceToken() //
-                            && fourthToken.innerToken().isNewlineToken()) {
+                            && fourthToken.innerToken().isNewlineOrEOF()) {
                         _processToken(secondToken);
                         return;
                     }
@@ -238,12 +256,33 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         } finally {
             // We process the token queue now if we get an EOF no matter what hence
             // the finally
-            if (positionedToken.innerToken() instanceof EndOfFileToken) {
-                PositionedToken<MustacheToken> current;
-                while ((current = previousTokens.poll()) != null) {
-                    _processToken(current);
+            
+            if (eof) {
+                var tokens = List.copyOf(previousTokens);
+                previousTokens.clear();
+                for (var t : tokens) {
+                    if (t.innerToken() instanceof EndOfFileToken) {
+                        break;
+                    }
+                    processToken(t);
                 }
+                _processToken(positionedToken);
+                
             }
+//            if (positionedToken.innerToken() instanceof EndOfFileToken) {
+//                
+//                currentWriter().println();
+//                currentWriter().print("// size " + size + " " + previousTokens.stream()
+//                        .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList());
+//                currentWriter().println();
+//                
+//
+//                PositionedToken<MustacheToken> current;
+//                while ((current = previousTokens.poll()) != null) {
+//                    _processToken(current);
+//                }
+//                _processToken(positionedToken);
+//            }
         }
     }
     

@@ -18,5 +18,12 @@ public class CodeNewLineSplitter {
         }
         return tokens;
     }
+    
+    public static String escapeJava(String s) {
+        s = s.replace("\"", "\\\"");
+        s = s.replace("\\", "\\\\");
+        s = s.replace("\n", "\\n");
+        return s;
+    }
 
 }

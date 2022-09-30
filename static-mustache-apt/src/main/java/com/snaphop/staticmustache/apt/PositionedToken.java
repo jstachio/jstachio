@@ -51,4 +51,11 @@ public class PositionedToken<T> {
     public T innerToken() {
         return innerToken;
     }
+
+    @Override
+    public String toString() {
+        return "PositionedToken [position=" + position + ", innerToken=" + innerToken + "]";
+    }
+    
+    
 }

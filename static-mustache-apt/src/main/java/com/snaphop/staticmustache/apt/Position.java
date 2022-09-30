@@ -64,4 +64,10 @@ public class Position implements Serializable {
         return col;
     }
 
+    @Override
+    public String toString() {
+        return "Position [fileName=" + fileName + ", row=" + row + ", currentLine=" + currentLine + ", col=" + col
+                + "]";
+    }
+
 }

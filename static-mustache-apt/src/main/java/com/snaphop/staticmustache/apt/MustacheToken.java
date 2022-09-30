@@ -114,6 +114,10 @@ public sealed interface MustacheToken {
         return false;
     }
     
+    default boolean isNewlineOrEOF() {
+        return isNewlineToken() || this instanceof EndOfFileToken;
+    }
+    
     /**
      * N.B this does not include newline!
      */

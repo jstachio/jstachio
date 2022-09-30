@@ -32,7 +32,6 @@ public class SpecSectionsTest {
     @Test
     public void testRender() throws Exception {
         String expected = specItem.expected();
-        String json = specItem.json();
         String actual = render(specItem);
         boolean failed = true;
         try {
