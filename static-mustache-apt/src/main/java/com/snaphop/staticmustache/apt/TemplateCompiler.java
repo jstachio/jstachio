@@ -211,6 +211,22 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             println();
         }
         
+        private boolean isStandalone() {
+            var lines = CodeNewLineSplitter.split(currentUnescaped.toString(), "\\n");
+            boolean startClear = false;
+            if (lines.isEmpty()) {
+                startClear = true;
+            }
+            else {
+                String line = lines.get(lines.size() - 1);
+                if (line.endsWith("\\n") || line.isBlank()) {
+                    startClear = true;
+                }
+            }
+            var afterLines = CodeNewLineSplitter.split(currentUnescaped.toString(), "\\n");
+            return false;
+        }
+        
         private void triggerSection() throws ProcessingException {
             var section = currentSection;
             if (section != null) {
