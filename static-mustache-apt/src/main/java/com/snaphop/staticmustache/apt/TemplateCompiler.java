@@ -157,10 +157,20 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
-        
         previousTokens.offer(positionedToken);
+        processTokens();
+    }
+    
+    private void processTokens() throws ProcessingException {
         
-        boolean eof = positionedToken.innerToken() instanceof EndOfFileToken;
+        
+        boolean eof = previousTokens.stream().filter(t -> t.innerToken().isEOF()).findFirst().isPresent();
+        if (eof) {
+            if (! previousTokens.getLast().innerToken().isEOF()) {
+                throw new IllegalStateException(previousTokens.toString());
+            }
+        }
+        
         /*
          * For standalone tag line support we need to see if blank space
          * is around the tag.
@@ -180,16 +190,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             return;
         }
         
+        boolean exitEarly = true;
+        
+        ArrayDeque<PositionedToken<MustacheToken>> buf = new ArrayDeque<>();
+
         try {
-            if (size < 2) {
+            if (size < 2 && ! eof) {
                 return; // we need more tokens
             }
             
-            List<PositionedToken<MustacheToken>> buf = new ArrayList<>();
             var firstToken = previousTokens.poll();
             var secondToken = previousTokens.poll();
-            buf.add(firstToken);
-            buf.add(secondToken);
+            buf.offerLast(firstToken);
+            buf.offerLast(secondToken);
             
             /*
              * Handle the easiest negative case
@@ -206,6 +219,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
              */
             if (firstToken.innerToken().isSectionToken() && secondToken.innerToken().isNewlineOrEOF()) {
                 _processToken(firstToken);
+                if (secondToken.innerToken().isEOF()) {
+                    _processToken(secondToken);
+                }
                 return;
             }
 
@@ -219,6 +235,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 if (firstToken.innerToken().isSectionToken() //
                         && secondToken.innerToken().isWhitespaceToken() && thirdToken.innerToken().isNewlineOrEOF()) {
                     _processToken(firstToken);
+                    if (thirdToken.innerToken().isEOF()) {
+                        _processToken(thirdToken);
+                    }
                     return;
                 }
 
@@ -228,6 +247,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 if (firstToken.innerToken().isWhitespaceToken() //
                         && secondToken.innerToken().isSectionToken() && thirdToken.innerToken().isNewlineOrEOF()) {
                     _processToken(secondToken);
+                    if (thirdToken.innerToken().isEOF()) {
+                        _processToken(thirdToken);
+                    }
                     return;
                 }
 
@@ -243,32 +265,72 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                             && thirdToken.innerToken().isWhitespaceToken() //
                             && fourthToken.innerToken().isNewlineOrEOF()) {
                         _processToken(secondToken);
+                        if (fourthToken.innerToken().isEOF()) {
+                            _processToken(fourthToken);
+                        }
                         return;
                     }
                 }
             }
             // We have to put the tokens back into the queue
-            buf.forEach(previousTokens::offer);
-
-            if (size >= 4) {
-                _processToken(previousTokens.poll());
+            buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
+            if (eof) {
+                System.out.println("//eof " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + previousTokens.stream()
+                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());   
             }
+
+//            if (size >= 4) {
+//                _processToken(previousTokens.poll());
+//                if (eof) {
+//                    processTokens();
+//                }
+//            }
+            exitEarly = false;
         } finally {
             // We process the token queue now if we get an EOF no matter what hence
             // the finally
-            
-            if (eof) {
-                var tokens = List.copyOf(previousTokens);
-                previousTokens.clear();
-                for (var t : tokens) {
-                    if (t.innerToken() instanceof EndOfFileToken) {
-                        break;
-                    }
-                    processToken(t);
+            if (eof && ! previousTokens.isEmpty()) {
+                if (exitEarly) {
+                    processTokens();
                 }
-                _processToken(positionedToken);
-                
+                else {
+                    _processToken(previousTokens.poll());
+                    processTokens();
+                }
             }
+        }
+    }
+            
+//            boolean _eof = previousTokens.stream().filter(t -> t.innerToken().isEOF()).findFirst().isPresent();
+//            if (_eof) {
+//                System.out.println("// " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + previousTokens.stream()
+//                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
+//                System.out.println("// buff " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + buf.stream()
+//                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
+//                var token = previousTokens.poll();
+//                if (token.innerToken().isEOF()) {
+//                    System.out.println("// " + getTemplateName() + " EOF " + token.innerToken());
+//                    _processToken(token);
+//                }
+//                else {
+//                    processTokens();
+//                }
+//            }
+
+//            if (eof) {
+//              System.out.println("// size " + size + " " + previousTokens.stream()
+//              .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
+//                var tokens = List.copyOf(previousTokens);
+//                previousTokens.clear();
+//                for (var t : tokens) {
+//                    if (t.innerToken() instanceof EndOfFileToken) {
+//                        break;
+//                    }
+//                    processToken(t);
+//                }
+//                _processToken(positionedToken);
+//                
+//            }
 //            if (positionedToken.innerToken() instanceof EndOfFileToken) {
 //                
 //                currentWriter().println();
@@ -283,8 +345,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 //                }
 //                _processToken(positionedToken);
 //            }
-        }
-    }
+
     
     
     void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
@@ -607,7 +668,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (foundYield)
                         throw new ProcessingException(position, "Yield can be used only once");
                     else if (context.isEnclosed())
-                        throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
+                        throw new ProcessingException(position, "Unclosed \"" + context.currentEnclosedContextName() + "\" block before yield");
                     else {
                         throw new ProcessingException(position, "Yield should be unescaped variable");
                     }
@@ -633,7 +694,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (foundYield)
                         throw new ProcessingException(position, "Yield can be used only once");
                     if (context.isEnclosed())
-                        throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block before yield");
+                        throw new ProcessingException(position, "Unclosed \"" + context.currentEnclosedContextName() + "\" block before yield");
                     else {
                         foundYield = true;
                         if (currentWriter().suppressesOutput())
@@ -680,7 +741,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             if (!context.isEnclosed())
                 return null;
             else {
-                throw new ProcessingException(position, "Unclosed " + context.currentEnclosedContextName() + " block at end of file");
+                throw new ProcessingException(position, "Unclosed \"" + context.currentEnclosedContextName() + "\" block at end of file");
             }
         }
 

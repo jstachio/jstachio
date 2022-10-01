@@ -1,7 +1,8 @@
 package com.github.sviperll.staticmustache.apt.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.util.ArrayDeque;
 import java.util.List;
 
 import org.junit.Test;
@@ -72,6 +73,26 @@ public class SplitTest {
         List<String> actual = CodeNewLineSplitter.split(s, "\\n");
         //assertEquals(4,actual.size());
         assertEquals(List.of("<div>\\n", "\\n", "<div>\\n", "\\t  "), actual);
+    }
+    
+    @Test
+    public void testName() throws Exception {
+        ArrayDeque<String> s = new ArrayDeque<>();
+        
+        s.offer("a");
+        s.offer("b");
+        s.offer("c");
+        
+        //s.poll();
+        //s.poll();
+        
+        //s.offer("a");
+        //.offer("b");
+        
+        System.out.println(s.getLast());
+        for (var i : s) {
+            System.out.println(i);
+        }
     }
 
 }
