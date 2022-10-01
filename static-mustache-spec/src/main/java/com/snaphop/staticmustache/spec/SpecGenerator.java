@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -48,7 +50,7 @@ public class SpecGenerator {
         String group();
         
         default String className() {
-            return name().replaceAll("[- \\(\\)]", "");
+            return name().replaceAll("[- \\(\\),]", "");
         }
         default String packageName() {
             return SpecModel.class.getPackageName() + "." + group();
@@ -80,7 +82,7 @@ public class SpecGenerator {
             return "src/main/resources/" + templateFileName();
         }
         String enumName() {
-            return name().replaceAll("[- \\(\\)]", "_").toUpperCase();
+            return name().replaceAll("[- \\(\\),]", "_").toUpperCase();
         }
     }
     
@@ -95,12 +97,14 @@ public class SpecGenerator {
     public void generateAll() throws IOException {
         generate("interpolation");
         generate("sections");
+        generate("~inheritance");
 
     }
     
     public void generate(String group) throws IOException {
         
         String specFile = group + ".yml";
+        group = group.replace("~","");
         
         var items = toSpecItems(group, getSpec(specFile));
         
@@ -284,6 +288,9 @@ public class SpecGenerator {
     @SuppressWarnings("unchecked")
     private List<SpecItem> toSpecItems(String group, JsonNode spec) throws IOException {
 
+        Set<String> names = new LinkedHashSet<>();
+        int nameIncrement = 1;
+        
         List<SpecItem> list = new ArrayList<>();
         for (final JsonNode test : spec.get("tests")) {
             String name = test.get("name").asText();
@@ -293,6 +300,13 @@ public class SpecGenerator {
             JsonNode data = test.get("data");
             String json = data.toString();
             Map<String, Object> _data;
+            
+            if (names.contains(name)) {
+                name = name + nameIncrement++;
+            }
+            else {
+                names.add(name);
+            }
              if (json.startsWith("{")) {
                  _data = (Map<String,Object>) new ObjectMapper().readValue(json, Map.class);
                  list.add(new SpecItem(name, group, desc, template, json, _data, expected));
@@ -323,8 +337,12 @@ public class SpecGenerator {
     // }
 
     private JsonNode getSpec(String spec) throws IOException {
+        var is = SpecGenerator.class.getResourceAsStream("/spec-1.3.0/specs/" + spec);
+        if (is == null) {
+            throw new IOException("Spec is missing. spec: " + spec);
+        }
         return new YAMLFactory(new YAMLMapper())
-                .createParser(new InputStreamReader(SpecGenerator.class.getResourceAsStream("/spec-1.3.0/specs/" + spec)))
+                .createParser(new InputStreamReader(is))
                 .readValueAsTree();
     }
 
