@@ -65,6 +65,10 @@ public class SpecGenerator {
         default String packageInfoFilePath() {
             return fileDir() + "/" + "package-info.java";
         }
+        
+        default boolean enabled() {
+            return group().enabled();
+        }
 
     }
 
@@ -170,21 +174,21 @@ public class SpecGenerator {
         
         int j = 0;
         for (var i : items) {
-            if (group.ignores().contains(i.className())) {
-                System.out.println("Skipping: " + i.className());
-                continue;
-            }
-            out.println(i);
             if (j == 0) {
                 File javaDir = Path.of(i.javaFilePath()).toFile().getParentFile();
                 File templateDir = Path.of(i.templateFilePath()).toFile().getParentFile();
                 cleanDirectory(javaDir);
                 cleanDirectory(templateDir);
             }
-            String javaCode = template.execute(i);
-            Files.writeString(Path.of(i.javaFilePath()), javaCode, StandardOpenOption.CREATE);
-            Files.writeString(Path.of(i.templateFilePath()), i.template());
-            j++;
+            if (i.enabled()) {
+                String javaCode = template.execute(i);
+                Files.writeString(Path.of(i.javaFilePath()), javaCode, StandardOpenOption.CREATE);
+                Files.writeString(Path.of(i.templateFilePath()), i.template());
+                j++;
+            }
+            else {
+               out.println("Skipping: " + i); 
+            }
         }
         
         String enumTemplate = """
@@ -196,7 +200,7 @@ public class SpecGenerator {
                 public enum {{className}} implements SpecListing {
                     {{#items}}
                     {{enumName}}(
-                        {{className}}.class,
+                        {{#enabled}}{{className}}.class{{/enabled}}{{^enabled}}null{{/enabled}},
                         "{{group}}",
                         "{{name}}",
                         "{{desc}}",
@@ -204,15 +208,15 @@ public class SpecGenerator {
                         "{{template}}", 
                         "{{expected}}"){
                         public String render(Map<String, Object> o) {
-                            {{#group.enabled}}
+                            {{#enabled}}
                             var m = new {{className}}();
                             m.putAll(o);
                             var r = {{className}}Renderer.of(m);
                             return r.renderString();
-                            {{/group.enabled}}
-                            {{^group.enabled}}
+                            {{/enabled}}
+                            {{^enabled}}
                             return "DISABLED TEST";
-                            {{/group.enabled}}
+                            {{/enabled}}
                         }
                     },
                     {{/items}}
