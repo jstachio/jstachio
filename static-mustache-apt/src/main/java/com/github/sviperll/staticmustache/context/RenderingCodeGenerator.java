@@ -226,9 +226,12 @@ public class RenderingCodeGenerator {
             DeclaredType dt = (DeclaredType) expression.type();
             OptionalRenderingContext declaredContext = new OptionalRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null", declaredContext);
+        } else if (javaModel.isType(expression.type(), knownTypes._MapNode) && expression.type() instanceof DeclaredType dt) {
+            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
+            return new BooleanRenderingContext("isFalsey(" + expression.text() + ")", declaredContext);
         } else if (expression.type() instanceof DeclaredType dt) {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
-            return new BooleanRenderingContext("(" + expression.text() + ") == null", declaredContext);
+            return new BooleanRenderingContext("(" + expression.text() + ") == null || Boolean.FALSE.equals(" + expression.text() + ")", declaredContext);
         } else if (expression.type() instanceof ArrayType) {
             return new BooleanRenderingContext("(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
         } else

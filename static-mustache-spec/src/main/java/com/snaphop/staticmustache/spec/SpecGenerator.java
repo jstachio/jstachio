@@ -126,7 +126,8 @@ public class SpecGenerator {
             boolean enabled() {
                 return false;
             }
-        };
+        },
+        inverted;
         
         boolean enabled() {
             return true;
@@ -149,6 +150,8 @@ public class SpecGenerator {
         generate(SpecGroup.interpolation);
         generate(SpecGroup.sections);
         generate(SpecGroup.inheritance);
+        generate(SpecGroup.inverted);
+
 
     }
     

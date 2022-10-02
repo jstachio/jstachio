@@ -1,11 +1,8 @@
 package com.snaphop.staticmustache.spec;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Collection;
 import java.util.EnumSet;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -16,7 +13,7 @@ import com.snaphop.staticmustache.spec.custom.Custom.Person;
 import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
 
 @RunWith(Parameterized.class)
-public class SpecSectionsTest {
+public class SpecSectionsTest extends AbstractSpecTest<SectionsSpecTemplate> {
 
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
@@ -29,21 +26,9 @@ public class SpecSectionsTest {
         this.specItem = specItem;
     }
 
-    @Test
-    public void testRender() throws Exception {
-        String expected = specItem.expected();
-        String actual = render(specItem);
-        boolean failed = true;
-        try {
-            assertEquals(specItem.description(), expected, actual);
-            failed = false;
-        } finally {
-            if (failed) {
-                System.out.print(specItem.describe());
-                System.out.println("<actual>" + actual + "</actual>\n");
-            }
-        }
-
+    @Override
+    SectionsSpecTemplate specItem() {
+        return this.specItem;
     }
 
     String render(SectionsSpecTemplate specTemplate) {

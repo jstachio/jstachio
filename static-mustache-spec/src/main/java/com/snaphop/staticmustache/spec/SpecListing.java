@@ -54,7 +54,7 @@ public interface SpecListing {
                 
                 json: {{json}}
                 
-                template: {{template}}
+                <template>{{template}}</template>
                 
                 <expected>{{expected}}</expected>
                 """;
