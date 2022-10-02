@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class SpecGenerator {
         
         String name();
         
-        String group();
+        SpecGroup group();
         
         default String className() {
             return name().replaceAll("[- \\(\\),]", "");
@@ -66,8 +67,9 @@ public class SpecGenerator {
         }
 
     }
-    public record SpecItem(String name, String group, String desc, String template, 
-            String json, Map<String,Object> data, String expected) implements JavaItem {
+
+    public record SpecItem(String name, SpecGroup group, String desc, String template, String json,
+            Map<String, Object> data, String expected, Map<String, SpecPartial> partials) implements JavaItem {
 
         String annotation() {
             return GenerateRenderableAdapter.class.getName();
@@ -86,25 +88,69 @@ public class SpecGenerator {
         }
     }
     
-    record TemplateList(String group, List<SpecItem> items) implements JavaItem {
+    record SpecPartial(String name, String template) {}
+    
+    record TemplateList(SpecGroup group, List<SpecItem> items) implements JavaItem {
         @Override
         public String name() {
-            return  StringUtils.capitalize(group()) + "SpecTemplate";
+            return  StringUtils.capitalize(group().name()) + "SpecTemplate";
+        }
+    }
+    
+    enum SpecGroup {
+        interpolation,
+        sections,
+        inheritance() {
+            @Override
+            String fileName() {
+                return "~inheritance.yml";
+            }
+            
+            @Override
+            Set<String> ignores() {
+                return Set.of("Recursion", 
+                        "Datadoesnotoverrideblock",
+                        "Overrideparentwithnewlines",
+                        "Inherit",
+                        "Onlyoneoverride",
+                        "Multilevelinheritance",
+                        "Inheritindentation",
+                        "Twooverriddenparents");
+            }
+            
+            @Override
+            boolean enabled() {
+                return false;
+            }
+        };
+        
+        boolean enabled() {
+            return true;
         }
         
+        String fileName() {
+            return name() + ".yml";
+        }
+        
+        Set<String> ignores() {
+            return Set.of();
+        }
+        
+        Set<String> includes() {
+            return Set.of();
+        }
     }
-
+    
     public void generateAll() throws IOException {
-        generate("interpolation");
-        generate("sections");
-        generate("~inheritance");
+        generate(SpecGroup.interpolation);
+        generate(SpecGroup.sections);
+        generate(SpecGroup.inheritance);
 
     }
     
-    public void generate(String group) throws IOException {
+    public void generate(SpecGroup group) throws IOException {
         
-        String specFile = group + ".yml";
-        group = group.replace("~","");
+        String specFile = group.fileName();
         
         var items = toSpecItems(group, getSpec(specFile));
         
@@ -124,6 +170,10 @@ public class SpecGenerator {
         
         int j = 0;
         for (var i : items) {
+            if (group.ignores().contains(i.className())) {
+                System.out.println("Skipping: " + i.className());
+                continue;
+            }
             out.println(i);
             if (j == 0) {
                 File javaDir = Path.of(i.javaFilePath()).toFile().getParentFile();
@@ -154,10 +204,15 @@ public class SpecGenerator {
                         "{{template}}", 
                         "{{expected}}"){
                         public String render(Map<String, Object> o) {
+                            {{#group.enabled}}
                             var m = new {{className}}();
                             m.putAll(o);
                             var r = {{className}}Renderer.of(m);
                             return r.renderString();
+                            {{/group.enabled}}
+                            {{^group.enabled}}
+                            return "DISABLED TEST";
+                            {{/group.enabled}}
                         }
                     },
                     {{/items}}
@@ -286,7 +341,7 @@ public class SpecGenerator {
 
 
     @SuppressWarnings("unchecked")
-    private List<SpecItem> toSpecItems(String group, JsonNode spec) throws IOException {
+    private List<SpecItem> toSpecItems(SpecGroup group, JsonNode spec) throws IOException {
 
         Set<String> names = new LinkedHashSet<>();
         int nameIncrement = 1;
@@ -299,6 +354,21 @@ public class SpecGenerator {
             String expected = test.get("expected").asText();
             JsonNode data = test.get("data");
             String json = data.toString();
+            
+            Map<String, SpecPartial> partials = new LinkedHashMap<>();
+            JsonNode pn = test.get("partials");
+            
+            if (pn != null) {
+                var fields = pn.fields();
+                while(fields.hasNext()) {
+                    var e = fields.next();
+                    String n = e.getKey();
+                    var p = e.getValue();
+                    String pt = p.asText();
+                    SpecPartial partial = new SpecPartial(name, pt);
+                    partials.put(n, partial);
+                }
+            }
             Map<String, Object> _data;
             
             if (names.contains(name)) {
@@ -309,7 +379,7 @@ public class SpecGenerator {
             }
              if (json.startsWith("{")) {
                  _data = (Map<String,Object>) new ObjectMapper().readValue(json, Map.class);
-                 list.add(new SpecItem(name, group, desc, template, json, _data, expected));
+                 list.add(new SpecItem(name, group, desc, template, json, _data, expected, partials));
              } 
              else {
                  //String s = new ObjectMapper().readValue(json, String.class);

@@ -31,8 +31,6 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -42,7 +40,6 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildT
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
-import com.snaphop.staticmustache.apt.MustacheToken.EndOfFileToken;
 
 /**
  *
@@ -274,17 +271,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
             // We have to put the tokens back into the queue
             buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
-            if (eof) {
-                System.out.println("//eof " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + previousTokens.stream()
-                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());   
-            }
-
-//            if (size >= 4) {
-//                _processToken(previousTokens.poll());
-//                if (eof) {
-//                    processTokens();
-//                }
-//            }
             exitEarly = false;
         } finally {
             // We process the token queue now if we get an EOF no matter what hence
@@ -300,53 +286,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
         }
     }
-            
-//            boolean _eof = previousTokens.stream().filter(t -> t.innerToken().isEOF()).findFirst().isPresent();
-//            if (_eof) {
-//                System.out.println("// " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + previousTokens.stream()
-//                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
-//                System.out.println("// buff " + getTemplateName() + "\t size " + size + " " + exitEarly + " " + buf.stream()
-//                .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
-//                var token = previousTokens.poll();
-//                if (token.innerToken().isEOF()) {
-//                    System.out.println("// " + getTemplateName() + " EOF " + token.innerToken());
-//                    _processToken(token);
-//                }
-//                else {
-//                    processTokens();
-//                }
-//            }
-
-//            if (eof) {
-//              System.out.println("// size " + size + " " + previousTokens.stream()
-//              .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList() + " " + getTemplateName());
-//                var tokens = List.copyOf(previousTokens);
-//                previousTokens.clear();
-//                for (var t : tokens) {
-//                    if (t.innerToken() instanceof EndOfFileToken) {
-//                        break;
-//                    }
-//                    processToken(t);
-//                }
-//                _processToken(positionedToken);
-//                
-//            }
-//            if (positionedToken.innerToken() instanceof EndOfFileToken) {
-//                
-//                currentWriter().println();
-//                currentWriter().print("// size " + size + " " + previousTokens.stream()
-//                        .map(p -> CodeNewLineSplitter.escapeJava(p.innerToken().toString())).toList());
-//                currentWriter().println();
-//                
-//
-//                PositionedToken<MustacheToken> current;
-//                while ((current = previousTokens.poll()) != null) {
-//                    _processToken(current);
-//                }
-//                _processToken(positionedToken);
-//            }
-
-    
     
     void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
