@@ -36,7 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
@@ -58,7 +58,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
         case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
         case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context);
-        case PARAM_PARTIAL_TEMPLATE -> throw new IllegalArgumentException("Cannot create parent template as root");
+        case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE -> throw new IllegalArgumentException("Cannot create partial template as root");
         };
     }
 
@@ -138,7 +138,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     @Override
     public ParameterPartial createParameterPartial(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
-        TemplateCompilerContext context = this.context.createForPartial();
+        TemplateCompilerContext context = this.context.createForParameterPartial();
         var c = new TemplateCompiler(reader, this, context, expectsYield) {
             @Override
             public TemplateCompilerType getCompilerType() {
@@ -146,6 +146,19 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
         };
         return new ParameterPartial(c);
+    }
+    
+    
+    public Partial createPartial(String templateName) throws IOException {
+        var reader = getTemplateLoader().open(templateName);
+        TemplateCompilerContext context = this.context.createForPartial();
+        var c = new TemplateCompiler(reader, this, context, expectsYield) {
+            @Override
+            public TemplateCompilerType getCompilerType() {
+                return TemplateCompilerType.PARTIAL_TEMPLATE;
+            }
+        };
+        return new Partial(c);
     }
 
     private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(4);
@@ -335,13 +348,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             
         }
         private void _beginSection(String name) throws ProcessingException {
-            var contextType = ChildType.SECTION;
+            var contextType = ContextType.SECTION;
             try {
                 context = context.getChild(name, contextType);
-                /*
-                 * For standalone lines we need to hold off on printing
-                 * to see if there is other things besides newlines
-                 */
                 printBeginSectionComment();
                 print(context.beginSectionRenderingCode());
                 println();
@@ -359,7 +368,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         
         private void _beginInvertedSection(String name) throws ProcessingException {
-            var contextType = ChildType.INVERTED;
+            var contextType = ContextType.INVERTED;
             try {
                 context = context.getChild(name, contextType);
                 printBeginSectionComment();
@@ -379,7 +388,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         
         private void _beginParentSection(String name) throws ProcessingException {
-            var contextType = ChildType.PARENT_PARTIAL;
+            var contextType = ContextType.PARENT_PARTIAL;
             try {
                 context = context.getChild(name, contextType);
                 printBeginSectionComment();
@@ -387,7 +396,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 //depth++;
                 var p = currentParameterPartial();
                 if (p != null) {
-                    throw new IllegalStateException("partial is already started for this context");
+                    throw new IllegalStateException("parent (parameter partial) is already started for this context");
                 }
                 p = createParameterPartial(name);
                 pushPartial(p);
@@ -405,7 +414,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         
         private void _beginBlockSection(String name) throws ProcessingException {
-            var contextType = ChildType.BLOCK;
+            var contextType = ContextType.BLOCK;
             try {
                 context = context.getChild(name, contextType);
                 printBeginSectionComment();
@@ -554,7 +563,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     }
                     //println();
                 }
-                case HEADER,FOOTER,SIMPLE -> {
+                case HEADER,FOOTER,SIMPLE,PARTIAL_TEMPLATE-> {
                     /*
                      * We are in the caller template at the end of a block
                      * {{$block}}
@@ -581,7 +590,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 }
                 }
             }
-            case PATH, ESCAPED_VAR, UNESCAPED_VAR -> { throw new IllegalStateException("Context Type is wrong. " + context.getType());}
+            case PATH, ESCAPED_VAR, UNESCAPED_VAR, PARTIAL -> { throw new IllegalStateException("Context Type is wrong. " + context.getType());}
             case ROOT, SECTION, INVERTED -> {
                 depth--;
             }
@@ -598,7 +607,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             try {
                 if (!expectsYield || !name.equals("yield")) {
                     //TemplateCompilerContext variable = context.getChild(name);
-                    TemplateCompilerContext variable = context.getChild(name, ChildType.ESCAPED_VAR);
+                    TemplateCompilerContext variable = context.getChild(name, ContextType.ESCAPED_VAR);
                     print("// variable: " + variable.currentEnclosedContextName());
                     println();
                     print(variable.renderingCode());
@@ -617,6 +626,32 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 throw new ProcessingException(position, ex);
             }
         }
+        
+        public Void partial(String name) throws ProcessingException {
+            flushUnescaped();
+            println();
+            var contextType = ContextType.PARTIAL;
+            try {
+                context = context.getChild(name, contextType);
+                printBeginSectionComment();
+                //We do not increase the printing depth
+                //depth++;
+                var pp = currentParameterPartial();
+                if (pp != null) {
+                    throw new IllegalStateException("parent (parameter partial) is already started for this context");
+                }
+                try (var p = createPartial(name)) {
+                    p.run();
+                }
+                
+            } catch (ContextException | IOException ex) {
+                throw new ProcessingException(position, ex);
+            }
+            print(context.endSectionRenderingCode());
+            printEndSectionComment();
+            context = context.parentContext();
+            return null;
+        }
 
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
@@ -624,7 +659,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             println();
             try {
                 if (!expectsYield || !name.equals("yield")) {
-                    TemplateCompilerContext variable = context.getChild(name, ChildType.UNESCAPED_VAR);
+                    TemplateCompilerContext variable = context.getChild(name, ContextType.UNESCAPED_VAR);
                     print("// unescaped variable: " + variable.currentEnclosedContextName());
                     println();
                     print(variable.unescapedRenderingCode());

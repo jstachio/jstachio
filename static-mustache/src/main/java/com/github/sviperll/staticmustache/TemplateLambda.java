@@ -27,22 +27,23 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache.token;
+package com.github.sviperll.staticmustache;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public enum MustacheTagKind {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Documented
+public @interface TemplateLambda {
+    
+    String value() default "";
 
-    VARIABLE, //
-    UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES, PARTIAL, BEGIN_SECTION, END_SECTION, //
-    BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION;
-
-    public boolean isSection() {
-        return switch (this) {
-        case VARIABLE, UNESCAPED_VARIABLE_THREE_BRACES, UNESCAPED_VARIABLE_TWO_BRACES, PARTIAL -> false;
-        default -> true;
-        };
-    }
 }

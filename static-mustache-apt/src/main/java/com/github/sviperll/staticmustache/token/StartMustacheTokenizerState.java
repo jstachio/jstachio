@@ -73,6 +73,8 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
         case '^' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
+        case '>' -> tokenizer
+                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.PARTIAL, tokenizer));
         case '<' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_PARENT_SECTION, tokenizer));
         case '$' -> tokenizer

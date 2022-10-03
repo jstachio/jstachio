@@ -42,6 +42,7 @@ interface TemplateCompilerLike extends AutoCloseable {
         SIMPLE,
         HEADER,
         FOOTER,
+        PARTIAL_TEMPLATE,
         PARAM_PARTIAL_TEMPLATE; // aka parent aka {{< parent }}
     }
     
@@ -49,38 +50,57 @@ interface TemplateCompilerLike extends AutoCloseable {
 
         NamedReader open(String name) throws IOException;
     }
-
-    class ParameterPartial implements AutoCloseable {
-
+    
+    abstract class AbstractPartial implements AutoCloseable {
         private final TemplateCompilerLike templateCompiler;
-
-        private final Map<String, StringCodeAppendable> blockArgs = new LinkedHashMap<>();
-
-        public ParameterPartial(TemplateCompilerLike templateCompiler) {
+        
+        public AbstractPartial(TemplateCompilerLike templateCompiler) {
             super();
             this.templateCompiler = templateCompiler;
-        }
-
-        void run() throws ProcessingException, IOException {
-            templateCompiler.run();
-        }
-
-        @Override
-        public void close() throws IOException {
-            templateCompiler.close();
-        }
-        
-        public Map<String, StringCodeAppendable> getBlockArgs() {
-            return blockArgs;
         }
         
         public String getTemplateName() {
             return templateCompiler.getTemplateName();
         }
         
+        void run() throws ProcessingException, IOException {
+            templateCompiler.run();
+        }
+        
+        @Override
+        public void close() throws IOException {
+            templateCompiler.close();
+        }
+
+    }
+
+    class Partial extends AbstractPartial {
+
+        public Partial(TemplateCompilerLike templateCompiler) {
+            super(templateCompiler);
+        }
+        
         @Override
         public String toString() {
-            return "PartialTemplateCompiler: " + blockArgs;
+            return "Partial(template = " + getTemplateName() + ")";
+        }
+    }
+    
+    class ParameterPartial extends AbstractPartial {
+
+        private final Map<String, StringCodeAppendable> blockArgs = new LinkedHashMap<>();
+
+        public ParameterPartial(TemplateCompilerLike templateCompiler) {
+            super(templateCompiler);
+        }
+        
+        public Map<String, StringCodeAppendable> getBlockArgs() {
+            return blockArgs;
+        }
+        
+        @Override
+        public String toString() {
+            return "ParameterPartial(template = " + getTemplateName() + " args=" + blockArgs + ")";
         }
 
     }

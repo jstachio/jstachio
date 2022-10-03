@@ -49,6 +49,8 @@ public sealed interface MustacheToken {
             case UNESCAPED_VARIABLE_THREE_BRACES -> visitor.unescapedVariable(name);
             case UNESCAPED_VARIABLE_TWO_BRACES -> visitor.unescapedVariable(name);
             case VARIABLE -> visitor.variable(name);
+            case PARTIAL -> visitor.partial(name);
+
             };
         }
         public boolean isTagToken() {
@@ -142,6 +144,7 @@ public sealed interface MustacheToken {
         R beginParentSection(String name) throws E;
         R beginBlockSection(String name) throws E;
         R endSection(String name) throws E;
+        R partial(String name) throws E;
         R variable(String name) throws E;
         R unescapedVariable(String name) throws E;
         R specialCharacter(char c) throws E;

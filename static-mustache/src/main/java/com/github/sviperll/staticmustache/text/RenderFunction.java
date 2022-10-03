@@ -3,8 +3,19 @@ package com.github.sviperll.staticmustache.text;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
+import java.util.function.Consumer;
 
-public interface RenderFunction {
+public interface RenderFunction extends Consumer<Appendable> {
+    
+    @Override
+    default void accept(Appendable t) {
+        try {
+            render(t);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        
+    }
     
     public void render(Appendable a) throws IOException;
     

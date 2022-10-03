@@ -38,7 +38,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 
-import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ChildType;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
 import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
 import com.github.sviperll.staticmustache.context.types.NativeType;
@@ -135,10 +135,10 @@ public class RenderingCodeGenerator {
         else {
              rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
         }
-        return new TemplateCompilerContext(this, variables, rootRenderingContext, ChildType.ROOT);
+        return new TemplateCompilerContext(this, variables, rootRenderingContext, ContextType.ROOT);
     }
 
-    RenderingContext createRenderingContext(ChildType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
+    RenderingContext createRenderingContext(ContextType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
             return switch(childType) {
             case SECTION: {
@@ -201,7 +201,7 @@ public class RenderingCodeGenerator {
         MapRenderingContext map = new MapRenderingContext(expression, javaModel.asElement(mapType), nullable);
         return map;
     }
-    private RenderingContext createIterableContext(ChildType childType, JavaExpression expression,
+    private RenderingContext createIterableContext(ContextType childType, JavaExpression expression,
             RenderingContext enclosing) throws TypeException {
         RenderingContext nullable = nullableRenderingContext(expression, enclosing);
         VariableContext variableContext = nullable.createEnclosedVariableContext();
@@ -217,7 +217,7 @@ public class RenderingCodeGenerator {
     RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (expression.type() instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType)expression.type();
-            return createRenderingContext(ChildType.INVERTED, javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+            return createRenderingContext(ContextType.INVERTED, javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
             return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Boolean)) {

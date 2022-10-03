@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 import org.eclipse.jdt.annotation.Nullable;
 
 
+//TODO rename to ContextNode
 /**
  * This interface is to allow you to simulate JSON node like trees
  * without being coupled to a particularly JSON lib.
