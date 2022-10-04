@@ -86,7 +86,7 @@ public class SpecGenerator {
         }
         
         String templatePathAnnotation() {
-            return TemplatePath.class.getName();
+            return TemplatePath.class.getCanonicalName();
         }
         
         String templateName() {
@@ -105,9 +105,13 @@ public class SpecGenerator {
         List<SpecPartial> partials() {
             return List.copyOf( partialMap.values());
         }
+        
+        boolean hasPartials() {
+            return ! partials().isEmpty();
+        }
     }
     
-    record SpecPartial(String name, String template) {}
+    record SpecPartial(String name, String path) {}
     
     record TemplateList(SpecGroup group, List<SpecItem> items) implements JavaItem {
         @Override
@@ -188,21 +192,31 @@ public class SpecGenerator {
                 package {{packageName}};
                 
                 import com.snaphop.staticmustache.spec.SpecModel;
+                {{#hasPartials}}
                 import {{templatePathsAnnotation}};
                 import {{templatePathAnnotation}};
+                {{/hasPartials}}
 
                 @{{annotation}}(template = "{{templateFileName}}")
+                {{#hasPartials}}
                 @TemplatePaths({
                 {{#partials}}
                 @TemplatePath(name="{{name}}", path="{{path}}"),
-                {{/partals}}
-                });
+                {{/partials}}
+                })
+                {{/hasPartials}}
                 public class {{className}} extends SpecModel {
                 }
                 """;
         
         Template template = Mustache.compiler()
                 .escapeHTML(false)
+                .withEscaper(new Escaper() {
+                    @Override
+                    public String escape(String raw) {
+                        return StringEscapeUtils.ESCAPE_JAVA.translate(raw);
+                    }
+                })
                 .compile(javaTemplate);
         
         int j = 0;

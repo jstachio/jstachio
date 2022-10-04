@@ -1,6 +1,8 @@
 package com.snaphop.staticmustache.spec.custom;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+//import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
+//import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
 import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
 import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
 
