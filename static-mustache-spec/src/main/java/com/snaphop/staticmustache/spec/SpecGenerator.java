@@ -206,9 +206,7 @@ public class SpecGenerator {
                 {{#hasPartials}}
                 @{{templatePathsAnnotation.name}}({
                 {{#partials}}
-                @{{templatePathAnnotation.name}}(name="{{name}}", template=""\"
-                {{{path}}}\"""
-                ),
+                @{{templatePathAnnotation.name}}(name="{{name}}", template="{{path}}"),
                 {{/partials}}
                 })
                 {{/hasPartials}}

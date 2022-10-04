@@ -7,9 +7,7 @@ import com.github.sviperll.staticmustache.Template;
 
 @GenerateRenderableAdapter(template = "partials/PaddingWhitespace.mustache")
 @TemplateMapping({
-@Template(name="partial", template="""
-[]"""
-),
+@Template(name="partial", template="[]"),
 })
 public class PaddingWhitespace extends SpecModel {
 }

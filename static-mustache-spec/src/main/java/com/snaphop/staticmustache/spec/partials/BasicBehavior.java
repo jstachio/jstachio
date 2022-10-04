@@ -7,9 +7,7 @@ import com.github.sviperll.staticmustache.Template;
 
 @GenerateRenderableAdapter(template = "partials/BasicBehavior.mustache")
 @TemplateMapping({
-@Template(name="text", template="""
-from partial"""
-),
+@Template(name="text", template="from partial"),
 })
 public class BasicBehavior extends SpecModel {
 }

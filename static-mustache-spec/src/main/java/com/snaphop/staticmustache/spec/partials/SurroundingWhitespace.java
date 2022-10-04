@@ -4,15 +4,10 @@ import com.snaphop.staticmustache.spec.SpecModel;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.TemplateMapping;
 import com.github.sviperll.staticmustache.Template;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags.Flag;
 
-@TemplateCompilerFlags(flags = {Flag.DEBUG})
 @GenerateRenderableAdapter(template = "partials/SurroundingWhitespace.mustache")
 @TemplateMapping({
-@Template(name="partial", template="""
-	|	"""
-),
+@Template(name="partial", template="\t|\t"),
 })
 public class SurroundingWhitespace extends SpecModel {
 }

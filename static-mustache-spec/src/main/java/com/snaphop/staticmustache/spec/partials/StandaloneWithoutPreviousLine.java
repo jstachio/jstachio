@@ -7,10 +7,7 @@ import com.github.sviperll.staticmustache.Template;
 
 @GenerateRenderableAdapter(template = "partials/StandaloneWithoutPreviousLine.mustache")
 @TemplateMapping({
-@Template(name="partial", template="""
->
->"""
-),
+@Template(name="partial", template=">\n>"),
 })
 public class StandaloneWithoutPreviousLine extends SpecModel {
 }

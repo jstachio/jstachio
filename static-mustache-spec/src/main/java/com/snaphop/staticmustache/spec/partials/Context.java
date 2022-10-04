@@ -7,9 +7,7 @@ import com.github.sviperll.staticmustache.Template;
 
 @GenerateRenderableAdapter(template = "partials/Context.mustache")
 @TemplateMapping({
-@Template(name="partial", template="""
-*{{text}}*"""
-),
+@Template(name="partial", template="*{{text}}*"),
 })
 public class Context extends SpecModel {
 }

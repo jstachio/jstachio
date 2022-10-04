@@ -7,10 +7,7 @@ import com.github.sviperll.staticmustache.Template;
 
 @GenerateRenderableAdapter(template = "partials/InlineIndentation.mustache")
 @TemplateMapping({
-@Template(name="partial", template="""
->
->"""
-),
+@Template(name="partial", template=">\n>"),
 })
 public class InlineIndentation extends SpecModel {
 }

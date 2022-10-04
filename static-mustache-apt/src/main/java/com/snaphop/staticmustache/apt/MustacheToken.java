@@ -55,11 +55,16 @@ public sealed interface MustacheToken {
         }
         public boolean isTagToken() {
             return true;
-        };
-        
+        }
         public boolean isSectionToken() {
             return tagKind().isSection();
-        };
+        }
+        public boolean isStandaloneToken() {
+            return isSectionToken() || tagKind == MustacheTagKind.PARTIAL;
+        }
+        public  boolean isIndented() {
+            return tagKind == MustacheTagKind.PARTIAL || tagKind == MustacheTagKind.BEGIN_PARENT_SECTION;
+        }
     }
     
     public record TextToken(String text) implements MustacheToken {
@@ -128,6 +133,10 @@ public sealed interface MustacheToken {
         return false;
     }
     
+    default boolean isStandaloneToken() {
+        return false;
+    }
+    
     default boolean isNewlineToken() {
         return false;
     }
@@ -138,6 +147,10 @@ public sealed interface MustacheToken {
     
     default boolean isEOF() {
         return this instanceof EndOfFileToken;
+    }
+    
+    default boolean isIndented() {
+        return false;
     }
     
     /**
