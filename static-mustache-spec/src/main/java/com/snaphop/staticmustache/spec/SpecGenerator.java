@@ -25,6 +25,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.TemplateFormatterTypes;
+import com.github.sviperll.staticmustache.TemplatePaths;
+import com.github.sviperll.staticmustache.TemplatePaths.TemplatePath;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Escaper;
 import com.samskivert.mustache.Template;
@@ -73,11 +75,20 @@ public class SpecGenerator {
     }
 
     public record SpecItem(String name, SpecGroup group, String desc, String template, String json,
-            Map<String, Object> data, String expected, Map<String, SpecPartial> partials) implements JavaItem {
+            Map<String, Object> data, String expected, Map<String, SpecPartial> partialMap) implements JavaItem {
 
         String annotation() {
             return GenerateRenderableAdapter.class.getName();
         }
+        
+        String templatePathsAnnotation() {
+            return TemplatePaths.class.getName();
+        }
+        
+        String templatePathAnnotation() {
+            return TemplatePath.class.getName();
+        }
+        
         String templateName() {
             return className();
         }
@@ -89,6 +100,10 @@ public class SpecGenerator {
         }
         String enumName() {
             return name().replaceAll("[- \\(\\),]", "_").toUpperCase();
+        }
+        
+        List<SpecPartial> partials() {
+            return List.copyOf( partialMap.values());
         }
     }
     
@@ -131,7 +146,7 @@ public class SpecGenerator {
         partials() {
             @Override
             boolean enabled() {
-                return false;
+                return true;
             }
         };
         
@@ -173,8 +188,15 @@ public class SpecGenerator {
                 package {{packageName}};
                 
                 import com.snaphop.staticmustache.spec.SpecModel;
-                
+                import {{templatePathsAnnotation}};
+                import {{templatePathAnnotation}};
+
                 @{{annotation}}(template = "{{templateFileName}}")
+                @TemplatePaths({
+                {{#partials}}
+                @TemplatePath(name="{{name}}", path="{{path}}"),
+                {{/partals}}
+                });
                 public class {{className}} extends SpecModel {
                 }
                 """;
@@ -380,7 +402,7 @@ public class SpecGenerator {
                     String n = e.getKey();
                     var p = e.getValue();
                     String pt = p.asText();
-                    SpecPartial partial = new SpecPartial(name, pt);
+                    SpecPartial partial = new SpecPartial(n, pt);
                     partials.put(n, partial);
                 }
             }
