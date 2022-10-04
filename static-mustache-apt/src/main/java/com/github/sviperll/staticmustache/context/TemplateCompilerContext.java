@@ -183,9 +183,9 @@ public class TemplateCompilerContext {
             };
         }
         /*
-         * dots are allowed in parent partials since they are file names
+         * dots are allowed in partials since they are file names
          */
-        if (childType == ContextType.PARENT_PARTIAL) {
+        if (childType == ContextType.PARENT_PARTIAL || childType == ContextType.PARTIAL) {
             return enclosing;
         }
         if (name.contains(".")) {

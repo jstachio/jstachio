@@ -425,6 +425,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
             var parameterPartial = currentParameterPartial();
             var caller = getCaller();
+            
+            var templateType = getCompilerType();
+            
             if (parameterPartial != null) {
                 /*
                  * {{< parent}}
@@ -439,7 +442,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 var writer = new StringCodeAppendable();
                 parameterPartial.getBlockArgs().put(name, writer);
                 if (_currentBlockOutput != null) {
-                    throw new IllegalStateException("existing block output");
+                    throw new IllegalStateException("existing block output. template: " + getTemplateName());
                 }
                 _currentBlockOutput = writer;
                 if (currentWriter() != _currentBlockOutput) {
@@ -450,17 +453,18 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 + ", partial: " + parameterPartial.getTemplateName());
                 println();
             }
-            else if (caller != null) {
+            else if (templateType == TemplateCompilerType.PARAM_PARTIAL_TEMPLATE && caller != null) {
                 /*
                  * We are in a block in a partial template
                  * e.g. partial.mustache
                  * {{$block}}{{/block}}
                  */
-                  if (caller.currentParameterPartial() == null) {
-                      throw new IllegalStateException("missing partial info");
+                  if (getCompilerType() == TemplateCompilerType.PARAM_PARTIAL_TEMPLATE && 
+                          caller.currentParameterPartial() == null) {
+                      throw new IllegalStateException("bug. missing partial parameter info");
                   }
                   if (_currentBlockOutput != null) {
-                      throw new IllegalStateException("existing block output");
+                      throw new IllegalStateException("existing block output. template: " + getTemplateName() + " name: " + name);
                   }
                   /*
                   * We will reconcile at the endSection if we actually need the output
@@ -474,7 +478,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 /*
                  * {{$block}}{{/block}}
                  */
-                // Apparently this root template has block parameters
+                // Apparently this either a root or partial template has block parameters.
                 // We do nothing for now
                 //println();
                 print("// unused block: " + name);

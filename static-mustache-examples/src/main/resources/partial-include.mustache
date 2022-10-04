@@ -1,0 +1,8 @@
+INCLUDE start
+Hello {{name}} from INCLUDE!
+{{< grand-child.mustache}}
+{{$message}}PARAM message from partial-include.mustache{{/message}}
+{{/grand-child.mustache}}
+{{$message}}CHILD local message{{/message}}
+{{$noreplace}}no replace{{/noreplace}}
+INCLUDE end
