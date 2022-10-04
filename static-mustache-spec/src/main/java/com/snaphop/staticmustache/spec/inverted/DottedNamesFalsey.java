@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.inverted;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "inverted/DottedNamesFalsey.mustache")
+@GenerateRenderableAdapter(template = "inverted/DottedNamesFalsey.mustache")
 public class DottedNamesFalsey extends SpecModel {
 }

@@ -37,6 +37,8 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +67,8 @@ import org.kohsuke.MetaInfServices;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.TemplatePaths.TemplatePath;
+import com.github.sviperll.staticmustache.Template;
+import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -183,18 +186,41 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         return List.of();
     }
     
-    private Map<String, String> resolveTemplatePaths(TypeElement element) {
+    private Map<String, NamedTemplate> resolveTemplatePaths(TypeElement element) {
 
-        Map<String, String> paths = new LinkedHashMap<>();
-        var prism = TemplatePathsPrism.getInstanceOn(element);
+        Map<String, NamedTemplate> paths = new LinkedHashMap<>();
+        var prism = TemplateMappingPrism.getInstanceOn(element);
         if (prism != null) {
             var tps = prism.value();
-            for (var tp : tps) {
-                paths.put(tp.name(), tp.path());
+            for (TemplatePrism tp : tps) {
+                NamedTemplate nt;
+
+                if (! tp.path().isBlank() ) {
+                    nt = new NamedTemplate.FileTemplate(tp.name(), tp.path());
+                }
+                else if (! tp.template().equals(Template.NOT_SET)) {
+                    nt = new NamedTemplate.InlineTemplate(tp.name(), tp.template());
+                }
+                else {
+                    nt = new NamedTemplate.FileTemplate(tp.name(), tp.name());
+
+                }
+                paths.put(tp.name(), nt);
             }
         }
         return paths;
     }
+    
+    private Set<TemplateCompilerFlags.Flag> resolveFlags(TypeElement element) {
+        var prism = TemplateCompilerFlagsPrism.getInstanceOn(element);
+        var flags = EnumSet.noneOf(TemplateCompilerFlags.Flag.class);
+        if (prism != null) {
+            prism.flags().stream().map(TemplateCompilerFlags.Flag::valueOf).forEach(flags::add);
+        }
+        return Collections.unmodifiableSet(flags);
+    }
+
+    
     
     private String getTypeName(TypeMirror tm) {
        var e = ((DeclaredType) tm).asElement();
@@ -291,7 +317,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             }
             List<String> ifaces = resolveBaseInterface(element);
             FormatterTypes formatterTypes = getFormatterTypes(element);
-            Map<String,String> templatePaths = resolveTemplatePaths(element);
+            Map<String,NamedTemplate> templatePaths = resolveTemplatePaths(element);
+            Set<TemplateCompilerFlags.Flag> flags = resolveFlags(element);
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
@@ -300,7 +327,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
-                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator, templatePaths);
+                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator, templatePaths, flags);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);

@@ -27,6 +27,8 @@ public interface SpecListing {
     
     Class<?> modelClass();
     
+    boolean enabled();
+    
     default String render() {
         return render(createContext());
     }

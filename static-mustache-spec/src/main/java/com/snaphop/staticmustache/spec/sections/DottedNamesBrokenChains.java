@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.sections;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "sections/DottedNamesBrokenChains.mustache")
+@GenerateRenderableAdapter(template = "sections/DottedNamesBrokenChains.mustache")
 public class DottedNamesBrokenChains extends SpecModel {
 }

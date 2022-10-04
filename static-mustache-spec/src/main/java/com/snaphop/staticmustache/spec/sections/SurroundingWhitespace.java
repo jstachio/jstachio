@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.sections;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "sections/SurroundingWhitespace.mustache")
+@GenerateRenderableAdapter(template = "sections/SurroundingWhitespace.mustache")
 public class SurroundingWhitespace extends SpecModel {
 }

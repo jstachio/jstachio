@@ -314,6 +314,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
     public String expected() {
         return this.expected;
     }
+    public boolean enabled() {
+        return modelClass != null;
+    }
     public abstract String render(Map<String, Object> o);
 
     public static final String DEFAULT_FILE = "inheritance/Default.mustache";

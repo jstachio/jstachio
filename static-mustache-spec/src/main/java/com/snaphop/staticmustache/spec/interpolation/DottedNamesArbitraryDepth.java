@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.interpolation;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "interpolation/DottedNamesArbitraryDepth.mustache")
+@GenerateRenderableAdapter(template = "interpolation/DottedNamesArbitraryDepth.mustache")
 public class DottedNamesArbitraryDepth extends SpecModel {
 }

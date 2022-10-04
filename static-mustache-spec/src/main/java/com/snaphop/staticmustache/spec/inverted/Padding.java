@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.inverted;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "inverted/Padding.mustache")
+@GenerateRenderableAdapter(template = "inverted/Padding.mustache")
 public class Padding extends SpecModel {
 }

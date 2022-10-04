@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.interpolation;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "interpolation/BasicIntegerInterpolation.mustache")
+@GenerateRenderableAdapter(template = "interpolation/BasicIntegerInterpolation.mustache")
 public class BasicIntegerInterpolation extends SpecModel {
 }

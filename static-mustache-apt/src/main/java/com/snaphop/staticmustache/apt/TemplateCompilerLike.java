@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
 
 interface TemplateCompilerLike extends AutoCloseable {
@@ -28,7 +30,10 @@ interface TemplateCompilerLike extends AutoCloseable {
 
     default CodeAppendable getWriter() {
         return Objects.requireNonNull(getCaller()).getWriter();
-
+    }
+    
+    default Set<TemplateCompilerFlags.Flag> flags() {
+        return Objects.requireNonNull(getCaller()).flags();
     }
     
     @Nullable ParameterPartial currentParameterPartial();

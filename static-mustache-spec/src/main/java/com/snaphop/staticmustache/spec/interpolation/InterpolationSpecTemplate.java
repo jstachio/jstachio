@@ -560,6 +560,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
     public String expected() {
         return this.expected;
     }
+    public boolean enabled() {
+        return modelClass != null;
+    }
     public abstract String render(Map<String, Object> o);
 
     public static final String NO_INTERPOLATION_FILE = "interpolation/NoInterpolation.mustache";

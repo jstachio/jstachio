@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.interpolation;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "interpolation/HTMLEscaping.mustache")
+@GenerateRenderableAdapter(template = "interpolation/HTMLEscaping.mustache")
 public class HTMLEscaping extends SpecModel {
 }

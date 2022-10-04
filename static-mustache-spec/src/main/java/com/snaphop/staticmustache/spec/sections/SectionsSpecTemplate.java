@@ -500,6 +500,9 @@ public enum SectionsSpecTemplate implements SpecListing {
     public String expected() {
         return this.expected;
     }
+    public boolean enabled() {
+        return modelClass != null;
+    }
     public abstract String render(Map<String, Object> o);
 
     public static final String TRUTHY_FILE = "sections/Truthy.mustache";

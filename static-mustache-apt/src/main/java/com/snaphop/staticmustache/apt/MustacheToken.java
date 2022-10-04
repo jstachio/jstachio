@@ -69,7 +69,7 @@ public sealed interface MustacheToken {
         };
     }
     
-    public record SpecialCharacterToken(char specialChar) implements MustacheToken {
+    public record SpecialCharacterToken(SpecialChar specialChar) implements MustacheToken {
         @Override
         public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
             return visitor.specialCharacter(specialChar);
@@ -93,6 +93,22 @@ public sealed interface MustacheToken {
         @Override
         public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
             return visitor.endOfFile();
+        }
+        
+    }
+    
+    public enum SpecialChar {
+        QUOTATION_MARK('"'), // "
+        BACKSLASH('\\'); // \
+       
+        private final char character;
+
+        private SpecialChar(char character) {
+            this.character = character;
+        }
+
+        public char character() {
+            return character;
         }
         
     }
@@ -147,7 +163,7 @@ public sealed interface MustacheToken {
         R partial(String name) throws E;
         R variable(String name) throws E;
         R unescapedVariable(String name) throws E;
-        R specialCharacter(char c) throws E;
+        R specialCharacter(SpecialChar specialChar ) throws E;
         R newline(char c) throws E;
         R text(String s) throws E;
         R endOfFile() throws E;

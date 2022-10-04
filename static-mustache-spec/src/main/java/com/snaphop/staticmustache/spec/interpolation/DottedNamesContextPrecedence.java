@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.interpolation;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "interpolation/DottedNamesContextPrecedence.mustache")
+@GenerateRenderableAdapter(template = "interpolation/DottedNamesContextPrecedence.mustache")
 public class DottedNamesContextPrecedence extends SpecModel {
 }

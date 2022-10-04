@@ -32,14 +32,19 @@ package com.snaphop.staticmustache.apt;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 
+import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
+import com.snaphop.staticmustache.apt.NamedTemplate.FileTemplate;
+import com.snaphop.staticmustache.apt.NamedTemplate.InlineTemplate;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateCompilerType;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateLoader;
 
@@ -51,13 +56,19 @@ class CodeWriter {
     private final Messager messager;
     private final SwitchablePrintWriter writer;
     private final RenderingCodeGenerator codeGenerator;
-    private final Map<String, String> templatePaths;
+    private final Map<String, NamedTemplate> templatePaths;
+    private final Set<TemplateCompilerFlags.Flag> flags;
 
-    CodeWriter(Messager messager, SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator, Map<String, String> templatePaths) {
+    CodeWriter(Messager messager, 
+            SwitchablePrintWriter writer, 
+            RenderingCodeGenerator codeGenerator, 
+            Map<String, NamedTemplate>templatePaths,
+            Set<TemplateCompilerFlags.Flag> flags) {
         this.messager = messager;
         this.writer = writer;
         this.codeGenerator = codeGenerator;
         this.templatePaths = templatePaths;
+        this.flags = flags;
     }
 
     TemplateCompilerContext createTemplateContext(TypeElement element, String rootExpression, VariableContext variableContext) {
@@ -75,15 +86,29 @@ class CodeWriter {
         
         TemplateLoader templateLoader = (name) -> { 
             
-            String path = templatePaths.get(name);
-            if (path == null) {
-                path = name;
+            NamedTemplate nt = templatePaths.get(name);
+            if (nt == null) {
+                nt = new FileTemplate(name, name);
             }
-            return new NamedReader(
-                new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()), name, path);
+            if (nt instanceof FileTemplate ft) {
+                String path = ft.path();
+                return new NamedReader(
+                        new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()), name, path);
+            }
+            else if (nt instanceof InlineTemplate it) {
+                String template = it.template();
+                StringReader sr = new StringReader(template);
+                return new NamedReader(
+                       sr, name, "INLINE");
+            }
+            else {
+                throw new IllegalStateException();
+            }
+
+
         };
         
-        try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType)) {
+        try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType, flags)) {
             templateCompiler.run();
         }
         

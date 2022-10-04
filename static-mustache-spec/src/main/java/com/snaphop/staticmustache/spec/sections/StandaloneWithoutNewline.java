@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.sections;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "sections/StandaloneWithoutNewline.mustache")
+@GenerateRenderableAdapter(template = "sections/StandaloneWithoutNewline.mustache")
 public class StandaloneWithoutNewline extends SpecModel {
 }

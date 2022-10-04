@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.inverted;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "inverted/Doubled.mustache")
+@GenerateRenderableAdapter(template = "inverted/Doubled.mustache")
 public class Doubled extends SpecModel {
 }

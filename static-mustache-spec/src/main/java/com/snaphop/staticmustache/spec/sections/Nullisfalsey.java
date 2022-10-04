@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.sections;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "sections/Nullisfalsey.mustache")
+@GenerateRenderableAdapter(template = "sections/Nullisfalsey.mustache")
 public class Nullisfalsey extends SpecModel {
 }

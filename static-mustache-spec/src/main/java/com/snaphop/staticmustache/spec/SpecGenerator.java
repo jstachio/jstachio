@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -23,10 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.TemplateFormatterTypes;
-import com.github.sviperll.staticmustache.TemplatePaths;
-import com.github.sviperll.staticmustache.TemplatePaths.TemplatePath;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Escaper;
 import com.samskivert.mustache.Template;
@@ -40,9 +36,11 @@ public class SpecGenerator {
     
     public static void main(String[] args) {
         try {
+            System.out.println("Start");
             new SpecGenerator().generateAll();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            //throw new UncheckedIOException(e);
         }
     }
     
@@ -69,24 +67,33 @@ public class SpecGenerator {
         }
         
         default boolean enabled() {
-            return group().enabled();
+            return group().enabled() && ! group().ignores().contains(className());
         }
 
     }
+    
+    public record ClassRef(Class<?> klass) {
+        public String namespace() {
+            return klass.getCanonicalName();
+        }
+        public String name() {
+            return klass.getSimpleName();
+        }
+    }
 
-    public record SpecItem(String name, SpecGroup group, String desc, String template, String json,
+    public record SpecItem (SpecGroup group, String name, String desc, String template, String json,
             Map<String, Object> data, String expected, Map<String, SpecPartial> partialMap) implements JavaItem {
 
-        String annotation() {
-            return GenerateRenderableAdapter.class.getName();
+        ClassRef annotation() {
+            return new ClassRef(com.github.sviperll.staticmustache.GenerateRenderableAdapter.class);
         }
         
-        String templatePathsAnnotation() {
-            return TemplatePaths.class.getName();
+        ClassRef templatePathsAnnotation() {
+            return new ClassRef(com.github.sviperll.staticmustache.TemplateMapping.class);
         }
         
-        String templatePathAnnotation() {
-            return TemplatePath.class.getCanonicalName();
+        ClassRef templatePathAnnotation() {
+            return new ClassRef(com.github.sviperll.staticmustache.Template.class);
         }
         
         String templateName() {
@@ -131,14 +138,7 @@ public class SpecGenerator {
             
             @Override
             Set<String> ignores() {
-                return Set.of("Recursion", 
-                        "Datadoesnotoverrideblock",
-                        "Overrideparentwithnewlines",
-                        "Inherit",
-                        "Onlyoneoverride",
-                        "Multilevelinheritance",
-                        "Inheritindentation",
-                        "Twooverriddenparents");
+                return Set.of("Recursion");
             }
             
             @Override
@@ -151,6 +151,10 @@ public class SpecGenerator {
             @Override
             boolean enabled() {
                 return true;
+            }
+            @Override
+            Set<String> ignores() {
+                return Set.of("FailedLookup", "Recursion");
             }
         };
         
@@ -192,16 +196,19 @@ public class SpecGenerator {
                 package {{packageName}};
                 
                 import com.snaphop.staticmustache.spec.SpecModel;
+                import {{annotation.namespace}};
                 {{#hasPartials}}
-                import {{templatePathsAnnotation}};
-                import {{templatePathAnnotation}};
+                import {{templatePathsAnnotation.namespace}};
+                import {{templatePathAnnotation.namespace}};
                 {{/hasPartials}}
 
-                @{{annotation}}(template = "{{templateFileName}}")
+                @{{annotation.name}}(template = "{{templateFileName}}")
                 {{#hasPartials}}
-                @TemplatePaths({
+                @{{templatePathsAnnotation.name}}({
                 {{#partials}}
-                @TemplatePath(name="{{name}}", path="{{path}}"),
+                @{{templatePathAnnotation.name}}(name="{{name}}", template=""\"
+                {{{path}}}\"""
+                ),
                 {{/partials}}
                 })
                 {{/hasPartials}}
@@ -313,6 +320,9 @@ public class SpecGenerator {
                     public String expected() {
                         return this.expected;
                     }
+                    public boolean enabled() {
+                        return modelClass != null;
+                    }
                     public abstract String render(Map<String, Object> o);
                     
                     {{#items}}
@@ -356,41 +366,6 @@ public class SpecGenerator {
         directory.mkdirs();
     }
 
-//    @Ignore
-//    @Test
-//    public void sections() throws IOException {
-//        run(getSpec("sections.yml"));
-//    }
-//
-//    @Ignore
-//    @Test
-//    public void delimiters() throws IOException {
-//        run(getSpec("delimiters.yml"));
-//    }
-
-    // @Test
-    // public void inverted() throws IOException {
-    // run(getSpec("inverted.yml"));
-    // }
-    //
-    // @Test
-    // public void partials() throws IOException {
-    // run(getSpec("partials.yml"));
-    // }
-    //
-    // @Test
-    // public void lambdas() throws IOException {
-    // run(getSpec("~lambdas.yml"));
-    // }
-    //
-    // @Test
-    // public void inheritance() throws IOException {
-    // run(getSpec("~inheritance.yml"));
-    // }
-    
-
-
-
     @SuppressWarnings("unchecked")
     private List<SpecItem> toSpecItems(SpecGroup group, JsonNode spec) throws IOException {
 
@@ -430,7 +405,7 @@ public class SpecGenerator {
             }
              if (json.startsWith("{")) {
                  _data = (Map<String,Object>) new ObjectMapper().readValue(json, Map.class);
-                 list.add(new SpecItem(name, group, desc, template, json, _data, expected, partials));
+                 list.add(new SpecItem(group, name, desc, template, json, _data, expected, partials));
              } 
              else {
                  //String s = new ObjectMapper().readValue(json, String.class);

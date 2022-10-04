@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.inverted;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "inverted/ContextMisses.mustache")
+@GenerateRenderableAdapter(template = "inverted/ContextMisses.mustache")
 public class ContextMisses extends SpecModel {
 }

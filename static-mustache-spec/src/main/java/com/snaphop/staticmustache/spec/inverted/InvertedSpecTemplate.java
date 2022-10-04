@@ -380,6 +380,9 @@ public enum InvertedSpecTemplate implements SpecListing {
     public String expected() {
         return this.expected;
     }
+    public boolean enabled() {
+        return modelClass != null;
+    }
     public abstract String render(Map<String, Object> o);
 
     public static final String FALSEY_FILE = "inverted/Falsey.mustache";

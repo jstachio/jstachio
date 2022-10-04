@@ -31,15 +31,19 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.github.sviperll.staticmustache.TemplateCompilerFlags;
+import com.github.sviperll.staticmustache.TemplateCompilerFlags.Flag;
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
+import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 
 /**
  *
@@ -52,12 +56,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             TemplateLoader templateLoader,
             CodeAppendable writer,
             TemplateCompilerContext context,
-            TemplateCompilerType compilerType) throws IOException {
+            TemplateCompilerType compilerType,
+            Set<TemplateCompilerFlags.Flag> flags
+            ) throws IOException {
         
        return switch (compilerType) {
         case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
         case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
-        case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context);
+        case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context, flags);
         case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE -> throw new IllegalArgumentException("Cannot create partial template as root");
         };
     }
@@ -169,6 +175,16 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         previousTokens.offer(positionedToken);
         processTokens();
+    }
+    
+    protected void debug(String message) {
+        if (isDebug()) {
+            System.out.println(message);
+        }
+    }
+    
+    protected boolean isDebug() {
+        return flags().contains(TemplateCompilerFlags.Flag.DEBUG);
     }
     
     private void processTokens() throws ProcessingException {
@@ -286,6 +302,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
             exitEarly = false;
         } finally {
+            if (exitEarly) {
+                if (isDebug()) {
+                    debug("Whitespace removed. buf: " + buf);
+                }
+            }
             // We process the token queue now if we get an EOF no matter what hence
             // the finally
             if (eof && ! previousTokens.isEmpty()) {
@@ -687,23 +708,24 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
         }
 
-        @Override
-        public @Nullable Void specialCharacter(char c) throws ProcessingException {
-            if (c == '\n') {
-                printCodeToWrite("\\n");
-            } else if (c == '"') {
-                printCodeToWrite("\\\"");
-            } else if (c == '\r') {
-                printCodeToWrite("\\r");
-            } else {
-                printCodeToWrite("" + c);
+        public Void specialCharacter(SpecialChar specialChar) throws ProcessingException {
+            switch(specialChar) {
+            case QUOTATION_MARK -> printCodeToWrite("\\\"");
+            case BACKSLASH -> printCodeToWrite("\\\\");
             }
-            
             return null;
         }
         
+        
         public Void newline(char c) throws ProcessingException {
-            specialCharacter(c);
+            if (c == '\n') {
+                printCodeToWrite("\\n");
+            } else if (c == '\r') {
+                printCodeToWrite("\\r");
+            }
+            else {
+                throw new IllegalArgumentException();
+            }
             return null;
         };
 
@@ -774,16 +796,20 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         
         private final TemplateLoader templateLoader;
         private final CodeAppendable writer;
+        private final Set<TemplateCompilerFlags.Flag> flags;
         
         public RootTemplateCompiler(
                 String templateName,
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context, 
-                boolean expectsYield) throws IOException {
+                boolean expectsYield,
+                Set<TemplateCompilerFlags.Flag> flags
+                ) throws IOException {
             super(templateLoader.open(templateName), null, context, expectsYield);
             this.templateLoader = templateLoader;
             this.writer = writer;
+            this.flags = flags;
         }
 
         @Override
@@ -801,6 +827,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             return this.writer;
         }
         
+        @Override
+        public Set<TemplateCompilerFlags.Flag> flags() {
+            return this.flags;
+        }
+        
     }
     
     static class SimpleTemplateCompiler extends RootTemplateCompiler {
@@ -808,8 +839,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         private SimpleTemplateCompiler(String templateName,
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
-                TemplateCompilerContext context) throws IOException {
-            super(templateName, templateLoader, writer, context, false);
+                TemplateCompilerContext context,
+                Set<TemplateCompilerFlags.Flag> flags
+                ) throws IOException {
+            super(templateName, templateLoader, writer, context, false, flags);
         }
 
         @Override
@@ -832,7 +865,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 CodeAppendable writer,
                 TemplateCompilerContext context
                 ) throws IOException {
-            super(templateName, templateLoader, writer, context, true);
+            super(templateName, templateLoader, writer, context, true, Set.of());
 
         }
 
@@ -861,7 +894,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 CodeAppendable writer,
                 TemplateCompilerContext context
                 ) throws IOException {
-            super(templateName, templateLoader, writer, context, true);
+            super(templateName, templateLoader, writer, context, true, Set.of());
         }
 
         @Override

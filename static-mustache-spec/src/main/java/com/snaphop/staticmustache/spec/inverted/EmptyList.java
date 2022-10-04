@@ -1,7 +1,8 @@
 package com.snaphop.staticmustache.spec.inverted;
 
 import com.snaphop.staticmustache.spec.SpecModel;
+import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 
-@com.github.sviperll.staticmustache.GenerateRenderableAdapter(template = "inverted/EmptyList.mustache")
+@GenerateRenderableAdapter(template = "inverted/EmptyList.mustache")
 public class EmptyList extends SpecModel {
 }

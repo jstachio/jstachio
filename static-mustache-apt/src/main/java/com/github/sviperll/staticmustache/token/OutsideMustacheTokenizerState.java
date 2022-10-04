@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.token;
 
 import com.snaphop.staticmustache.apt.MustacheToken;
+import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 import com.snaphop.staticmustache.apt.ProcessingException;
 
 /**
@@ -77,7 +78,11 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
         }
         case '"' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(c));
+            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.QUOTATION_MARK));
+        }
+        case '\\' -> {
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.BACKSLASH));
         }
         default -> text.append(c);
         }
