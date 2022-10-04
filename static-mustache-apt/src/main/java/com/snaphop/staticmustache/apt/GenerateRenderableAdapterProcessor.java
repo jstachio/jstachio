@@ -65,6 +65,7 @@ import org.kohsuke.MetaInfServices;
 
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
+import com.github.sviperll.staticmustache.TemplatePaths.TemplatePath;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
@@ -183,8 +184,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     }
     
     private Map<String, String> resolveTemplatePaths(TypeElement element) {
+
+        Map<String, String> paths = new LinkedHashMap<>();
         var prism = TemplatePathsPrism.getInstanceOn(element);
-        Map<String,String> paths = new LinkedHashMap<>();
         if (prism != null) {
             var tps = prism.value();
             for (var tp : tps) {
