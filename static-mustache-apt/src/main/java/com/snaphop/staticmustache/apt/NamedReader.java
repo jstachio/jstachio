@@ -39,9 +39,11 @@ import java.io.Reader;
 class NamedReader extends Reader {
     private final Reader reader;
     private final String name;
-    public NamedReader(Reader reader, String name) {
+    private final String path;
+    public NamedReader(Reader reader, String name, String path) {
         this.reader = reader;
         this.name = name;
+        this.path = path;
     }
 
     @Override
@@ -56,5 +58,9 @@ class NamedReader extends Reader {
 
     public String name() {
         return name;
+    }
+    
+    public String path() {
+        return path;
     }
 }

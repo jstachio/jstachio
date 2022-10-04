@@ -32,6 +32,7 @@ package com.snaphop.staticmustache.apt;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
@@ -50,11 +51,13 @@ class CodeWriter {
     private final Messager messager;
     private final SwitchablePrintWriter writer;
     private final RenderingCodeGenerator codeGenerator;
+    private final Map<String, String> templatePaths;
 
-    CodeWriter(Messager messager, SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator) {
+    CodeWriter(Messager messager, SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator, Map<String, String> templatePaths) {
         this.messager = messager;
         this.writer = writer;
         this.codeGenerator = codeGenerator;
+        this.templatePaths = templatePaths;
     }
 
     TemplateCompilerContext createTemplateContext(TypeElement element, String rootExpression, VariableContext variableContext) {
@@ -65,11 +68,20 @@ class CodeWriter {
         writer.println(s);
     }
 
-    void compileTemplate(TextFileObject resource, String templateName, TemplateCompilerContext context, TemplateCompilerType templateCompilerType) 
+    void compileTemplate(TextFileObject resource, String templateName, 
+            TemplateCompilerContext context, 
+            TemplateCompilerType templateCompilerType) 
             throws IOException, ProcessingException {
         
-        TemplateLoader templateLoader = (name) -> new NamedReader(
-                new InputStreamReader(new BufferedInputStream(resource.openInputStream(name)), resource.charset()), name);
+        TemplateLoader templateLoader = (name) -> { 
+            
+            String path = templatePaths.get(name);
+            if (path == null) {
+                path = name;
+            }
+            return new NamedReader(
+                new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()), name, path);
+        };
         
         try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType)) {
             templateCompiler.run();

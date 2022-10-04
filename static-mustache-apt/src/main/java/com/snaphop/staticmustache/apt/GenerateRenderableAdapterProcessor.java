@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -181,6 +182,18 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         return List.of();
     }
     
+    private Map<String, String> resolveTemplatePaths(TypeElement element) {
+        var prism = TemplatePathsPrism.getInstanceOn(element);
+        Map<String,String> paths = new LinkedHashMap<>();
+        if (prism != null) {
+            var tps = prism.value();
+            for (var tp : tps) {
+                paths.put(tp.name(), tp.path());
+            }
+        }
+        return paths;
+    }
+    
     private String getTypeName(TypeMirror tm) {
        var e = ((DeclaredType) tm).asElement();
        var te = (TypeElement) e;
@@ -276,6 +289,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             }
             List<String> ifaces = resolveBaseInterface(element);
             FormatterTypes formatterTypes = getFormatterTypes(element);
+            Map<String,String> templatePaths = resolveTemplatePaths(element);
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
@@ -284,7 +298,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset);
                 JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
-                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator);
+                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator, templatePaths);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);

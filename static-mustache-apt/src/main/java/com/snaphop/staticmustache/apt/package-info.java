@@ -33,6 +33,8 @@
     @GeneratePrism(com.github.sviperll.staticmustache.GenerateRenderableAdapter.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateBasePath.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateInterface.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.TemplatePaths.class), //
+    @GeneratePrism(com.github.sviperll.staticmustache.TemplatePaths.TemplatePath.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateFormatterTypes.class), //
 })
 package com.snaphop.staticmustache.apt;

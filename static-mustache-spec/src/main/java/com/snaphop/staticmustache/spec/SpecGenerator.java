@@ -127,7 +127,13 @@ public class SpecGenerator {
                 return false;
             }
         },
-        inverted;
+        inverted,
+        partials() {
+            @Override
+            boolean enabled() {
+                return false;
+            }
+        };
         
         boolean enabled() {
             return true;
@@ -151,6 +157,8 @@ public class SpecGenerator {
         generate(SpecGroup.sections);
         generate(SpecGroup.inheritance);
         generate(SpecGroup.inverted);
+        generate(SpecGroup.partials);
+
 
 
     }

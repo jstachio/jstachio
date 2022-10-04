@@ -26,4 +26,22 @@ public class PartialTest {
                 end partial parent""", actual);
     }
 
+    @Test
+    public void testTemplatePaths() throws Exception {
+        TemplatePathsExample te = new TemplatePathsExample("Joe");
+        var actual = TemplatePathsExampleRenderer.of(te).renderString();
+
+        assertEquals("""
+                template-path-example start
+                INCLUDE start
+                Hello Joe from INCLUDE!
+                GRAND CHILD start
+                PARAM message from partial-include.mustache
+                GRAND CHILD end
+                CHILD local message
+                no replace
+                INCLUDE end
+                template-path-example end""", actual);
+    }
+
 }
