@@ -195,6 +195,8 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         return flags().contains(TemplateCompilerFlags.Flag.DEBUG);
     }
     
+    boolean onNewLine = true;
+    
     private void processTokens() throws ProcessingException {
         
         
@@ -248,24 +250,27 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
              * Handle the easiest negative case
              * [ not new line or space ] {{#somesection}}
              */
-            if ( ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
+            if (onNewLine && ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
                     && secondToken.innerToken().isStandaloneToken()) {
                 _processToken(firstToken);
                 _processToken(secondToken);
+                onNewLine = false;
                 continue;
             }
             /*
              * {{#some section}} [ newline ]
              */
-            if (firstToken.innerToken().isStandaloneToken() && secondToken.innerToken().isNewlineOrEOF()) {
+            if (onNewLine && firstToken.innerToken().isStandaloneToken() && secondToken.innerToken().isNewlineOrEOF()) {
+                debug("2 standalone condition: {{#some section}} [ newline ]");
                 _processToken(firstToken);
                 if (secondToken.innerToken().isEOF()) {
                     _processToken(secondToken);
                 }
+                onNewLine = true;
                 continue;
             }
 
-            if (size >= 3) {
+            if (onNewLine && size >= 3) {
                 var thirdToken = previousTokens.poll();
                 buf.add(thirdToken);
 
@@ -275,10 +280,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 if (firstToken.innerToken().isStandaloneToken() //
                         && secondToken.innerToken().isWhitespaceToken() //
                         && thirdToken.innerToken().isNewlineOrEOF()) {
+                    debug("3 standalone condition: {{#some section}} [white space] [ newline ]");
                     _processToken(firstToken);
                     if (thirdToken.innerToken().isEOF()) {
                         _processToken(thirdToken);
                     }
+                    onNewLine = true;
                     continue;
                 }
 
@@ -288,10 +295,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 if (firstToken.innerToken().isWhitespaceToken() //
                         && secondToken.innerToken().isStandaloneToken() //
                         && thirdToken.innerToken().isNewlineOrEOF()) {
+                    debug("3 standalone condition: [white space] {{#some section}} [ newline ]");
                     _processIndentToken(firstToken, secondToken);
                     if (thirdToken.innerToken().isEOF()) {
                         _processToken(thirdToken);
                     }
+                    onNewLine = true;
                     continue;
                 }
 
@@ -306,10 +315,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                             && secondToken.innerToken().isStandaloneToken() //
                             && thirdToken.innerToken().isWhitespaceToken() //
                             && fourthToken.innerToken().isNewlineOrEOF()) {
+                        debug("4 standalone condition: [white space] {{#some section}} [white space] [ newline ]");
                         _processIndentToken(firstToken, secondToken);
                         if (fourthToken.innerToken().isEOF()) {
                             _processToken(fourthToken);
                         }
+                        onNewLine = true;
                         continue;
                     }
                 }
@@ -322,9 +333,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             if (eof && ! previousTokens.isEmpty()) {
                 _processToken(previousTokens.poll());
             }
-            else if (previousTokens.size() > 4) {
+            else if (previousTokens.size() > 5) {
                 if (isDebug()) {
-                    debug("More than 4 tokens");
+                    debug("More than 5 tokens");
                 }
                 _processToken(previousTokens.poll());
             }
@@ -340,6 +351,12 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     
     void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
+        if (positionedToken.innerToken().isNewlineOrEOF()) {
+            onNewLine = true;
+        }
+        else {
+            onNewLine = false;
+        }
         lastProcessedToken = positionedToken;
     }
     
@@ -348,14 +365,16 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         if(positionedToken.innerToken().isIndented()) {
             if (whitespace.innerToken() instanceof TextToken tt) {
-                debug("Setting indent");
+                if (isDebug()) {
+                    debug("Setting indent. whitespace: " + tt + " standalone: " + positionedToken.innerToken());
+                }
                 partialIndent = tt.text();
             }
             else {
                 throw new IllegalStateException("whitespace token is wrong");
             }
         }
-        positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
+        _processToken(positionedToken);
     }
     
     
@@ -715,17 +734,15 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             if (indent.isEmpty()) {
                 return;
             }
-            if (lastProcessedToken == null) {
-                printCodeToWrite(indent);
-            }
-            else if(lastProcessedToken.innerToken().isNewlineToken()) {
-                printCodeToWrite(indent);
+            var lpt = lastProcessedToken;
+            if (lpt == null || lpt.innerToken().isNewlineToken()) {
+                print(context.unescapedWriterExpression() + ".append(\"" + indent + "\"); ");
             }
         }
         
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
-            indentVariable();
+            //indentVariable();
             flushUnescaped();
             println();
             try {
@@ -755,7 +772,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
         }
 
-        public Void specialCharacter(SpecialChar specialChar) throws ProcessingException {
+        public @Nullable Void specialCharacter(SpecialChar specialChar) throws ProcessingException {
             switch(specialChar) {
             case QUOTATION_MARK -> printCodeToWrite("\\\"");
             case BACKSLASH -> printCodeToWrite("\\\\");
@@ -764,7 +781,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         
         
-        public Void newline(char c) throws ProcessingException {
+        public @Nullable Void newline(char c) throws ProcessingException {
             if (c == '\n') {
                 printCodeToWrite("\\n");
             } else if (c == '\r') {
