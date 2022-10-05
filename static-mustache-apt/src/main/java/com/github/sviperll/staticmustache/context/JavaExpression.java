@@ -123,4 +123,10 @@ class JavaExpression {
         ExecutableElement executableElement = (ExecutableElement)element;
         return (ExecutableType)model.asMemberOf((DeclaredType)type, executableElement);
     }
+    @Override
+    public String toString() {
+        return "JavaExpression [text=" + text + ", type=" + type + ", path=" + path + "]";
+    }
+    
+    
 }

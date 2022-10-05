@@ -38,8 +38,29 @@ import org.eclipse.jdt.annotation.Nullable;
 interface RenderingContext {
     String beginSectionRenderingCode();
     String endSectionRenderingCode();
+    
+    @Nullable JavaExpression getDataDirectly(String name) throws ContextException;
+
+    //TODO remove defaultValue as its polynull
     @Nullable JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
     @Nullable RenderingContext getParent();
+    
+    default String printStack() {
+        StringBuilder sb = new StringBuilder();
+        @Nullable
+        RenderingContext parent = this;
+        while(parent != null) {
+            sb.append("\n<- ");
+            sb.append(parent.description());
+            parent = parent.getParent();
+        }
+
+        return sb.toString();
+    }
+    
+    default String description() {
+        return getClass().getName();
+    }
 }

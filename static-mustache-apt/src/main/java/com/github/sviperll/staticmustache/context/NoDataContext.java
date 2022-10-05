@@ -50,6 +50,12 @@ class NoDataContext implements RenderingContext {
     }
 
     @Override
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+        //TODO maybe this should use parent?
+        return null;
+    }
+    
+    @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         return parent.getDataOrDefault(name, defaultValue);
     }

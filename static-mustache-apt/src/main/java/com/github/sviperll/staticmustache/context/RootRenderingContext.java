@@ -50,6 +50,11 @@ class RootRenderingContext implements RenderingContext {
     public String endSectionRenderingCode() {
         return "";
     }
+    
+    @Override
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+        return null;
+    }
 
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {

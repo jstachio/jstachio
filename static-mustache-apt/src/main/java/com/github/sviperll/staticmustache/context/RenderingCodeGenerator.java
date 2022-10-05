@@ -103,7 +103,6 @@ public class RenderingCodeGenerator {
             if (formatterTypes.isMatch(cname)) {
                 return renderFormatCall(variables, path, text, cname + ".class");
             }
-            //return variables.writer() + ".append((" + text + ").toString());";
         }
         
         throw new TypeException(MessageFormat

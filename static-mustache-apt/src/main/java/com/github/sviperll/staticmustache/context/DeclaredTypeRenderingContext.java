@@ -69,9 +69,10 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     public String endSectionRenderingCode() {
         return parent.endSectionRenderingCode();
     }
-
+    
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+
         List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
         
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
@@ -100,9 +101,14 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         if (result != null)
             return result;
         result = getFieldEntryOrDefault(enclosedElements, name, null);
-        if (result != null)
-            return result;
-        return parent.getDataOrDefault(name, defaultValue);
+        
+        return result;
+    }
+
+    @Override
+    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+        var result = getDataDirectly(name);
+        return result != null ? result : parent.getDataOrDefault(name, defaultValue);
     }
 
     private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {
@@ -184,4 +190,17 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     public @Nullable RenderingContext getParent() {
         return this.parent;
     }
+    
+    @Override
+    public String description() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return "DeclaredTypeRenderingContext [\n\texpression=" + expression + ",\n\tdefinitionElement=" + definitionElement
+                + ",\n\tparent=" + parent + "]";
+    }
+    
+    
 }

@@ -92,6 +92,11 @@ class InvertedRenderingContext implements BooleanExpressionContext {
     public @Nullable BooleanExpressionContext getParentExpression() {
         return parent;
     }
+    
+    @Override
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+        return parent.getDataDirectly(name);
+    }
 
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {

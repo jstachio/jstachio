@@ -52,6 +52,11 @@ class VariablesRenderingContext implements RenderingContext {
     public String endSectionRenderingCode() {
         return parent.endSectionRenderingCode();
     }
+    
+    @Override
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+        return null;
+    }
 
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {

@@ -60,6 +60,11 @@ class LayoutableRenderingContext implements RenderingContext {
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         return enclosing.getDataOrDefault(name, defaultValue);
     }
+    
+    @Override
+    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+        return null;
+    }
 
     @Override
     public JavaExpression currentExpression() {

@@ -162,17 +162,29 @@ public class TemplateCompilerContext {
         }
         
         RenderingContext enclosing = new OwnedRenderingContext(context);
-        
+        //System.out.println(enclosing.printStack());
         var it = names.iterator();
+        /*
+         * A non dotted name can be resolved against parents
+         */
+        enclosing = _getChildRender(it.next(), it.hasNext() ? childType.pathType() : childType, enclosing, false);
+        /*
+         * Each part of a dotted name should resolve only against its parent.
+         * direct = true
+         */
         while (it.hasNext()) {
             String n = it.next();
-            enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing);
+            enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing, true);
         }
         return new TemplateCompilerContext(generator, variables, enclosing, childType, new EnclosedRelation(name, this));
 
     }
     
     private RenderingContext _getChildRender(String name, ContextType childType, RenderingContext enclosing) throws ContextException {
+        return _getChildRender(name, childType, enclosing, false);
+    }
+    
+    private RenderingContext _getChildRender(String name, ContextType childType, RenderingContext enclosing, boolean direct) throws ContextException {
         if (name.equals(".")) {
             return switch (childType) {
             case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
@@ -194,9 +206,12 @@ public class TemplateCompilerContext {
         if (childType == ContextType.BLOCK) {
             return enclosing;
         }
-        JavaExpression entry = enclosing.getDataOrDefault(name, null);
-        if (entry == null)
-            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}''", name));
+        JavaExpression entry = direct ? enclosing.getDataDirectly(name) :  enclosing.getDataOrDefault(name, null);
+        if (entry == null) {
+            System.out.println("Field not found. field: " + name + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
+            //Thread.dumpStack();
+            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}'' " + direct, name));
+        }
         RenderingContext enclosedField;
         try {
             enclosedField = switch (childType) {
