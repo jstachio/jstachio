@@ -81,7 +81,7 @@ public sealed interface MustacheToken {
         };
     }
     
-    public record NewlineToken(char newlineChar) implements MustacheToken {
+    public record NewlineToken(NewlineChar newlineChar) implements MustacheToken {
         @Override
         public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
             return visitor.newline(newlineChar);
@@ -102,6 +102,11 @@ public sealed interface MustacheToken {
         
     }
     
+    public enum NewlineChar {
+        LF,
+        CRLF
+        
+    }
     public enum SpecialChar {
         QUOTATION_MARK('"'), // "
         BACKSLASH('\\'); // \
@@ -177,7 +182,7 @@ public sealed interface MustacheToken {
         R variable(String name) throws E;
         R unescapedVariable(String name) throws E;
         R specialCharacter(SpecialChar specialChar ) throws E;
-        R newline(char c) throws E;
+        R newline(NewlineChar c) throws E;
         R text(String s) throws E;
         R endOfFile() throws E;
     }

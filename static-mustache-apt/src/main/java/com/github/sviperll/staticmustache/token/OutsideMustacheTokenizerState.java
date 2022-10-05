@@ -30,6 +30,7 @@
 package com.github.sviperll.staticmustache.token;
 
 import com.snaphop.staticmustache.apt.MustacheToken;
+import com.snaphop.staticmustache.apt.MustacheToken.NewlineChar;
 import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 import com.snaphop.staticmustache.apt.ProcessingException;
 
@@ -75,11 +76,11 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
         switch (c) {
         case '\n' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(new MustacheToken.NewlineToken(c));
+            NewlineChar nc = lastChar == '\r' ? NewlineChar.CRLF : NewlineChar.LF;
+            tokenizer.emitToken(new MustacheToken.NewlineToken(nc));
         }
         case '\r' -> {
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(new MustacheToken.NewlineToken(c));
+            
         }
         case '"' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
@@ -90,9 +91,9 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
             tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.BACKSLASH));
         }
         default -> { 
-//            if (lastChar == '\r') {
-//                text.append("\r");
-//            }
+            if (lastChar == '\r') {
+                text.append("\r");
+            }
             text.append(c);
         }
         }

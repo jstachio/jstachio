@@ -42,6 +42,7 @@ import com.github.sviperll.staticmustache.context.TemplateCompilerContext.Contex
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
+import com.snaphop.staticmustache.apt.MustacheToken.NewlineChar;
 import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 import com.snaphop.staticmustache.apt.MustacheToken.TextToken;
 
@@ -780,14 +781,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         }
         
         
-        public @Nullable Void newline(char c) throws ProcessingException {
-            if (c == '\n') {
-                printCodeToWrite("\\n");
-            } else if (c == '\r') {
-                printCodeToWrite("\\r");
-            }
-            else {
-                throw new IllegalArgumentException();
+        public @Nullable Void newline(NewlineChar c) throws ProcessingException {
+            switch(c) {
+            case LF -> printCodeToWrite("\\n");
+            case CRLF -> printCodeToWrite("\\r\\n");
             }
             return null;
         };

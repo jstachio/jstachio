@@ -31,4 +31,5 @@ public class SpecInvertedTest extends AbstractSpecTest<InvertedSpecTemplate> {
     String render(InvertedSpecTemplate specTemplate) {
         return specTemplate.render();
     }
+    
 }
