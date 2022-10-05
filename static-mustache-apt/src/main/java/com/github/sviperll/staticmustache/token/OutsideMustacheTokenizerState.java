@@ -40,6 +40,7 @@ import com.snaphop.staticmustache.apt.ProcessingException;
 class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     private final StringBuilder text = new StringBuilder();
     private final MustacheTokenizer tokenizer;
+    private char lastChar = 0;
 
     OutsideMustacheTokenizerState(final MustacheTokenizer tokenizer) {
         this.tokenizer = tokenizer;
@@ -72,7 +73,11 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     @Override
     public Void character(char c) throws ProcessingException {
         switch (c) {
-        case '\n', '\r' -> {
+        case '\n' -> {
+            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+            tokenizer.emitToken(new MustacheToken.NewlineToken(c));
+        }
+        case '\r' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
             tokenizer.emitToken(new MustacheToken.NewlineToken(c));
         }
@@ -84,8 +89,14 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
             tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.BACKSLASH));
         }
-        default -> text.append(c);
+        default -> { 
+//            if (lastChar == '\r') {
+//                text.append("\r");
+//            }
+            text.append(c);
         }
+        }
+        lastChar = c;
         return null;
     }
 

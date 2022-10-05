@@ -79,7 +79,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     String partialIndent = "";
     
     private final TemplateCompilerLike parent;
-    //TODO we probably need this as a stack as parent sections can include other parents or partials
+    //TODO we might need this as a stack as parent sections can include other parents or partials
     private @Nullable ParameterPartial _partial;
 
     protected @Nullable StringCodeAppendable _currentBlockOutput;
@@ -87,6 +87,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     protected @Nullable HiddenCodeAppendable _parentBlockOutput;
     
     protected @Nullable PositionedToken<MustacheToken> lastProcessedToken = null;
+    
+    private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(5);
+    
+    boolean atStartOfLine = true;
 
     private TemplateCompiler(NamedReader reader, 
             TemplateCompilerLike parent, 
@@ -175,9 +179,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         return new Partial(c);
     }
 
-    private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(4);
 
-    boolean eof = false;
     
     @Override
     public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
@@ -195,7 +197,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         return flags().contains(TemplateCompilerFlags.Flag.DEBUG);
     }
     
-    boolean onNewLine = true;
+
     
     private void processTokens() throws ProcessingException {
         
@@ -250,27 +252,27 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
              * Handle the easiest negative case
              * [ not new line or space ] {{#somesection}}
              */
-            if (onNewLine && ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
+            if (atStartOfLine && ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
                     && secondToken.innerToken().isStandaloneToken()) {
                 _processToken(firstToken);
                 _processToken(secondToken);
-                onNewLine = false;
+                atStartOfLine = false;
                 continue;
             }
             /*
              * {{#some section}} [ newline ]
              */
-            if (onNewLine && firstToken.innerToken().isStandaloneToken() && secondToken.innerToken().isNewlineOrEOF()) {
+            if (atStartOfLine && firstToken.innerToken().isStandaloneToken() && secondToken.innerToken().isNewlineOrEOF()) {
                 debug("2 standalone condition: {{#some section}} [ newline ]");
                 _processToken(firstToken);
                 if (secondToken.innerToken().isEOF()) {
                     _processToken(secondToken);
                 }
-                onNewLine = true;
+                atStartOfLine = true;
                 continue;
             }
 
-            if (onNewLine && size >= 3) {
+            if (atStartOfLine && size >= 3) {
                 var thirdToken = previousTokens.poll();
                 buf.add(thirdToken);
 
@@ -285,7 +287,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (thirdToken.innerToken().isEOF()) {
                         _processToken(thirdToken);
                     }
-                    onNewLine = true;
+                    atStartOfLine = true;
                     continue;
                 }
 
@@ -300,7 +302,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (thirdToken.innerToken().isEOF()) {
                         _processToken(thirdToken);
                     }
-                    onNewLine = true;
+                    atStartOfLine = true;
                     continue;
                 }
 
@@ -320,7 +322,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                         if (fourthToken.innerToken().isEOF()) {
                             _processToken(fourthToken);
                         }
-                        onNewLine = true;
+                        atStartOfLine = true;
                         continue;
                     }
                 }
@@ -352,10 +354,10 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         positionedToken.innerToken().accept(new CompilingTokenProcessor(positionedToken.position()));
         if (positionedToken.innerToken().isNewlineOrEOF()) {
-            onNewLine = true;
+            atStartOfLine = true;
         }
         else {
-            onNewLine = false;
+            atStartOfLine = false;
         }
         lastProcessedToken = positionedToken;
     }
@@ -679,6 +681,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void variable(String name) throws ProcessingException {
+            indent();
             flushUnescaped();
             println();
             try {
@@ -730,19 +733,15 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             return null;
         }
 
-        private void indentVariable() {
-            if (indent.isEmpty()) {
-                return;
-            }
-            var lpt = lastProcessedToken;
-            if (lpt == null || lpt.innerToken().isNewlineToken()) {
-                print(context.unescapedWriterExpression() + ".append(\"" + indent + "\"); ");
+        private void indent() {
+            if (atStartOfLine) {
+                printCodeToWrite(indent);
             }
         }
         
         @Override
         public @Nullable Void unescapedVariable(String name) throws ProcessingException {
-            //indentVariable();
+            indent();
             flushUnescaped();
             println();
             try {
@@ -795,13 +794,14 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
 
         @Override
         public @Nullable Void text(String s) throws ProcessingException {
+            indent();
             printCodeToWrite(s);
             return null;
         }
 
         @Override
         public @Nullable Void endOfFile() throws ProcessingException {
-        	flushUnescaped();
+            flushUnescaped();
             if (!context.isEnclosed())
                 return null;
             else {
@@ -823,7 +823,6 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     code.append(" +");
                 }
                 code.append("\n    \"");
-                code.append(indent);
                 code.append(line);
                 code.append("\"");
                 i++;
