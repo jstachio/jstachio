@@ -52,7 +52,7 @@ interface RenderingContext {
         @Nullable
         RenderingContext parent = this;
         while(parent != null) {
-            sb.append("\n<- ");
+            sb.append("\n\t<- ");
             sb.append(parent.description());
             parent = parent.getParent();
         }

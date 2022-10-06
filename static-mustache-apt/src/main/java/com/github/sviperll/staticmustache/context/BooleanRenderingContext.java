@@ -91,4 +91,14 @@ class BooleanRenderingContext implements BooleanExpressionContext {
     public @Nullable RenderingContext getParent() {
         return parent;
     }
+    
+    @Override
+    public String description() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return "BooleanRenderingContext [expression=" + expression + "]";
+    }
 }

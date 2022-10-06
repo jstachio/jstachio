@@ -34,25 +34,33 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.github.sviperll.staticmustache.context.ContextException.FieldNotFoundContextException;
+
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class TemplateCompilerContext {
+    private final TemplateStack templateStack;
     private final @Nullable EnclosedRelation enclosedRelation;
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
     private final ContextType childType;
 
-    TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field,
+    TemplateCompilerContext(TemplateStack templateStack, RenderingCodeGenerator processor, VariableContext variables, RenderingContext field,
             ContextType childType) {
-        this(processor, variables, field, childType, null);
+        this(templateStack, processor, variables, field, childType, null);
     }
 
-    private TemplateCompilerContext(RenderingCodeGenerator processor, VariableContext variables, RenderingContext field, 
+    private TemplateCompilerContext(
+            TemplateStack templateStack, 
+            RenderingCodeGenerator processor, 
+            VariableContext variables, 
+            RenderingContext field, 
             ContextType childType,
              @Nullable EnclosedRelation parent) {
+        this.templateStack = templateStack;
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
@@ -91,13 +99,13 @@ public class TemplateCompilerContext {
         return context.endSectionRenderingCode();
     }
 
-    public TemplateCompilerContext createForParameterPartial() {
+    public TemplateCompilerContext createForParameterPartial(String template) {
         // No enclosing relation for new partials
-        return new TemplateCompilerContext(generator, variables, context, ContextType.PARENT_PARTIAL);
+        return new TemplateCompilerContext(templateStack.ofPartial(template), generator, variables, context, ContextType.PARENT_PARTIAL);
     }
     
-    public TemplateCompilerContext createForPartial() {
-        return new TemplateCompilerContext(generator, variables, context, ContextType.PARTIAL);
+    public TemplateCompilerContext createForPartial(String template) {
+        return new TemplateCompilerContext(templateStack.ofPartial(template),generator, variables, context, ContextType.PARTIAL);
     }
 
     
@@ -142,13 +150,14 @@ public class TemplateCompilerContext {
     private TemplateCompilerContext _getChild(String name, ContextType childType) throws ContextException {
         if (name.equals(".")) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(generator, variables, enclosedField, childType, new EnclosedRelation(name, this));
+            return new TemplateCompilerContext(templateStack, generator, variables, enclosedField, childType, 
+                    new EnclosedRelation(name, this));
         }
         
         switch (childType) {
         case PARTIAL, PARENT_PARTIAL, BLOCK -> {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(generator, variables, enclosedField, childType,
+            return new TemplateCompilerContext(templateStack, generator, variables, enclosedField, childType,
                     new EnclosedRelation(name, this));
         }
         default -> {
@@ -167,16 +176,28 @@ public class TemplateCompilerContext {
         /*
          * A non dotted name can be resolved against parents
          */
-        enclosing = _getChildRender(it.next(), it.hasNext() ? childType.pathType() : childType, enclosing, false);
+        var start = _getChildRender(it.next(), it.hasNext() ? childType.pathType() : childType, enclosing, false);
+        enclosing = start;
         /*
          * Each part of a dotted name should resolve only against its parent.
          * direct = true
          */
         while (it.hasNext()) {
             String n = it.next();
-            enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing, true);
+            if (childType == ContextType.INVERTED) {
+                try {
+                    enclosing = _getChildRender(n, childType, enclosing, true);
+                } catch (FieldNotFoundContextException e) {
+                    enclosing = start;
+                    break;
+                }
+            }
+            else {
+                enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing, true);
+            }
         }
-        return new TemplateCompilerContext(generator, variables, enclosing, childType, new EnclosedRelation(name, this));
+        return new TemplateCompilerContext(templateStack, 
+                generator, variables, enclosing, childType, new EnclosedRelation(name, this));
 
     }
     
@@ -208,9 +229,8 @@ public class TemplateCompilerContext {
         }
         JavaExpression entry = direct ? enclosing.getDataDirectly(name) :  enclosing.getDataOrDefault(name, null);
         if (entry == null) {
-            System.out.println("Field not found. field: " + name + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
-            //Thread.dumpStack();
-            throw new ContextException(MessageFormat.format("Field not found in current context: ''{0}'' " + direct, name));
+            System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
+            throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }
         RenderingContext enclosedField;
         try {
@@ -245,5 +265,9 @@ public class TemplateCompilerContext {
     
     public ContextType getType() {
         return childType;
+    }
+    
+    public TemplateStack getTemplateStack() {
+        return templateStack;
     }
 }

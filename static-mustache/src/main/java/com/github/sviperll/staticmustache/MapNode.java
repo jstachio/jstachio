@@ -42,24 +42,42 @@ public interface MapNode extends Iterable<MapNode> {
         }
         return new ChildMapNode(this, o);
     }
-    
+    /**
+     * Gets a field from java.util.Map if MapNode is wrapping one.
+     * This is direct access and does not check the parents.
+     * 
+     * Just like java.util.Map null will be returned if no field is found.
+     * 
+     * @param field
+     * @return a child node. maybe null.
+     */
     default @Nullable MapNode get(String field) {
-        /*
-         * In theory we could make a special RenderingContext for MapNode
-         * to go up the stack (generated code) but it would probably should look similar
-         * to the following.
-         */
         Object o = object();
         MapNode child = null;
         if (o instanceof Map<?,?> m) {
             child = ofChild(m.get(field));
         }
+        return child;
+    }
+    
+    /**
+     * Will search up the tree for a field starting at this nodes children first.
+     * @param field
+     * @return null if not found
+     */
+    default @Nullable MapNode find(String field) {
+        /*
+         * In theory we could make a special RenderingContext for MapNode
+         * to go up the stack (generated code) but it would probably look similar
+         * to the following.
+         */
+        MapNode child = get(field);
         if (child != null) {
             return child;
         }
         var parent = parent();
         if (parent != null && parent != this) {
-            child = parent.get(field);
+            child = parent.find(field);
             if (child != null) {
                 child = ofChild(child.object());
             }

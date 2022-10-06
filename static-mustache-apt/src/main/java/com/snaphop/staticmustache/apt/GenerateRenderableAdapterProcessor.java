@@ -467,7 +467,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 
             VariableContext variables = VariableContext.createDefaultContext();
             String dataName = variables.introduceNewNameLike("data");
-            TemplateCompilerContext context = codeWriter.createTemplateContext(element, dataName, variables);
+            TemplateCompilerContext context = codeWriter.createTemplateContext(templateName, element, dataName, variables);
             println("        private final " + Appendable.class.getName() + " " + variables.unescapedWriter() + ";");
             println("        private final " + Appendable.class.getName() + " " + variables.writer() + ";");
             println("        private final " + className + " " + dataName + ";");
@@ -481,7 +481,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("        }");
             println("        @Override");
             println("        public void render() throws " + IOException.class.getName() + " {");
-            codeWriter.compileTemplate(templateLoader, templateName, context, templateCompilerType);
+            codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
             println("        }");
             println("    }");
         }

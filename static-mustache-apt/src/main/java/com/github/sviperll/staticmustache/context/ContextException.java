@@ -42,4 +42,10 @@ public class ContextException extends Exception {
     ContextException(String message) {
         super(message);
     }
+    
+    public static class FieldNotFoundContextException extends ContextException {
+        FieldNotFoundContextException(String message) {
+            super(message);
+        }
+    }
 }

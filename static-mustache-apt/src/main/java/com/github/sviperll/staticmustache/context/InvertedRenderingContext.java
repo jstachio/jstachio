@@ -32,6 +32,7 @@ package com.github.sviperll.staticmustache.context;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -48,18 +49,7 @@ class InvertedRenderingContext implements BooleanExpressionContext {
 
     @Override
     public String beginSectionRenderingCode() {
-        RenderingContext p = getParent();
-        List<BooleanExpressionContext> expressions = new ArrayList<>();
-        while (p != null) {
-            if (p instanceof BooleanExpressionContext be) {
-                if (! be.getExpression().isBlank()) {
-                    expressions.add(be);
-                }
-            }
-            p = p.getParent();
-        }
-        
-        Collections.reverse(expressions);
+        List<BooleanExpressionContext> expressions = booleanExpressions();
         
         StringBuilder sb = new StringBuilder();
         //sb.append("/* inverted */ ");
@@ -76,6 +66,22 @@ class InvertedRenderingContext implements BooleanExpressionContext {
         }
         sb.append(") {");
         return sb.toString();
+    }
+
+    private List<BooleanExpressionContext> booleanExpressions() {
+        RenderingContext p = getParent();
+        List<BooleanExpressionContext> expressions = new ArrayList<>();
+        while (p != null) {
+            if (p instanceof BooleanExpressionContext be) {
+                if (! be.getExpression().isBlank()) {
+                    expressions.add(be);
+                }
+            }
+            p = p.getParent();
+        }
+        
+        Collections.reverse(expressions);
+        return expressions;
     }
 
     @Override
@@ -116,5 +122,16 @@ class InvertedRenderingContext implements BooleanExpressionContext {
     @Override
     public @Nullable RenderingContext getParent() {
         return parent;
+    }
+    
+    @Override
+    public String description() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return "InvertedRenderingContext [expression="
+                + booleanExpressions().stream().map(e -> e.getExpression()).collect(Collectors.joining(",")) + "]";
     }
 }

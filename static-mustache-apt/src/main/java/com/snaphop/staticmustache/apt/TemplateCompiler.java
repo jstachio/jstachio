@@ -153,7 +153,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     @Override
     public ParameterPartial createParameterPartial(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
-        TemplateCompilerContext context = this.context.createForParameterPartial();
+        TemplateCompilerContext context = this.context.createForParameterPartial(templateName);
         var c = new TemplateCompiler(reader, this, context, expectsYield) {
             @Override
             public TemplateCompilerType getCompilerType() {
@@ -168,7 +168,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
     
     public Partial createPartial(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
-        TemplateCompilerContext context = this.context.createForPartial();
+        TemplateCompilerContext context = this.context.createForPartial(templateName);
         var c = new TemplateCompiler(reader, this, context, expectsYield) {
             @Override
             public TemplateCompilerType getCompilerType() {

@@ -123,18 +123,22 @@ public class RenderingCodeGenerator {
      * @param variables declared variables to use in generated code
      * @return new TemplateCompilerContext
      */
-    public TemplateCompilerContext createTemplateCompilerContext(TypeElement element, String expression, VariableContext variables) {
+    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
         RenderingContext rootRenderingContext;
         // A special case scenario where the root is a java.util.Map or our custom MapNode... not recommended but useful for spec tests
-        if (javaModel.isType(element.asType(), knownTypes._Map) || javaModel.isType(element.asType(), knownTypes._MapNode)) {
-             rootRenderingContext = new MapRenderingContext(javaExpression, element, root);
+
+        if (javaModel.isType(element.asType(), knownTypes._MapNode)) {
+            rootRenderingContext = new MapNodeRenderingContext(javaExpression, element, root);
         }
+        else if (javaModel.isType(element.asType(), knownTypes._Map)) {
+            rootRenderingContext = new MapRenderingContext(javaExpression, element, root);
+       }
         else {
              rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
         }
-        return new TemplateCompilerContext(this, variables, rootRenderingContext, ContextType.ROOT);
+        return new TemplateCompilerContext(TemplateStack.of(templateName), this, variables, rootRenderingContext, ContextType.ROOT);
     }
 
     RenderingContext createRenderingContext(ContextType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
@@ -144,7 +148,7 @@ public class RenderingCodeGenerator {
                 yield createIterableContext(childType, expression, enclosing);
             }
             default: {
-                yield createMapContext(expression, enclosing);
+                yield createMapNodeContext(expression, enclosing);
             }
             };
         } else if (expression.type() instanceof WildcardType) {
@@ -200,6 +204,14 @@ public class RenderingCodeGenerator {
         MapRenderingContext map = new MapRenderingContext(expression, javaModel.asElement(mapType), nullable);
         return map;
     }
+    
+    private RenderingContext createMapNodeContext(JavaExpression expression, RenderingContext enclosing) {
+        RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+        DeclaredType mapType = (DeclaredType) expression.type();
+        MapNodeRenderingContext map = new MapNodeRenderingContext(expression, javaModel.asElement(mapType), nullable);
+        return map;
+    }
+    
     private RenderingContext createIterableContext(ContextType childType, JavaExpression expression,
             RenderingContext enclosing) throws TypeException {
         RenderingContext nullable = nullableRenderingContext(expression, enclosing);
@@ -208,7 +220,7 @@ public class RenderingCodeGenerator {
         RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
         IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
         if (expression.model().isType(expression.type(), knownTypes._MapNode)) {
-            return createMapContext(iterable.elementExpession(), iterable);
+            return createMapNodeContext(iterable.elementExpession(), iterable);
         }
         return createRenderingContext(childType, iterable.elementExpession(), iterable);
     }
@@ -226,8 +238,9 @@ public class RenderingCodeGenerator {
             OptionalRenderingContext declaredContext = new OptionalRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null", declaredContext);
         } else if (javaModel.isType(expression.type(), knownTypes._MapNode) && expression.type() instanceof DeclaredType dt) {
-            DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
-            return new BooleanRenderingContext("isFalsey(" + expression.text() + ")", declaredContext);
+            //DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
+            MapNodeRenderingContext c = new MapNodeRenderingContext(expression, javaModel.asElement(dt) , enclosing);
+            return new BooleanRenderingContext("isFalsey(" + expression.text() + ")", c);
         } else if (expression.type() instanceof DeclaredType dt) {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + expression.text() + ") == null || Boolean.FALSE.equals(" + expression.text() + ")", declaredContext);

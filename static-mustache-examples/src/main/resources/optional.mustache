@@ -1,8 +1,29 @@
+{{myBoolean}}
 
+<name>
+{{#name}}
+{{.}}
+{{/name}}
+</name>
+
+<inverted-name>
+{{^name}}
+no show name
+{{/name}}
+</inverted-name>
+
+<name>
+{{name}}
+</name>
+
+<child.name>
+{{#child.name}}
+{{.}}
+{{/child.name}}
+</child.name>
 
 <inverted-child.name>
 {{^child.name}}
-nowefwefwef
+no show child name
 {{/child.name}}
-
 </inverted-child.name>

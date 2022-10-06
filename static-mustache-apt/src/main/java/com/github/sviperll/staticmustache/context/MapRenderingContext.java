@@ -41,8 +41,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class MapRenderingContext implements RenderingContext {
-    private final JavaExpression expression;
-    private final TypeElement definitionElement;
+    protected final JavaExpression expression;
+    protected final TypeElement definitionElement;
     private final RenderingContext parent;
 
     MapRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
@@ -81,7 +81,11 @@ class MapRenderingContext implements RenderingContext {
     @Override
     public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
         //TODO this should probably check parent as well?
-       return getDataDirectly(name);
+       var r = getDataDirectly(name);
+       if (r == null) {
+           r = parent.getDataOrDefault(name, defaultValue);
+       }
+       return r;
     }
 
 

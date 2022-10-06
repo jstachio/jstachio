@@ -1,8 +1,5 @@
 package com.snaphop.staticmustache.spec.custom;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.snaphop.staticmustache.spec.custom.Custom.DottedNamesTruthy.A;
 //import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
@@ -47,20 +44,20 @@ public class Custom {
 
 
     
-    @GenerateRenderableAdapter(template = InterpolationSpecTemplate.DOTTED_NAMES___BROKEN_CHAIN_RESOLUTION_FILE)
-    public record DottedNamesBrokenChainResolution(A a, C c) {
-        public static DottedNamesBrokenChainResolution test() {
-            return new DottedNamesBrokenChainResolution(new A(new B()), new C("Jim"));
-        }
-
-        public record A(B b) {
-        }
-        
-        public record B() {
-        }
-        
-        public record C(String name) {
-        }
-    }
+//    @GenerateRenderableAdapter(template = InterpolationSpecTemplate.DOTTED_NAMES___BROKEN_CHAIN_RESOLUTION_FILE)
+//    public record DottedNamesBrokenChainResolution(A a, C c) {
+//        public static DottedNamesBrokenChainResolution test() {
+//            return new DottedNamesBrokenChainResolution(new A(new B()), new C("Jim"));
+//        }
+//
+//        public record A(B b) {
+//        }
+//        
+//        public record B() {
+//        }
+//        
+//        public record C(String name) {
+//        }
+//    }
 
 }

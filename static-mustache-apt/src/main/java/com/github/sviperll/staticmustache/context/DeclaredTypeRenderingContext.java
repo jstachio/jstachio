@@ -198,8 +198,8 @@ class DeclaredTypeRenderingContext implements RenderingContext {
 
     @Override
     public String toString() {
-        return "DeclaredTypeRenderingContext [\n\texpression=" + expression + ",\n\tdefinitionElement=" + definitionElement
-                + ",\n\tparent=" + parent + "]";
+        return "DeclaredTypeRenderingContext [\n\t\texpression=" + expression + ",\n\t\tdefinitionElement=" + definitionElement
+                + ",\n\t\tparent=" + parent + "]";
     }
     
     

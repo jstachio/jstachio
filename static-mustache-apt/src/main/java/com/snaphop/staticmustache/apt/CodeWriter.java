@@ -71,18 +71,20 @@ class CodeWriter {
         this.flags = flags;
     }
 
-    TemplateCompilerContext createTemplateContext(TypeElement element, String rootExpression, VariableContext variableContext) {
-        return codeGenerator.createTemplateCompilerContext(element, rootExpression, variableContext);
+    TemplateCompilerContext createTemplateContext(String templateName, TypeElement element, String rootExpression, VariableContext variableContext) {
+        return codeGenerator.createTemplateCompilerContext(templateName, element, rootExpression, variableContext);
     }
 
     void println(String s) {
         writer.println(s);
     }
 
-    void compileTemplate(TextFileObject resource, String templateName, 
+    void compileTemplate(TextFileObject resource, 
             TemplateCompilerContext context, 
             TemplateCompilerType templateCompilerType) 
             throws IOException, ProcessingException {
+        
+        String templateName = context.getTemplateStack().getTemplateName();
         
         TemplateLoader templateLoader = (name) -> { 
             
