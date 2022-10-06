@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum InheritanceSpecTemplate implements SpecListing {
     DEFAULT(
-        null,
+        Default.class,
         "inheritance",
         "Default",
         "Default content should be rendered if the block isn't overridden",
@@ -13,11 +13,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$title}}Default title{{/title}}\n",
         "Default title\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Default();
+            m.putAll(o);
+            var r = DefaultRenderer.of(m);
+            return r.renderString();
         }
     },
     VARIABLE(
-        null,
+        Variable.class,
         "inheritance",
         "Variable",
         "Default content renders variables",
@@ -25,11 +28,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$foo}}default {{bar}} content{{/foo}}\n",
         "default baz content\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Variable();
+            m.putAll(o);
+            var r = VariableRenderer.of(m);
+            return r.renderString();
         }
     },
     TRIPLE_MUSTACHE(
-        null,
+        TripleMustache.class,
         "inheritance",
         "Triple Mustache",
         "Default content renders triple mustache variables",
@@ -37,11 +43,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$foo}}default {{{bar}}} content{{/foo}}\n",
         "default <baz> content\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new TripleMustache();
+            m.putAll(o);
+            var r = TripleMustacheRenderer.of(m);
+            return r.renderString();
         }
     },
     SECTIONS(
-        null,
+        Sections.class,
         "inheritance",
         "Sections",
         "Default content renders sections",
@@ -49,11 +58,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}\n",
         "default qux content\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Sections();
+            m.putAll(o);
+            var r = SectionsRenderer.of(m);
+            return r.renderString();
         }
     },
     NEGATIVE_SECTIONS(
-        null,
+        NegativeSections.class,
         "inheritance",
         "Negative Sections",
         "Default content renders negative sections",
@@ -61,11 +73,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$foo}}default {{^bar}}{{baz}}{{/bar}} content{{/foo}}\n",
         "default three content\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new NegativeSections();
+            m.putAll(o);
+            var r = NegativeSectionsRenderer.of(m);
+            return r.renderString();
         }
     },
     MUSTACHE_INJECTION(
-        null,
+        MustacheInjection.class,
         "inheritance",
         "Mustache Injection",
         "Mustache injection in default content",
@@ -73,11 +88,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}\n",
         "default {{qux}} content\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new MustacheInjection();
+            m.putAll(o);
+            var r = MustacheInjectionRenderer.of(m);
+            return r.renderString();
         }
     },
     INHERIT(
-        null,
+        Inherit.class,
         "inheritance",
         "Inherit",
         "Default content rendered inside inherited templates",
@@ -85,11 +103,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<include}}{{/include}}\n",
         "default content"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Inherit();
+            m.putAll(o);
+            var r = InheritRenderer.of(m);
+            return r.renderString();
         }
     },
     OVERRIDDEN_CONTENT(
-        null,
+        Overriddencontent.class,
         "inheritance",
         "Overridden content",
         "Overridden content",
@@ -97,11 +118,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<super}}{{$title}}sub template title{{/title}}{{/super}}",
         "...sub template title..."){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Overriddencontent();
+            m.putAll(o);
+            var r = OverriddencontentRenderer.of(m);
+            return r.renderString();
         }
     },
     DATA_DOES_NOT_OVERRIDE_BLOCK(
-        null,
+        Datadoesnotoverrideblock.class,
         "inheritance",
         "Data does not override block",
         "Context does not override argument passed into parent",
@@ -109,11 +133,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<include}}{{$var}}var in template{{/var}}{{/include}}",
         "var in template"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Datadoesnotoverrideblock();
+            m.putAll(o);
+            var r = DatadoesnotoverrideblockRenderer.of(m);
+            return r.renderString();
         }
     },
     DATA_DOES_NOT_OVERRIDE_BLOCK_DEFAULT(
-        null,
+        Datadoesnotoverrideblockdefault.class,
         "inheritance",
         "Data does not override block default",
         "Context does not override default content of block",
@@ -121,11 +148,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<include}}{{/include}}",
         "var in include"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Datadoesnotoverrideblockdefault();
+            m.putAll(o);
+            var r = DatadoesnotoverrideblockdefaultRenderer.of(m);
+            return r.renderString();
         }
     },
     OVERRIDDEN_PARENT(
-        null,
+        Overriddenparent.class,
         "inheritance",
         "Overridden parent",
         "Overridden parent",
@@ -133,11 +163,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "test {{<parent}}{{$stuff}}override{{/stuff}}{{/parent}}",
         "test override"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Overriddenparent();
+            m.putAll(o);
+            var r = OverriddenparentRenderer.of(m);
+            return r.renderString();
         }
     },
     TWO_OVERRIDDEN_PARENTS(
-        null,
+        Twooverriddenparents.class,
         "inheritance",
         "Two overridden parents",
         "Two overridden parents with different content",
@@ -145,11 +178,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "test {{<parent}}{{$stuff}}override1{{/stuff}}{{/parent}} {{<parent}}{{$stuff}}override2{{/stuff}}{{/parent}}\n",
         "test |override1 default| |override2 default|\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Twooverriddenparents();
+            m.putAll(o);
+            var r = TwooverriddenparentsRenderer.of(m);
+            return r.renderString();
         }
     },
     OVERRIDE_PARENT_WITH_NEWLINES(
-        null,
+        Overrideparentwithnewlines.class,
         "inheritance",
         "Override parent with newlines",
         "Override parent with newlines",
@@ -157,11 +193,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{$ballmer}}\npeaked\n\n:(\n{{/ballmer}}{{/parent}}",
         "peaked\n\n:(\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Overrideparentwithnewlines();
+            m.putAll(o);
+            var r = OverrideparentwithnewlinesRenderer.of(m);
+            return r.renderString();
         }
     },
     INHERIT_INDENTATION(
-        null,
+        Inheritindentation.class,
         "inheritance",
         "Inherit indentation",
         "Inherit indentation when overriding a parent",
@@ -169,11 +208,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{$nineties}}hammer time{{/nineties}}{{/parent}}",
         "stop:\n  hammer time\n"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Inheritindentation();
+            m.putAll(o);
+            var r = InheritindentationRenderer.of(m);
+            return r.renderString();
         }
     },
     ONLY_ONE_OVERRIDE(
-        null,
+        Onlyoneoverride.class,
         "inheritance",
         "Only one override",
         "Override one parameter but not the other",
@@ -181,11 +223,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{$stuff2}}override two{{/stuff2}}{{/parent}}",
         "new default one, override two"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Onlyoneoverride();
+            m.putAll(o);
+            var r = OnlyoneoverrideRenderer.of(m);
+            return r.renderString();
         }
     },
     PARENT_TEMPLATE(
-        null,
+        Parenttemplate.class,
         "inheritance",
         "Parent template",
         "Parent templates behave identically to partials when called with no parameters",
@@ -193,7 +238,10 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{>parent}}|{{<parent}}{{/parent}}",
         "default content|default content"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Parenttemplate();
+            m.putAll(o);
+            var r = ParenttemplateRenderer.of(m);
+            return r.renderString();
         }
     },
     RECURSION(
@@ -209,7 +257,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
         }
     },
     MULTI_LEVEL_INHERITANCE(
-        null,
+        Multilevelinheritance.class,
         "inheritance",
         "Multi-level inheritance",
         "Top-level substitutions take precedence in multi-level inheritance",
@@ -217,11 +265,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{$a}}c{{/a}}{{/parent}}",
         "c"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Multilevelinheritance();
+            m.putAll(o);
+            var r = MultilevelinheritanceRenderer.of(m);
+            return r.renderString();
         }
     },
     MULTI_LEVEL_INHERITANCE__NO_SUB_CHILD(
-        null,
+        Multilevelinheritancenosubchild.class,
         "inheritance",
         "Multi-level inheritance, no sub child",
         "Top-level substitutions take precedence in multi-level inheritance",
@@ -229,11 +280,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{/parent}}",
         "p"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Multilevelinheritancenosubchild();
+            m.putAll(o);
+            var r = MultilevelinheritancenosubchildRenderer.of(m);
+            return r.renderString();
         }
     },
     TEXT_INSIDE_PARENT(
-        null,
+        Textinsideparent.class,
         "inheritance",
         "Text inside parent",
         "Ignores text inside parent templates, but does parse $ tags",
@@ -241,11 +295,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}} asdfasd {{$foo}}hmm{{/foo}} asdfasdfasdf {{/parent}}",
         "hmm"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Textinsideparent();
+            m.putAll(o);
+            var r = TextinsideparentRenderer.of(m);
+            return r.renderString();
         }
     },
     TEXT_INSIDE_PARENT1(
-        null,
+        Textinsideparent1.class,
         "inheritance",
         "Text inside parent1",
         "Allows text inside a parent tag, but ignores it",
@@ -253,11 +310,14 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}} asdfasd asdfasdfasdf {{/parent}}",
         "default content"){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Textinsideparent1();
+            m.putAll(o);
+            var r = Textinsideparent1Renderer.of(m);
+            return r.renderString();
         }
     },
     BLOCK_SCOPE(
-        null,
+        Blockscope.class,
         "inheritance",
         "Block scope",
         "Scope of a substituted block is evaluated in the context of the parent template",
@@ -265,7 +325,10 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "{{<parent}}{{$block}}I say {{fruit}}.{{/block}}{{/parent}}",
         "I say bananas."){
         public String render(Map<String, Object> o) {
-            return "DISABLED TEST";
+            var m = new Blockscope();
+            m.putAll(o);
+            var r = BlockscopeRenderer.of(m);
+            return r.renderString();
         }
     },
     ;

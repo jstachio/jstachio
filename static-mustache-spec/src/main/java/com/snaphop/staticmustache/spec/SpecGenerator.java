@@ -138,12 +138,12 @@ public class SpecGenerator {
             
             @Override
             Set<String> ignores() {
-                return Set.of("Recursion");
+                return Set.of("Recursion", "NegativeSections");
             }
             
             @Override
             boolean enabled() {
-                return false;
+                return true;
             }
         },
         inverted,

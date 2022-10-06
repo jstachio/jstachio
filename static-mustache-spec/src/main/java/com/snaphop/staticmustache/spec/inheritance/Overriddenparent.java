@@ -1,13 +1,13 @@
-package com.snaphop.staticmustache.spec.partials;
+package com.snaphop.staticmustache.spec.inheritance;
 
 import com.snaphop.staticmustache.spec.SpecModel;
 import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.github.sviperll.staticmustache.TemplateMapping;
 import com.github.sviperll.staticmustache.Template;
 
-@GenerateRenderableAdapter(template = "partials/InlineIndentation.mustache")
+@GenerateRenderableAdapter(template = "inheritance/Overriddenparent.mustache")
 @TemplateMapping({
-@Template(name="partial", template=">\n>"),
+@Template(name="parent", template="{{$stuff}}...{{/stuff}}"),
 })
-public class InlineIndentation extends SpecModel {
+public class Overriddenparent extends SpecModel {
 }
