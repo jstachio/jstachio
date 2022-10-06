@@ -184,6 +184,10 @@ public class TemplateCompilerContext {
          */
         while (it.hasNext()) {
             String n = it.next();
+            /*
+             * Inverted dotted fields can actually not exist.
+             * TODO add compiler flag on whether or not to support this
+             */
             if (childType == ContextType.INVERTED) {
                 try {
                     enclosing = _getChildRender(n, childType, enclosing, true);
@@ -205,10 +209,22 @@ public class TemplateCompilerContext {
         return _getChildRender(name, childType, enclosing, false);
     }
     
-    private RenderingContext _getChildRender(String name, ContextType childType, RenderingContext enclosing, boolean direct) throws ContextException {
+    private RenderingContext _getChildRender(String name, ContextType childType, RenderingContext enclosing, boolean direct) 
+            throws ContextException {
+        try {
+            return __getChildRender(name, childType, enclosing, direct);
+        }
+        catch (TypeException ex) {
+            throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
+        }
+    }
+        
+    private RenderingContext __getChildRender(String name, ContextType childType, RenderingContext enclosing, boolean direct) 
+            throws ContextException, TypeException {
         if (name.equals(".")) {
             return switch (childType) {
-            case ESCAPED_VAR, UNESCAPED_VAR, PATH, SECTION ->  enclosing;
+            case ESCAPED_VAR, UNESCAPED_VAR, PATH -> enclosing;
+            case SECTION ->  generator.createRenderingContext(childType, enclosing.currentExpression(), enclosing);
             case INVERTED -> throw new ContextException("Current section can't be inverted");
             case PARENT_PARTIAL, ROOT -> throw new ContextException("Current section can't be parent");
             case PARTIAL -> throw new ContextException("Current section can't be partial");
@@ -233,17 +249,13 @@ public class TemplateCompilerContext {
             throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }
         RenderingContext enclosedField;
-        try {
-            enclosedField = switch (childType) {
-            case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
-            case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
-            case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
-            case PARTIAL -> throw new IllegalStateException("partial not allowed here");
-            case BLOCK -> throw new IllegalStateException("block not allowed here");
-            };
-        } catch (TypeException ex) {
-            throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
-        }
+        enclosedField = switch (childType) {
+        case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
+        case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
+        case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
+        case PARTIAL -> throw new IllegalStateException("partial not allowed here");
+        case BLOCK -> throw new IllegalStateException("block not allowed here");
+        };
         return enclosedField;
     }
 

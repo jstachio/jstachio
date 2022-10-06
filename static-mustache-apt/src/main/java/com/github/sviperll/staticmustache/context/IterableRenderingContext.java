@@ -71,7 +71,7 @@ class IterableRenderingContext implements RenderingContext {
     
     @Override
     public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
-        return null;
+        return parent.getDataDirectly(name);
     }
 
     @Override
