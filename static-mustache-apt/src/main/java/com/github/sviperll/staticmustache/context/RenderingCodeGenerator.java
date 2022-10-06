@@ -75,12 +75,12 @@ public class RenderingCodeGenerator {
         this.templateFormatElement = formatClass;
 
     }
-    String generateRenderingCode(JavaExpression expression, VariableContext variables) throws TypeException {
+    String generateRenderingCode(JavaExpression expression, VariableContext variables, String path) throws TypeException {
         TypeMirror type = expression.type();
         final String text = expression.text();
-        String path = expression.path();
+        //String path = expression.path();
         if (type instanceof WildcardType) {
-            return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables);
+            return generateRenderingCode(javaModel.expression(text, ((WildcardType)type).getExtendsBound()), variables, path);
         }
         
         
@@ -88,7 +88,7 @@ public class RenderingCodeGenerator {
             return text + ".render(" + variables.unescapedWriter()  + "); ";
         }
         
-        KnownType knownType = javaModel.resolvetype(type).orElse(null);
+        KnownType knownType = javaModel.resolveType(type).orElse(null);
         
         if (knownType != null && knownType instanceof ObjectType) {
             String cname = knownType.renderClassName() + ".class";

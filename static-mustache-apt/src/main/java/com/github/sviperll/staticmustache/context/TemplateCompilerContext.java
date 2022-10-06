@@ -70,12 +70,30 @@ public class TemplateCompilerContext {
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
         JavaExpression entry = context.currentExpression();
+        String path =  enclosedRelation != null ? enclosedRelation.name() : "";
         try {
-            return generator.generateRenderingCode(entry, variables);
+            return generator.generateRenderingCode(entry, variables, path);
         } catch (TypeException ex) {
             throw new ContextException("Unable to render field", ex);
         }
     }
+    
+//    private String path() {
+//        List<String> segments = new ArrayList<>();
+//        var e = enclosedRelation;
+//        while (e != null) {
+//            String n = e.name();
+//            if (! n.isBlank()) {
+//                segments.add(e.name());
+//            }
+//            var pe = parentContext().enclosedRelation;
+//            if (pe == e || pe == this.enclosedRelation)
+//                break;
+//            e = pe;
+//        }
+//        Collections.reverse(segments);
+//        return segments.stream().collect(Collectors.joining("."));
+//    }
 
     public String renderingCode() throws ContextException {
         return beginSectionRenderingCode() + sectionBodyRenderingCode(variables) + endSectionRenderingCode();

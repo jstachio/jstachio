@@ -173,9 +173,9 @@ public class JavaLanguageModel {
         throw new IllegalStateException();
         
     }
-    public Optional<KnownType> resolvetype(TypeMirror type) throws TypeException {
+    public Optional<KnownType> resolveType(TypeMirror type) throws TypeException {
         if (type instanceof WildcardType) {
-            return resolvetype(((WildcardType)type).getExtendsBound());
+            return resolveType(((WildcardType)type).getExtendsBound());
         }
         else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
             return  Optional.of(knownTypes._Renderable);

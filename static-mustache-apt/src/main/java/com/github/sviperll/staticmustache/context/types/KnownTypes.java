@@ -122,9 +122,9 @@ public class KnownTypes {
         _Error = b.objectType(Error.class);
         _RuntimeException = b.objectType(RuntimeException.class);
         _Optional = b.objectType(Optional.class);
+        _MapNode = b.objectType(MapNode.class); // MapNode needs to be above _Iterable
         _Iterable = b.objectType(Iterable.class);
         _Map = b.objectType(Map.class);
-        _MapNode = b.objectType(MapNode.class);
         _UUID = b.objectType(UUID.class);
         _URI = b.objectType(URI.class);
         _URL = b.objectType(URL.class);
