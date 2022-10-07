@@ -14,7 +14,7 @@ public class ParentTest {
                 before child
                 CHILD start
                 GRAND CHILD start
-                PARAM message from child.mustache
+                PARAM message from parent: Surprise hello 1!
                 GRAND CHILD end
                 PARAM message from parent: Surprise hello 1!
                 no replace
