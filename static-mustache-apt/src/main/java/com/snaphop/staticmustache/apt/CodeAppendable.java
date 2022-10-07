@@ -2,6 +2,7 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.function.Consumer;
 
 public interface CodeAppendable extends Appendable {
     
@@ -23,22 +24,24 @@ public interface CodeAppendable extends Appendable {
 
     public void disableOutput();
     
-    public enum HiddenCodeAppendable implements CodeAppendable {
+    public record HiddenCodeAppendable(Consumer<CharSequence> sink)   implements CodeAppendable {
         
-        INSTANCE;
         
         @Override
         public HiddenCodeAppendable append(CharSequence csq) {
+            sink.accept(csq);
             return this;
         }
 
         @Override
         public HiddenCodeAppendable append(CharSequence csq, int start, int end) {
+            sink.accept(csq);
             return this;
         }
 
         @Override
         public HiddenCodeAppendable append(char c)  {
+            append(String.valueOf(c));
             return this;
         }
 

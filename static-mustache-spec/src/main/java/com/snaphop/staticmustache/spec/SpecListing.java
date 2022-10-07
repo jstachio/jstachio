@@ -1,6 +1,7 @@
 package com.snaphop.staticmustache.spec;
 
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,6 +30,12 @@ public interface SpecListing {
     
     boolean enabled();
     
+    Map<String,String> partials();
+    
+    default List<SpecPartial> specPartials() {
+        return partials().entrySet().stream().map(e -> new SpecPartial(e.getKey(), e.getValue())).toList();
+    }
+    
     default String render() {
         return render(createContext());
     }
@@ -55,6 +62,12 @@ public interface SpecListing {
                 Desc: {{description}}
                 
                 json: {{json}}
+                
+                <partials>
+                {{#specPartials}}
+                    <{{name}}>{{path}}</{{name}}>
+                {{/specPartials}}
+                </partials>
                 
                 <template>{{template}}</template>
                 

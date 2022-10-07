@@ -1,16 +1,16 @@
 package com.snaphop.staticmustache.spec;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.util.Collection;
 import java.util.EnumSet;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.snaphop.staticmustache.spec.inheritance.InheritanceSpecTemplate;
 
-@Ignore
 @RunWith(Parameterized.class)
 public class SpecInheritanceTest extends AbstractSpecTest<InheritanceSpecTemplate> {
 
@@ -29,8 +29,20 @@ public class SpecInheritanceTest extends AbstractSpecTest<InheritanceSpecTemplat
     InheritanceSpecTemplate specItem() {
         return this.specItem;
     }
-
-    String render(InheritanceSpecTemplate specTemplate) {
-        return specTemplate.render();
+    
+    @Override
+    protected String adjustResult(InheritanceSpecTemplate specItem, String result, Result type) {
+        return switch(specItem) {
+        case INHERIT -> result.trim();
+        case BLOCK_SCOPE -> ignoreTemplate("Do not correctly support block scope");
+        case OVERRIDE_PARENT_WITH_NEWLINES -> result.trim();
+        default -> result;
+        };
     }
+    
+    private String ignoreTemplate(String message) {
+        assumeTrue(message, false);
+        return "FAIL";
+    }
+    
 }

@@ -11,7 +11,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "The greater-than operator should expand to the named partial.",
         "{}",
         "\"{{>text}}\"",
-        "\"from partial\""){
+        "\"from partial\"",
+        Map.of(
+            
+            "text",
+            "from partial"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicBehavior();
             m.putAll(o);
@@ -26,7 +32,9 @@ public enum PartialsSpecTemplate implements SpecListing {
         "The empty string should be used when the named partial is not found.",
         "{}",
         "\"{{>text}}\"",
-        "\"\""){
+        "\"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             return "DISABLED TEST";
         }
@@ -38,7 +46,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "The greater-than operator should operate within the current context.",
         "{\"text\":\"content\"}",
         "\"{{>partial}}\"",
-        "\"*content*\""){
+        "\"*content*\"",
+        Map.of(
+            
+            "partial",
+            "*{{text}}*"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Context();
             m.putAll(o);
@@ -53,7 +67,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "The greater-than operator should properly recurse.",
         "{\"content\":\"X\",\"nodes\":[{\"content\":\"Y\",\"nodes\":[]}]}",
         "{{>node}}",
-        "X<Y<>>"){
+        "X<Y<>>",
+        Map.of(
+            
+            "node",
+            "{{content}}<{{#nodes}}{{>node}}{{/nodes}}>"
+        )
+        ){
         public String render(Map<String, Object> o) {
             return "DISABLED TEST";
         }
@@ -65,7 +85,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "The greater-than operator should not alter surrounding whitespace.",
         "{}",
         "| {{>partial}} |",
-        "| \t|\t |"){
+        "| \t|\t |",
+        Map.of(
+            
+            "partial",
+            "\t|\t"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new SurroundingWhitespace();
             m.putAll(o);
@@ -80,7 +106,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "Whitespace should be left untouched.",
         "{\"data\":\"|\"}",
         "  {{data}}  {{> partial}}\n",
-        "  |  >\n>\n"){
+        "  |  >\n>\n",
+        Map.of(
+            
+            "partial",
+            ">\n>"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new InlineIndentation();
             m.putAll(o);
@@ -95,7 +127,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "\"\\r\\n\" should be considered a newline for standalone tags.",
         "{}",
         "|\r\n{{>partial}}\r\n|",
-        "|\r\n>|"){
+        "|\r\n>|",
+        Map.of(
+            
+            "partial",
+            ">"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneLineEndings();
             m.putAll(o);
@@ -110,7 +148,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "Standalone tags should not require a newline to precede them.",
         "{}",
         "  {{>partial}}\n>",
-        "  >\n  >>"){
+        "  >\n  >>",
+        Map.of(
+            
+            "partial",
+            ">\n>"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutPreviousLine();
             m.putAll(o);
@@ -125,7 +169,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "Standalone tags should not require a newline to follow them.",
         "{}",
         ">\n  {{>partial}}",
-        ">\n  >\n  >"){
+        ">\n  >\n  >",
+        Map.of(
+            
+            "partial",
+            ">\n>"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutNewline();
             m.putAll(o);
@@ -140,7 +190,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "Each line of the partial should be indented before rendering.",
         "{\"content\":\"<\\n->\"}",
         "\\\n {{>partial}}\n/\n",
-        "\\\n |\n <\n->\n |\n/\n"){
+        "\\\n |\n <\n->\n |\n/\n",
+        Map.of(
+            
+            "partial",
+            "|\n{{{content}}}\n|\n"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneIndentation();
             m.putAll(o);
@@ -155,7 +211,13 @@ public enum PartialsSpecTemplate implements SpecListing {
         "Superfluous in-tag whitespace should be ignored.",
         "{\"boolean\":true}",
         "|{{> partial }}|",
-        "|[]|"){
+        "|[]|",
+        Map.of(
+            
+            "partial",
+            "[]"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new PaddingWhitespace();
             m.putAll(o);
@@ -171,6 +233,7 @@ public enum PartialsSpecTemplate implements SpecListing {
     private final String json;
     private final String template;
     private final String expected;
+    private final Map<String,String> partials;
 
     private PartialsSpecTemplate(
         Class<?> modelClass,
@@ -179,7 +242,8 @@ public enum PartialsSpecTemplate implements SpecListing {
         String description,
         String json,
         String template,
-        String expected) {
+        String expected,
+        Map<String,String> partials) {
         this.modelClass = modelClass;
         this.group = group;
         this.title = title;
@@ -187,6 +251,7 @@ public enum PartialsSpecTemplate implements SpecListing {
         this.json = json;
         this.template = template;
         this.expected = expected;
+        this.partials = partials;
     }
     public Class<?> modelClass() {
         return modelClass;
@@ -211,6 +276,9 @@ public enum PartialsSpecTemplate implements SpecListing {
     }
     public boolean enabled() {
         return modelClass != null;
+    }
+    public Map<String,String> partials() {
+        return this.partials;
     }
     public abstract String render(Map<String, Object> o);
 

@@ -11,7 +11,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Mustache-free templates should render as-is.",
         "{}",
         "Hello from {Mustache}!\n",
-        "Hello from {Mustache}!\n"){
+        "Hello from {Mustache}!\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new NoInterpolation();
             m.putAll(o);
@@ -26,7 +28,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Unadorned tags should interpolate content into the template.",
         "{\"subject\":\"world\"}",
         "Hello, {{subject}}!\n",
-        "Hello, world!\n"){
+        "Hello, world!\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicInterpolation();
             m.putAll(o);
@@ -41,7 +45,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Basic interpolation should be HTML escaped.",
         "{\"forbidden\":\"& \\\" < >\"}",
         "These characters should be HTML escaped: {{forbidden}}\n",
-        "These characters should be HTML escaped: &amp; &quot; &lt; &gt;\n"){
+        "These characters should be HTML escaped: &amp; &quot; &lt; &gt;\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new HTMLEscaping();
             m.putAll(o);
@@ -56,7 +62,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Triple mustaches should interpolate without HTML escaping.",
         "{\"forbidden\":\"& \\\" < >\"}",
         "These characters should not be HTML escaped: {{{forbidden}}}\n",
-        "These characters should not be HTML escaped: & \" < >\n"){
+        "These characters should not be HTML escaped: & \" < >\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustache();
             m.putAll(o);
@@ -71,7 +79,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Ampersand should interpolate without HTML escaping.",
         "{\"forbidden\":\"& \\\" < >\"}",
         "These characters should not be HTML escaped: {{&forbidden}}\n",
-        "These characters should not be HTML escaped: & \" < >\n"){
+        "These characters should not be HTML escaped: & \" < >\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Ampersand();
             m.putAll(o);
@@ -86,7 +96,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
         "\"{{mph}} miles an hour!\"",
-        "\"85 miles an hour!\""){
+        "\"85 miles an hour!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicIntegerInterpolation();
             m.putAll(o);
@@ -101,7 +113,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
         "\"{{{mph}}} miles an hour!\"",
-        "\"85 miles an hour!\""){
+        "\"85 miles an hour!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheIntegerInterpolation();
             m.putAll(o);
@@ -116,7 +130,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Integers should interpolate seamlessly.",
         "{\"mph\":85}",
         "\"{{&mph}} miles an hour!\"",
-        "\"85 miles an hour!\""){
+        "\"85 miles an hour!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandIntegerInterpolation();
             m.putAll(o);
@@ -131,7 +147,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
         "\"{{power}} jiggawatts!\"",
-        "\"1.21 jiggawatts!\""){
+        "\"1.21 jiggawatts!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicDecimalInterpolation();
             m.putAll(o);
@@ -146,7 +164,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
         "\"{{{power}}} jiggawatts!\"",
-        "\"1.21 jiggawatts!\""){
+        "\"1.21 jiggawatts!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheDecimalInterpolation();
             m.putAll(o);
@@ -161,7 +181,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Decimals should interpolate seamlessly with proper significance.",
         "{\"power\":1.21}",
         "\"{{&power}} jiggawatts!\"",
-        "\"1.21 jiggawatts!\""){
+        "\"1.21 jiggawatts!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandDecimalInterpolation();
             m.putAll(o);
@@ -176,7 +198,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
         "I ({{cannot}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicNullInterpolation();
             m.putAll(o);
@@ -191,7 +215,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
         "I ({{{cannot}}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheNullInterpolation();
             m.putAll(o);
@@ -206,7 +232,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Nulls should interpolate as the empty string.",
         "{\"cannot\":null}",
         "I ({{&cannot}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandNullInterpolation();
             m.putAll(o);
@@ -221,7 +249,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Failed context lookups should default to empty strings.",
         "{}",
         "I ({{cannot}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new BasicContextMissInterpolation();
             m.putAll(o);
@@ -236,7 +266,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Failed context lookups should default to empty strings.",
         "{}",
         "I ({{{cannot}}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheContextMissInterpolation();
             m.putAll(o);
@@ -251,7 +283,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Failed context lookups should default to empty strings.",
         "{}",
         "I ({{&cannot}}) be seen!",
-        "I () be seen!"){
+        "I () be seen!",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandContextMissInterpolation();
             m.putAll(o);
@@ -266,7 +300,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
         "\"{{person.name}}\" == \"{{#person}}{{name}}{{/person}}\"",
-        "\"Joe\" == \"Joe\""){
+        "\"Joe\" == \"Joe\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBasicInterpolation();
             m.putAll(o);
@@ -281,7 +317,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
         "\"{{{person.name}}}\" == \"{{#person}}{{{name}}}{{/person}}\"",
-        "\"Joe\" == \"Joe\""){
+        "\"Joe\" == \"Joe\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesTripleMustacheInterpolation();
             m.putAll(o);
@@ -296,7 +334,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Dotted names should be considered a form of shorthand for sections.",
         "{\"person\":{\"name\":\"Joe\"}}",
         "\"{{&person.name}}\" == \"{{#person}}{{&name}}{{/person}}\"",
-        "\"Joe\" == \"Joe\""){
+        "\"Joe\" == \"Joe\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesAmpersandInterpolation();
             m.putAll(o);
@@ -311,7 +351,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Dotted names should be functional to any level of nesting.",
         "{\"a\":{\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Phil\"}}}}}}",
         "\"{{a.b.c.d.e.name}}\" == \"Phil\"",
-        "\"Phil\" == \"Phil\""){
+        "\"Phil\" == \"Phil\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesArbitraryDepth();
             m.putAll(o);
@@ -326,7 +368,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Any falsey value prior to the last part of the name should yield ''.",
         "{\"a\":{}}",
         "\"{{a.b.c}}\" == \"\"",
-        "\"\" == \"\""){
+        "\"\" == \"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChains();
             m.putAll(o);
@@ -341,7 +385,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Each part of a dotted name should resolve only against its parent.",
         "{\"a\":{\"b\":{}},\"c\":{\"name\":\"Jim\"}}",
         "\"{{a.b.c.name}}\" == \"\"",
-        "\"\" == \"\""){
+        "\"\" == \"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChainResolution();
             m.putAll(o);
@@ -356,7 +402,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "The first part of a dotted name should resolve as any other name.",
         "{\"a\":{\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Phil\"}}}}},\"b\":{\"c\":{\"d\":{\"e\":{\"name\":\"Wrong\"}}}}}",
         "\"{{#a}}{{b.c.d.e.name}}{{/a}}\" == \"Phil\"",
-        "\"Phil\" == \"Phil\""){
+        "\"Phil\" == \"Phil\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesInitialResolution();
             m.putAll(o);
@@ -371,7 +419,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Dotted names should be resolved against former resolutions.",
         "{\"a\":{\"b\":{}},\"b\":{\"c\":\"ERROR\"}}",
         "{{#a}}{{b.c}}{{/a}}",
-        ""){
+        "",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesContextPrecedence();
             m.putAll(o);
@@ -386,7 +436,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "| {{string}} |",
-        "| --- |"){
+        "| --- |",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new InterpolationSurroundingWhitespace();
             m.putAll(o);
@@ -401,7 +453,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "| {{{string}}} |",
-        "| --- |"){
+        "| --- |",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheSurroundingWhitespace();
             m.putAll(o);
@@ -416,7 +470,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "| {{&string}} |",
-        "| --- |"){
+        "| --- |",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandSurroundingWhitespace();
             m.putAll(o);
@@ -431,7 +487,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "  {{string}}\n",
-        "  ---\n"){
+        "  ---\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new InterpolationStandalone();
             m.putAll(o);
@@ -446,7 +504,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "  {{{string}}}\n",
-        "  ---\n"){
+        "  ---\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheStandalone();
             m.putAll(o);
@@ -461,7 +521,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Standalone interpolation should not alter surrounding whitespace.",
         "{\"string\":\"---\"}",
         "  {{&string}}\n",
-        "  ---\n"){
+        "  ---\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandStandalone();
             m.putAll(o);
@@ -476,7 +538,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
         "|{{ string }}|",
-        "|---|"){
+        "|---|",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new InterpolationWithPadding();
             m.putAll(o);
@@ -491,7 +555,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
         "|{{{ string }}}|",
-        "|---|"){
+        "|---|",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustacheWithPadding();
             m.putAll(o);
@@ -506,7 +572,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
         "Superfluous in-tag whitespace should be ignored.",
         "{\"string\":\"---\"}",
         "|{{& string }}|",
-        "|---|"){
+        "|---|",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new AmpersandWithPadding();
             m.putAll(o);
@@ -522,6 +590,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
     private final String json;
     private final String template;
     private final String expected;
+    private final Map<String,String> partials;
 
     private InterpolationSpecTemplate(
         Class<?> modelClass,
@@ -530,7 +599,8 @@ public enum InterpolationSpecTemplate implements SpecListing {
         String description,
         String json,
         String template,
-        String expected) {
+        String expected,
+        Map<String,String> partials) {
         this.modelClass = modelClass;
         this.group = group;
         this.title = title;
@@ -538,6 +608,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
         this.json = json;
         this.template = template;
         this.expected = expected;
+        this.partials = partials;
     }
     public Class<?> modelClass() {
         return modelClass;
@@ -562,6 +633,9 @@ public enum InterpolationSpecTemplate implements SpecListing {
     }
     public boolean enabled() {
         return modelClass != null;
+    }
+    public Map<String,String> partials() {
+        return this.partials;
     }
     public abstract String render(Map<String, Object> o);
 

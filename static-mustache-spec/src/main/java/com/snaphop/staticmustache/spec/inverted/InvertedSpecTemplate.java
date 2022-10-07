@@ -11,7 +11,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Falsey sections should have their contents rendered.",
         "{\"boolean\":false}",
         "\"{{^boolean}}This should be rendered.{{/boolean}}\"",
-        "\"This should be rendered.\""){
+        "\"This should be rendered.\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Falsey();
             m.putAll(o);
@@ -26,7 +28,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Truthy sections should have their contents omitted.",
         "{\"boolean\":true}",
         "\"{{^boolean}}This should not be rendered.{{/boolean}}\"",
-        "\"\""){
+        "\"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Truthy();
             m.putAll(o);
@@ -41,7 +45,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Null is falsey.",
         "{\"null\":null}",
         "\"{{^null}}This should be rendered.{{/null}}\"",
-        "\"This should be rendered.\""){
+        "\"This should be rendered.\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Nullisfalsey();
             m.putAll(o);
@@ -56,7 +62,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Objects and hashes should behave like truthy values.",
         "{\"context\":{\"name\":\"Joe\"}}",
         "\"{{^context}}Hi {{name}}.{{/context}}\"",
-        "\"\""){
+        "\"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Context();
             m.putAll(o);
@@ -71,7 +79,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Lists should behave like truthy values.",
         "{\"list\":[{\"n\":1},{\"n\":2},{\"n\":3}]}",
         "\"{{^list}}{{n}}{{/list}}\"",
-        "\"\""){
+        "\"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new List();
             m.putAll(o);
@@ -86,7 +96,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Empty lists should behave like falsey values.",
         "{\"list\":[]}",
         "\"{{^list}}Yay lists!{{/list}}\"",
-        "\"Yay lists!\""){
+        "\"Yay lists!\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new EmptyList();
             m.putAll(o);
@@ -101,7 +113,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Multiple inverted sections per template should be permitted.",
         "{\"bool\":false,\"two\":\"second\"}",
         "{{^bool}}\n* first\n{{/bool}}\n* {{two}}\n{{^bool}}\n* third\n{{/bool}}\n",
-        "* first\n* second\n* third\n"){
+        "* first\n* second\n* third\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Doubled();
             m.putAll(o);
@@ -116,7 +130,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Nested falsey sections should have their contents rendered.",
         "{\"bool\":false}",
         "| A {{^bool}}B {{^bool}}C{{/bool}} D{{/bool}} E |",
-        "| A B C D E |"){
+        "| A B C D E |",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new NestedFalsey();
             m.putAll(o);
@@ -131,7 +147,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Nested truthy sections should be omitted.",
         "{\"bool\":true}",
         "| A {{^bool}}B {{^bool}}C{{/bool}} D{{/bool}} E |",
-        "| A  E |"){
+        "| A  E |",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new NestedTruthy();
             m.putAll(o);
@@ -146,7 +164,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Failed context lookups should be considered falsey.",
         "{}",
         "[{{^missing}}Cannot find key 'missing'!{{/missing}}]",
-        "[Cannot find key 'missing'!]"){
+        "[Cannot find key 'missing'!]",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new ContextMisses();
             m.putAll(o);
@@ -161,7 +181,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Dotted names should be valid for Inverted Section tags.",
         "{\"a\":{\"b\":{\"c\":true}}}",
         "\"{{^a.b.c}}Not Here{{/a.b.c}}\" == \"\"",
-        "\"\" == \"\""){
+        "\"\" == \"\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesTruthy();
             m.putAll(o);
@@ -176,7 +198,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Dotted names should be valid for Inverted Section tags.",
         "{\"a\":{\"b\":{\"c\":false}}}",
         "\"{{^a.b.c}}Not Here{{/a.b.c}}\" == \"Not Here\"",
-        "\"Not Here\" == \"Not Here\""){
+        "\"Not Here\" == \"Not Here\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesFalsey();
             m.putAll(o);
@@ -191,7 +215,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Dotted names that cannot be resolved should be considered falsey.",
         "{\"a\":{}}",
         "\"{{^a.b.c}}Not Here{{/a.b.c}}\" == \"Not Here\"",
-        "\"Not Here\" == \"Not Here\""){
+        "\"Not Here\" == \"Not Here\"",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new DottedNamesBrokenChains();
             m.putAll(o);
@@ -206,7 +232,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Inverted sections should not alter surrounding whitespace.",
         "{\"boolean\":false}",
         " | {{^boolean}}\t|\t{{/boolean}} | \n",
-        " | \t|\t | \n"){
+        " | \t|\t | \n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new SurroundingWhitespace();
             m.putAll(o);
@@ -221,7 +249,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Inverted should not alter internal whitespace.",
         "{\"boolean\":false}",
         " | {{^boolean}} {{! Important Whitespace }}\n {{/boolean}} | \n",
-        " |  \n  | \n"){
+        " |  \n  | \n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new InternalWhitespace();
             m.putAll(o);
@@ -236,7 +266,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Single-line sections should not alter surrounding whitespace.",
         "{\"boolean\":false}",
         " {{^boolean}}NO{{/boolean}}\n {{^boolean}}WAY{{/boolean}}\n",
-        " NO\n WAY\n"){
+        " NO\n WAY\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new IndentedInlineSections();
             m.putAll(o);
@@ -251,7 +283,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Standalone lines should be removed from the template.",
         "{\"boolean\":false}",
         "| This Is\n{{^boolean}}\n|\n{{/boolean}}\n| A Line\n",
-        "| This Is\n|\n| A Line\n"){
+        "| This Is\n|\n| A Line\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneLines();
             m.putAll(o);
@@ -266,7 +300,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Standalone indented lines should be removed from the template.",
         "{\"boolean\":false}",
         "| This Is\n  {{^boolean}}\n|\n  {{/boolean}}\n| A Line\n",
-        "| This Is\n|\n| A Line\n"){
+        "| This Is\n|\n| A Line\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneIndentedLines();
             m.putAll(o);
@@ -281,7 +317,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "\"\\r\\n\" should be considered a newline for standalone tags.",
         "{\"boolean\":false}",
         "|\r\n{{^boolean}}\r\n{{/boolean}}\r\n|",
-        "|\r\n|"){
+        "|\r\n|",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneLineEndings();
             m.putAll(o);
@@ -296,7 +334,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Standalone tags should not require a newline to precede them.",
         "{\"boolean\":false}",
         "  {{^boolean}}\n^{{/boolean}}\n/",
-        "^\n/"){
+        "^\n/",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutPreviousLine();
             m.putAll(o);
@@ -311,7 +351,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Standalone tags should not require a newline to follow them.",
         "{\"boolean\":false}",
         "^{{^boolean}}\n/\n  {{/boolean}}",
-        "^\n/\n"){
+        "^\n/\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new StandaloneWithoutNewline();
             m.putAll(o);
@@ -326,7 +368,9 @@ public enum InvertedSpecTemplate implements SpecListing {
         "Superfluous in-tag whitespace should be ignored.",
         "{\"boolean\":false}",
         "|{{^ boolean }}={{/ boolean }}|",
-        "|=|"){
+        "|=|",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Padding();
             m.putAll(o);
@@ -342,6 +386,7 @@ public enum InvertedSpecTemplate implements SpecListing {
     private final String json;
     private final String template;
     private final String expected;
+    private final Map<String,String> partials;
 
     private InvertedSpecTemplate(
         Class<?> modelClass,
@@ -350,7 +395,8 @@ public enum InvertedSpecTemplate implements SpecListing {
         String description,
         String json,
         String template,
-        String expected) {
+        String expected,
+        Map<String,String> partials) {
         this.modelClass = modelClass;
         this.group = group;
         this.title = title;
@@ -358,6 +404,7 @@ public enum InvertedSpecTemplate implements SpecListing {
         this.json = json;
         this.template = template;
         this.expected = expected;
+        this.partials = partials;
     }
     public Class<?> modelClass() {
         return modelClass;
@@ -382,6 +429,9 @@ public enum InvertedSpecTemplate implements SpecListing {
     }
     public boolean enabled() {
         return modelClass != null;
+    }
+    public Map<String,String> partials() {
+        return this.partials;
     }
     public abstract String render(Map<String, Object> o);
 

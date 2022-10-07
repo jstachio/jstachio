@@ -11,7 +11,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Default content should be rendered if the block isn't overridden",
         "{}",
         "{{$title}}Default title{{/title}}\n",
-        "Default title\n"){
+        "Default title\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Default();
             m.putAll(o);
@@ -26,7 +28,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Default content renders variables",
         "{\"bar\":\"baz\"}",
         "{{$foo}}default {{bar}} content{{/foo}}\n",
-        "default baz content\n"){
+        "default baz content\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Variable();
             m.putAll(o);
@@ -41,7 +45,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Default content renders triple mustache variables",
         "{\"bar\":\"<baz>\"}",
         "{{$foo}}default {{{bar}}} content{{/foo}}\n",
-        "default <baz> content\n"){
+        "default <baz> content\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new TripleMustache();
             m.putAll(o);
@@ -56,7 +62,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Default content renders sections",
         "{\"bar\":{\"baz\":\"qux\"}}",
         "{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}\n",
-        "default qux content\n"){
+        "default qux content\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new Sections();
             m.putAll(o);
@@ -65,18 +73,17 @@ public enum InheritanceSpecTemplate implements SpecListing {
         }
     },
     NEGATIVE_SECTIONS(
-        NegativeSections.class,
+        null,
         "inheritance",
         "Negative Sections",
         "Default content renders negative sections",
         "{\"baz\":\"three\"}",
         "{{$foo}}default {{^bar}}{{baz}}{{/bar}} content{{/foo}}\n",
-        "default three content\n"){
+        "default three content\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
-            var m = new NegativeSections();
-            m.putAll(o);
-            var r = NegativeSectionsRenderer.of(m);
-            return r.renderString();
+            return "DISABLED TEST";
         }
     },
     MUSTACHE_INJECTION(
@@ -86,7 +93,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Mustache injection in default content",
         "{\"bar\":{\"baz\":\"{{qux}}\"}}",
         "{{$foo}}default {{#bar}}{{baz}}{{/bar}} content{{/foo}}\n",
-        "default {{qux}} content\n"){
+        "default {{qux}} content\n",
+        Map.of()
+        ){
         public String render(Map<String, Object> o) {
             var m = new MustacheInjection();
             m.putAll(o);
@@ -101,7 +110,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Default content rendered inside inherited templates",
         "{}",
         "{{<include}}{{/include}}\n",
-        "default content"){
+        "default content",
+        Map.of(
+            
+            "include",
+            "{{$foo}}default content{{/foo}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Inherit();
             m.putAll(o);
@@ -116,7 +131,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Overridden content",
         "{}",
         "{{<super}}{{$title}}sub template title{{/title}}{{/super}}",
-        "...sub template title..."){
+        "...sub template title...",
+        Map.of(
+            
+            "super",
+            "...{{$title}}Default title{{/title}}..."
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Overriddencontent();
             m.putAll(o);
@@ -131,7 +152,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Context does not override argument passed into parent",
         "{\"var\":\"var in data\"}",
         "{{<include}}{{$var}}var in template{{/var}}{{/include}}",
-        "var in template"){
+        "var in template",
+        Map.of(
+            
+            "include",
+            "{{$var}}var in include{{/var}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Datadoesnotoverrideblock();
             m.putAll(o);
@@ -146,7 +173,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Context does not override default content of block",
         "{\"var\":\"var in data\"}",
         "{{<include}}{{/include}}",
-        "var in include"){
+        "var in include",
+        Map.of(
+            
+            "include",
+            "{{$var}}var in include{{/var}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Datadoesnotoverrideblockdefault();
             m.putAll(o);
@@ -161,7 +194,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Overridden parent",
         "{}",
         "test {{<parent}}{{$stuff}}override{{/stuff}}{{/parent}}",
-        "test override"){
+        "test override",
+        Map.of(
+            
+            "parent",
+            "{{$stuff}}...{{/stuff}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Overriddenparent();
             m.putAll(o);
@@ -176,7 +215,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Two overridden parents with different content",
         "{}",
         "test {{<parent}}{{$stuff}}override1{{/stuff}}{{/parent}} {{<parent}}{{$stuff}}override2{{/stuff}}{{/parent}}\n",
-        "test |override1 default| |override2 default|\n"){
+        "test |override1 default| |override2 default|\n",
+        Map.of(
+            
+            "parent",
+            "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Twooverriddenparents();
             m.putAll(o);
@@ -191,7 +236,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Override parent with newlines",
         "{}",
         "{{<parent}}{{$ballmer}}\npeaked\n\n:(\n{{/ballmer}}{{/parent}}",
-        "peaked\n\n:(\n"){
+        "peaked\n\n:(\n",
+        Map.of(
+            
+            "parent",
+            "{{$ballmer}}peaking{{/ballmer}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Overrideparentwithnewlines();
             m.putAll(o);
@@ -206,7 +257,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Inherit indentation when overriding a parent",
         "{}",
         "{{<parent}}{{$nineties}}hammer time{{/nineties}}{{/parent}}",
-        "stop:\n  hammer time\n"){
+        "stop:\n  hammer time\n",
+        Map.of(
+            
+            "parent",
+            "stop:\n  {{$nineties}}collaborate and listen{{/nineties}}\n"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Inheritindentation();
             m.putAll(o);
@@ -221,7 +278,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Override one parameter but not the other",
         "{}",
         "{{<parent}}{{$stuff2}}override two{{/stuff2}}{{/parent}}",
-        "new default one, override two"){
+        "new default one, override two",
+        Map.of(
+            
+            "parent",
+            "{{$stuff}}new default one{{/stuff}}, {{$stuff2}}new default two{{/stuff2}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Onlyoneoverride();
             m.putAll(o);
@@ -236,7 +299,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Parent templates behave identically to partials when called with no parameters",
         "{}",
         "{{>parent}}|{{<parent}}{{/parent}}",
-        "default content|default content"){
+        "default content|default content",
+        Map.of(
+            
+            "parent",
+            "{{$foo}}default content{{/foo}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Parenttemplate();
             m.putAll(o);
@@ -251,7 +320,16 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Recursion in inherited templates",
         "{}",
         "{{<parent}}{{$foo}}override{{/foo}}{{/parent}}",
-        "override override override don't recurse"){
+        "override override override don't recurse",
+        Map.of(
+            
+            "parent",
+            "{{$foo}}default content{{/foo}} {{$bar}}{{<parent2}}{{/parent2}}{{/bar}}"
+            ,
+            "parent2",
+            "{{$foo}}parent2 default content{{/foo}} {{<parent}}{{$bar}}don't recurse{{/bar}}{{/parent}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             return "DISABLED TEST";
         }
@@ -263,7 +341,19 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Top-level substitutions take precedence in multi-level inheritance",
         "{}",
         "{{<parent}}{{$a}}c{{/a}}{{/parent}}",
-        "c"){
+        "c",
+        Map.of(
+            
+            "parent",
+            "{{<older}}{{$a}}p{{/a}}{{/older}}"
+            ,
+            "older",
+            "{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}"
+            ,
+            "grandParent",
+            "{{$a}}g{{/a}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Multilevelinheritance();
             m.putAll(o);
@@ -278,7 +368,19 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Top-level substitutions take precedence in multi-level inheritance",
         "{}",
         "{{<parent}}{{/parent}}",
-        "p"){
+        "p",
+        Map.of(
+            
+            "parent",
+            "{{<older}}{{$a}}p{{/a}}{{/older}}"
+            ,
+            "older",
+            "{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}"
+            ,
+            "grandParent",
+            "{{$a}}g{{/a}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Multilevelinheritancenosubchild();
             m.putAll(o);
@@ -293,7 +395,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Ignores text inside parent templates, but does parse $ tags",
         "{}",
         "{{<parent}} asdfasd {{$foo}}hmm{{/foo}} asdfasdfasdf {{/parent}}",
-        "hmm"){
+        "hmm",
+        Map.of(
+            
+            "parent",
+            "{{$foo}}default content{{/foo}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Textinsideparent();
             m.putAll(o);
@@ -308,7 +416,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Allows text inside a parent tag, but ignores it",
         "{}",
         "{{<parent}} asdfasd asdfasdfasdf {{/parent}}",
-        "default content"){
+        "default content",
+        Map.of(
+            
+            "parent",
+            "{{$foo}}default content{{/foo}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Textinsideparent1();
             m.putAll(o);
@@ -323,7 +437,13 @@ public enum InheritanceSpecTemplate implements SpecListing {
         "Scope of a substituted block is evaluated in the context of the parent template",
         "{\"fruit\":\"apples\",\"nested\":{\"fruit\":\"bananas\"}}",
         "{{<parent}}{{$block}}I say {{fruit}}.{{/block}}{{/parent}}",
-        "I say bananas."){
+        "I say bananas.",
+        Map.of(
+            
+            "parent",
+            "{{#nested}}{{$block}}You say {{fruit}}.{{/block}}{{/nested}}"
+        )
+        ){
         public String render(Map<String, Object> o) {
             var m = new Blockscope();
             m.putAll(o);
@@ -339,6 +459,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
     private final String json;
     private final String template;
     private final String expected;
+    private final Map<String,String> partials;
 
     private InheritanceSpecTemplate(
         Class<?> modelClass,
@@ -347,7 +468,8 @@ public enum InheritanceSpecTemplate implements SpecListing {
         String description,
         String json,
         String template,
-        String expected) {
+        String expected,
+        Map<String,String> partials) {
         this.modelClass = modelClass;
         this.group = group;
         this.title = title;
@@ -355,6 +477,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
         this.json = json;
         this.template = template;
         this.expected = expected;
+        this.partials = partials;
     }
     public Class<?> modelClass() {
         return modelClass;
@@ -379,6 +502,9 @@ public enum InheritanceSpecTemplate implements SpecListing {
     }
     public boolean enabled() {
         return modelClass != null;
+    }
+    public Map<String,String> partials() {
+        return this.partials;
     }
     public abstract String render(Map<String, Object> o);
 

@@ -118,8 +118,6 @@ public class SpecGenerator {
         }
     }
     
-    record SpecPartial(String name, String path) {}
-    
     record TemplateList(SpecGroup group, List<SpecItem> items) implements JavaItem {
         @Override
         public String name() {
@@ -258,7 +256,20 @@ public class SpecGenerator {
                         "{{desc}}",
                         "{{json}}",
                         "{{template}}", 
-                        "{{expected}}"){
+                        "{{expected}}",
+                        {{#hasPartials}}
+                        Map.of(
+                            {{#partials}}
+                            {{^-first}},{{/-first}}
+                            "{{name}}",
+                            "{{path}}"
+                            {{/partials}}
+                        )
+                        {{/hasPartials}}
+                        {{^hasPartials}}
+                        Map.of()
+                        {{/hasPartials}}
+                        ){
                         public String render(Map<String, Object> o) {
                             {{#enabled}}
                             var m = new {{className}}();
@@ -280,6 +291,7 @@ public class SpecGenerator {
                     private final String json;
                     private final String template;
                     private final String expected;
+                    private final Map<String,String> partials;
                     
                     private {{className}}(
                         Class<?> modelClass,
@@ -288,7 +300,8 @@ public class SpecGenerator {
                         String description,
                         String json,
                         String template,
-                        String expected) {
+                        String expected,
+                        Map<String,String> partials) {
                         this.modelClass = modelClass;
                         this.group = group;
                         this.title = title;
@@ -296,6 +309,7 @@ public class SpecGenerator {
                         this.json = json;
                         this.template = template;
                         this.expected = expected;
+                        this.partials = partials;
                     }
                     public Class<?> modelClass() {
                         return modelClass;
@@ -320,6 +334,9 @@ public class SpecGenerator {
                     }
                     public boolean enabled() {
                         return modelClass != null;
+                    }
+                    public Map<String,String> partials() {
+                        return this.partials;
                     }
                     public abstract String render(Map<String, Object> o);
                     

@@ -188,7 +188,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
         processTokens();
     }
     
-    protected void debug(String message) {
+    protected void debug(CharSequence message) {
         if (isDebug()) {
             System.out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
         }
@@ -223,7 +223,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
          */
 
         
-        boolean exitEarly = true;
+        //boolean exitEarly = true;
         
         ArrayDeque<PositionedToken<MustacheToken>> buf = new ArrayDeque<>();
 
@@ -237,9 +237,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             }
             
             if (size < 2 && ! eof) {
-                if(isDebug()) {
-                    debug("Waiting for more tokens");
-                }
+//                if(isDebug()) {
+//                    debug("Waiting for more tokens");
+//                }
                 return; // we need more tokens
             }
             
@@ -331,7 +331,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             // We have to put the tokens back into the queue
             buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
 
-            exitEarly = false;
+            //exitEarly = false;
             
             if (eof && ! previousTokens.isEmpty()) {
                 _processToken(previousTokens.poll());
@@ -345,11 +345,11 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
             
         } while(eof && !previousTokens.isEmpty());
         
-        if (exitEarly) {
-            if (isDebug()) {
-                debug("Whitespace removed. tokens: " + previousTokens + " buf: " + buf);
-            }
-        }
+//        if (exitEarly) {
+//            if (isDebug()) {
+//                debug("Whitespace removed. tokens: " + previousTokens + " buf: " + buf);
+//            }
+//        }
     }
     
     void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
@@ -476,7 +476,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                 }
                 p = createParameterPartial(name);
                 pushPartial(p);
-                _parentBlockOutput = HiddenCodeAppendable.INSTANCE;
+                _parentBlockOutput = new HiddenCodeAppendable(s -> {
+                    /* if (isDebug()) { debug(s);} */
+                } ); 
                 
             } catch (ContextException | IOException ex) {
                 throw new ProcessingException(position, ex);
@@ -590,6 +592,9 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     throw new IllegalStateException("partial is has not started for this context");
                 }
                 try (p) {
+                    if (isDebug()) {
+                        debug("Running partial. " + p);
+                    }
                     p.run();
                     popPartial();
                 } catch (IOException e) {
@@ -618,7 +623,7 @@ class TemplateCompiler implements TemplateCompilerLike, TokenProcessor<Positione
                     if (callingPartial == null) {
                         throw new IllegalStateException("missing partial info");
                     }
-                    var callingBlock = callingPartial.getBlockArgs().get(name);
+                    var callingBlock =  callingPartial.findBlock(name); //callingPartial.getBlockArgs().get(name);
                     if (callingBlock != null) {
                         output = callingBlock;
                     }

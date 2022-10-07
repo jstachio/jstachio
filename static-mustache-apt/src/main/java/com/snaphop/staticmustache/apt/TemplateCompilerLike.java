@@ -1,6 +1,7 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -58,7 +59,7 @@ interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
     }
     
     abstract class AbstractPartial implements AutoCloseable {
-        private final TemplateCompilerLike templateCompiler;
+        protected final TemplateCompilerLike templateCompiler;
         
         public AbstractPartial(TemplateCompilerLike templateCompiler) {
             super();
@@ -102,6 +103,26 @@ interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
         
         public Map<String, StringCodeAppendable> getBlockArgs() {
             return blockArgs;
+        }
+        
+        public StringCodeAppendable findBlock(String name) {
+            TemplateCompilerLike caller = templateCompiler;
+            ArrayDeque<TemplateCompilerLike> callers = new ArrayDeque<>();
+            callers.push(caller);
+            while ((caller = caller.getCaller()) != null) {
+                callers.push(caller);
+            }
+            for (var c : callers) {
+                var p = c.currentParameterPartial();
+                StringCodeAppendable b;
+                if (p != null) {
+                    b = p.getBlockArgs().get(name);
+                    if (b != null) {
+                        return b;
+                    }
+                }
+            }
+            return null;
         }
         
         @Override
