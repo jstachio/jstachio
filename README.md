@@ -1,18 +1,20 @@
 Static mustache
 ===============
 
-*N.B. this is the SnapHop fork*
+A typesafe Java Mustache templating engine.
 
-Logicless text templating engine.
-Templates are compiled alone with Java-sources.
-Value bindings are statically checked.
+Templates are compiled into readable Java source code and value bindings are statically checked.
+
+**N.B. this is the SnapHop fork of https://github.com/sviperll/static-mustache .**
+
+**This project will be renamed soon and heavily refactored. Updated link to come soon.**
 
 Features
 --------
 
  * Logicless templating language.
 
- * [Mustache](http://mustache.github.io/) syntax.
+ * [Mustache (v 1.3)](https://github.com/mustache/spec) syntax.
 
  * Templates are compiled into effective code
 
@@ -36,9 +38,9 @@ Use maven dependency:
 
 ```xml
     <dependency>
-        <groupId>com.github.sviperll</groupId>
+        <groupId>com.snaphop.staticmustache</groupId>
         <artifactId>static-mustache</artifactId>
-        <version>0.4</version>
+        <version>(see release tags)</version>
     </dependency>
 ```
 
@@ -48,6 +50,9 @@ Use maven dependency:
 SnapHop additions
 -----------------
 
+ * Full support of non-optional Mustache spec v1.3.0 requirements (including whitespace)
+   * Optional inheritance support with some caveats
+   * Optional lambda support with some differences due to static nature
  * RenderService extension point via ServiceLoader
  * Formatter for custom `toString` of variables
  * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
@@ -197,16 +202,14 @@ See `static-mustache-examples` project for more examples.
 Current differences from mustache
 ---------------------------------
 
- * Lambdas are not supported
- * Partials are not supported
+ * Lambdas are not supported (yet)
  * Delimiter redefinition is not supported
- * (snaphop) [Compound variables aka Handlebars path expressions are supported](https://github.com/samskivert/jmustache#compound-variables)
- 
+ * Whitespace in block tags is explicit (currently the [spec is ill-defined on this](https://github.com/mustache/spec/pull/131)) 
 
 Design
 ------
 
-The idea is to create templating engine combining [mustache](http://mustache.github.io/) logicless philosophy
+The idea is to create templating engine combining [mustache](https://jgonggrijp.gitlab.io/wontache/mustache.5.html) logicless philosophy
 with Java's single responsibility and static-typing.
 Full compile-time check of syntax and data-binding is the main requirement.
 
@@ -226,9 +229,9 @@ Missing fields are compile-time error.
 Interpretation of Java-types and values
 ---------------------------------------
 
-See [original mustache manual](http://mustache.github.io/mustache.5.html).
+See [mustache manual (v 1.3)](https://jgonggrijp.gitlab.io/wontache/mustache.5.html) .
 
-When some value is null nothing is rendered for this mustache-variable or mustache-section anyway.
+~~When some value is null nothing is rendered for this mustache-variable or mustache-section anyway.~~ Configurable via `@TemplateFormatterTypes` as well as the RenderService SPI.
 
 Boxed and unboxed booleans can be used for mustache-sections. Section is only rendered if value is true.
 
@@ -278,9 +281,3 @@ License
 -------
 
 Static mustache is under BSD 3-clause license.
-
-Flattr
-------
-
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sviperll&url=https%3A%2F%2Fgithub.com%2Fsviperll%2Fstatic-mustache&title=static-mustache&language=Java&tags=github&category=software)
-
