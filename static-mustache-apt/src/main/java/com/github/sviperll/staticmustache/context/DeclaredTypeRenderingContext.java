@@ -142,8 +142,11 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         if (!nameFound)
             return defaultValue;
         else {
-            throw new ContextException(MessageFormat.format("Refence to method with non-empty list of parameters: ''{0}'': only methods without parameters are supported",
-                                                            methodName));
+            //We need to return null to let the lambda context to be found
+            //TODO maybe declared type should check handle lambdas?
+            return null;
+//            throw new ContextException(MessageFormat.format("Refence to method with non-empty list of parameters: ''{0}'': only methods without parameters are supported",
+//                                                            methodName));
         }
     }
 

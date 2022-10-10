@@ -35,6 +35,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException.FieldNotFoundContextException;
+import com.github.sviperll.staticmustache.context.Lambda.Lambdas;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
@@ -42,25 +43,34 @@ import com.github.sviperll.staticmustache.context.ContextException.FieldNotFound
  */
 public class TemplateCompilerContext {
     private final TemplateStack templateStack;
+    private final Lambdas lambdas;
     private final @Nullable EnclosedRelation enclosedRelation;
     private final RenderingContext context;
     private final RenderingCodeGenerator generator;
     private final VariableContext variables;
     private final ContextType childType;
 
-    TemplateCompilerContext(TemplateStack templateStack, RenderingCodeGenerator processor, VariableContext variables, RenderingContext field,
+    TemplateCompilerContext(
+            TemplateStack templateStack,
+            Lambdas lambdas,
+            RenderingCodeGenerator processor, 
+            VariableContext variables, 
+            RenderingContext field,
             ContextType childType) {
-        this(templateStack, processor, variables, field, childType, null);
+        this(templateStack, lambdas,
+                processor, variables, field, childType, null);
     }
 
     private TemplateCompilerContext(
             TemplateStack templateStack, 
+            Lambdas lambdas,
             RenderingCodeGenerator processor, 
             VariableContext variables, 
             RenderingContext field, 
             ContextType childType,
              @Nullable EnclosedRelation parent) {
         this.templateStack = templateStack;
+        this.lambdas = lambdas;
         this.enclosedRelation = parent;
         this.context = field;
         this.generator = processor;
@@ -119,11 +129,11 @@ public class TemplateCompilerContext {
 
     public TemplateCompilerContext createForParameterPartial(String template) {
         // No enclosing relation for new partials
-        return new TemplateCompilerContext(templateStack.ofPartial(template), generator, variables, context, ContextType.PARENT_PARTIAL);
+        return new TemplateCompilerContext(templateStack.ofPartial(template), lambdas, generator, variables, context, ContextType.PARENT_PARTIAL);
     }
     
     public TemplateCompilerContext createForPartial(String template) {
-        return new TemplateCompilerContext(templateStack.ofPartial(template),generator, variables, context, ContextType.PARTIAL);
+        return new TemplateCompilerContext(templateStack.ofPartial(template),lambdas, generator, variables, context, ContextType.PARTIAL);
     }
 
     
@@ -165,18 +175,20 @@ public class TemplateCompilerContext {
         }
     }
     
+    private TemplateCompilerContext createEnclosed(String name, ContextType childType, RenderingContext enclosedField) {
+        return new TemplateCompilerContext(templateStack, lambdas, generator, variables, enclosedField, childType, 
+                new EnclosedRelation(name, this));
+    }
     private TemplateCompilerContext _getChild(String name, ContextType childType) throws ContextException {
         if (name.equals(".")) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(templateStack, generator, variables, enclosedField, childType, 
-                    new EnclosedRelation(name, this));
+            return createEnclosed(name, childType, enclosedField);
         }
         
         switch (childType) {
         case PARTIAL, PARENT_PARTIAL, BLOCK -> {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
-            return new TemplateCompilerContext(templateStack, generator, variables, enclosedField, childType,
-                    new EnclosedRelation(name, this));
+            return createEnclosed(name, childType, enclosedField);
         }
         default -> {
         }
@@ -218,9 +230,7 @@ public class TemplateCompilerContext {
                 enclosing = _getChildRender(n, it.hasNext() ? childType.pathType() : childType, enclosing, true);
             }
         }
-        return new TemplateCompilerContext(templateStack, 
-                generator, variables, enclosing, childType, new EnclosedRelation(name, this));
-
+        return createEnclosed(name, childType, enclosing);
     }
     
     private RenderingContext _getChildRender(String name, ContextType childType, RenderingContext enclosing) throws ContextException {
@@ -262,7 +272,15 @@ public class TemplateCompilerContext {
             return enclosing;
         }
         JavaExpression entry = direct ? enclosing.getDataDirectly(name) :  enclosing.getDataOrDefault(name, null);
+        if (entry == null && childType == ContextType.SECTION) {
+            var lambda = lambdas.lambdas().get(name);
+            if (lambda != null) {
+                entry = lambda.callExpression();
+                return new LambdaRenderingContext(entry, variables);
+            }
+        }
         if (entry == null) {
+            //TODO remove this system out
             System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
             throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }

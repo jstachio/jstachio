@@ -30,20 +30,26 @@
 package com.github.sviperll.staticmustache.context;
 
 import java.text.MessageFormat;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.ElementFilter;
 
+import com.github.sviperll.staticmustache.context.Lambda.Lambdas;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
 import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
 import com.github.sviperll.staticmustache.context.types.NativeType;
 import com.github.sviperll.staticmustache.context.types.ObjectType;
 import com.snaphop.staticmustache.apt.FormatterTypes;
+import com.snaphop.staticmustache.apt.TemplateLambdaPrism;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -114,6 +120,30 @@ public class RenderingCodeGenerator {
                 + ", " + cname //
                 + ", " + text + ");";
     }
+    
+    private Lambdas resolveLambdas(TypeElement element, JavaExpression root) {
+        
+        var all = javaModel.getElements().getAllMembers(element);
+        var lambdaMethods = ElementFilter.methodsIn(all).stream()
+                .filter(e -> 
+                        e.getModifiers().contains(Modifier.PUBLIC) 
+                        && e.getReturnType().getKind() != TypeKind.VOID
+                        && e.getParameters().size() == 1 )
+                .filter(e -> TemplateLambdaPrism.getInstanceOn(e) != null)
+                .toList();
+        Map<String, Lambda> lambdas = new LinkedHashMap<>();
+        
+        for (var lm : lambdaMethods) {
+            TemplateLambdaPrism p = TemplateLambdaPrism.getInstanceOn(lm);
+            String name = p.name();
+            String path = p.path();
+            var lambda = Lambda.of(root,lm, name, name, path);
+            //TODO check for name collisions
+            lambdas.put(lambda.name(), lambda);
+        }
+        
+        return new Lambdas(lambdas);
+    }
 
     /**
      * creates TemplateCompilerContext instance.
@@ -126,6 +156,8 @@ public class RenderingCodeGenerator {
     public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
+        Lambdas lambdas = resolveLambdas(element, javaExpression);
+        
         RenderingContext rootRenderingContext;
         // A special case scenario where the root is a java.util.Map or our custom MapNode... not recommended but useful for spec tests
 
@@ -138,7 +170,7 @@ public class RenderingCodeGenerator {
         else {
              rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
         }
-        return new TemplateCompilerContext(TemplateStack.of(templateName), this, variables, rootRenderingContext, ContextType.ROOT);
+        return new TemplateCompilerContext(TemplateStack.of(templateName), lambdas, this, variables, rootRenderingContext, ContextType.ROOT);
     }
 
     RenderingContext createRenderingContext(ContextType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {

@@ -35,6 +35,7 @@
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateInterface.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateMapping.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.Template.class), //
+    @GeneratePrism(value = com.github.sviperll.staticmustache.TemplateLambda.class, publicAccess = true), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateFormatterTypes.class), //
     @GeneratePrism(com.github.sviperll.staticmustache.TemplateCompilerFlags.class), //
 
