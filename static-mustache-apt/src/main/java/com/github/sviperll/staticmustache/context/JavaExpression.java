@@ -83,6 +83,10 @@ class JavaExpression {
         return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror(), concatPath("length"));
     }
     
+    JavaExpression stringLiteral(String alreadyEscapedString) {
+        return new JavaExpression(model, alreadyEscapedString, model.knownTypes()._String.typeElement().asType(), path);
+    }
+    
     JavaExpression mapGet(ExecutableElement getMethod, String key) {
         JavaExpression keyExpression = new JavaExpression(model, "\"" + key + "\"", model.knownTypes()._String.typeElement().asType(), concatPath(key));
         return methodCall(getMethod, keyExpression);

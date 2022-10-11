@@ -14,8 +14,8 @@ public sealed interface Lambda {
     
     public ExecutableElement method();
     
-    default JavaExpression callExpression() {
-        return expression().mapGet(method(), "TODO");
+    default JavaExpression callExpression(String literalBlock) {
+        return expression().methodCall(method(), expression().stringLiteral(literalBlock));
     }
     
     public enum ReturnType {
@@ -71,7 +71,35 @@ public sealed interface Lambda {
         throw new IllegalStateException("method is not supported. method = " + method);
     }
     
-    public record Lambdas(Map<String, Lambda> lambdas) {
+    public class Lambdas {
         
+        private final Map<String, Lambda> lambdas;
+        
+        private LambdaCallback callback = (lb, v) -> {
+            throw new IllegalStateException("callback not set");
+        };
+        
+        public Lambdas(Map<String, Lambda> lambdas) {
+            super();
+            this.lambdas = lambdas;
+        }
+        
+        public void setCallback(LambdaCallback callback) {
+            this.callback = callback;
+        }
+        
+        
+        public LambdaCallback getCallback() {
+            return callback;
+        }
+        
+        public Map<String, Lambda> lambdas() {
+            return lambdas;
+        }
+        
+    }
+    
+    public interface LambdaCallback {
+        public JavaExpression apply(Lambda lambda, VariableContext variables);
     }
 }

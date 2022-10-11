@@ -29,6 +29,9 @@
  */
 package com.snaphop.staticmustache.apt;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 import com.github.sviperll.staticmustache.token.MustacheTagKind;
 
 /**
@@ -65,32 +68,66 @@ public sealed interface MustacheToken {
         public  boolean isIndented() {
             return tagKind == MustacheTagKind.PARTIAL || tagKind == MustacheTagKind.BEGIN_PARENT_SECTION;
         }
+        
+        public void appendRawText(Appendable a) throws IOException {
+            //TODO hmm probably need to fix this for change delimeter support
+            switch(tagKind()) {
+            case BEGIN_SECTION -> a.append("{{").append("#").append(name).append("}}");
+            case BEGIN_BLOCK_SECTION -> a.append("{{").append("$").append(name).append("}}");
+            case BEGIN_INVERTED_SECTION -> a.append("{{").append("^").append(name).append("}}");
+            case BEGIN_PARENT_SECTION -> a.append("{{").append("<").append(name).append("}}");
+            case END_SECTION -> a.append("{{").append("/").append(name).append("}}");
+            case UNESCAPED_VARIABLE_THREE_BRACES -> a.append("{{{").append(name).append("}}}");
+            case UNESCAPED_VARIABLE_TWO_BRACES -> a.append("{{&").append(name).append("}}");
+            case VARIABLE -> a.append("{{").append(name).append("}}");
+            case PARTIAL -> a.append("{{").append(">").append(name).append("}}");
+            };
+        }
     }
     
     public record TextToken(String text) implements MustacheToken {
         @Override
         public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
             return visitor.text(text);
-        };
+        }
+        
+        public void appendRawText(Appendable a) throws IOException {
+            a.append(text);
+        }
     }
     
     public record SpecialCharacterToken(SpecialChar specialChar) implements MustacheToken {
         @Override
         public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
             return visitor.specialCharacter(specialChar);
-        };
+        }
+        
+        public void appendRawText(Appendable a) throws IOException {
+            a.append(specialChar.character());
+        }
+        public void appendEscapedJava(StringBuilder sb) {
+            sb.append(specialChar.javaEscaped());
+        }
     }
     
     public record NewlineToken(NewlineChar newlineChar) implements MustacheToken {
         @Override
         public <R, E extends Exception> R accept(MustacheToken.Visitor<R,E> visitor) throws E {
             return visitor.newline(newlineChar);
-        };
+        }
         
         @Override
         public boolean isNewlineToken() {
             return true;
-        };
+        }
+        
+        public void appendRawText(Appendable a) throws IOException {
+            a.append(newlineChar.characters());
+        }
+        
+        public void appendEscapedJava(StringBuilder sb) {
+            sb.append(newlineChar.javaEscaped());
+        }
     }
     
     public record EndOfFileToken() implements MustacheToken {
@@ -100,13 +137,35 @@ public sealed interface MustacheToken {
             return visitor.endOfFile();
         }
         
+        public void appendRawText(Appendable a) throws IOException {
+        }
+        
     }
     
     public enum NewlineChar {
-        LF,
-        CRLF
+        LF("\n"),
+        CRLF("\r\n");
+        
+        private final String characters;
+
+        private NewlineChar(String characters) {
+            this.characters = characters;
+        }
+        
+        
+        public String characters() {
+            return characters;
+        }
+        
+        public String javaEscaped() {
+            return switch(this) {
+            case LF -> "\\n";
+            case CRLF -> "\\r\\n";
+            };
+        }
         
     }
+    
     public enum SpecialChar {
         QUOTATION_MARK('"'), // "
         BACKSLASH('\\'); // \
@@ -119,6 +178,13 @@ public sealed interface MustacheToken {
 
         public char character() {
             return character;
+        }
+        
+        public String javaEscaped() {
+            return switch (this) {
+            case QUOTATION_MARK -> "\\\"";
+            case BACKSLASH -> "\\\\";
+            };
         }
         
     }
@@ -157,6 +223,21 @@ public sealed interface MustacheToken {
     default boolean isIndented() {
         return false;
     }
+    
+    public void appendRawText(Appendable a) throws IOException;
+    
+    default void appendRawText(StringBuilder sb) {
+        try {
+            appendRawText((Appendable)sb);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+    
+    default void appendEscapedJava(StringBuilder sb) {
+        appendRawText(sb);
+    }
+
     
     /**
      * N.B this does not include newline!

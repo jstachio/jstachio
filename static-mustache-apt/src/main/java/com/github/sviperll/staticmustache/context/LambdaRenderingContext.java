@@ -5,11 +5,19 @@ import org.eclipse.jdt.annotation.Nullable;
 class LambdaRenderingContext implements RenderingContext {
     private final Lambda lambda;
     private final VariableContext variables;
-    public LambdaRenderingContext(Lambda lambda, VariableContext variables) {
+    
+    public LambdaRenderingContext(
+            Lambda lambda, 
+            VariableContext variables) {
         this.lambda = lambda;
         this.variables = variables;
     }
 
+    
+    public Lambda getLambda() {
+        return lambda;
+    }
+    
     @Override
     public String beginSectionRenderingCode() {
        return "";
@@ -17,7 +25,8 @@ class LambdaRenderingContext implements RenderingContext {
 
     @Override
     public String endSectionRenderingCode() {
-        return variables.unescapedWriter() + ".append(" + currentExpression().text() + ");";
+        return "";
+        //return variables.unescapedWriter() + ".append(" + currentExpression().text() + ");";
     }
     
     @Override
@@ -32,7 +41,7 @@ class LambdaRenderingContext implements RenderingContext {
 
     @Override
     public JavaExpression currentExpression() {
-        return lambda.callExpression();
+        return lambda.callExpression("ignore");
     }
 
     @Override
@@ -44,4 +53,5 @@ class LambdaRenderingContext implements RenderingContext {
     public @Nullable RenderingContext getParent() {
         return null;
     }
+    
 }

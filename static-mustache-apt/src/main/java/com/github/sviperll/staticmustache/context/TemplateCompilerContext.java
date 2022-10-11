@@ -112,6 +112,22 @@ public class TemplateCompilerContext {
     public String unescapedRenderingCode() throws ContextException {
         return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.unescaped()) + endSectionRenderingCode();
     }
+    
+    public String lambdaRenderingCode(String literalBody) throws ContextException  {
+        if (context instanceof LambdaRenderingContext lc) {
+            Lambda lm = lc.getLambda();
+            var entry = lm.callExpression(literalBody);
+            //TODO use formatter for non string types
+            return variables.unescapedWriter() 
+                    + ".append(" 
+                    + entry.text()
+                    +");";
+                //return generator.generateRenderingCode(entry, variables, path);
+        }
+        else {
+            throw new IllegalStateException("bug expected lambda context");
+        }
+    }
 
     public String beginSectionRenderingCode() {
         return  debugComment() +  context.beginSectionRenderingCode();

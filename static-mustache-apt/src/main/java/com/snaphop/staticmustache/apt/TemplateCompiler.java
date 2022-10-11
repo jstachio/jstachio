@@ -38,11 +38,13 @@ import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
+import com.github.sviperll.staticmustache.token.MustacheTagKind;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
 import com.snaphop.staticmustache.apt.MustacheToken.NewlineChar;
 import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
+import com.snaphop.staticmustache.apt.MustacheToken.TagToken;
 
 /**
  *
@@ -101,6 +103,38 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         }
         processor.processToken(TokenProcessor.EOF);
         currentWriter().println();
+    }
+    
+    @Override
+    public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+        if (inLambda()) {
+            processInsideLambdaToken(positionedToken);
+        }
+        else {
+            super.processToken(positionedToken);
+        }
+    }
+    
+    void processInsideLambdaToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+        String lambdaName = context.currentEnclosedContextName();
+        var mt = positionedToken.innerToken();
+        if (mt instanceof TagToken tt 
+                && tt.tagKind() == MustacheTagKind.END_SECTION 
+                && lambdaName.equals(tt.name())) {
+            super.processToken(positionedToken);
+        }
+        else if (mt.isEOF()) {
+            throw new ProcessingException(position, "EOF reached before lambda closing tag found. lambda = " + lambdaName);
+        }
+        else {
+            mt.appendEscapedJava(currentUnescaped);
+        }
+        
+        
+    }
+    
+    protected boolean inLambda() {
+        return context.getType() == ContextType.LAMBDA;
     }
     
     @Override
@@ -186,6 +220,13 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     
     private void _printCodeToWrite(String s) {
         if (s.isEmpty()) return;
+        String code = stringLiteralConcat(s);
+        println();
+        print(context.unescapedWriterExpression() + ".append(" + code + "); ");
+        println();
+    }
+
+    private String stringLiteralConcat(String s) {
         int i = 0;
         StringBuilder code = new StringBuilder();
         for (String line : CodeNewLineSplitter.split(s, "\\n")) {
@@ -197,9 +238,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             code.append("\"");
             i++;
         }
-        println();
-        print(context.unescapedWriterExpression() + ".append(" + code.toString() + "); ");
-        println();
+        return code.toString();
     }
 
     private void print(String s) {
@@ -246,7 +285,27 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             print(context.beginSectionRenderingCode());
             println();
             depth++;
+            /*
+             * See if the context type is now a lambda
+             */
+            if (context.getType() == ContextType.LAMBDA) {
+                _beginLambdaSection(name);
+            }
             
+        } catch (ContextException ex) {
+            throw new ProcessingException(position, ex);
+        }
+    }
+    
+    protected void _beginLambdaSection(String name) {
+        
+    }
+    
+    protected void _endLambdaSection(String name) throws ProcessingException {
+        try {
+            String code = stringLiteralConcat(currentUnescaped.toString());
+            currentUnescaped.setLength(0);
+            print(context.lambdaRenderingCode(code));
         } catch (ContextException ex) {
             throw new ProcessingException(position, ex);
         }
@@ -368,7 +427,6 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     
     @Override
     protected void _endSection(String name) throws ProcessingException {
-        flushUnescaped();
         if (!context.isEnclosed()) {
             throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
         }
@@ -377,14 +435,21 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         }
         var contextType = context.getType();
         switch(contextType) {
+        case LAMBDA -> {
+            _endLambdaSection(name);
+            depth--;
+        }
         case PARENT_PARTIAL -> {
+            flushUnescaped();
             _endParentSection(name);
         }
         case BLOCK -> {
+            flushUnescaped();
             _endBlockSection(name);
         }
         case PATH, ESCAPED_VAR, UNESCAPED_VAR, PARTIAL -> { throw new IllegalStateException("Context Type is wrong. " + context.getType());}
         case ROOT, SECTION, INVERTED -> {
+            flushUnescaped();
             depth--;
         }
         };
@@ -578,18 +643,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     
     @Override
     protected void _specialCharacter(SpecialChar specialChar) throws ProcessingException {
-        switch(specialChar) {
-        case QUOTATION_MARK -> printCodeToWrite("\\\"");
-        case BACKSLASH -> printCodeToWrite("\\\\");
-        }
+        printCodeToWrite(specialChar.javaEscaped());
     }
     
     @Override
     public void _newline(NewlineChar c) throws ProcessingException {
-        switch(c) {
-        case LF -> printCodeToWrite("\\n");
-        case CRLF -> printCodeToWrite("\\r\\n");
-        }
+        printCodeToWrite(c.javaEscaped());
     }
     
     @Override
