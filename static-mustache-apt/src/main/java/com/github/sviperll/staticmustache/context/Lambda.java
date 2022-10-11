@@ -17,6 +17,13 @@ public sealed interface Lambda {
     default JavaExpression callExpression() {
         return expression().mapGet(method(), "TODO");
     }
+    
+    public enum ReturnType {
+        INLINE_TEMPLATE,
+        PATH_TEMPLATE,
+        STRING,
+        RENDER_FUNCTION
+    }
 
     public record InlineTemplateLambda(
             JavaExpression expression,

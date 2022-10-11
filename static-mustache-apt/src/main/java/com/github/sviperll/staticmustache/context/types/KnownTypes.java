@@ -41,7 +41,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import com.github.sviperll.staticmustache.MapNode;
+import com.github.sviperll.staticmustache.ContextNode;
 import com.github.sviperll.staticmustache.text.Layoutable;
 import com.github.sviperll.staticmustache.text.RenderFunction;
 
@@ -122,7 +122,7 @@ public class KnownTypes {
         _Error = b.objectType(Error.class);
         _RuntimeException = b.objectType(RuntimeException.class);
         _Optional = b.objectType(Optional.class);
-        _MapNode = b.objectType(MapNode.class); // MapNode needs to be above _Iterable
+        _MapNode = b.objectType(ContextNode.class); // MapNode needs to be above _Iterable
         _Iterable = b.objectType(Iterable.class);
         _Map = b.objectType(Map.class);
         _UUID = b.objectType(UUID.class);

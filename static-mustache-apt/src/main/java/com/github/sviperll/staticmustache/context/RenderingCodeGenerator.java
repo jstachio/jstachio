@@ -162,7 +162,7 @@ public class RenderingCodeGenerator {
         // A special case scenario where the root is a java.util.Map or our custom MapNode... not recommended but useful for spec tests
 
         if (javaModel.isType(element.asType(), knownTypes._MapNode)) {
-            rootRenderingContext = new MapNodeRenderingContext(javaExpression, element, root);
+            rootRenderingContext = new ContextNodeRenderingContext(javaExpression, element, root);
         }
         else if (javaModel.isType(element.asType(), knownTypes._Map)) {
             rootRenderingContext = new MapRenderingContext(javaExpression, element, root);
@@ -240,7 +240,7 @@ public class RenderingCodeGenerator {
     private RenderingContext createMapNodeContext(JavaExpression expression, RenderingContext enclosing) {
         RenderingContext nullable = nullableRenderingContext(expression, enclosing);
         DeclaredType mapType = (DeclaredType) expression.type();
-        MapNodeRenderingContext map = new MapNodeRenderingContext(expression, javaModel.asElement(mapType), nullable);
+        ContextNodeRenderingContext map = new ContextNodeRenderingContext(expression, javaModel.asElement(mapType), nullable);
         return map;
     }
     
@@ -271,7 +271,7 @@ public class RenderingCodeGenerator {
             return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null", declaredContext);
         } else if (javaModel.isType(expression.type(), knownTypes._MapNode) && expression.type() instanceof DeclaredType dt) {
             //DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
-            MapNodeRenderingContext c = new MapNodeRenderingContext(expression, javaModel.asElement(dt) , enclosing);
+            ContextNodeRenderingContext c = new ContextNodeRenderingContext(expression, javaModel.asElement(dt) , enclosing);
             return new BooleanRenderingContext("isFalsey(" + expression.text() + ")", c);
         } else if (expression.type() instanceof DeclaredType dt) {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);

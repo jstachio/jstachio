@@ -3,9 +3,9 @@ package com.snaphop.staticmustache.spec;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.github.sviperll.staticmustache.MapNode;
+import com.github.sviperll.staticmustache.ContextNode;
 
-public class SpecModel implements MapNode {
+public class SpecModel implements ContextNode {
     
     private final Map<String, Object> object = new LinkedHashMap<>();
     

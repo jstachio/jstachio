@@ -3,21 +3,21 @@ package com.github.sviperll.staticmustache.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 class LambdaRenderingContext implements RenderingContext {
-    private final JavaExpression expression;
+    private final Lambda lambda;
     private final VariableContext variables;
-    public LambdaRenderingContext(JavaExpression expression, VariableContext variables) {
-        this.expression = expression;
+    public LambdaRenderingContext(Lambda lambda, VariableContext variables) {
+        this.lambda = lambda;
         this.variables = variables;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        return variables.unescapedWriter() + ".append(" + expression.text() + ");";
+       return "";
     }
 
     @Override
     public String endSectionRenderingCode() {
-        return "";
+        return variables.unescapedWriter() + ".append(" + currentExpression().text() + ");";
     }
     
     @Override
@@ -32,7 +32,7 @@ class LambdaRenderingContext implements RenderingContext {
 
     @Override
     public JavaExpression currentExpression() {
-        return expression;
+        return lambda.callExpression();
     }
 
     @Override

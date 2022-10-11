@@ -2,7 +2,7 @@ package com.github.sviperll.staticmustache.examples;
 
 import java.io.IOException;
 
-import com.github.sviperll.staticmustache.MapNode;
+import com.github.sviperll.staticmustache.ContextNode;
 import com.github.sviperll.staticmustache.TemplateLambda;
 import com.github.sviperll.staticmustache.text.RenderFunction;
 
@@ -19,7 +19,7 @@ public record Lambda(String name) {
         a.append(" Esquire");
     }
     
-    public void something(MapNode context, RenderFunction block, String text) {
+    public void something(ContextNode context, RenderFunction block, String text) {
         
     }
 

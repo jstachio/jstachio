@@ -146,12 +146,12 @@ public class TemplateCompilerContext {
     }
 
     
-    //TODO rename to ContextType
     public enum ContextType {
         ROOT,
         ESCAPED_VAR,
         UNESCAPED_VAR,
         SECTION, // #
+        LAMBDA, // #
         INVERTED { // ^
           @Override
         public ContextType pathType() {
@@ -176,9 +176,13 @@ public class TemplateCompilerContext {
     }
     
     private TemplateCompilerContext createEnclosed(String name, ContextType childType, RenderingContext enclosedField) {
+        if (enclosedField instanceof LambdaRenderingContext) {
+            childType = ContextType.LAMBDA;
+        }
         return new TemplateCompilerContext(templateStack, lambdas, generator, variables, enclosedField, childType, 
                 new EnclosedRelation(name, this));
     }
+    
     private TemplateCompilerContext _getChild(String name, ContextType childType) throws ContextException {
         if (name.equals(".")) {
             RenderingContext enclosedField = _getChildRender(name, childType, new OwnedRenderingContext(context));
@@ -256,6 +260,7 @@ public class TemplateCompilerContext {
             case INVERTED -> throw new ContextException("Current section can't be inverted");
             case PARENT_PARTIAL, ROOT -> throw new ContextException("Current section can't be parent");
             case PARTIAL -> throw new ContextException("Current section can't be partial");
+            case LAMBDA -> throw new ContextException("Current section can't be lambda");
             case BLOCK -> throw new ContextException("Current section can't be block");
             };
         }
@@ -275,8 +280,7 @@ public class TemplateCompilerContext {
         if (entry == null && childType == ContextType.SECTION) {
             var lambda = lambdas.lambdas().get(name);
             if (lambda != null) {
-                entry = lambda.callExpression();
-                return new LambdaRenderingContext(entry, variables);
+                return new LambdaRenderingContext(lambda, variables);
             }
         }
         if (entry == null) {
@@ -291,6 +295,8 @@ public class TemplateCompilerContext {
         case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
         case PARTIAL -> throw new IllegalStateException("partial not allowed here");
         case BLOCK -> throw new IllegalStateException("block not allowed here");
+        case LAMBDA -> throw new IllegalStateException("LAMBDA not allowed here");
+
         };
         return enclosedField;
     }

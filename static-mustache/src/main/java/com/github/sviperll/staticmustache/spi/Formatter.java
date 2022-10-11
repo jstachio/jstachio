@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.github.sviperll.staticmustache.MapNode;
+import com.github.sviperll.staticmustache.ContextNode;
 
 public interface Formatter {
 
@@ -50,7 +50,7 @@ public interface Formatter {
             if (o == null) {
                 throw new NullPointerException("null at: " + path);
             }
-            else if (o instanceof MapNode m) {
+            else if (o instanceof ContextNode m) {
                 a.append(m.renderString());
             }
             else {

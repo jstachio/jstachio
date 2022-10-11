@@ -3,12 +3,12 @@ package com.github.sviperll.staticmustache;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 
-//TODO rename to ContextNode
 /**
  * This interface is to allow you to simulate JSON node like trees
  * without being coupled to a particularly JSON lib.
@@ -20,28 +20,39 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author agentgt
  *
  */
-public interface MapNode extends Iterable<MapNode> {
+public interface ContextNode extends Iterable<ContextNode> {
 
-    public static @Nullable MapNode ofRoot(@Nullable Object o) {
+    public static @Nullable ContextNode ofRoot(@Nullable Object o) {
         if (o == null) {
             return null;
         }
-        if (o instanceof MapNode n) {
+        if (o instanceof ContextNode n) {
             return n;
         }
         return new RootMapNode(o);
         
     }
     
-    default @Nullable MapNode ofChild(@Nullable Object o) {
+    default @Nullable ContextNode ofChild(String name, @Nullable Object o) {
         if (o == null) {
             return null;
         }
-        if ( o instanceof MapNode) {
+        if ( o instanceof ContextNode) {
             throw new IllegalArgumentException("Cannot wrap MapNode around another MapNode");
         }
-        return new ChildMapNode(this, o);
+        return new NamedMapNode(this, o, name);
     }
+    
+    default @Nullable ContextNode ofChild(int index, @Nullable Object o) {
+        if (o == null) {
+            return null;
+        }
+        if ( o instanceof ContextNode) {
+            throw new IllegalArgumentException("Cannot wrap MapNode around another MapNode");
+        }
+        return new IndexedMapNode(this, o, index);
+    }
+    
     /**
      * Gets a field from java.util.Map if MapNode is wrapping one.
      * This is direct access and does not check the parents.
@@ -51,11 +62,11 @@ public interface MapNode extends Iterable<MapNode> {
      * @param field
      * @return a child node. maybe null.
      */
-    default @Nullable MapNode get(String field) {
+    default @Nullable ContextNode get(String field) {
         Object o = object();
-        MapNode child = null;
+        ContextNode child = null;
         if (o instanceof Map<?,?> m) {
-            child = ofChild(m.get(field));
+            child = ofChild(field,m.get(field));
         }
         return child;
     }
@@ -65,13 +76,13 @@ public interface MapNode extends Iterable<MapNode> {
      * @param field
      * @return null if not found
      */
-    default @Nullable MapNode find(String field) {
+    default @Nullable ContextNode find(String field) {
         /*
          * In theory we could make a special RenderingContext for MapNode
          * to go up the stack (generated code) but it would probably look similar
          * to the following.
          */
-        MapNode child = get(field);
+        ContextNode child = get(field);
         if (child != null) {
             return child;
         }
@@ -79,7 +90,7 @@ public interface MapNode extends Iterable<MapNode> {
         if (parent != null && parent != this) {
             child = parent.find(field);
             if (child != null) {
-                child = ofChild(child.object());
+                child = ofChild(field, child.object());
             }
         }
         return child;
@@ -91,15 +102,17 @@ public interface MapNode extends Iterable<MapNode> {
         return String.valueOf(object());
     }
     
-    default @Nullable MapNode parent() {
+    default @Nullable ContextNode parent() {
         return null;
     }
     
     @Override
-    default Iterator<MapNode> iterator() {
+    default Iterator<ContextNode> iterator() {
         Object o = object();
         if (o instanceof Iterable<?> it) {
-            return StreamSupport.stream(it.spliterator(), false).map(this::ofChild).iterator();
+            AtomicInteger index = new AtomicInteger();
+            return StreamSupport.stream(it.spliterator(), false)
+                    .map( i -> this.ofChild(index.getAndIncrement(),  i)).iterator();
         }
         else if (isFalsey()) {
             return Collections.emptyIterator();
@@ -112,14 +125,21 @@ public interface MapNode extends Iterable<MapNode> {
         return Boolean.FALSE.equals(o);
     }
     
-    public record RootMapNode(Object object) implements MapNode {
+    public record RootMapNode(Object object) implements ContextNode {
         @Override
         public String toString() {
             return renderString();
         }
     }
     
-    public record ChildMapNode(MapNode parent, Object object) implements MapNode {
+    public record NamedMapNode(ContextNode parent, Object object, String name) implements ContextNode {
+        @Override
+        public String toString() {
+            return renderString();
+        }
+    }
+    
+    public record IndexedMapNode(ContextNode parent, Object object, int index) implements ContextNode {
         @Override
         public String toString() {
             return renderString();

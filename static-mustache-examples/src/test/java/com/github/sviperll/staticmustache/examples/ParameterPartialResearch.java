@@ -13,7 +13,7 @@ public class ParameterPartialResearch {
         
     }
     @SuppressWarnings("unused")
-    public void spec() {
+    public void parameterPartials() {
         /*
          * partials are basically macro expansion
          * however they have access to the parent context
@@ -161,6 +161,10 @@ public class ParameterPartialResearch {
          * The other question is if the parent template ({{<input}} input in this calse) gets the context
          * of the calling template.
          */
+        
+    }
+    
+    public void lambdas() {
         
     }
     

@@ -5,9 +5,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
-public class MapNodeRenderingContext extends MapRenderingContext {
+public class ContextNodeRenderingContext extends MapRenderingContext {
 
-    MapNodeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
+    ContextNodeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
         super(expression, element, parent);
     }
     
