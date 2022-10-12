@@ -156,7 +156,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
             }
             else if (previousTokens.size() > 5) {
                 if (isDebug()) {
-                    debug("More than 5 tokens");
+                    debug("More than 5 tokens: " + previousTokens.stream().map(pt -> pt.innerToken()).toList());
                 }
                 processTokenGroup(ProcessToken.of(previousTokens.poll()));
             }

@@ -105,7 +105,7 @@ interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
             return blockArgs;
         }
         
-        public StringCodeAppendable findBlock(String name) {
+        public @Nullable StringCodeAppendable findBlock(String name) {
             TemplateCompilerLike caller = templateCompiler;
             ArrayDeque<TemplateCompilerLike> callers = new ArrayDeque<>();
             callers.push(caller);

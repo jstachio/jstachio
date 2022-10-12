@@ -6,7 +6,7 @@ public interface TemplateStack {
     
     public String getTemplateName();
     
-    public TemplateStack getCaller();
+    public @Nullable TemplateStack getCaller();
     
     default String describeTemplateStack() {
         StringBuilder sb = new StringBuilder();
@@ -36,7 +36,7 @@ public interface TemplateStack {
             return templateName;
         }
         
-        public TemplateStack getCaller() {
+        public @Nullable TemplateStack getCaller() {
             return caller;
         }
     }
