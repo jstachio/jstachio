@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -57,9 +58,9 @@ public class JavaLanguageModel {
     
     private static JavaLanguageModel INSTANCE;
     
-    public static JavaLanguageModel createInstance(Types types, Elements elements) {
+    public static JavaLanguageModel createInstance(Types types, Elements elements, Messager messager) {
         KnownTypes knownTypes = KnownTypes.createInstace(elements, types);
-        var self = new JavaLanguageModel(types, elements, knownTypes);
+        var self = new JavaLanguageModel(types, elements, messager, knownTypes);
         INSTANCE = self;
         return self;
     }
@@ -70,14 +71,21 @@ public class JavaLanguageModel {
 
     private final Types operations;
     private final Elements elements;
+    private final Messager messager;
     
     private final KnownTypes knownTypes;
-    JavaLanguageModel(Types operations, Elements elements, KnownTypes knownTypes) {
+    JavaLanguageModel(Types operations, Elements elements, Messager messager, KnownTypes knownTypes) {
         this.operations = operations;
         this.knownTypes = knownTypes;
         this.elements = elements;
+        this.messager = messager;
     }
     
+    
+    
+    public Messager getMessager() {
+        return messager;
+    }
     
     public Types getTypes() {
         return operations;

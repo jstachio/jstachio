@@ -64,11 +64,6 @@ class ArrayRenderingContext implements RenderingContext {
     JavaExpression componentExpession() {
         return arrayExpression.subscript(indexExpression());
     }
-
-    @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
     
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {

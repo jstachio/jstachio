@@ -33,6 +33,7 @@ import java.text.MessageFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -48,6 +49,7 @@ import com.github.sviperll.staticmustache.context.types.KnownType;
 import com.github.sviperll.staticmustache.context.types.KnownTypes;
 import com.github.sviperll.staticmustache.context.types.NativeType;
 import com.github.sviperll.staticmustache.context.types.ObjectType;
+import com.snaphop.staticmustache.apt.AnnotatedException;
 import com.snaphop.staticmustache.apt.FormatterTypes;
 import com.snaphop.staticmustache.apt.TemplateLambdaPrism;
 
@@ -112,7 +114,7 @@ public class RenderingCodeGenerator {
         }
         
         throw new TypeException(MessageFormat
-                .format("Can''t render {0} expression of {1} type as it is not an allowed type. ", text, type));
+                .format("Can''t render {0} expression of {1} type as it is not an allowed type to format. ", text, type));
     }
     private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
         return "format(" + variables.writer() //
@@ -121,23 +123,27 @@ public class RenderingCodeGenerator {
                 + ", " + text + ");";
     }
     
-    private Lambdas resolveLambdas(TypeElement element, JavaExpression root) {
+    private Lambdas resolveLambdas(TypeElement element, JavaExpression root) throws AnnotatedException {
         
         var all = javaModel.getElements().getAllMembers(element);
         var lambdaMethods = ElementFilter.methodsIn(all).stream()
                 .filter(e -> 
                         e.getModifiers().contains(Modifier.PUBLIC) 
-                        && e.getReturnType().getKind() != TypeKind.VOID
-                        && e.getParameters().size() == 1 )
+                        && e.getReturnType().getKind() != TypeKind.VOID)
                 .filter(e -> TemplateLambdaPrism.getInstanceOn(e) != null)
                 .toList();
         Map<String, Lambda> lambdas = new LinkedHashMap<>();
         
-        for (var lm : lambdaMethods) {
+        for (ExecutableElement lm : lambdaMethods) {
             TemplateLambdaPrism p = TemplateLambdaPrism.getInstanceOn(lm);
             String name = p.name();
             String path = p.path();
-            var lambda = Lambda.of(root,lm, name, name, path);
+            Lambda lambda;
+            try {
+                lambda = Lambda.of(root,lm, name, name, path);
+            } catch (Exception e1) {
+                throw new AnnotatedException(e1.getMessage(), lm);
+            }
             //TODO check for name collisions
             lambdas.put(lambda.name(), lambda);
         }
@@ -152,8 +158,9 @@ public class RenderingCodeGenerator {
      * @param expression java expression of type corresponding to given TypeElement
      * @param variables declared variables to use in generated code
      * @return new TemplateCompilerContext
+     * @throws AnnotatedException 
      */
-    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) {
+    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) throws AnnotatedException {
         RootRenderingContext root = new RootRenderingContext(variables);
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
         Lambdas lambdas = resolveLambdas(element, javaExpression);

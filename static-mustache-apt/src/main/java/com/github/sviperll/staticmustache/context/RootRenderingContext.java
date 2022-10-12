@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.function.Predicate;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -57,7 +59,7 @@ class RootRenderingContext implements RenderingContext {
     }
 
     @Override
-    public @Nullable JavaExpression find(String name) {
+    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) {
         return null;
     }
 

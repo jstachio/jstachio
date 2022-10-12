@@ -68,11 +68,6 @@ class BooleanRenderingContext implements BooleanExpressionContext {
     }
 
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
-    
-    @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
         return parent.get(name);
     }

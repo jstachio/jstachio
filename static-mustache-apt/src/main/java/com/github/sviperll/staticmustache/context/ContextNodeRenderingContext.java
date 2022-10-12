@@ -1,5 +1,7 @@
 package com.github.sviperll.staticmustache.context;
 
+import java.util.function.Predicate;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -12,7 +14,7 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
     }
     
     @Override
-    public JavaExpression find(String name) throws ContextException {
+    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
         //See MapNode.find
         //Currently this only works if MapNode is the root context
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);

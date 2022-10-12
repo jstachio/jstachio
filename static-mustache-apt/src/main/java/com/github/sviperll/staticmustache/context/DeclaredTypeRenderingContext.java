@@ -33,6 +33,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -72,7 +73,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
-
+        
         List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
         
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
@@ -106,9 +107,15 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        var result = get(name);
-        return result != null ? result : parent.find(name);
+    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+        JavaExpression result = null;
+        if (filter.test(this)) {
+            result = get(name);
+        }
+        if (result == null) {
+            result = parent.find(name, filter);
+        }
+        return result;
     }
 
     private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {

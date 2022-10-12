@@ -1,50 +1,143 @@
 package com.github.sviperll.staticmustache.context;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 public sealed interface Lambda {
 
-    public String name();
+    default String name() {
+        return method().name();
+    }
     
-    public JavaExpression expression();
+    public Method method();
     
-    public ExecutableElement method();
+    default JavaExpression callExpression(String literalBlock, LambdaContext context) throws TypeException {
+        JavaLanguageModel model = method().expression().model();
+        var currentContextExpression = context.get();
+        List<JavaExpression> args = new ArrayList<>();
+        for (var param : method().params()) {
+            JavaExpression arg = switch (param.paramType()) {
+            case STRING_BODY -> {
+                yield currentContextExpression.stringLiteral(literalBlock);
+            }
+            case CURRENT_CONTEXT -> {
+                var supertype = param.type();
+                if (! model.isSubtype(currentContextExpression.type(), supertype)) {
+                    var method = method();
+                    throw new TypeException(String.format("""
+                            Lambda context parameter is incorrect. details:
+                                                     method :  %s
+                                        current context type:  %s
+                                lambda expected context type:  %s
+                            """, 
+                            method.methodElement(),
+                            currentContextExpression.type(),
+                            param.type()
+                            ));
+                }
+                yield currentContextExpression;
+            }
+            };
+            args.add(arg);
+        }
+        
+        return method().expression().methodCall(method().methodElement(), args.toArray(new JavaExpression[]{}));
+    }
     
-    default JavaExpression callExpression(String literalBlock) {
-        return expression().methodCall(method(), expression().stringLiteral(literalBlock));
+    
+    default ReturnType returnType() {
+        return ReturnType.STRING;
     }
     
     public enum ReturnType {
-        INLINE_TEMPLATE,
-        PATH_TEMPLATE,
         STRING,
-        RENDER_FUNCTION
+//        UNESCAPED_STRING,
+//        INLINE_TEMPLATE,
+//        PATH_TEMPLATE,
+//        RENDER_FUNCTION
+    }
+    
+    public enum ParamType {
+        STRING_BODY,
+        CURRENT_CONTEXT
+    }
+    
+
+    public record Param(String name, ParamType paramType, TypeMirror type) {
     }
 
-    public record InlineTemplateLambda(
+    
+    public record Method(
             JavaExpression expression,
-            ExecutableElement method, 
             String name, 
-            String template) implements Lambda {
-
+            ExecutableElement methodElement, 
+            ReturnType returnType, 
+            List<Param> params) {
+        
+        public static Method of(
+                JavaExpression expression,
+                ExecutableElement method, 
+                @Nullable String name) {
+            if (name == null || name.isBlank()) {
+                name = method.getSimpleName().toString();
+            }
+            
+            var model = expression.model();
+            
+            var parameters = method.getParameters();
+            if (parameters.size() > 2 || parameters.size() < 1) {
+                throw new UnsupportedOperationException("Lambda can only support 1 or 2 parameters");
+            }
+            List<Param> params = new ArrayList<>();
+            var it = parameters.iterator();
+            VariableElement p = it.next();
+            if (model.isType(p.asType(),  model.knownTypes()._String)) {
+                params.add(new Param(name, ParamType.STRING_BODY, p.asType()));
+            }
+            else {
+                throw new UnsupportedOperationException("Lambda can only support string as first argument");
+            }
+            if (it.hasNext()) {
+                p = it.next();
+                params.add(new Param(name, ParamType.CURRENT_CONTEXT, p.asType()));
+            }
+            
+            ReturnType returnType;
+            if (model.isType(method.getReturnType(), model.knownTypes()._String)) {
+                returnType = ReturnType.STRING;
+            }
+            else {
+                throw new UnsupportedOperationException("Currently only String return types are supported.");
+            }
+            return new Method(expression, name, method, returnType, params);
+        }
     }
+    
+    
+//    public record InlineTemplateLambda(
+//            JavaExpression expression,
+//            ExecutableElement method, 
+//            String name, 
+//            String template) implements Lambda {
+//
+//    }
+//
+//    public record PathTemplateLambda(
+//            JavaExpression expression,
+//            ExecutableElement method, 
+//            String name, 
+//            String path) implements Lambda {
+//
+//    }
 
-    public record PathTemplateLambda(
-            JavaExpression expression,
-            ExecutableElement method, 
-            String name, 
-            String path) implements Lambda {
-
-    }
-
-    public record StringLambda(
-            JavaExpression expression,
-            ExecutableElement method, 
-            String name) implements Lambda {
+    public record StringLambda(Method method) implements Lambda {
     }
     
     public static Lambda of( //
@@ -56,19 +149,9 @@ public sealed interface Lambda {
         if (name == null || name.isBlank()) {
             name = method.getSimpleName().toString();
         }
-        if (template != null && ! template.isBlank()) {
-            return new InlineTemplateLambda(expression, method, name, template);
-        }
-        if (path != null && ! path.isBlank()) {
-            return new PathTemplateLambda(expression, method, name, path);
-        }
         
-        if (JavaLanguageModel.getInstance().isSameType(method.getReturnType(), 
-                JavaLanguageModel.getInstance().knownTypes()._String.typeElement().asType())) { 
-            return new StringLambda(expression, method, name);
-        }
-        
-        throw new IllegalStateException("method is not supported. method = " + method);
+        Method m = Method.of(expression, method, name);
+        return new StringLambda(m);
     }
     
     public class Lambdas {

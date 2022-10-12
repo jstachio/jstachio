@@ -74,7 +74,6 @@ import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.meta.ElementMessage;
-import com.github.sviperll.staticmustache.meta.ElementMessager;
 import com.github.sviperll.staticmustache.text.LayoutFunction;
 import com.github.sviperll.staticmustache.text.Layoutable;
 import com.github.sviperll.staticmustache.text.RenderFunction;
@@ -117,6 +116,16 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> processEnnotations,
                            RoundEnvironment roundEnv) {
+        try {
+            return _process(processEnnotations, roundEnv);
+        } catch (AnnotatedException e) {
+            e.report(processingEnv.getMessager());
+            return true;
+        }
+    }
+    
+    private boolean _process(Set<? extends TypeElement> processEnnotations,
+                           RoundEnvironment roundEnv)  throws AnnotatedException {
         if (roundEnv.processingOver()) {
             for (ElementMessage error: errors) {
                 TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
@@ -126,7 +135,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             /*
              * Lets just bind the damn utils so that we do not have to pass them around everywhere
              */
-            JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+            JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), processingEnv.getMessager());
             Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapter.class.getName());
             for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapter.class)) {
                 TypeElement classElement = (TypeElement)element;
@@ -240,7 +249,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     }
     
     
-    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws RuntimeException {
+    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
         Method templateFormatMethod;
         Method adapterNameMethod;
         Method templateMethod;
@@ -283,15 +292,15 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             }
         }
         if (templateFormatElement == null)
-            throw new RuntimeException(templateFormatMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element,templateFormatMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
         if (directiveAdapterName == null)
-            throw new RuntimeException(adapterNameMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, adapterNameMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
         if (directiveCharset == null)
-            throw new RuntimeException(charsetMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, charsetMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
         if (templatePath == null)
-            throw new RuntimeException(templateMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element,templateMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
         if (isLayout == null)
-            throw new RuntimeException(isLayoutMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, isLayoutMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
         String adapterClassSimpleName;
         if (!directiveAdapterName.equals(":auto"))
             adapterClassSimpleName = directiveAdapterName;
@@ -325,9 +334,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 
                 //TODO pass basepath
                 TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset);
-                JavaLanguageModel javaModel = JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils());
+                JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
-                CodeWriter codeWriter = new CodeWriter(new ElementMessager(processingEnv.getMessager(), element), switchablePrintWriter, codeGenerator, templatePaths, flags);
+                CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, templatePaths, flags);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);
@@ -380,7 +389,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         }
 
         private void writeRenderableAdapterClass(String adapterClassSimpleName, Boolean isLayout,
-                       TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException {
+                       TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException, AnnotatedException {
             String className = element.getQualifiedName().toString();
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
@@ -461,7 +470,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("}");
         }
 
-        private void writeRendererDefinitionClass(String adapterRendererClassSimpleName, TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException {
+        private void writeRendererDefinitionClass(String adapterRendererClassSimpleName, TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException, AnnotatedException {
             String className = element.getQualifiedName().toString();
             println("    private static class " + adapterRendererClassSimpleName + " implements " + RendererDefinition.class.getName() + " {");
 

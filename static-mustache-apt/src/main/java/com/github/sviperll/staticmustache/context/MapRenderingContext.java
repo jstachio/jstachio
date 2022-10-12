@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.function.Predicate;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -63,7 +65,12 @@ class MapRenderingContext implements RenderingContext {
 
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
-        var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
+        
+        if (name.equals(".")) {
+            return currentExpression();
+        }
+        
+        var all = expression.model().getElements().getAllMembers(definitionElement);
         
         var getMethod = ElementFilter.methodsIn(all).stream()
                 .filter(e -> "get".equals(e.getSimpleName().toString())
@@ -79,15 +86,17 @@ class MapRenderingContext implements RenderingContext {
     }
     
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        //TODO this should probably check parent as well?
-       var r = get(name);
-       if (r == null) {
-           r = parent.find(name);
-       }
-       return r;
+    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+        // For Maps we favor resolving from the parent first
+        // Otherwise it is impossible to get out of the Map!
+        JavaExpression r = parent.find(name, filter.and(c -> ! (c instanceof MapRenderingContext)));
+        System.out.println(name + " " + r);
+        
+        if (r == null && filter.test(this)) {
+            r = get(name);
+        }
+        return r;
     }
-
 
     @Override
     public JavaExpression currentExpression() {

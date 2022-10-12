@@ -243,7 +243,11 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             code.append("\"");
             i++;
         }
-        return code.toString();
+        String result = code.toString();
+        if (result.isEmpty()) {
+            result = "\"\"";
+        }
+        return result;
     }
 
     private void print(String s) {
@@ -584,6 +588,8 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                 }
             }
         } catch (ContextException ex) {
+            var templateStack = context.getTemplateStack();
+            System.out.println("Variable not found." + " var: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + context.printStack() + "\n");
             throw new ProcessingException(position, ex);
         }
     }

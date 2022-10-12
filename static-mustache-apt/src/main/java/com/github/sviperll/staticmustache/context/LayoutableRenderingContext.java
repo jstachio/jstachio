@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.function.Predicate;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -57,8 +59,8 @@ class LayoutableRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        return enclosing.find(name);
+    public JavaExpression find(String name, Predicate<RenderingContext> filter ) throws ContextException {
+        return enclosing.find(name, filter);
     }
     
     @Override

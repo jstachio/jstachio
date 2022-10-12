@@ -87,23 +87,6 @@ public class TemplateCompilerContext {
             throw new ContextException("Unable to render field", ex);
         }
     }
-    
-//    private String path() {
-//        List<String> segments = new ArrayList<>();
-//        var e = enclosedRelation;
-//        while (e != null) {
-//            String n = e.name();
-//            if (! n.isBlank()) {
-//                segments.add(e.name());
-//            }
-//            var pe = parentContext().enclosedRelation;
-//            if (pe == e || pe == this.enclosedRelation)
-//                break;
-//            e = pe;
-//        }
-//        Collections.reverse(segments);
-//        return segments.stream().collect(Collectors.joining("."));
-//    }
 
     public String renderingCode() throws ContextException {
         return beginSectionRenderingCode() + sectionBodyRenderingCode(variables) + endSectionRenderingCode();
@@ -116,7 +99,13 @@ public class TemplateCompilerContext {
     public String lambdaRenderingCode(String literalBody) throws ContextException  {
         if (context instanceof LambdaRenderingContext lc) {
             Lambda lm = lc.getLambda();
-            var entry = lm.callExpression(literalBody);
+            LambdaContext ctx = new LambdaContext(lc);
+            JavaExpression entry;
+            try {
+                entry = lm.callExpression(literalBody, ctx);
+            } catch (TypeException e) {
+                throw new ContextException(e.getMessage());
+            }
             //TODO use formatter for non string types
             return variables.unescapedWriter() 
                     + ".append(" 
@@ -292,12 +281,16 @@ public class TemplateCompilerContext {
         if (childType == ContextType.BLOCK) {
             return enclosing;
         }
-        JavaExpression entry = direct ? enclosing.get(name) :  enclosing.find(name);
+        JavaExpression entry = direct ? enclosing.get(name) : enclosing.find(name, c -> !( c instanceof MapRenderingContext ));
         if (entry == null && childType == ContextType.SECTION) {
             var lambda = lambdas.lambdas().get(name);
             if (lambda != null) {
                 return new LambdaRenderingContext(lambda, variables, enclosing);
             }
+        }
+        if (entry == null & ! direct) {
+            // We retry for Map like contexts
+            entry = enclosing.find(name, c -> true);
         }
         if (entry == null) {
             //TODO remove this system out
@@ -340,5 +333,9 @@ public class TemplateCompilerContext {
     
     public TemplateStack getTemplateStack() {
         return templateStack;
+    }
+    
+    public String printStack() {
+        return context.printStack();
     }
 }

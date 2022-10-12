@@ -66,11 +66,6 @@ class OptionalRenderingContext implements RenderingContext {
         return null;
     }
 
-    @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
-
 
     @Override
     public JavaExpression currentExpression() {

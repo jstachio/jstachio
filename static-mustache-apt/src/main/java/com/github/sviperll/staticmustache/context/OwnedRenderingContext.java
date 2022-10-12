@@ -57,11 +57,6 @@ class OwnedRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
-
-    @Override
     public JavaExpression currentExpression() {
         return parent.currentExpression();
     }

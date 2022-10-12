@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.util.function.Predicate;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 
@@ -45,6 +47,15 @@ interface RenderingContext {
      * @throws ContextException
      */
     @Nullable JavaExpression get(String name) throws ContextException;
+    
+    /**
+     * This should be mostly equivalent to {{.}}
+     * @return
+     */
+    default @Nullable JavaExpression get() {
+        return currentExpression();
+    }
+
 
     /**
      * Looks for a method or or field up the context stack starting
@@ -54,7 +65,18 @@ interface RenderingContext {
      * @return
      * @throws ContextException
      */
-    @Nullable JavaExpression find(String name) throws ContextException;
+   // @Nullable JavaExpression find(String name) throws ContextException;
+    
+    default @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+        var p = getParent();
+        if (p != null) {
+            return p.find(name, filter);
+        }
+        return null;
+    }
+
+
+    
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
     @Nullable RenderingContext getParent();

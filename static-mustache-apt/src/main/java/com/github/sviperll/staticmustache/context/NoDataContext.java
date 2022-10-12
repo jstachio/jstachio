@@ -54,11 +54,6 @@ class NoDataContext implements RenderingContext {
         //TODO maybe this should use parent?
         return null;
     }
-    
-    @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
 
     @Override
     public JavaExpression currentExpression() {

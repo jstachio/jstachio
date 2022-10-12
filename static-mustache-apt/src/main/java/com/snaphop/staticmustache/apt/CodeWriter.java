@@ -36,7 +36,6 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 
 import com.github.sviperll.staticmustache.TemplateCompilerFlags;
@@ -53,25 +52,23 @@ import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateLoader;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class CodeWriter {
-    private final Messager messager;
     private final SwitchablePrintWriter writer;
     private final RenderingCodeGenerator codeGenerator;
     private final Map<String, NamedTemplate> templatePaths;
     private final Set<TemplateCompilerFlags.Flag> flags;
 
-    CodeWriter(Messager messager, 
+    CodeWriter( 
             SwitchablePrintWriter writer, 
             RenderingCodeGenerator codeGenerator, 
             Map<String, NamedTemplate>templatePaths,
             Set<TemplateCompilerFlags.Flag> flags) {
-        this.messager = messager;
         this.writer = writer;
         this.codeGenerator = codeGenerator;
         this.templatePaths = templatePaths;
         this.flags = flags;
     }
 
-    TemplateCompilerContext createTemplateContext(String templateName, TypeElement element, String rootExpression, VariableContext variableContext) {
+    TemplateCompilerContext createTemplateContext(String templateName, TypeElement element, String rootExpression, VariableContext variableContext) throws AnnotatedException {
         return codeGenerator.createTemplateCompilerContext(templateName, element, rootExpression, variableContext);
     }
 

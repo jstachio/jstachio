@@ -64,10 +64,6 @@ class IterableRenderingContext implements RenderingContext {
         return " }" + parent.endSectionRenderingCode();
     }
 
-    @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
-    }
     
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {

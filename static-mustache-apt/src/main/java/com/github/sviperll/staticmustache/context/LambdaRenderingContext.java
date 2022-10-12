@@ -33,17 +33,19 @@ class LambdaRenderingContext implements RenderingContext {
     
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
-        return null;
+        return parent.get(name);
     }
 
     @Override
-    public JavaExpression find(String name) throws ContextException {
-        return parent.find(name);
+    public @Nullable JavaExpression get() {
+        return parent.get();
     }
 
     @Override
     public JavaExpression currentExpression() {
-        return lambda.callExpression("NOT KNOWN YET");
+        return parent.currentExpression();
+//        var ctx = new LambdaContext(this);
+//        return lambda.callExpression("NOT KNOWN YET", ctx);
     }
 
     @Override
@@ -52,7 +54,7 @@ class LambdaRenderingContext implements RenderingContext {
     }
     
     @Override
-    public @Nullable RenderingContext getParent() {
+    public RenderingContext getParent() {
         return parent;
     }
     
