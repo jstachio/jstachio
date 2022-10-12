@@ -52,13 +52,13 @@ class RootRenderingContext implements RenderingContext {
     }
     
     @Override
-    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+    public @Nullable JavaExpression get(String name) throws ContextException {
         return null;
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
-        return defaultValue;
+    public @Nullable JavaExpression find(String name) {
+        return null;
     }
 
     @Override

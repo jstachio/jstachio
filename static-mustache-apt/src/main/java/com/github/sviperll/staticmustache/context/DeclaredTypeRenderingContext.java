@@ -71,7 +71,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
     
     @Override
-    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+    public @Nullable JavaExpression get(String name) throws ContextException {
 
         List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
         
@@ -106,9 +106,9 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
-        var result = getDataDirectly(name);
-        return result != null ? result : parent.getDataOrDefault(name, defaultValue);
+    public JavaExpression find(String name) throws ContextException {
+        var result = get(name);
+        return result != null ? result : parent.find(name);
     }
 
     private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {

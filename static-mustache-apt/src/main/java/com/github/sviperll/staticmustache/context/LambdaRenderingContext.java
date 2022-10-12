@@ -29,22 +29,21 @@ class LambdaRenderingContext implements RenderingContext {
     @Override
     public String endSectionRenderingCode() {
         return "";
-        //return variables.unescapedWriter() + ".append(" + currentExpression().text() + ");";
     }
     
     @Override
-    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+    public @Nullable JavaExpression get(String name) throws ContextException {
         return null;
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) {
-        return defaultValue;
+    public JavaExpression find(String name) throws ContextException {
+        return parent.find(name);
     }
 
     @Override
     public JavaExpression currentExpression() {
-        return lambda.callExpression("ignore");
+        return lambda.callExpression("NOT KNOWN YET");
     }
 
     @Override

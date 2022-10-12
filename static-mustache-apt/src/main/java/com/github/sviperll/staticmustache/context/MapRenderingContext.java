@@ -62,7 +62,7 @@ class MapRenderingContext implements RenderingContext {
     }
 
     @Override
-    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+    public @Nullable JavaExpression get(String name) throws ContextException {
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
         
         var getMethod = ElementFilter.methodsIn(all).stream()
@@ -79,11 +79,11 @@ class MapRenderingContext implements RenderingContext {
     }
     
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+    public JavaExpression find(String name) throws ContextException {
         //TODO this should probably check parent as well?
-       var r = getDataDirectly(name);
+       var r = get(name);
        if (r == null) {
-           r = parent.getDataOrDefault(name, defaultValue);
+           r = parent.find(name);
        }
        return r;
     }

@@ -66,12 +66,12 @@ class ArrayRenderingContext implements RenderingContext {
     }
 
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
-        return parent.getDataOrDefault(name, defaultValue);
+    public JavaExpression find(String name) throws ContextException {
+        return parent.find(name);
     }
     
     @Override
-    public @Nullable JavaExpression getDataDirectly(String name) throws ContextException {
+    public @Nullable JavaExpression get(String name) throws ContextException {
         return null;
     }
 

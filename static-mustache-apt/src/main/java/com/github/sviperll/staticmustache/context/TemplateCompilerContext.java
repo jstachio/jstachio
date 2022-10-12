@@ -292,7 +292,7 @@ public class TemplateCompilerContext {
         if (childType == ContextType.BLOCK) {
             return enclosing;
         }
-        JavaExpression entry = direct ? enclosing.getDataDirectly(name) :  enclosing.getDataOrDefault(name, null);
+        JavaExpression entry = direct ? enclosing.get(name) :  enclosing.find(name);
         if (entry == null && childType == ContextType.SECTION) {
             var lambda = lambdas.lambdas().get(name);
             if (lambda != null) {

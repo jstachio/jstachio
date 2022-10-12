@@ -12,7 +12,7 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
     }
     
     @Override
-    public JavaExpression getDataOrDefault(String name, JavaExpression defaultValue) throws ContextException {
+    public JavaExpression find(String name) throws ContextException {
         //See MapNode.find
         //Currently this only works if MapNode is the root context
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);

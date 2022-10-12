@@ -31,18 +31,30 @@ package com.github.sviperll.staticmustache.context;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
- */
+
 interface RenderingContext {
     String beginSectionRenderingCode();
     String endSectionRenderingCode();
     
-    @Nullable JavaExpression getDataDirectly(String name) throws ContextException;
+    /**
+     * Gets the method (or field) directly in this context.
+     * This is for dotted names as they cannot look up the context stack.
+     * 
+     * @param name
+     * @return
+     * @throws ContextException
+     */
+    @Nullable JavaExpression get(String name) throws ContextException;
 
-    //TODO remove defaultValue as its polynull
-    @Nullable JavaExpression getDataOrDefault(String name, @Nullable JavaExpression defaultValue) throws ContextException;
+    /**
+     * Looks for a method or or field up the context stack starting
+     * in the current context first and then delgating to the parent.
+     * 
+     * @param name
+     * @return
+     * @throws ContextException
+     */
+    @Nullable JavaExpression find(String name) throws ContextException;
     JavaExpression currentExpression();
     VariableContext createEnclosedVariableContext();
     @Nullable RenderingContext getParent();
