@@ -30,6 +30,7 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,36 +106,40 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         currentWriter().println();
     }
     
+    
     @Override
-    public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+    protected void processTokenGroup(List<ProcessToken> tokens) throws ProcessingException {
         if (inLambda()) {
-            processInsideLambdaToken(positionedToken);
+            processInsideLambdaToken(tokens);
         }
         else {
-            super.processToken(positionedToken);
+            super.processTokenGroup(tokens);
         }
     }
     
-    void processInsideLambdaToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+    void processInsideLambdaToken(List<ProcessToken> tokens) throws ProcessingException {
         String lambdaName = context.currentEnclosedContextName();
-        var mt = positionedToken.innerToken();
-        if (mt instanceof TagToken tt 
-                && tt.tagKind() == MustacheTagKind.END_SECTION 
-                && lambdaName.equals(tt.name())) {
-            super.processToken(positionedToken);
-        }
-        else if (mt.isEOF()) {
-            throw new ProcessingException(position, "EOF reached before lambda closing tag found. lambda = " + lambdaName);
-        }
-        else {
-            mt.appendEscapedJava(currentUnescaped);
+        for (var t : tokens) {
+            var mt = t.token().innerToken();
+            if (mt instanceof TagToken tt 
+                    && tt.tagKind() == MustacheTagKind.END_SECTION 
+                    && lambdaName.equals(tt.name())) {
+                super._processToken(t.token());
+            }
+            else if (mt.isEOF()) {
+                throw new ProcessingException(position, "EOF reached before lambda closing tag found. lambda = " + lambdaName);
+            }
+            else {
+                mt.appendEscapedJava(currentUnescaped);
+            }
         }
         
         
     }
+    
     
     protected boolean inLambda() {
-        return context.getType() == ContextType.LAMBDA;
+       return context.getType() == ContextType.LAMBDA;
     }
     
     @Override
@@ -298,10 +303,15 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
     
     protected void _beginLambdaSection(String name) {
-        
+        if (isDebug()) {
+            debug("Begin lambda. name = " + name);
+        }
     }
     
     protected void _endLambdaSection(String name) throws ProcessingException {
+        if (isDebug()) {
+            debug("End Lambda. name = " + name);
+        }
         try {
             String code = stringLiteralConcat(currentUnescaped.toString());
             currentUnescaped.setLength(0);

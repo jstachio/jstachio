@@ -1,6 +1,7 @@
 package com.snaphop.staticmustache.apt;
 
 import java.util.ArrayDeque;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -19,7 +20,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     
 
     @Override
-    public void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+    public final void processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         previousTokens.offer(positionedToken);
         processTokens();
     }
@@ -35,7 +36,6 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     }
     
     private void processTokens() throws ProcessingException {
-        
         
         boolean eof = previousTokens.stream().filter(t -> t.innerToken().isEOF()).findFirst().isPresent();
         if (eof) {
@@ -60,6 +60,8 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
 
         do {
             
+            buf.clear();
+            
             int size = previousTokens.size();
             
             if (size == 1 && eof) {
@@ -71,7 +73,6 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
                 return; // we need more tokens
             }
             
-            buf.clear();
             var firstToken = previousTokens.poll();
             var secondToken = previousTokens.poll();
             buf.offerLast(firstToken);
@@ -83,8 +84,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
              */
             if (atStartOfLine && ! (firstToken.innerToken().isNewlineToken() || firstToken.innerToken().isWhitespaceToken()) 
                     && secondToken.innerToken().isStandaloneToken()) {
-                _processToken(firstToken);
-                _processToken(secondToken);
+                processTokenGroup(ProcessToken.of(firstToken), ProcessToken.of(secondToken));
                 atStartOfLine = false;
                 continue;
             }
@@ -93,10 +93,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
              */
             if (atStartOfLine && firstToken.innerToken().isStandaloneToken() && secondToken.innerToken().isNewlineOrEOF()) {
                 debug("2 standalone condition: {{#some section}} [ newline ]");
-                _processToken(firstToken);
-                if (secondToken.innerToken().isEOF()) {
-                    _processToken(secondToken);
-                }
+                processTokenGroup(ProcessToken.of(firstToken), ProcessToken.ignore(secondToken));
                 atStartOfLine = true;
                 continue;
             }
@@ -112,10 +109,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
                         && secondToken.innerToken().isWhitespaceToken() //
                         && thirdToken.innerToken().isNewlineOrEOF()) {
                     debug("3 standalone condition: {{#some section}} [white space] [ newline ]");
-                    _processToken(firstToken);
-                    if (thirdToken.innerToken().isEOF()) {
-                        _processToken(thirdToken);
-                    }
+                    processTokenGroup(ProcessToken.of(firstToken), ProcessToken.ignore(secondToken), ProcessToken.ignore(thirdToken));
                     atStartOfLine = true;
                     continue;
                 }
@@ -127,10 +121,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
                         && secondToken.innerToken().isStandaloneToken() //
                         && thirdToken.innerToken().isNewlineOrEOF()) {
                     debug("3 standalone condition: [white space] {{#some section}} [ newline ]");
-                    _processIndentToken(firstToken, secondToken);
-                    if (thirdToken.innerToken().isEOF()) {
-                        _processToken(thirdToken);
-                    }
+                    processTokenGroup(ProcessToken.indent(firstToken), ProcessToken.of(secondToken), ProcessToken.ignore(thirdToken));
                     atStartOfLine = true;
                     continue;
                 }
@@ -147,34 +138,55 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
                             && thirdToken.innerToken().isWhitespaceToken() //
                             && fourthToken.innerToken().isNewlineOrEOF()) {
                         debug("4 standalone condition: [white space] {{#some section}} [white space] [ newline ]");
-                        _processIndentToken(firstToken, secondToken);
-                        if (fourthToken.innerToken().isEOF()) {
-                            _processToken(fourthToken);
-                        }
+                        processTokenGroup(
+                                ProcessToken.indent(firstToken), 
+                                ProcessToken.of(secondToken), 
+                                ProcessToken.ignore(thirdToken),
+                                ProcessToken.ignore(fourthToken));
                         atStartOfLine = true;
                         continue;
                     }
                 }
             }
-            // We have to put the tokens back into the queue
+            // We have to put the tokens back into the queue if none of the conditions applied
             buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
 
-            //exitEarly = false;
-            
             if (eof && ! previousTokens.isEmpty()) {
-                _processToken(previousTokens.poll());
+                processTokenGroup(ProcessToken.of(previousTokens.poll()));
             }
             else if (previousTokens.size() > 5) {
                 if (isDebug()) {
                     debug("More than 5 tokens");
                 }
-                _processToken(previousTokens.poll());
+                processTokenGroup(ProcessToken.of(previousTokens.poll()));
             }
             
         } while(eof && !previousTokens.isEmpty());
     }
     
-    void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+    
+    protected void processTokenGroup(ProcessToken ... tokens) throws ProcessingException {
+        processTokenGroup(List.of(tokens));
+    }
+    protected void processTokenGroup(List<ProcessToken> tokens) throws ProcessingException {
+        var it = tokens.iterator();
+        while (it.hasNext()) {
+            var token = it.next();
+            switch(token.hint()) {
+            case IGNORE -> {}
+            case INDENT -> {
+                var nextToken = it.next();
+                _processIndentToken(token.token(), nextToken.token());
+            }
+            case NORMAL, EOF -> {
+                _processToken(token.token());
+            }
+            }
+        }
+        
+    }
+    
+    protected void _processToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         this.position = positionedToken.position();
         positionedToken.innerToken().accept(new CompilingTokenProcessor(this));
         if (positionedToken.innerToken().isNewlineOrEOF()) {
@@ -186,7 +198,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
         lastProcessedToken = positionedToken;
     }
     
-    void _processIndentToken(
+    protected void _processIndentToken(
             PositionedToken<MustacheToken> whitespace, 
             PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
         if(positionedToken.innerToken().isIndented()) {
@@ -201,6 +213,38 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
             }
         }
         _processToken(positionedToken);
+    }
+    
+    protected record ProcessToken(PositionedToken<MustacheToken> token, ProcessHint hint) {
+        
+        protected static ProcessToken ignore(PositionedToken<MustacheToken> token) {
+            if (token.innerToken().isEOF()) {
+                return new ProcessToken(token, ProcessHint.EOF);
+            }
+            return new ProcessToken(token, ProcessHint.IGNORE);
+        }
+        
+        protected static ProcessToken of(PositionedToken<MustacheToken> token) {
+            if (token.innerToken().isEOF()) {
+                return new ProcessToken(token, ProcessHint.EOF);
+            }
+            return new ProcessToken(token, ProcessHint.NORMAL);
+        }
+        
+        protected static ProcessToken indent(PositionedToken<MustacheToken> token) {
+            if (token.innerToken().isEOF()) {
+                return new ProcessToken(token, ProcessHint.EOF);
+            }
+            return new ProcessToken(token, ProcessHint.INDENT);
+        }
+        
+        protected enum ProcessHint {
+            IGNORE,
+            INDENT,
+            NORMAL,
+            EOF;
+        }
+        
     }
 
     protected abstract void _endOfFile() throws ProcessingException;

@@ -296,11 +296,12 @@ public class TemplateCompilerContext {
         if (entry == null && childType == ContextType.SECTION) {
             var lambda = lambdas.lambdas().get(name);
             if (lambda != null) {
-                return new LambdaRenderingContext(lambda, variables);
+                return new LambdaRenderingContext(lambda, variables, enclosing);
             }
         }
         if (entry == null) {
             //TODO remove this system out
+            Thread.dumpStack();
             System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
             throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }

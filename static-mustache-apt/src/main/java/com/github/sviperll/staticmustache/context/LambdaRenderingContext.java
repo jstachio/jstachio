@@ -5,12 +5,15 @@ import org.eclipse.jdt.annotation.Nullable;
 class LambdaRenderingContext implements RenderingContext {
     private final Lambda lambda;
     private final VariableContext variables;
+    private final RenderingContext parent;
     
     public LambdaRenderingContext(
             Lambda lambda, 
-            VariableContext variables) {
+            VariableContext variables,
+            RenderingContext parent) {
         this.lambda = lambda;
         this.variables = variables;
+        this.parent = parent;
     }
 
     
@@ -51,7 +54,7 @@ class LambdaRenderingContext implements RenderingContext {
     
     @Override
     public @Nullable RenderingContext getParent() {
-        return null;
+        return parent;
     }
     
 }
