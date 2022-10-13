@@ -39,5 +39,5 @@ jobs:
           reporter: 'java-junit'
           path: '**/target/surefire-reports/TEST-*.xml'
         if: always()
-      - name: Deploy with Maven
-        run: mvn $MAVEN_CLI_OPTS -Dmaven.install.skip=true -DskipTests=true deploy 
+          #      - name: Deploy with Maven
+          #        run: mvn $MAVEN_CLI_OPTS -Dmaven.install.skip=true -DskipTests=true deploy 
