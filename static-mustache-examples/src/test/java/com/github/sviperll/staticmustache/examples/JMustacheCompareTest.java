@@ -54,7 +54,8 @@ public class JMustacheCompareTest {
     }
     
     private String normalize(String out) {
-        return out.replaceAll("\\n+", "\n");
+        return out;
+        //return out.replaceAll("\\n+", "\n");
     }
     private String jmustacheRender(PageContainer page) {
         try {
