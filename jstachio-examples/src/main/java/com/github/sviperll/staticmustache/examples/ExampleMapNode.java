@@ -3,8 +3,8 @@ package com.github.sviperll.staticmustache.examples;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.ContextNode;
+import io.jstach.ContextNode;
+import io.jstach.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template = "example-map-node.mustache")
 public class ExampleMapNode implements ContextNode {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,5 +27,46 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-@org.eclipse.jdt.annotation.NonNullByDefault
-package com.github.sviperll.staticmustache.text;
+package io.jstach.text;
+
+import java.io.IOException;
+
+import io.jstach.spi.RenderService;
+
+/**
+ * Can be rendered.
+ * <p>
+ * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate html output.
+ * 
+ * @param <T>
+ *                marks given renderable with it's format
+ *
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ */
+public abstract class Renderable<T> implements RenderFunction {
+
+    /**
+     * Creates Renderer object that can be called to write out actual rendered text.
+     * <p>
+     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
+     * 
+     * @param appendable
+     *                       appendable to write rendered text to
+     * @return Renderer object
+     */
+    protected abstract RendererDefinition createRenderer(Appendable appendable);
+    
+    public abstract String getTemplate();
+    
+    public abstract Object getContext();
+    
+    @Override
+    public final void render(Appendable a) throws IOException {
+        RenderService rs = RenderService.findService();
+        var rf = rs.renderer(getTemplate(), getContext(), (writer) -> {
+            var r = createRenderer(writer);
+            r.render();
+        });
+        rf.render(a);
+    }
+}

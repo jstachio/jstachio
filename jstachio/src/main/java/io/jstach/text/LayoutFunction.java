@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache.text;
+package io.jstach.text;
 
 import java.io.IOException;
 

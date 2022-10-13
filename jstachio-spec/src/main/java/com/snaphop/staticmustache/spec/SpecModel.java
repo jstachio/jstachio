@@ -3,7 +3,7 @@ package com.snaphop.staticmustache.spec;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.github.sviperll.staticmustache.ContextNode;
+import io.jstach.ContextNode;
 
 public class SpecModel implements ContextNode {
     

@@ -41,9 +41,9 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import com.github.sviperll.staticmustache.ContextNode;
-import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.RenderFunction;
+import io.jstach.ContextNode;
+import io.jstach.text.Layoutable;
+import io.jstach.text.RenderFunction;
 
 /**
  *

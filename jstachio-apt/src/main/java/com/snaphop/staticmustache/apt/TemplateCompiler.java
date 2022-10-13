@@ -37,7 +37,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
@@ -49,6 +48,8 @@ import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
 import com.snaphop.staticmustache.apt.MustacheToken.NewlineChar;
 import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 import com.snaphop.staticmustache.apt.MustacheToken.TagToken;
+
+import io.jstach.TemplateCompilerFlags;
 
 /**
  *

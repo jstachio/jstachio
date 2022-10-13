@@ -6,10 +6,11 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.snaphop.staticmustache.apt.MustacheToken.NewlineChar;
 import com.snaphop.staticmustache.apt.MustacheToken.SpecialChar;
 import com.snaphop.staticmustache.apt.MustacheToken.TextToken;
+
+import io.jstach.TemplateCompilerFlags;
 
 public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
     

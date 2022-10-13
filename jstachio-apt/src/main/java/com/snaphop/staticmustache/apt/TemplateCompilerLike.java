@@ -9,9 +9,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.TemplateStack;
 import com.snaphop.staticmustache.apt.CodeAppendable.StringCodeAppendable;
+
+import io.jstach.TemplateCompilerFlags;
 
 interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
 

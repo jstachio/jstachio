@@ -2,10 +2,10 @@ package com.github.sviperll.staticmustache.examples;
 
 import java.util.Map;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags.Flag;
-import com.github.sviperll.staticmustache.TemplateLambda;
+import io.jstach.GenerateRenderableAdapter;
+import io.jstach.TemplateCompilerFlags;
+import io.jstach.TemplateLambda;
+import io.jstach.TemplateCompilerFlags.Flag;
 
 @GenerateRenderableAdapter(template = "lambda-example.mustache")
 @TemplateCompilerFlags(flags = { Flag.DEBUG })

@@ -8,10 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-import com.github.sviperll.staticmustache.spi.RenderService;
-import com.github.sviperll.staticmustache.text.RenderFunction;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+
+import io.jstach.spi.RenderService;
+import io.jstach.text.RenderFunction;
 
 public class JMustacheRenderService implements RenderService {
 

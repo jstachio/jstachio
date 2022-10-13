@@ -38,7 +38,6 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
@@ -46,6 +45,8 @@ import com.snaphop.staticmustache.apt.NamedTemplate.FileTemplate;
 import com.snaphop.staticmustache.apt.NamedTemplate.InlineTemplate;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateCompilerType;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateLoader;
+
+import io.jstach.TemplateCompilerFlags;
 
 /**
  *

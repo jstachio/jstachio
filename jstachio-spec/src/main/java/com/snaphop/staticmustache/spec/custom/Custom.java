@@ -1,12 +1,13 @@
 package com.snaphop.staticmustache.spec.custom;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
 import com.snaphop.staticmustache.spec.custom.Custom.DottedNamesTruthy.A;
 //import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
 //import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
 import com.snaphop.staticmustache.spec.interpolation.InterpolationSpecTemplate;
 import com.snaphop.staticmustache.spec.inverted.InvertedSpecTemplate;
 import com.snaphop.staticmustache.spec.sections.SectionsSpecTemplate;
+
+import io.jstach.GenerateRenderableAdapter;
 
 public class Custom {
     

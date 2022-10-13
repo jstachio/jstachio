@@ -31,9 +31,9 @@ package com.github.sviperll.staticmustache.examples;
 
 import java.util.List;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.formats.Html;
+import io.jstach.GenerateRenderableAdapter;
+import io.jstach.text.Layoutable;
+import io.jstach.text.formats.Html;
 
 /**
  *

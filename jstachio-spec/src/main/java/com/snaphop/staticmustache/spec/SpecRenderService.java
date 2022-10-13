@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import com.github.sviperll.staticmustache.spi.Formatter;
-import com.github.sviperll.staticmustache.spi.RenderService;
+import io.jstach.spi.Formatter;
+import io.jstach.spi.RenderService;
 
 @MetaInfServices(RenderService.class)
 public class SpecRenderService implements RenderService {

@@ -65,22 +65,23 @@ import javax.tools.JavaFileObject;
 
 import org.kohsuke.MetaInfServices;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.GenerateRenderableAdapters;
-import com.github.sviperll.staticmustache.Template;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.JavaLanguageModel;
 import com.github.sviperll.staticmustache.context.RenderingCodeGenerator;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.VariableContext;
 import com.github.sviperll.staticmustache.meta.ElementMessage;
-import com.github.sviperll.staticmustache.text.LayoutFunction;
-import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.RenderFunction;
-import com.github.sviperll.staticmustache.text.Renderable;
-import com.github.sviperll.staticmustache.text.RendererDefinition;
-import com.github.sviperll.staticmustache.text.formats.TextFormat;
 import com.snaphop.staticmustache.apt.TemplateCompilerLike.TemplateCompilerType;
+
+import io.jstach.GenerateRenderableAdapter;
+import io.jstach.GenerateRenderableAdapters;
+import io.jstach.Template;
+import io.jstach.TemplateCompilerFlags;
+import io.jstach.text.LayoutFunction;
+import io.jstach.text.Layoutable;
+import io.jstach.text.RenderFunction;
+import io.jstach.text.Renderable;
+import io.jstach.text.RendererDefinition;
+import io.jstach.text.formats.TextFormat;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")

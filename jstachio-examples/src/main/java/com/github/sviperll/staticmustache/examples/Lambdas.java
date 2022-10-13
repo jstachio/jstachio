@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.github.sviperll.staticmustache.TemplateLambda;
+import io.jstach.TemplateLambda;
 
 public interface Lambdas {
     

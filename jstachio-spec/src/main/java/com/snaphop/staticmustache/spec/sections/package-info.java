@@ -1,2 +1,2 @@
-@com.github.sviperll.staticmustache.TemplateFormatterTypes(patterns = ".*")
+@io.jstach.TemplateFormatterTypes(patterns = ".*")
 package com.snaphop.staticmustache.spec.sections;

@@ -1,11 +1,12 @@
 package com.snaphop.staticmustache.spec.inheritance;
 
 import com.snaphop.staticmustache.spec.SpecModel;
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.TemplateMapping;
-import com.github.sviperll.staticmustache.Template;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags;
-import com.github.sviperll.staticmustache.TemplateCompilerFlags.Flag;
+
+import io.jstach.GenerateRenderableAdapter;
+import io.jstach.Template;
+import io.jstach.TemplateCompilerFlags;
+import io.jstach.TemplateMapping;
+import io.jstach.TemplateCompilerFlags.Flag;
 
 @GenerateRenderableAdapter(template = "inheritance/Multilevelinheritance.mustache")
 @TemplateMapping({

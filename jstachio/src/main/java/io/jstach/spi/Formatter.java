@@ -1,10 +1,10 @@
-package com.github.sviperll.staticmustache.spi;
+package io.jstach.spi;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.github.sviperll.staticmustache.ContextNode;
+import io.jstach.ContextNode;
 
 public interface Formatter {
 

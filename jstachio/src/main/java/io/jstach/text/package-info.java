@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,54 +27,5 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.sviperll.staticmustache;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import com.github.sviperll.staticmustache.text.formats.Html;
-
-/**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
- */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
-@Documented
-public @interface GenerateRenderableAdapter {
-    /**
-      * @return Path to mustache template */
-    String template();
-
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
-
-    /**
-     * Class representing template format.
-     * <p>
-     * You can create custom formats using
-     * @TemplateFormat annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> templateFormat() default Html.class;
-
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
-
-    boolean isLayout() default false;
-}
+@org.eclipse.jdt.annotation.NonNullByDefault
+package io.jstach.text;

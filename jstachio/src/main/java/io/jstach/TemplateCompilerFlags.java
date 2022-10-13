@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache;
+package io.jstach;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,8 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
+@Target(ElementType.TYPE)
 @Documented
-public @interface TemplateInterface {
-    public Class<?> value();
+public @interface TemplateCompilerFlags {
+    
+    Flag[] flags();
+    
+    public enum Flag {
+        DEBUG
+    }
 }

@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache;
+package io.jstach;
 
 import java.util.Collections;
 import java.util.Iterator;

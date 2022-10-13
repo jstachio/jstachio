@@ -36,8 +36,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.sviperll.staticmustache.text.Layoutable;
-import com.github.sviperll.staticmustache.text.formats.Html;
+import io.jstach.text.Layoutable;
+import io.jstach.text.formats.Html;
 
 public class Main {
     public static void main(String[] args) throws IOException {

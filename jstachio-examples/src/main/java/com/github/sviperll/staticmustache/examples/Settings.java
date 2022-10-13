@@ -29,9 +29,9 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
-import com.github.sviperll.staticmustache.text.RenderFunction;
-import com.github.sviperll.staticmustache.text.formats.Html;
+import io.jstach.GenerateRenderableAdapter;
+import io.jstach.text.RenderFunction;
+import io.jstach.text.formats.Html;
 
 /**
  *

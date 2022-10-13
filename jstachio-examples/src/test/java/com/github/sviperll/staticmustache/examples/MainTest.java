@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.github.sviperll.staticmustache.text.RenderFunction;
+import io.jstach.text.RenderFunction;
 
 public class MainTest {
 

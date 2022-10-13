@@ -29,15 +29,15 @@
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
 @net.java.dev.hickory.prism.GeneratePrisms({ //
-    @GeneratePrism(com.github.sviperll.staticmustache.GenerateRenderableAdapters.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.GenerateRenderableAdapter.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.TemplateBasePath.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.TemplateInterface.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.TemplateMapping.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.Template.class), //
-    @GeneratePrism(value = com.github.sviperll.staticmustache.TemplateLambda.class, publicAccess = true), //
-    @GeneratePrism(com.github.sviperll.staticmustache.TemplateFormatterTypes.class), //
-    @GeneratePrism(com.github.sviperll.staticmustache.TemplateCompilerFlags.class), //
+    @GeneratePrism(io.jstach.GenerateRenderableAdapters.class), //
+    @GeneratePrism(io.jstach.GenerateRenderableAdapter.class), //
+    @GeneratePrism(io.jstach.TemplateBasePath.class), //
+    @GeneratePrism(io.jstach.TemplateInterface.class), //
+    @GeneratePrism(io.jstach.TemplateMapping.class), //
+    @GeneratePrism(io.jstach.Template.class), //
+    @GeneratePrism(value = io.jstach.TemplateLambda.class, publicAccess = true), //
+    @GeneratePrism(io.jstach.TemplateFormatterTypes.class), //
+    @GeneratePrism(io.jstach.TemplateCompilerFlags.class), //
 
 })
 package com.snaphop.staticmustache.apt;

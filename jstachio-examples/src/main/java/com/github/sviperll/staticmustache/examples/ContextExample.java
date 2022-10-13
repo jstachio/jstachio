@@ -1,6 +1,6 @@
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+import io.jstach.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template="context-example.mustache")
 public record ContextExample(String a, String b, Sec sec, C c ) {

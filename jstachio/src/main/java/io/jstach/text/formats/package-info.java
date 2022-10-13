@@ -28,4 +28,4 @@
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
-package com.github.sviperll.staticmustache.text.formats;
+package io.jstach.text.formats;

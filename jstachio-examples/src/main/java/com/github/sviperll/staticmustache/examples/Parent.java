@@ -1,6 +1,6 @@
 package com.github.sviperll.staticmustache.examples;
 
-import com.github.sviperll.staticmustache.GenerateRenderableAdapter;
+import io.jstach.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template="parent.mustache")
 public record Parent(String message) {

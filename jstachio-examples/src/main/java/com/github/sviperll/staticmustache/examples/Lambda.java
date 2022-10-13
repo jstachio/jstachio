@@ -2,9 +2,9 @@ package com.github.sviperll.staticmustache.examples;
 
 import java.io.IOException;
 
-import com.github.sviperll.staticmustache.ContextNode;
-import com.github.sviperll.staticmustache.TemplateLambda;
-import com.github.sviperll.staticmustache.text.RenderFunction;
+import io.jstach.ContextNode;
+import io.jstach.TemplateLambda;
+import io.jstach.text.RenderFunction;
 
 public record Lambda(String name) {
     

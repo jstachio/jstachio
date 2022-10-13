@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache;
+package io.jstach;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,11 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface Template {
+public @interface TemplateMapping {
     
-    String name();
-    String path() default "";
-    String template() default NOT_SET;
+    public Template[] value() default {};
     
-    public static String NOT_SET = "__NOT_SET__";
 }

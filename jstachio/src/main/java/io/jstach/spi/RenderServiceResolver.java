@@ -1,11 +1,11 @@
-package com.github.sviperll.staticmustache.spi;
+package io.jstach.spi;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import com.github.sviperll.staticmustache.text.RenderFunction;
+import io.jstach.text.RenderFunction;
 
 enum RenderServiceResolver implements RenderService {
 

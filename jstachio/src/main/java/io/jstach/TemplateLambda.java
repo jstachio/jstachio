@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache;
+package io.jstach;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -22,9 +22,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.github.sviperll.staticmustache.TemplateFormatterTypes;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Escaper;
+
+import io.jstach.TemplateFormatterTypes;
+
 import com.samskivert.mustache.Template;
 
 /**
@@ -85,15 +87,15 @@ public class SpecGenerator {
             Map<String, Object> data, String expected, Map<String, SpecPartial> partialMap) implements JavaItem {
 
         ClassRef annotation() {
-            return new ClassRef(com.github.sviperll.staticmustache.GenerateRenderableAdapter.class);
+            return new ClassRef(io.jstach.GenerateRenderableAdapter.class);
         }
         
         ClassRef templatePathsAnnotation() {
-            return new ClassRef(com.github.sviperll.staticmustache.TemplateMapping.class);
+            return new ClassRef(io.jstach.TemplateMapping.class);
         }
         
         ClassRef templatePathAnnotation() {
-            return new ClassRef(com.github.sviperll.staticmustache.Template.class);
+            return new ClassRef(io.jstach.Template.class);
         }
         
         String templateName() {
