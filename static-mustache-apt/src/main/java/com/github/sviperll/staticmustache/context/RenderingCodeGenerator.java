@@ -123,6 +123,7 @@ public class RenderingCodeGenerator {
                 + ", " + text + ");";
     }
     
+    @SuppressWarnings("null")
     private Lambdas resolveLambdas(TypeElement element, JavaExpression root) throws AnnotatedException {
         
         var all = javaModel.getElements().getAllMembers(element);
@@ -160,9 +161,9 @@ public class RenderingCodeGenerator {
      * @return new TemplateCompilerContext
      * @throws AnnotatedException 
      */
-    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) throws AnnotatedException {
-        RootRenderingContext root = new RootRenderingContext(variables);
+    public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, TypeElement element, String expression, VariableContext variables) throws AnnotatedException {
         JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
+        RootRenderingContext root = new RootRenderingContext(variables);
         Lambdas lambdas = resolveLambdas(element, javaExpression);
         
         RenderingContext rootRenderingContext;
@@ -177,7 +178,16 @@ public class RenderingCodeGenerator {
         else {
              rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression, element, root);
         }
-        return new TemplateCompilerContext(TemplateStack.of(templateName), lambdas, this, variables, rootRenderingContext, ContextType.ROOT);
+        return new TemplateCompilerContext(templateStack, lambdas, this, variables, rootRenderingContext, ContextType.ROOT);
+    }
+    
+    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) throws AnnotatedException {
+        return createTemplateCompilerContext(TemplateStack.of(templateName), element, expression, variables);
+    }
+    
+    public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, DeclaredType type, String expression, VariableContext variables) throws AnnotatedException {
+        TypeElement element = javaModel.asElement(type);
+        return createTemplateCompilerContext(templateStack, element, expression, variables);
     }
 
     RenderingContext createRenderingContext(ContextType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {

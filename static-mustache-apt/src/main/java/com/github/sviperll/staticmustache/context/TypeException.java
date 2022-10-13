@@ -33,7 +33,6 @@ package com.github.sviperll.staticmustache.context;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@SuppressWarnings("serial")
 class TypeException extends Exception {
     public TypeException(String message) {
         super(message);

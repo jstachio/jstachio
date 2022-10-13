@@ -29,22 +29,23 @@
  */
 package com.snaphop.staticmustache.apt;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.github.sviperll.staticmustache.context.ContextException;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@SuppressWarnings("serial")
 public class ProcessingException extends Exception {
     private final Position position;
 
-    private ProcessingException(Position position, String message, Throwable cause) {
+    private ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
         this.position = position;
     }
 
-    public ProcessingException(Position position, String message) {
+    public ProcessingException(Position position, @Nullable String message) {
         this(position, message, null);
     }
 
@@ -59,5 +60,20 @@ public class ProcessingException extends Exception {
 
     public Position position() {
         return position;
+    }
+    
+    public static class AnnotationProcessingException extends ProcessingException {
+        
+        private final AnnotatedException annotatedException;
+       
+        public AnnotationProcessingException(Position position, AnnotatedException annotedException) {
+            super(position, annotedException);
+            this.annotatedException = annotedException;
+        }
+        
+        public AnnotatedException getAnnotatedException() {
+            return annotatedException;
+        }
+        
     }
 }

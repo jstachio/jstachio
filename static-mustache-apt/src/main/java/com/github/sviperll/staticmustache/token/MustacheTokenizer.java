@@ -29,6 +29,8 @@
  */
 package com.github.sviperll.staticmustache.token;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.github.sviperll.staticmustache.token.util.BracesTokenizer;
 import com.github.sviperll.staticmustache.token.util.PositionHodingTokenProcessor;
 import com.snaphop.staticmustache.apt.MustacheToken;
@@ -50,7 +52,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
      * @param downstream TokenProcessor is invoked on each found MustacheToken
      * @return .
      */
-    public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
+    public static TokenProcessor<@NonNull Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
         TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
         return BracesTokenizer.createInstance(fileName, mustacheTokenizer);
     }

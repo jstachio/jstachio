@@ -30,15 +30,18 @@
 package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.TemplateCompilerFlags;
 import com.github.sviperll.staticmustache.context.ContextException;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
+import com.github.sviperll.staticmustache.context.TemplateCompilerContext.LambdaCompiler;
 import com.github.sviperll.staticmustache.token.MustacheTagKind;
 import com.github.sviperll.staticmustache.token.MustacheTokenizer;
 import com.snaphop.staticmustache.apt.CodeAppendable.HiddenCodeAppendable;
@@ -66,7 +69,8 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
         case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
         case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context, flags);
-        case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE -> throw new IllegalArgumentException("Cannot create partial template as root");
+        case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE, LAMBDA 
+            -> throw new IllegalArgumentException("Cannot create partial template as root");
         };
     }
 
@@ -75,7 +79,17 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     private TemplateCompilerContext context;
     boolean foundYield = false;
     int depth = 0;
+    /*
+     * This buffer contains the raw uninterpolated unescaped markup as escaped java string literals.
+     * 
+     * TODO maybe this should be a list of lines instead
+     */
     StringBuilder currentUnescaped = new StringBuilder();
+    /*
+     * Unlike the above is not java escaped
+     */
+    StringBuilder rawLambdaContent = new StringBuilder();
+    
     String indent = "";
     
     private final TemplateCompilerLike parent;
@@ -97,7 +111,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
 
     public void run() throws ProcessingException, IOException {
-        TokenProcessor<Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
+        TokenProcessor<@NonNull Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
         int readResult;
         while ((readResult = reader.read()) >= 0) {
             processor.processToken((char)readResult);
@@ -131,6 +145,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             }
             else {
                 mt.appendEscapedJava(currentUnescaped);
+                mt.appendRawText(rawLambdaContent);
             }
         }
         
@@ -170,11 +185,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
     
     public CodeAppendable currentWriter() {
-        if (_currentBlockOutput != null) {
-            return _currentBlockOutput;
+        CodeAppendable out = _currentBlockOutput;
+        if (out != null) {
+            return out;
         }
-        if (_parentBlockOutput != null) {
-            return _parentBlockOutput;
+        if ((out = _parentBlockOutput) != null) {
+            return out;
         }
         return getWriter();
     }
@@ -225,30 +241,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     
     private void _printCodeToWrite(String s) {
         if (s.isEmpty()) return;
-        String code = stringLiteralConcat(s);
+        String code = CodeAppendable.stringLiteralConcat(s);
         println();
         print(context.unescapedWriterExpression() + ".append(" + code + "); ");
         println();
     }
 
-    private String stringLiteralConcat(String s) {
-        int i = 0;
-        StringBuilder code = new StringBuilder();
-        for (String line : CodeNewLineSplitter.split(s, "\\n")) {
-            if (i > 0) {
-                code.append(" +");
-            }
-            code.append("\n    \"");
-            code.append(line);
-            code.append("\"");
-            i++;
-        }
-        String result = code.toString();
-        if (result.isEmpty()) {
-            result = "\"\"";
-        }
-        return result;
-    }
 
     private void print(String s) {
         int i = 0;
@@ -310,6 +308,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         if (isDebug()) {
             debug("Begin lambda. name = " + name);
         }
+        rawLambdaContent.setLength(0);
     }
     
     protected void _endLambdaSection(String name) throws ProcessingException {
@@ -317,11 +316,39 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             debug("End Lambda. name = " + name);
         }
         try {
-            String code = stringLiteralConcat(currentUnescaped.toString());
+            String javaCode = CodeAppendable.stringLiteralConcat(currentUnescaped.toString());
             currentUnescaped.setLength(0);
-            print(context.lambdaRenderingCode(code));
+            String rawBody = rawLambdaContent.toString();
+            rawLambdaContent.setLength(0);
+            var self = this;
+            LambdaCompiler lambdaCompiler = new LambdaCompiler() {
+                @Override
+                public String run(TemplateCompilerContext rootContext, Reader reader) 
+                        throws IOException, ProcessingException {
+                    NamedReader namedReader = new NamedReader(reader, name, "INLINE");
+                    StringCodeAppendable codeAppendable = new StringCodeAppendable();
+                    try(var c = new TemplateCompiler(namedReader, self, rootContext, false) {
+                        @Override
+                        public TemplateCompilerType getCompilerType() {
+                            return TemplateCompilerType.LAMBDA;
+                        }
+                        public CodeAppendable getWriter() {
+                            return codeAppendable;
+                        }
+                    }) {
+                        c.run();
+                        return codeAppendable.toString();
+                    }
+                    
+                }
+            };
+            print(context.lambdaRenderingCode(rawBody, javaCode, lambdaCompiler));
         } catch (ContextException ex) {
             throw new ProcessingException(position, ex);
+        } catch (IOException ioe) {
+            throw new ProcessingException(position, ioe);
+        } catch (AnnotatedException ae) {
+            throw new ProcessingException.AnnotationProcessingException(position, ae);
         }
     }
     
@@ -540,7 +567,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                         + callingPartial.getTemplateName());
             }
         }
-        case HEADER,FOOTER,SIMPLE,PARTIAL_TEMPLATE-> {
+        case HEADER,FOOTER,SIMPLE,PARTIAL_TEMPLATE,LAMBDA -> {
             /*
              * We are in the caller template at the end of a block
              * {{$block}}

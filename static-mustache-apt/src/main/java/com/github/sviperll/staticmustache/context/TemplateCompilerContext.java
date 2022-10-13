@@ -29,13 +29,21 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
 
+import javax.lang.model.type.DeclaredType;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.context.ContextException.FieldNotFoundContextException;
 import com.github.sviperll.staticmustache.context.Lambda.Lambdas;
+import com.snaphop.staticmustache.apt.AnnotatedException;
+import com.snaphop.staticmustache.apt.ProcessingException;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
@@ -80,7 +88,8 @@ public class TemplateCompilerContext {
 
     private String sectionBodyRenderingCode(VariableContext variables) throws ContextException {
         JavaExpression entry = context.currentExpression();
-        String path =  enclosedRelation != null ? enclosedRelation.name() : "";
+        var er = enclosedRelation;
+        String path =  er != null ? er.name() : "";
         try {
             return generator.generateRenderingCode(entry, variables, path);
         } catch (TypeException ex) {
@@ -96,26 +105,49 @@ public class TemplateCompilerContext {
         return beginSectionRenderingCode() + sectionBodyRenderingCode(variables.unescaped()) + endSectionRenderingCode();
     }
     
-    public String lambdaRenderingCode(String literalBody) throws ContextException  {
+    public String lambdaRenderingCode(String rawBody, String javaCode, LambdaCompiler compiler) 
+            throws ContextException, IOException, AnnotatedException, ProcessingException  {
         if (context instanceof LambdaRenderingContext lc) {
             Lambda lm = lc.getLambda();
             LambdaContext ctx = new LambdaContext(lc);
             JavaExpression entry;
             try {
-                entry = lm.callExpression(literalBody, ctx);
+                entry = lm.callExpression(javaCode, ctx);
             } catch (TypeException e) {
-                throw new ContextException(e.getMessage());
+                throw new ContextException(e.getMessage(), e);
             }
-            //TODO use formatter for non string types
-            return variables.unescapedWriter() 
-                    + ".append(" 
-                    + entry.text()
-                    +");";
+            return switch(lm.method().returnType()) {
+            case STRING-> {
+                //TODO use formatter for non string types
                 //return generator.generateRenderingCode(entry, variables, path);
+                yield variables.unescapedWriter() 
+                + ".append(" 
+                + entry.text()
+                +");";
+            }
+            case MODEL -> {
+                DeclaredType modelType;
+                if (lm.method().methodElement().getReturnType() instanceof @NonNull DeclaredType dt) {
+                    modelType = dt;
+                }
+                else {
+                    throw new IllegalStateException("Expected declaredType");
+                }
+                TemplateCompilerContext context = createForLambda(lm.name(), modelType);
+                StringReader sr = new StringReader(rawBody);
+                yield compiler.run(context, sr);
+            }
+            };
         }
         else {
             throw new IllegalStateException("bug expected lambda context");
         }
+    }
+    /*
+     * This dumb callback interface is so the context does not have to know all about Template Compiling
+     */
+    public interface LambdaCompiler {
+        public String run(TemplateCompilerContext rootContext, Reader reader) throws IOException, ProcessingException;
     }
 
     public String beginSectionRenderingCode() {
@@ -139,6 +171,12 @@ public class TemplateCompilerContext {
     
     public TemplateCompilerContext createForPartial(String template) {
         return new TemplateCompilerContext(templateStack.ofPartial(template),lambdas, generator, variables, context, ContextType.PARTIAL);
+    }
+    
+    TemplateCompilerContext createForLambda(String lambdaName, DeclaredType model) throws AnnotatedException {
+        String modelVariableName = variables.introduceNewNameLike(lambdaName);
+        var templateStack = this.templateStack.ofLambda(lambdaName);
+        return generator.createTemplateCompilerContext(templateStack, model, modelVariableName, variables);
     }
 
     

@@ -49,6 +49,7 @@ interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
         SIMPLE,
         HEADER,
         FOOTER,
+        LAMBDA,
         PARTIAL_TEMPLATE,
         PARAM_PARTIAL_TEMPLATE; // aka parent aka {{< parent }}
     }

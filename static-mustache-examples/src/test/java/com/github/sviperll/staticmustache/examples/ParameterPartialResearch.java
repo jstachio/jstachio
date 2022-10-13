@@ -165,7 +165,12 @@ public class ParameterPartialResearch {
     }
     
     public void lambdas() {
-        
+        String code = """
+                // call lambda
+                var model = data.someLambda(code, context);
+                // render template with new variable
+                model.stuff();
+                """;
     }
     
     private void render(Object...o) {

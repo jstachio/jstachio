@@ -19,7 +19,7 @@ public class LambdaContext {
         return parent.find(name, (c) -> true);
     }
 
-    public @Nullable JavaExpression get() {
+    public JavaExpression get() {
         return parent.get();
     }
 

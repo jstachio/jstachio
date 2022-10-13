@@ -29,17 +29,18 @@
  */
 package com.github.sviperll.staticmustache.context;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@SuppressWarnings("serial")
 public class ContextException extends Exception {
-    ContextException(String message, TypeException ex) {
+    ContextException(@Nullable String message, TypeException ex) {
         super(message + ": type error: " + ex.getMessage(), ex);
     }
 
-    ContextException(String message) {
+    ContextException(@Nullable String message) {
         super(message);
     }
     

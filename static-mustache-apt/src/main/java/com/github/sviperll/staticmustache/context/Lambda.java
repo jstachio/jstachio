@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,16 +53,9 @@ public sealed interface Lambda {
     }
     
     
-    default ReturnType returnType() {
-        return ReturnType.STRING;
-    }
-    
     public enum ReturnType {
         STRING,
-//        UNESCAPED_STRING,
-//        INLINE_TEMPLATE,
-//        PATH_TEMPLATE,
-//        RENDER_FUNCTION
+        MODEL
     }
     
     public enum ParamType {
@@ -112,6 +106,9 @@ public sealed interface Lambda {
             ReturnType returnType;
             if (model.isType(method.getReturnType(), model.knownTypes()._String)) {
                 returnType = ReturnType.STRING;
+            }
+            else if (method.getReturnType() instanceof DeclaredType dt) {
+                returnType = ReturnType.MODEL;
             }
             else {
                 throw new UnsupportedOperationException("Currently only String return types are supported.");

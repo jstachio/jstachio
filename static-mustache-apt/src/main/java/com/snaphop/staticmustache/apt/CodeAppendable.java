@@ -2,6 +2,8 @@ package com.snaphop.staticmustache.apt;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface CodeAppendable extends Appendable {
@@ -110,6 +112,46 @@ public interface CodeAppendable extends Appendable {
         public void disableOutput() {
         }
         
+    }
+    
+    public static String stringLiteralConcat(String s) {
+        int i = 0;
+        StringBuilder code = new StringBuilder();
+        for (String line : split(s, "\\n")) {
+            if (i > 0) {
+                code.append(" +");
+            }
+            code.append("\n    \"");
+            code.append(line);
+            code.append("\"");
+            i++;
+        }
+        String result = code.toString();
+        if (result.isEmpty()) {
+            result = "\"\"";
+        }
+        return result;
+    }
+    
+    static List<String> split(String s , String delim) {
+        int dl = delim.length();
+        int sl = s.length();
+        List<String> tokens = new ArrayList<>();
+        for (int i = 0; i < sl; ) {
+            int end = s.indexOf(delim, i);
+            end = end < 0 ? sl : Integer.min(end + dl, sl);
+            String chunk = s.substring(i, end);
+            tokens.add(chunk);
+            i = end;
+        }
+        return tokens;
+    }
+    
+    public static String escapeJava(String s) {
+        s = s.replace("\"", "\\\"");
+        s = s.replace("\\", "\\\\");
+        s = s.replace("\n", "\\n");
+        return s;
     }
 
 }

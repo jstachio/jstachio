@@ -52,7 +52,7 @@ interface RenderingContext {
      * This should be mostly equivalent to {{.}}
      * @return
      */
-    default @Nullable JavaExpression get() {
+    default JavaExpression get() {
         return currentExpression();
     }
 

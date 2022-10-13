@@ -3,6 +3,7 @@ package com.snaphop.staticmustache.apt;
 import java.util.ArrayDeque;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.github.sviperll.staticmustache.TemplateCompilerFlags;
@@ -27,7 +28,10 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     
     protected void debug(CharSequence message) {
         if (isDebug()) {
-            System.out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
+            var out = System.out;
+            if (out != null) {
+                out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
+            }
         }
     }
     
@@ -165,7 +169,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     }
     
     
-    protected void processTokenGroup(ProcessToken ... tokens) throws ProcessingException {
+    protected void processTokenGroup(@NonNull ProcessToken ... tokens) throws ProcessingException {
         processTokenGroup(List.of(tokens));
     }
     protected void processTokenGroup(List<ProcessToken> tokens) throws ProcessingException {
@@ -236,6 +240,10 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
                 return new ProcessToken(token, ProcessHint.EOF);
             }
             return new ProcessToken(token, ProcessHint.INDENT);
+        }
+        
+        public PositionedToken<MustacheToken> token() {
+            return token;
         }
         
         protected enum ProcessHint {

@@ -26,6 +26,10 @@ public interface TemplateStack {
         return new SimpleTemplateStack(templateName, this);
     }
     
+    default TemplateStack ofLambda(String templateName) {
+        return new SimpleTemplateStack(templateName, this);
+    }
+    
     public static TemplateStack of(String templateName) {
         return new SimpleTemplateStack(templateName, null);
     }
