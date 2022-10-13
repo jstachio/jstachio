@@ -1,27 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.snaphop.staticmustache</groupId>
-  <artifactId>static-mustache-maven-parent</artifactId>
-  <name>static-mustache-maven-parent</name>
+  <groupId>io.jstach</groupId>
+  <artifactId>jstachio-maven-parent</artifactId>
+  <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
   <version>0.6.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <properties>
-    <netbeans.hint.license>BSD3</netbeans.hint.license>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.9</metainf-services.version>
   </properties>
   <modules>
-    <module>static-mustache</module>
-    <module>static-mustache-examples</module>
-    <module>static-mustache-apt</module>
-    <module>static-mustache-spec</module>
+    <module>jstachio</module>
+    <module>jstachio-examples</module>
+    <module>jstachio-apt</module>
+    <module>jstachio-spec</module>
   </modules>
   <scm>
-    <connection>scm:git:https://github.com/snaphop/static-mustache.git</connection>
-    <developerConnection>scm:git:https://github.com/snaphop/static-mustache.git</developerConnection>
-    <url>https://github.com/snaphop/static-mustache</url>
+    <connection>scm:git:https://github.com/jstachio/jstachio.git</connection>
+    <developerConnection>scm:git:https://github.com/jstachio/jstachio.git</developerConnection>
+    <url>https://github.com/jstachio/jstachio</url>
     <tag>HEAD</tag>
   </scm>
   <licenses>
@@ -33,14 +32,14 @@
   </licenses>
   <developers>
     <developer>
-      <id>sviperll</id>
-      <name>Victor Nazarov</name>
-      <email>asviraspossible@gmail.com</email>
-    </developer>
-    <developer>
       <id>agentgt</id>
       <name>Adam Gent</name>
       <email>adam at snaphop dot com</email>
+    </developer>
+    <developer>
+      <id>sviperll</id>
+      <name>Victor Nazarov</name>
+      <email>asviraspossible@gmail.com</email>
     </developer>
   </developers>
   <dependencies>

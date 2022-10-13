@@ -1,15 +1,43 @@
-*~
-/build
-/target
-/static-mustache/build
-/static-mustache/target
-/static-mustache-examples/build
-/static-mustache-examples/target
-/.nb-gradle
-/.gradle
-/text-templates/target/
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+target
+.classpath
 .project
 .settings
-.classpath
 .factorypath
+dependency-reduced-pom.xml
+bin
+
+# OSX
+*.DS_Store
+
+# IntelliJ IDE Project Files #
+*.iml
+*.idea
+*.versionsBackup
+pom.xml.versionsBackup
+jacoco.exec
+.*.md.html
+node
+dump
+TODO
+.interp
 tmp
+checkstyle
+javadoc
+*.mv.db
+versions
+out
+node
+node_modules
+build
+.gradle
+
+# Emacs
+
+\#*\#
+.\#*

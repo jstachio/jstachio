@@ -1,13 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.snaphop.staticmustache</groupId>
-    <artifactId>static-mustache-maven-parent</artifactId>
+    <groupId>io.jstach</groupId>
+    <artifactId>jstachio-maven-parent</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>static-mustache-examples</artifactId>
-  <name>static-mustache-examples</name>
-  <packaging>jar</packaging>
+  <artifactId>jstachio-spec</artifactId>
   <build>
     <plugins>
       <plugin>
@@ -21,7 +19,7 @@
             </annotationProcessorPath>
             <annotationProcessorPath>
               <groupId>${project.groupId}</groupId>
-              <artifactId>static-mustache-apt</artifactId>
+              <artifactId>jstachio-apt</artifactId>
               <version>${project.version}</version>
             </annotationProcessorPath>
           </annotationProcessorPaths>
@@ -38,13 +36,13 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>static-mustache</artifactId>
+      <artifactId>jstachio</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>static-mustache-apt</artifactId>
+      <artifactId>jstachio-apt</artifactId>
       <version>${project.version}</version>
       <optional>true</optional>
       <scope>provided</scope>
@@ -57,8 +55,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.apache.commons</groupId>
+       <artifactId>commons-text</artifactId>
+       <version>1.9</version>
     </dependency>
   </dependencies>
 </project>
-
