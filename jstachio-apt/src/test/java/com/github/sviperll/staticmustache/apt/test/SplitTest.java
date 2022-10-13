@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.snaphop.staticmustache.apt.CodeAppendable;
+import io.jstach.apt.CodeAppendable;
 
 public class SplitTest {
 

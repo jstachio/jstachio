@@ -1,11 +1,10 @@
 import javax.annotation.processing.Processor;
 
-module com.snaphop.staticmustache.apt {
+module io.jstach.apt {
 	
 	requires java.compiler;
 	//requires static metainf.services;
-	requires static org.mapstruct.tools.gem;
-	requires com.snaphop.staticmustache;
+	requires io.jstach;
 	requires static org.eclipse.jdt.annotation;
 	
 	
