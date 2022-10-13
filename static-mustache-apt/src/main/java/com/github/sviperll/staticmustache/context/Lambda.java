@@ -96,7 +96,10 @@ public sealed interface Lambda {
                 params.add(new Param(name, ParamType.STRING_BODY, p.asType()));
             }
             else {
-                throw new UnsupportedOperationException("Lambda can only support string as first argument");
+                params.add(new Param(name, ParamType.CURRENT_CONTEXT, p.asType()));
+                if (it.hasNext()) {
+                    throw new UnsupportedOperationException("Lambdas can only have one context parameter");
+                }
             }
             if (it.hasNext()) {
                 p = it.next();
@@ -111,7 +114,7 @@ public sealed interface Lambda {
                 returnType = ReturnType.MODEL;
             }
             else {
-                throw new UnsupportedOperationException("Currently only String return types are supported.");
+                throw new UnsupportedOperationException("Currently only raw String and model Class return types are supported.");
             }
             return new Method(expression, name, method, returnType, params);
         }
@@ -134,52 +137,33 @@ public sealed interface Lambda {
 //
 //    }
 
-    public record StringLambda(Method method) implements Lambda {
+    record SimpleLambda(Method method) implements Lambda {
     }
     
     public static Lambda of( //
             JavaExpression expression,
             ExecutableElement method, 
-            @Nullable String name, 
-            @Nullable String template, 
-            @Nullable String path) {
+            @Nullable String name) {
         if (name == null || name.isBlank()) {
             name = method.getSimpleName().toString();
         }
         
         Method m = Method.of(expression, method, name);
-        return new StringLambda(m);
+        return new SimpleLambda(m);
     }
     
     public class Lambdas {
-        
+
         private final Map<String, Lambda> lambdas;
-        
-        private LambdaCallback callback = (lb, v) -> {
-            throw new IllegalStateException("callback not set");
-        };
         
         public Lambdas(Map<String, Lambda> lambdas) {
             super();
             this.lambdas = lambdas;
         }
         
-        public void setCallback(LambdaCallback callback) {
-            this.callback = callback;
-        }
-        
-        
-        public LambdaCallback getCallback() {
-            return callback;
-        }
-        
         public Map<String, Lambda> lambdas() {
             return lambdas;
         }
         
-    }
-    
-    public interface LambdaCallback {
-        public JavaExpression apply(Lambda lambda, VariableContext variables);
     }
 }

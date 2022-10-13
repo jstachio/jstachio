@@ -14,8 +14,8 @@ public @interface TemplateLambda {
     
     String name() default "";
     
-    String template() default "";
-    
-    String path() default "";
+//    String template() default "";
+//    
+//    String path() default "";
 
 }

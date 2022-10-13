@@ -1,3 +1,15 @@
 {{#name}}{{#hello}}Adam {{name}} {{/hello}}{{/name}}
 
-{{#props}}{{#listProps}}{{/listProps}}{{/props}}
+{{#props}}
+{{#listProps}}
+{{/stuff}} <-- Bad content should be ignored
+{{/listProps}}
+{{/props}}
+
+{{#props}}
+{{#eachProps}}
+{{#values}}
+Key: {{key}}, Value: {{value}}
+{{/values}}
+{{/eachProps}}
+{{/props}}

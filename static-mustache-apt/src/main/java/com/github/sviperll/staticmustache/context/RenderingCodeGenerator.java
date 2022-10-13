@@ -43,6 +43,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.github.sviperll.staticmustache.context.Lambda.Lambdas;
 import com.github.sviperll.staticmustache.context.TemplateCompilerContext.ContextType;
 import com.github.sviperll.staticmustache.context.types.KnownType;
@@ -106,7 +108,7 @@ public class RenderingCodeGenerator {
         else if (knownType != null && knownType instanceof NativeType) {
             return "format(" + variables.writer() + ", " + "\"" + path + "\"" + ", " + text + ");"; 
         }
-        else if (type instanceof DeclaredType dt) {
+        else if (type instanceof @NonNull DeclaredType dt) {
             String cname = javaModel.eraseType(dt);
             if (formatterTypes.isMatch(cname)) {
                 return renderFormatCall(variables, path, text, cname + ".class");
@@ -138,10 +140,10 @@ public class RenderingCodeGenerator {
         for (ExecutableElement lm : lambdaMethods) {
             TemplateLambdaPrism p = TemplateLambdaPrism.getInstanceOn(lm);
             String name = p.name();
-            String path = p.path();
+            //String path = p.path();
             Lambda lambda;
             try {
-                lambda = Lambda.of(root,lm, name, name, path);
+                lambda = Lambda.of(root,lm, name);
             } catch (Exception e1) {
                 throw new AnnotatedException(e1.getMessage(), lm);
             }
