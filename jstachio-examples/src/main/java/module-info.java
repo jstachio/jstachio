@@ -1,9 +1,9 @@
 import javax.annotation.processing.Processor;
-import com.github.sviperll.staticmustache.examples.JMustacheRenderService;
 
+import io.jstach.examples.JMustacheRenderService;
 import io.jstach.spi.RenderService;
 
-module com.snaphop.staticmustache.example {
+module io.jstach.examples {
     requires io.jstach;
     requires java.compiler;
     requires org.kohsuke.metainf_services;
@@ -11,7 +11,7 @@ module com.snaphop.staticmustache.example {
     
     requires static org.eclipse.jdt.annotation;
     
-    opens com.github.sviperll.staticmustache.examples to com.samskivert.jmustache;
+    opens io.jstach.examples to com.samskivert.jmustache;
 
     uses Processor;
     uses RenderService;
