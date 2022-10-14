@@ -66,8 +66,6 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             ) throws IOException {
         
        return switch (compilerType) {
-        case FOOTER -> new FooterTemplateCompiler(templateName, templateLoader, writer, context);
-        case HEADER -> new HeaderTemplateCompiler(templateName, templateLoader, writer, context);
         case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context, flags);
         case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE, LAMBDA 
             -> throw new IllegalArgumentException("Cannot create partial template as root");
@@ -75,9 +73,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
 
     private final NamedReader reader;
-    private final boolean expectsYield;
     private TemplateCompilerContext context;
-    boolean foundYield = false;
     int depth = 0;
     /*
      * This buffer contains the raw uninterpolated unescaped markup as escaped java string literals.
@@ -102,12 +98,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
     private TemplateCompiler(NamedReader reader, 
             TemplateCompilerLike parent, 
-            TemplateCompilerContext context,
-            boolean expectsYield) {
+            TemplateCompilerContext context) {
         this.reader = reader;
         this.parent = parent;
         this.context = context;
-        this.expectsYield = expectsYield;
     }
 
     public void run() throws ProcessingException, IOException {
@@ -199,7 +193,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     public ParameterPartial createParameterPartial(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
         TemplateCompilerContext context = this.context.createForParameterPartial(templateName);
-        var c = new TemplateCompiler(reader, this, context, expectsYield) {
+        var c = new TemplateCompiler(reader, this, context) {
             @Override
             public TemplateCompilerType getCompilerType() {
                 return TemplateCompilerType.PARAM_PARTIAL_TEMPLATE;
@@ -214,7 +208,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     public Partial createPartial(String templateName) throws IOException {
         var reader = getTemplateLoader().open(templateName);
         TemplateCompilerContext context = this.context.createForPartial(templateName);
-        var c = new TemplateCompiler(reader, this, context, expectsYield) {
+        var c = new TemplateCompiler(reader, this, context) {
             @Override
             public TemplateCompilerType getCompilerType() {
                 return TemplateCompilerType.PARTIAL_TEMPLATE;
@@ -327,7 +321,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                         throws IOException, ProcessingException {
                     NamedReader namedReader = new NamedReader(reader, name, "INLINE");
                     StringCodeAppendable codeAppendable = new StringCodeAppendable();
-                    try(var c = new TemplateCompiler(namedReader, self, rootContext, false) {
+                    try(var c = new TemplateCompiler(namedReader, self, rootContext) {
                         @Override
                         public TemplateCompilerType getCompilerType() {
                             return TemplateCompilerType.LAMBDA;
@@ -567,7 +561,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                         + callingPartial.getTemplateName());
             }
         }
-        case HEADER,FOOTER,SIMPLE,PARTIAL_TEMPLATE,LAMBDA -> {
+        case SIMPLE,PARTIAL_TEMPLATE,LAMBDA -> {
             /*
              * We are in the caller template at the end of a block
              * {{$block}}
@@ -598,22 +592,13 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         flushUnescaped();
         println();
         try {
-            if (!expectsYield || !name.equals("yield")) {
-                //TODO figure out indenting variables
-                TemplateCompilerContext variable = context.getChild(name, ContextType.ESCAPED_VAR);
-                print("// variable: " + variable.currentEnclosedContextName());
-                println();
-                print(variable.renderingCode());
-                println();
-            } else {
-                if (foundYield)
-                    throw new ProcessingException(position, "Yield can be used only once");
-                else if (context.isEnclosed())
-                    throw new ProcessingException(position, "Unclosed \"" + context.currentEnclosedContextName() + "\" block before yield");
-                else {
-                    throw new ProcessingException(position, "Yield should be unescaped variable");
-                }
-            }
+            //TODO figure out indenting variables
+            TemplateCompilerContext variable = context.getChild(name, ContextType.ESCAPED_VAR);
+            print("// variable: " + variable.currentEnclosedContextName());
+            println();
+            print(variable.renderingCode());
+            println();
+
         } catch (ContextException ex) {
             var templateStack = context.getTemplateStack();
             System.out.println("Variable not found." + " var: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + context.printStack() + "\n");
@@ -653,26 +638,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         flushUnescaped();
         println();
         try {
-            if (!expectsYield || !name.equals("yield")) {
-                TemplateCompilerContext variable = context.getChild(name, ContextType.UNESCAPED_VAR);
-                print("// unescaped variable: " + variable.currentEnclosedContextName());
-                println();
-                
-                print(variable.unescapedRenderingCode());
-                println();
-            } else {
-                if (foundYield)
-                    throw new ProcessingException(position, "Yield can be used only once");
-                if (context.isEnclosed())
-                    throw new ProcessingException(position, "Unclosed \"" + context.currentEnclosedContextName() + "\" block before yield");
-                else {
-                    foundYield = true;
-                    if (currentWriter().suppressesOutput())
-                        currentWriter().enableOutput();
-                    else
-                        currentWriter().disableOutput();
-                }
-            }
+            TemplateCompilerContext variable = context.getChild(name, ContextType.UNESCAPED_VAR);
+            print("// unescaped variable: " + variable.currentEnclosedContextName());
+            println();
+
+            print(variable.unescapedRenderingCode());
+            println();
         } catch (ContextException ex) {
             throw new ProcessingException(position, ex);
         }
@@ -726,10 +697,9 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context, 
-                boolean expectsYield,
                 Set<TemplateCompilerFlags.Flag> flags
                 ) throws IOException {
-            super(templateLoader.open(templateName), null, context, expectsYield);
+            super(templateLoader.open(templateName), null, context);
             this.templateLoader = templateLoader;
             this.writer = writer;
             this.flags = flags;
@@ -765,7 +735,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                 TemplateCompilerContext context,
                 Set<TemplateCompilerFlags.Flag> flags
                 ) throws IOException {
-            super(templateName, templateLoader, writer, context, false, flags);
+            super(templateName, templateLoader, writer, context, flags);
         }
 
         @Override
@@ -781,62 +751,6 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         
     }
 
-    static class HeaderTemplateCompiler extends RootTemplateCompiler {
-        private HeaderTemplateCompiler(
-                String templateName,
-                TemplateLoader templateLoader,
-                CodeAppendable writer,
-                TemplateCompilerContext context
-                ) throws IOException {
-            super(templateName, templateLoader, writer, context, true, Set.of());
-
-        }
-
-        @Override
-        public void run() throws ProcessingException, IOException {
-            boolean suppressesOutput = getWriter().suppressesOutput();
-            foundYield = false;
-            getWriter().enableOutput();
-            super.run();
-            if (suppressesOutput)
-                getWriter().disableOutput();
-            else
-                getWriter().enableOutput();
-        }
-        
-        @Override
-        public TemplateCompilerType getCompilerType() {
-            return TemplateCompilerType.HEADER;
-        }
-    }
-
-    static class FooterTemplateCompiler extends RootTemplateCompiler {
-        private FooterTemplateCompiler(
-                String templateName,
-                TemplateLoader templateLoader,
-                CodeAppendable writer,
-                TemplateCompilerContext context
-                ) throws IOException {
-            super(templateName, templateLoader, writer, context, true, Set.of());
-        }
-
-        @Override
-        public void run() throws ProcessingException, IOException {
-            boolean suppressesOutput = getWriter().suppressesOutput();
-            foundYield = false;
-            getWriter().disableOutput();
-            super.run();
-            if (suppressesOutput)
-                getWriter().disableOutput();
-            else
-                getWriter().enableOutput();
-        }
-        
-        @Override
-        public TemplateCompilerType getCompilerType() {
-            return TemplateCompilerType.FOOTER;
-        }
-    }
 
     interface Factory {
         TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer, TemplateCompilerContext context);

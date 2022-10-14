@@ -38,10 +38,6 @@ public interface RenderFunction extends Consumer<Appendable> {
         return a;
     }
     
-    default RenderFunction withLayout(LayoutFunction lf) {
-        return lf.withBody(this);
-    }
-    
     public static RenderFunction of(List<? extends RenderFunction> rfs) {
         return new Composite(rfs);
     }

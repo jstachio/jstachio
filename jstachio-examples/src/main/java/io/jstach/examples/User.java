@@ -32,8 +32,6 @@ package io.jstach.examples;
 import java.util.List;
 
 import io.jstach.annotation.GenerateRenderer;
-import io.jstach.text.Layoutable;
-import io.jstach.text.formats.Html;
 
 /**
  *
@@ -50,14 +48,12 @@ public class User {
     public final int age;
     public final String[] array;
     public final List<Item<String>> list1;
-    public final Layoutable<Html> liLayout;
 
-    public User(String name, int age, String[] array, List<Item<String>> list1, Layoutable<Html> liLayout) {
+    public User(String name, int age, String[] array, List<Item<String>> list1) {
         this.name = name;
         this.age = age;
         this.array = array;
         this.list1 = list1;
-        this.liLayout = liLayout;
     }
 
     public static class Item<T> {

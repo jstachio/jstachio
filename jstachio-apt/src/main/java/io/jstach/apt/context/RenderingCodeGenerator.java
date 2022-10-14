@@ -206,13 +206,6 @@ public class RenderingCodeGenerator {
             WildcardType wildcardType = (WildcardType)expression.type();
             var extendsBound = wildcardType.getExtendsBound();
             return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
-        } else if (javaModel.isSubtype(expression.type(), javaModel.getGenericDeclaredType(knownTypes._Layoutable.typeElement()))) {
-            if (!javaModel.isSubtype(expression.type(), javaModel.getDeclaredType(knownTypes._Layoutable.typeElement(), javaModel.getDeclaredType(templateFormatElement)))) {
-                throw new TypeException(MessageFormat.format("Can''t render {0} expression of {1} type: expression is Layoutable, but wrong format", expression.text(), expression.type()));
-            } else {
-                VariableContext context = enclosing.createEnclosedVariableContext();
-                return new LayoutableRenderingContext(expression, context, enclosing);
-            }
         } else if (javaModel.isType(expression.type(), knownTypes._boolean) && ! childType.isVar()) {
             return new BooleanRenderingContext(expression.text(), enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Boolean) && ! childType.isVar()) {

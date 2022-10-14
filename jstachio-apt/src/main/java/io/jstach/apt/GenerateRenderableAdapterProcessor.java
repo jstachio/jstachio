@@ -77,8 +77,6 @@ import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
-import io.jstach.text.LayoutFunction;
-import io.jstach.text.Layoutable;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.Renderable;
 import io.jstach.text.RendererDefinition;
@@ -262,7 +260,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
             templateMethod = GenerateRenderer.class.getDeclaredMethod("template");
             charsetMethod = GenerateRenderer.class.getDeclaredMethod("charset");
-            isLayoutMethod = GenerateRenderer.class.getDeclaredMethod("isLayout");
         } catch (NoSuchMethodException ex) {
             throw new RuntimeException(ex);
         } catch (SecurityException ex) {
@@ -273,7 +270,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         String directiveAdapterName = null;
         String directiveCharset = null;
         TypeElement templateFormatElement = null;
-        Boolean isLayout = null;
         Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = processingEnv.getElementUtils().getElementValuesWithDefaults(directiveMirror);
         for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: annotationValues.entrySet()) {
             if (entry.getKey().getSimpleName().contentEquals(templateFormatMethod.getName())) {
@@ -289,8 +285,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 templatePath = (String)entry.getValue().getValue();
             } else if (entry.getKey().getSimpleName().contentEquals(charsetMethod.getName())) {
                 directiveCharset = (String)entry.getValue().getValue();
-            } else if (entry.getKey().getSimpleName().contentEquals(isLayoutMethod.getName())) {
-                isLayout = (Boolean)entry.getValue().getValue();
             }
         }
         if (templateFormatElement == null)
@@ -301,14 +295,12 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             throw new AnnotatedException(element, charsetMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         if (templatePath == null)
             throw new AnnotatedException(element,templateMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
-        if (isLayout == null)
-            throw new AnnotatedException(element, isLayoutMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
+
         String adapterClassSimpleName;
         if (!directiveAdapterName.equals(":auto"))
             adapterClassSimpleName = directiveAdapterName;
         else {
-            //adapterClassSimpleName = (isLayout ? "Layoutable" : "Renderable") + element.getSimpleName().toString() + "Adapter";
-            adapterClassSimpleName = element.getSimpleName().toString() + (isLayout ? "Layoutable" : "Renderer");
+            adapterClassSimpleName = element.getSimpleName().toString() + "Renderer";
 
         }
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
@@ -350,7 +342,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, templatePaths, flags);
                 ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
 
-                writer.writeRenderableAdapterClass(adapterClassSimpleName, isLayout, templateFormatElement, ifaces);
+                writer.writeRenderableAdapterClass(adapterClassSimpleName, templateFormatElement, ifaces);
             }
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
@@ -399,7 +391,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             codeWriter.println(s);
         }
 
-        private void writeRenderableAdapterClass(String adapterClassSimpleName, Boolean isLayout,
+        private void writeRenderableAdapterClass(String adapterClassSimpleName,
                        TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException, AnnotatedException {
             String className = element.getQualifiedName().toString();
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
@@ -409,12 +401,11 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             List<String> ifaceStrings = new ArrayList<String>(ifaces);
             //ifaces.stream().map(c -> c.getName()).forEach(ifaceStrings::add);
             
-            if (isLayout) ifaceStrings.add(Layoutable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">");
             
             String implementsString = ifaceStrings.isEmpty() ? "" : " implements " +
                     ifaceStrings.stream().collect(Collectors.joining(", "));
             
-            String extendsString = isLayout ? "" :  " extends " 
+            String extendsString = " extends " 
                     + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
             
             String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
@@ -424,7 +415,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println(modifier + "class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + templateName + "\";");
             println("    private final " + className + " data;");
-            String constructorModifier = isLayout ? "public" : "private";
+            String constructorModifier = "private";
             println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
             println("        this.data = data;");
             println("    }");
@@ -438,46 +429,20 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("    public Object " + "getContext() {");
             println("        return this.data;");
             println("    }");
-            if (!isLayout) {
-            	
-                println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
-                println("        return new " + adapterClassSimpleName + "(data);");
-                println("    }");
-                
-                String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
-                String adapterRendererClassName = adapterClassSimpleName + "." + adapterRendererClassSimpleName;
+            println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
+            println("        return new " + adapterClassSimpleName + "(data);");
+            println("    }");
+            
+            String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
+            String adapterRendererClassName = adapterClassSimpleName + "." + adapterRendererClassSimpleName;
 
-                println("    @Override");
-                println("    protected " + RendererDefinition.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
-                println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
-                println("    }");
+            println("    @Override");
+            println("    protected " + RendererDefinition.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
+            println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
+            println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
+            println("    }");
 
-                writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompilerType.SIMPLE);
-            } else {
-            	
-                println("    public static " + LayoutFunction.class.getName() + " of(" + className + " data) {");
-                println("        return new " + adapterClassSimpleName + "(data);");
-                println("    }");
-                
-                String adapterHeaderRendererClassSimpleName = adapterClassSimpleName + "HeaderRenderer";
-                String adapterHeaderRendererClassName = adapterClassSimpleName + "." + adapterHeaderRendererClassSimpleName;
-                String adapterFooterRendererClassSimpleName = adapterClassSimpleName + "FooterRenderer";
-                String adapterFooterRendererClassName = adapterClassSimpleName + "." + adapterFooterRendererClassSimpleName;
-                println("    @Override");
-                println("    public " + RendererDefinition.class.getName() + " createHeaderRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
-                println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterHeaderRendererClassName + "(data, writer, unescapedWriter));");
-                println("    }");
-                println("    @Override");
-                println("    public " + RendererDefinition.class.getName() + " createFooterRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
-                println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-                println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterFooterRendererClassName + "(data, writer, unescapedWriter));");
-                println("    }");
-
-                writeRendererDefinitionClass(adapterHeaderRendererClassSimpleName, TemplateCompilerType.HEADER);
-                writeRendererDefinitionClass(adapterFooterRendererClassSimpleName, TemplateCompilerType.FOOTER);
-            }
+            writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompilerType.SIMPLE);
             println("}");
         }
 

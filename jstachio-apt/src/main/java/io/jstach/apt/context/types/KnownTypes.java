@@ -42,7 +42,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import io.jstach.ContextNode;
-import io.jstach.text.Layoutable;
 import io.jstach.text.RenderFunction;
 
 /**
@@ -84,9 +83,6 @@ public class KnownTypes {
     public final ObjectType _UUID;
     public final ObjectType _URI;
     public final ObjectType _URL;
-
-    
-    public final ObjectType _Layoutable;
     
     private final List<NativeType> nativeTypes;
     private final List<ObjectType> objectTypes;
@@ -128,10 +124,6 @@ public class KnownTypes {
         _UUID = b.objectType(UUID.class);
         _URI = b.objectType(URI.class);
         _URL = b.objectType(URL.class);
-
-
-        
-        _Layoutable = b.objectType(Layoutable.class);
         
         this.nativeTypes = List.copyOf(b.nativeTypes);
         this.objectTypes = List.copyOf(b.objectTypes);

@@ -2,7 +2,6 @@ package io.jstach.examples;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +9,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import io.jstach.examples.Blog;
-import io.jstach.examples.IdContainer;
-import io.jstach.examples.Main;
-import io.jstach.examples.PageContainer;
-import io.jstach.examples.Post;
-import io.jstach.examples.User1;
 import io.jstach.text.RenderFunction;
 
 public class MainTest {
@@ -26,11 +19,6 @@ public class MainTest {
     {
         list1.add(new User1.Item<String>("abc"));
         list1.add(new User1.Item<String>("def"));
-    }
-
-    @Test
-    public void testMain() throws IOException {
-        Main.main(new String[] {});
     }
 
     @Test

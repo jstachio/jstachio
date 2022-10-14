@@ -74,5 +74,4 @@ public @interface GenerateRenderer {
      */
     String charset() default ":default";
 
-    boolean isLayout() default false;
 }
