@@ -31,8 +31,8 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
-import io.jstach.annotation.GenerateRenderableAdapters;
+import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.GenerateRenderers;
 import io.jstach.text.formats.Html;
 import io.jstach.text.formats.PlainText;
 
@@ -40,9 +40,9 @@ import io.jstach.text.formats.PlainText;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapters({
-    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
-    @GenerateRenderableAdapter(template = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
+@GenerateRenderers({
+    @GenerateRenderer(template = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
+    @GenerateRenderer(template = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
 })
 public class User1 {
     public final String name;

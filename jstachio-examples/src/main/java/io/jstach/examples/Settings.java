@@ -29,7 +29,7 @@
  */
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.formats.Html;
 
@@ -37,7 +37,7 @@ import io.jstach.text.formats.Html;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(template = "settings.mustache", templateFormat = Html.class)
+@GenerateRenderer(template = "settings.mustache", templateFormat = Html.class)
 public class Settings {
     final RenderFunction info;
     final boolean isEnabled;

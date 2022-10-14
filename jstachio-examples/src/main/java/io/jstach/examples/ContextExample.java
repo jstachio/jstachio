@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template="context-example.mustache")
+@GenerateRenderer(template="context-example.mustache")
 public record ContextExample(String a, String b, Sec sec, C c ) {
 
     public record Sec(String b) {}

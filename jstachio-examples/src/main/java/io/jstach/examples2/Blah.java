@@ -2,9 +2,9 @@ package io.jstach.examples2;
 
 import java.util.UUID;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template = "blah.mustache")
+@GenerateRenderer(template = "blah.mustache")
 public class Blah {
     
     private final String name;

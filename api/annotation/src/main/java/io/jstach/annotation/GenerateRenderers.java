@@ -42,37 +42,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Documented
-public @interface GenerateRenderableAdapter {
+public @interface GenerateRenderers {
     /**
-      * @return Path to mustache template */
-    String template();
-
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
-
-    /**
-     * Class representing template format.
-     * <p>
-     * You can create custom formats using
-     * @TemplateFormat annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> templateFormat() default AutoFormat.class;
-
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
-
-    boolean isLayout() default false;
+      * @return several templates to generate adapters */
+    GenerateRenderer[] value();
 }

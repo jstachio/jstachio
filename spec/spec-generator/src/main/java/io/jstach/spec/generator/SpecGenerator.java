@@ -91,7 +91,7 @@ public class SpecGenerator {
         }
 
         ClassRef annotation() {
-            return new ClassRef(io.jstach.annotation.GenerateRenderableAdapter.class);
+            return new ClassRef(io.jstach.annotation.GenerateRenderer.class);
         }
         
         ClassRef templatePathsAnnotation() {

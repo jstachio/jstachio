@@ -31,7 +31,7 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.text.Layoutable;
 import io.jstach.text.formats.Html;
 
@@ -39,7 +39,7 @@ import io.jstach.text.formats.Html;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(
+@GenerateRenderer(
     // points to src/main/resources/user.mustache file
     template = "user.mustache"
 

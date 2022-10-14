@@ -29,7 +29,7 @@
  */
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.text.Layoutable;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.formats.Html;
@@ -42,7 +42,7 @@ import io.jstach.text.formats.Html;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(template = "layouted.mustache")
+@GenerateRenderer(template = "layouted.mustache")
 public class Layouted {
     final RenderFunction body;
     final Layoutable<Html> layout;

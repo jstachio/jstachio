@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template="partial-example.mustache")
+@GenerateRenderer(template="partial-example.mustache")
 public record PartialExample(String name) {
 
 }

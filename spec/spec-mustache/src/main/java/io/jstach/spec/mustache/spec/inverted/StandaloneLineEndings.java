@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.inverted;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderableAdapter(template = "inverted/StandaloneLineEndings.mustache")
+@GenerateRenderer(template = "inverted/StandaloneLineEndings.mustache")
 public class StandaloneLineEndings extends SpecModel {
 }

@@ -29,13 +29,13 @@
  */
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(template = "layout.mustache", isLayout = true)
+@GenerateRenderer(template = "layout.mustache", isLayout = true)
 public class Html5Layout {
     final String title;
     public Html5Layout(String title) {

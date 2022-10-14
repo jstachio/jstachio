@@ -66,8 +66,8 @@ import javax.tools.JavaFileObject;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.annotation.AutoFormat;
-import io.jstach.annotation.GenerateRenderableAdapter;
-import io.jstach.annotation.GenerateRenderableAdapters;
+import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.GenerateRenderers;
 import io.jstach.annotation.Template;
 import io.jstach.annotation.TemplateCompilerFlags;
 import io.jstach.annotation.TextFormat;
@@ -138,8 +138,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
              * Lets just bind the damn utils so that we do not have to pass them around everywhere
              */
             JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), processingEnv.getMessager());
-            Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapter.class.getName());
-            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapter.class)) {
+            Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderer.class.getName());
+            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderer.class)) {
                 TypeElement classElement = (TypeElement)element;
                 List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
                 AnnotationMirror directive = null;
@@ -149,8 +149,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 }
                 writeRenderableAdapterClass(classElement, directive);
             }
-            Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderableAdapters.class.getName());
-            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderableAdapters.class)) {
+            Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderers.class.getName());
+            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderers.class)) {
                 TypeElement classElement = (TypeElement)element;
                 List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
                 for (AnnotationMirror mirror: annotationMirrors) {
@@ -258,11 +258,11 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         Method charsetMethod;
         Method isLayoutMethod;
         try {
-            templateFormatMethod = GenerateRenderableAdapter.class.getDeclaredMethod("templateFormat");
-            adapterNameMethod = GenerateRenderableAdapter.class.getDeclaredMethod("adapterName");
-            templateMethod = GenerateRenderableAdapter.class.getDeclaredMethod("template");
-            charsetMethod = GenerateRenderableAdapter.class.getDeclaredMethod("charset");
-            isLayoutMethod = GenerateRenderableAdapter.class.getDeclaredMethod("isLayout");
+            templateFormatMethod = GenerateRenderer.class.getDeclaredMethod("templateFormat");
+            adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
+            templateMethod = GenerateRenderer.class.getDeclaredMethod("template");
+            charsetMethod = GenerateRenderer.class.getDeclaredMethod("charset");
+            isLayoutMethod = GenerateRenderer.class.getDeclaredMethod("isLayout");
         } catch (NoSuchMethodException ex) {
             throw new RuntimeException(ex);
         } catch (SecurityException ex) {
@@ -294,15 +294,15 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             }
         }
         if (templateFormatElement == null)
-            throw new AnnotatedException(element,templateFormatMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element,templateFormatMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         if (directiveAdapterName == null)
-            throw new AnnotatedException(element, adapterNameMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, adapterNameMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         if (directiveCharset == null)
-            throw new AnnotatedException(element, charsetMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, charsetMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         if (templatePath == null)
-            throw new AnnotatedException(element,templateMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element,templateMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         if (isLayout == null)
-            throw new AnnotatedException(element, isLayoutMethod.getName() + " should always be defined in " + GenerateRenderableAdapter.class.getName() + " annotation");
+            throw new AnnotatedException(element, isLayoutMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
         String adapterClassSimpleName;
         if (!directiveAdapterName.equals(":auto"))
             adapterClassSimpleName = directiveAdapterName;

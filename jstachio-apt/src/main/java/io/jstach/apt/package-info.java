@@ -29,8 +29,8 @@
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
 @net.java.dev.hickory.prism.GeneratePrisms({ //
-    @GeneratePrism(io.jstach.annotation.GenerateRenderableAdapters.class), //
-    @GeneratePrism(io.jstach.annotation.GenerateRenderableAdapter.class), //
+    @GeneratePrism(io.jstach.annotation.GenerateRenderers.class), //
+    @GeneratePrism(io.jstach.annotation.GenerateRenderer.class), //
     @GeneratePrism(io.jstach.annotation.TemplateBasePath.class), //
     @GeneratePrism(io.jstach.annotation.TemplateInterface.class), //
     @GeneratePrism(io.jstach.annotation.TemplateMapping.class), //

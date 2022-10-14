@@ -1,6 +1,6 @@
 package io.jstach.spec.mustache.spec.custom;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.spec.mustache.spec.custom.Custom.DottedNamesTruthy.A;
 import io.jstach.spec.mustache.spec.interpolation.InterpolationSpecTemplate;
 import io.jstach.spec.mustache.spec.inverted.InvertedSpecTemplate;
@@ -12,23 +12,23 @@ public class Custom {
         public static final Person Joe = new Person("Joe");
     }
     
-    @GenerateRenderableAdapter(template = InterpolationSpecTemplate.DOTTED_NAMES___BASIC_INTERPOLATION_FILE)
+    @GenerateRenderer(template = InterpolationSpecTemplate.DOTTED_NAMES___BASIC_INTERPOLATION_FILE)
     public record DottedNamesBasicInterpolation(Person person) {
     }
     
-    @GenerateRenderableAdapter(template = InterpolationSpecTemplate.DOTTED_NAMES___AMPERSAND_INTERPOLATION_FILE)
+    @GenerateRenderer(template = InterpolationSpecTemplate.DOTTED_NAMES___AMPERSAND_INTERPOLATION_FILE)
     public record DottedNamesAmpersandInterpolation(Person person) {
     }
     
-    @GenerateRenderableAdapter(template = InterpolationSpecTemplate.DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION_FILE)
+    @GenerateRenderer(template = InterpolationSpecTemplate.DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION_FILE)
     public record DottedNamesTripleMustacheInterpolation(Person person) {
     }
     
-    @GenerateRenderableAdapter(template = SectionsSpecTemplate.CONTEXT_FILE)
+    @GenerateRenderer(template = SectionsSpecTemplate.CONTEXT_FILE)
     public record Context(Person context) {
     }
     
-    @GenerateRenderableAdapter(template = InvertedSpecTemplate.DOTTED_NAMES___TRUTHY_FILE)
+    @GenerateRenderer(template = InvertedSpecTemplate.DOTTED_NAMES___TRUTHY_FILE)
     public record DottedNamesTruthy(A a) {
         public static DottedNamesTruthy test() {
             return new DottedNamesTruthy(new A(new B(true)));

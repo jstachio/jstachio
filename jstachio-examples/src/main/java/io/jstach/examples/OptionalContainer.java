@@ -2,9 +2,9 @@ package io.jstach.examples;
 
 import java.util.Optional;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template="optional.mustache")
+@GenerateRenderer(template="optional.mustache")
 public record OptionalContainer(Optional<String> name, boolean myBoolean, OptionalContainer child) {
 
 }

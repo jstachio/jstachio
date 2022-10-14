@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.interpolation;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderableAdapter(template = "interpolation/DottedNamesTripleMustacheInterpolation.mustache")
+@GenerateRenderer(template = "interpolation/DottedNamesTripleMustacheInterpolation.mustache")
 public class DottedNamesTripleMustacheInterpolation extends SpecModel {
 }

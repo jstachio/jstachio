@@ -29,12 +29,12 @@
  */
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderableAdapter(template = "li-layout.mustache", isLayout = true)
+@GenerateRenderer(template = "li-layout.mustache", isLayout = true)
 public class LiLayout {
 }

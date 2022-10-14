@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template = "page.mustache")
+@GenerateRenderer(template = "page.mustache")
 public class PageContainer implements Mixin {
 
 	private final IdContainer container;

@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 
-@GenerateRenderableAdapter(template="parent.mustache")
+@GenerateRenderer(template="parent.mustache")
 public record Parent(String message) {
     
 }

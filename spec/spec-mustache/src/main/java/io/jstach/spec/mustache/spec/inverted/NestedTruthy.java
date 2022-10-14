@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.inverted;
 
-import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderer;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderableAdapter(template = "inverted/NestedTruthy.mustache")
+@GenerateRenderer(template = "inverted/NestedTruthy.mustache")
 public class NestedTruthy extends SpecModel {
 }
