@@ -63,6 +63,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.annotation.AutoFormat;
@@ -77,6 +79,7 @@ import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
+import io.jstach.apt.prism.GenerateRendererPrism;
 import io.jstach.apt.prism.TemplateBasePathPrism;
 import io.jstach.apt.prism.TemplateCompilerFlagsPrism;
 import io.jstach.apt.prism.TemplateFormatterTypesPrism;
@@ -195,7 +198,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         TemplateInterfacePrism prism = TemplateInterfacePrism.getInstanceOn(packageElement);
         if (prism != null) {
-            var tm = prism.value();
+            var tm =  prism.value();
+            assert tm != null;
             return List.of(getTypeName(tm));
         }
         return List.of();
@@ -209,18 +213,22 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             var tps = prism.value();
             for (TemplatePrism tp : tps) {
                 NamedTemplate nt;
-
-                if (! tp.path().isBlank() ) {
-                    nt = new NamedTemplate.FileTemplate(tp.name(), tp.path());
+                String path = tp.path();
+                String name = tp.name();
+                assert name != null;
+                String template = tp.template();
+                
+                if (! path.isBlank() ) {
+                    nt = new NamedTemplate.FileTemplate(name, path);
                 }
-                else if (! tp.template().equals(Template.NOT_SET)) {
-                    nt = new NamedTemplate.InlineTemplate(tp.name(), tp.template());
+                else if (! template.equals(Template.NOT_SET)) {
+                    nt = new NamedTemplate.InlineTemplate(name, template);
                 }
                 else {
-                    nt = new NamedTemplate.FileTemplate(tp.name(), tp.name());
+                    nt = new NamedTemplate.FileTemplate(name, name);
 
                 }
-                paths.put(tp.name(), nt);
+                paths.put(name, nt);
             }
         }
         return paths;
@@ -256,50 +264,42 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     
     
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
-        Method templateFormatMethod;
-        Method adapterNameMethod;
-        Method templateMethod;
-        Method charsetMethod;
-        try {
-            templateFormatMethod = GenerateRenderer.class.getDeclaredMethod("templateFormat");
-            adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
-            templateMethod = GenerateRenderer.class.getDeclaredMethod("template");
-            charsetMethod = GenerateRenderer.class.getDeclaredMethod("charset");
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException(ex);
-        }
+//        Method templateFormatMethod;
+//        Method adapterNameMethod;
+//        Method templateMethod;
+//        Method charsetMethod;
+//        try {
+//            templateFormatMethod = GenerateRenderer.class.getDeclaredMethod("templateFormat");
+//            adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
+//            templateMethod = GenerateRenderer.class.getDeclaredMethod("template");
+//            charsetMethod = GenerateRenderer.class.getDeclaredMethod("charset");
+//        } catch (NoSuchMethodException ex) {
+//            throw new RuntimeException(ex);
+//        } catch (SecurityException ex) {
+//            throw new RuntimeException(ex);
+//        }
 
         String templatePath = null;
         String directiveAdapterName = null;
         String directiveCharset = null;
         TypeElement templateFormatElement = null;
-        Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = processingEnv.getElementUtils().getElementValuesWithDefaults(directiveMirror);
-        for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry: annotationValues.entrySet()) {
-            if (entry.getKey().getSimpleName().contentEquals(templateFormatMethod.getName())) {
-                AnnotationValue value = entry.getValue();
-                Object templateFormatValue = value.getValue();
-                if (!(templateFormatValue instanceof DeclaredType))
-                    throw new ClassCastException("Expecting DeclaredType got " + templateFormatValue.getClass().getName() + ": " + templateFormatValue);
-                DeclaredType templateFormatType = (DeclaredType)templateFormatValue;
-                templateFormatElement = (TypeElement)templateFormatType.asElement();
-            } else if (entry.getKey().getSimpleName().contentEquals(adapterNameMethod.getName())) {
-                directiveAdapterName = (String)entry.getValue().getValue();
-            } else if (entry.getKey().getSimpleName().contentEquals(templateMethod.getName())) {
-                templatePath = (String)entry.getValue().getValue();
-            } else if (entry.getKey().getSimpleName().contentEquals(charsetMethod.getName())) {
-                directiveCharset = (String)entry.getValue().getValue();
-            }
+        
+        GenerateRendererPrism gp = GenerateRendererPrism.getInstance(directiveMirror);
+        
+        if (gp == null) {
+            throw new AnnotatedException(element, "Missing annotation. bug.");
         }
-        if (templateFormatElement == null)
-            throw new AnnotatedException(element,templateFormatMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
-        if (directiveAdapterName == null)
-            throw new AnnotatedException(element, adapterNameMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
-        if (directiveCharset == null)
-            throw new AnnotatedException(element, charsetMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
-        if (templatePath == null)
-            throw new AnnotatedException(element,templateMethod.getName() + " should always be defined in " + GenerateRenderer.class.getName() + " annotation");
+        templatePath = gp.template();
+        directiveAdapterName = gp.adapterName();
+        directiveCharset = gp.charset();
+        TypeMirror templateFormatType = gp.templateFormat();
+        if (templateFormatType instanceof DeclaredType dt) {
+            templateFormatElement = (TypeElement) dt.asElement();
+        }
+        else {
+            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
+        }
+        
 
         String adapterClassSimpleName;
         if (!directiveAdapterName.equals(":auto"))
@@ -310,7 +310,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         }
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
-            TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
+            @Nullable TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
             if (templateFormatAnnotation == null) {
                 throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TextFormat.class.getName() + " annotation");
             }
