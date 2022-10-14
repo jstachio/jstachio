@@ -1,0 +1,88 @@
+class java/lang/reflect/Field
+getDeclaringClass
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getType
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getGenericType
+ ()Ljava/lang/reflect/Type;
+ ()L1java/lang/reflect/Type;
+equals
+ (Ljava/lang/Object;)Z
+ (Ljava/lang/Object;)Z
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toGenericString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+get
+ (Ljava/lang/Object;)Ljava/lang/Object;
+ (L0java/lang/Object;)L0java/lang/Object;
+getBoolean
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getByte
+ (Ljava/lang/Object;)B
+ (L0java/lang/Object;)B
+getChar
+ (Ljava/lang/Object;)C
+ (L0java/lang/Object;)C
+getShort
+ (Ljava/lang/Object;)S
+ (L0java/lang/Object;)S
+getInt
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+getLong
+ (Ljava/lang/Object;)J
+ (L0java/lang/Object;)J
+getFloat
+ (Ljava/lang/Object;)F
+ (L0java/lang/Object;)F
+getDouble
+ (Ljava/lang/Object;)D
+ (L0java/lang/Object;)D
+set
+ (Ljava/lang/Object;Ljava/lang/Object;)V
+ (L0java/lang/Object;L0java/lang/Object;)V
+setBoolean
+ (Ljava/lang/Object;Z)V
+ (L0java/lang/Object;Z)V
+setByte
+ (Ljava/lang/Object;B)V
+ (L0java/lang/Object;B)V
+setChar
+ (Ljava/lang/Object;C)V
+ (L0java/lang/Object;C)V
+setShort
+ (Ljava/lang/Object;S)V
+ (L0java/lang/Object;S)V
+setInt
+ (Ljava/lang/Object;I)V
+ (L0java/lang/Object;I)V
+setLong
+ (Ljava/lang/Object;J)V
+ (L0java/lang/Object;J)V
+setFloat
+ (Ljava/lang/Object;F)V
+ (L0java/lang/Object;F)V
+setDouble
+ (Ljava/lang/Object;D)V
+ (L0java/lang/Object;D)V
+getAnnotation
+ <T::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TT;>;)TT;
+ <T::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TT;>;)T0T;
+getAnnotationsByType
+ <T::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TT;>;)[TT;
+ <T::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TT;>;)[1T1T;
+getDeclaredAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getAnnotatedType
+ ()Ljava/lang/reflect/AnnotatedType;
+ ()L1java/lang/reflect/AnnotatedType;

@@ -1,0 +1,7 @@
+class java/text/Collator
+getInstance
+ ()Ljava/text/Collator;
+ ()L1java/text/Collator;
+getInstance
+ (Ljava/util/Locale;)Ljava/text/Collator;
+ (Ljava/util/Locale;)L1java/text/Collator;

@@ -1,0 +1,7 @@
+class java/io/InputStream
+nullInputStream
+ ()Ljava/io/InputStream;
+ ()L1java/io/InputStream;
+transferTo
+ (Ljava/io/OutputStream;)J
+ (L1java/io/OutputStream;)J

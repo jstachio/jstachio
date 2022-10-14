@@ -1,0 +1,31 @@
+class java/lang/Runtime$Version
+build
+ ()Ljava/util/Optional<Ljava/lang/Integer;>;
+ ()L1java/util/Optional<L1java/lang/Integer;>;
+compareTo
+ (Ljava/lang/Runtime$Version;)I
+ (L1java/lang/Runtime$Version;)I
+compareToIgnoreOptional
+ (Ljava/lang/Runtime$Version;)I
+ (L1java/lang/Runtime$Version;)I
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+equalsIgnoreOptional
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+optional
+ ()Ljava/util/Optional<Ljava/lang/String;>;
+ ()L1java/util/Optional<L1java/lang/String;>;
+parse
+ (Ljava/lang/String;)Ljava/lang/Runtime$Version;
+ (L1java/lang/String;)L1java/lang/Runtime$Version;
+pre
+ ()Ljava/util/Optional<Ljava/lang/String;>;
+ ()L1java/util/Optional<L1java/lang/String;>;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+version
+ ()Ljava/util/List<Ljava/lang/Integer;>;
+ ()L1java/util/List<L1java/lang/Integer;>;

@@ -1,0 +1,46 @@
+class java/lang/Throwable
+<init>
+ (Ljava/lang/String;)V
+ (L0java/lang/String;)V
+<init>
+ (Ljava/lang/String;Ljava/lang/Throwable;)V
+ (L0java/lang/String;L0java/lang/Throwable;)V
+<init>
+ (Ljava/lang/Throwable;)V
+ (L0java/lang/Throwable;)V
+addSuppressed
+ (Ljava/lang/Throwable;)V
+ (L1java/lang/Throwable;)V
+fillInStackTrace
+ ()Ljava/lang/Throwable;
+ ()L1java/lang/Throwable;
+getCause
+ ()Ljava/lang/Throwable;
+ ()L0java/lang/Throwable;
+getLocalizedMessage
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getMessage
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getStackTrace
+ ()[Ljava/lang/StackTraceElement;
+ ()[1L1java/lang/StackTraceElement;
+getSuppressed
+ ()[Ljava/lang/Throwable;
+ ()[1L1java/lang/Throwable;
+initCause
+ (Ljava/lang/Throwable;)Ljava/lang/Throwable;
+ (L0java/lang/Throwable;)Ljava/lang/Throwable;
+printStackTrace
+ (Ljava/io/PrintStream;)V
+ (L1java/io/PrintStream;)V
+printStackTrace
+ (Ljava/io/PrintWriter;)V
+ (L1java/io/PrintWriter;)V
+setStackTrace
+ ([Ljava/lang/StackTraceElement;)V
+ ([1L1java/lang/StackTraceElement;)V
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

@@ -1,0 +1,19 @@
+class java/lang/ProcessHandle$Info
+arguments
+ ()Ljava/util/Optional<[Ljava/lang/String;>;
+ ()L1java/util/Optional<[1L1java/lang/String;>;
+command
+ ()Ljava/util/Optional<Ljava/lang/String;>;
+ ()L1java/util/Optional<L1java/lang/String;>;
+commandLine
+ ()Ljava/util/Optional<Ljava/lang/String;>;
+ ()L1java/util/Optional<L1java/lang/String;>;
+startInstant
+ ()Ljava/util/Optional<Ljava/time/Instant;>;
+ ()L1java/util/Optional<L1java/time/Instant;>;
+totalCpuDuration
+ ()Ljava/util/Optional<Ljava/time/Duration;>;
+ ()L1java/util/Optional<L1java/time/Duration;>;
+user
+ ()Ljava/util/Optional<Ljava/lang/String;>;
+ ()L1java/util/Optional<L1java/lang/String;>;

@@ -1,0 +1,4 @@
+class java/time/ZoneId
+from
+ (Ljava/time/temporal/TemporalAccessor;)Ljava/time/ZoneId;
+ (Ljava/time/temporal/TemporalAccessor;)L1java/time/ZoneId;

@@ -1,0 +1,19 @@
+class java/util/HashSet
+<init>
+ (Ljava/util/Collection<+TE;>;)V
+ (L1java/util/Collection<+TE;>;)V
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+contains
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+iterator
+ ()Ljava/util/Iterator<TE;>;
+ ()L1java/util/Iterator<TE;>;
+remove
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+spliterator
+ ()Ljava/util/Spliterator<TE;>;
+ ()L1java/util/Spliterator<TE;>;

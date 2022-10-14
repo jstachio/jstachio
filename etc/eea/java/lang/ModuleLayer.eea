@@ -1,0 +1,43 @@
+class java/lang/ModuleLayer
+boot
+ ()Ljava/lang/ModuleLayer;
+ ()L0java/lang/ModuleLayer;
+configuration
+ ()Ljava/lang/module/Configuration;
+ ()L1java/lang/module/Configuration;
+defineModules
+ (Ljava/lang/module/Configuration;Ljava/util/List<Ljava/lang/ModuleLayer;>;Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/ClassLoader;>;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/module/Configuration;L1java/util/List<L1java/lang/ModuleLayer;>;L1java/util/function/Function<L1java/lang/String;L1java/lang/ClassLoader;>;)L1java/lang/ModuleLayer$Controller;
+defineModules
+ (Ljava/lang/module/Configuration;Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/ClassLoader;>;)Ljava/lang/ModuleLayer;
+ (L1java/lang/module/Configuration;L1java/util/function/Function<L1java/lang/String;L1java/lang/ClassLoader;>;)L1java/lang/ModuleLayer;
+defineModulesWithManyLoaders
+ (Ljava/lang/module/Configuration;Ljava/lang/ClassLoader;)Ljava/lang/ModuleLayer;
+ (L1java/lang/module/Configuration;L0java/lang/ClassLoader;)L1java/lang/ModuleLayer;
+defineModulesWithManyLoaders
+ (Ljava/lang/module/Configuration;Ljava/util/List<Ljava/lang/ModuleLayer;>;Ljava/lang/ClassLoader;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/module/Configuration;L1java/util/List<L1java/lang/ModuleLayer;>;L0java/lang/ClassLoader;)L1java/lang/ModuleLayer$Controller;
+defineModulesWithOneLoader
+ (Ljava/lang/module/Configuration;Ljava/lang/ClassLoader;)Ljava/lang/ModuleLayer;
+ (L1java/lang/module/Configuration;L0java/lang/ClassLoader;)L1java/lang/ModuleLayer;
+defineModulesWithOneLoader
+ (Ljava/lang/module/Configuration;Ljava/util/List<Ljava/lang/ModuleLayer;>;Ljava/lang/ClassLoader;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/module/Configuration;L1java/util/List<L1java/lang/ModuleLayer;>;L0java/lang/ClassLoader;)L1java/lang/ModuleLayer$Controller;
+empty
+ ()Ljava/lang/ModuleLayer;
+ ()L1java/lang/ModuleLayer;
+findLoader
+ (Ljava/lang/String;)Ljava/lang/ClassLoader;
+ (L1java/lang/String;)L0java/lang/ClassLoader;
+findModule
+ (Ljava/lang/String;)Ljava/util/Optional<Ljava/lang/Module;>;
+ (L1java/lang/String;)L1java/util/Optional<L1java/lang/Module;>;
+modules
+ ()Ljava/util/Set<Ljava/lang/Module;>;
+ ()L1java/util/Set<L1java/lang/Module;>;
+parents
+ ()Ljava/util/List<Ljava/lang/ModuleLayer;>;
+ ()L1java/util/List<L1java/lang/ModuleLayer;>;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

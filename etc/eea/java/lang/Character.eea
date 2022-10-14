@@ -1,0 +1,64 @@
+class java/lang/Character
+TYPE
+ Ljava/lang/Class<Ljava/lang/Character;>;
+ L1java/lang/Class<L1java/lang/Character;>;
+codePointAt
+ (Ljava/lang/CharSequence;I)I
+ (L1java/lang/CharSequence;I)I
+codePointAt
+ ([CI)I
+ ([1CI)I
+codePointAt
+ ([CII)I
+ ([1CII)I
+codePointBefore
+ (Ljava/lang/CharSequence;I)I
+ (L1java/lang/CharSequence;I)I
+codePointBefore
+ ([CI)I
+ ([1CI)I
+codePointBefore
+ ([CII)I
+ ([1CII)I
+codePointCount
+ (Ljava/lang/CharSequence;II)I
+ (L1java/lang/CharSequence;II)I
+codePointCount
+ ([CII)I
+ ([1CII)I
+codePointOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+compareTo
+ (Ljava/lang/Character;)I
+ (L1java/lang/Character;)I
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getName
+ (I)Ljava/lang/String;
+ (I)L0java/lang/String;
+offsetByCodePoints
+ (Ljava/lang/CharSequence;II)I
+ (L1java/lang/CharSequence;II)I
+offsetByCodePoints
+ ([CIIII)I
+ ([1CIIII)I
+toChars
+ (I)[C
+ (I)[1C
+toChars
+ (I[CI)I
+ (I[1CI)I
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ (C)Ljava/lang/String;
+ (C)L1java/lang/String;
+toString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+valueOf
+ (C)Ljava/lang/Character;
+ (C)L1java/lang/Character;

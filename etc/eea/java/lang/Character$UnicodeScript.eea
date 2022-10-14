@@ -1,0 +1,7 @@
+class java/lang/Character$UnicodeScript
+forName
+ (Ljava/lang/String;)Ljava/lang/Character$UnicodeScript;
+ (L1java/lang/String;)L1java/lang/Character$UnicodeScript;
+of
+ (I)Ljava/lang/Character$UnicodeScript;
+ (I)L1java/lang/Character$UnicodeScript;

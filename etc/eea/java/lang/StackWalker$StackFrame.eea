@@ -1,0 +1,22 @@
+class java/lang/StackWalker$StackFrame
+getClassName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getDeclaringClass
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getDescriptor
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getFileName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getMethodName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getMethodType
+ ()Ljava/lang/invoke/MethodType;
+ ()L1java/lang/invoke/MethodType;
+toStackTraceElement
+ ()Ljava/lang/StackTraceElement;
+ ()L1java/lang/StackTraceElement;

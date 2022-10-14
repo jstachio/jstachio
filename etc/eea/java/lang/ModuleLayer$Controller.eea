@@ -1,0 +1,13 @@
+class java/lang/ModuleLayer$Controller
+addExports
+ (Ljava/lang/Module;Ljava/lang/String;Ljava/lang/Module;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/Module;L1java/lang/String;L1java/lang/Module;)L1java/lang/ModuleLayer$Controller;
+addOpens
+ (Ljava/lang/Module;Ljava/lang/String;Ljava/lang/Module;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/Module;L1java/lang/String;L1java/lang/Module;)L1java/lang/ModuleLayer$Controller;
+addReads
+ (Ljava/lang/Module;Ljava/lang/Module;)Ljava/lang/ModuleLayer$Controller;
+ (L1java/lang/Module;L1java/lang/Module;)L1java/lang/ModuleLayer$Controller;
+layer
+ ()Ljava/lang/ModuleLayer;
+ ()L1java/lang/ModuleLayer;

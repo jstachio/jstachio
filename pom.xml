@@ -10,8 +10,10 @@
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.9</metainf-services.version>
+    <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
   </properties>
   <modules>
+    <module>etc</module>
     <module>api</module>
     <module>jstachio-examples</module>
     <module>jstachio-apt</module>

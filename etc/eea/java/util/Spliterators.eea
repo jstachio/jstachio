@@ -1,0 +1,4 @@
+class java/util/Spliterators
+iterator
+ <T:Ljava/lang/Object;>(Ljava/util/Spliterator<+TT;>;)Ljava/util/Iterator<TT;>;
+ <T:Ljava/lang/Object;>(L1java/util/Spliterator<+TT;>;)L1java/util/Iterator<TT;>;

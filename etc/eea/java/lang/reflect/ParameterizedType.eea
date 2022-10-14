@@ -1,0 +1,10 @@
+class java/lang/reflect/ParameterizedType
+getActualTypeArguments
+ ()[Ljava/lang/reflect/Type;
+ ()[1L1java/lang/reflect/Type;
+getRawType
+ ()Ljava/lang/reflect/Type;
+ ()L1java/lang/reflect/Type;
+getOwnerType
+ ()Ljava/lang/reflect/Type;
+ ()L0java/lang/reflect/Type;

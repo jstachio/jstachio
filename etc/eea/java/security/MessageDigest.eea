@@ -1,0 +1,7 @@
+class java/security/MessageDigest
+digest
+ ([B)[B
+ ([1B)[1B
+getInstance
+ (Ljava/lang/String;)Ljava/security/MessageDigest;
+ (L1java/lang/String;)L1java/security/MessageDigest;

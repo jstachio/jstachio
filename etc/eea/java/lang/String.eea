@@ -1,0 +1,232 @@
+class java/lang/String
+<init>
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+<init>
+ (Ljava/lang/StringBuffer;)V
+ (L1java/lang/StringBuffer;)V
+<init>
+ (Ljava/lang/StringBuilder;)V
+ (L1java/lang/StringBuilder;)V
+<init>
+ ([B)V
+ ([1B)V
+<init>
+ ([BI)V
+ ([1BI)V
+<init>
+ ([BII)V
+ ([1BII)V
+<init>
+ ([BIII)V
+ ([1BIII)V
+<init>
+ ([BIILjava/lang/String;)V
+ ([1BIIL1java/lang/String;)V
+<init>
+ ([BIILjava/nio/charset/Charset;)V
+ ([1BIIL1java/nio/charset/Charset;)V
+<init>
+ ([BLjava/lang/String;)V
+ ([1BL1java/lang/String;)V
+<init>
+ ([BLjava/nio/charset/Charset;)V
+ ([1BL1java/nio/charset/Charset;)V
+<init>
+ ([C)V
+ ([1C)V
+<init>
+ ([CII)V
+ ([1CII)V
+<init>
+ ([III)V
+ ([1III)V
+CASE_INSENSITIVE_ORDER
+ Ljava/util/Comparator<Ljava/lang/String;>;
+ L1java/util/Comparator<L1java/lang/String;>;
+chars
+ ()Ljava/util/stream/IntStream;
+ ()L1java/util/stream/IntStream;
+codePoints
+ ()Ljava/util/stream/IntStream;
+ ()L1java/util/stream/IntStream;
+compareTo
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+compareToIgnoreCase
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+concat
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)L1java/lang/String;
+contains
+ (Ljava/lang/CharSequence;)Z
+ (L1java/lang/CharSequence;)Z
+contentEquals
+ (Ljava/lang/CharSequence;)Z
+ (L1java/lang/CharSequence;)Z
+contentEquals
+ (Ljava/lang/StringBuffer;)Z
+ (L1java/lang/StringBuffer;)Z
+copyValueOf
+ ([C)Ljava/lang/String;
+ ([1C)L1java/lang/String;
+copyValueOf
+ ([CII)Ljava/lang/String;
+ ([1CII)L1java/lang/String;
+endsWith
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+equalsIgnoreCase
+ (Ljava/lang/String;)Z
+ (L0java/lang/String;)Z
+format
+ (Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+ (L1java/lang/String;[1L0java/lang/Object;)L1java/lang/String;
+format
+ (Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+ (L0java/util/Locale;L1java/lang/String;[1L0java/lang/Object;)L1java/lang/String;
+getBytes
+ ()[B
+ ()[1B
+getBytes
+ (II[BI)V
+ (II[1BI)V
+getBytes
+ (Ljava/lang/String;)[B
+ (L1java/lang/String;)[1B
+getBytes
+ (Ljava/nio/charset/Charset;)[B
+ (L1java/nio/charset/Charset;)[1B
+getChars
+ (II[CI)V
+ (II[1CI)V
+indexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+indexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+intern
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+join
+ (Ljava/lang/CharSequence;Ljava/lang/Iterable<+Ljava/lang/CharSequence;>;)Ljava/lang/String;
+ (L1java/lang/CharSequence;L1java/lang/Iterable<+L0java/lang/CharSequence;>;)L1java/lang/String;
+join
+ (Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Ljava/lang/String;
+ (L1java/lang/CharSequence;[1L0java/lang/CharSequence;)L1java/lang/String;
+lastIndexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+lastIndexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+lines
+ ()Ljava/util/stream/Stream<Ljava/lang/String;>;
+ ()L1java/util/stream/Stream<L1java/lang/String;>;
+matches
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+regionMatches
+ (ILjava/lang/String;II)Z
+ (IL1java/lang/String;II)Z
+regionMatches
+ (ZILjava/lang/String;II)Z
+ (ZIL1java/lang/String;II)Z
+repeat
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+replace
+ (CC)Ljava/lang/String;
+ (CC)L1java/lang/String;
+replace
+ (Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;
+ (L1java/lang/CharSequence;L1java/lang/CharSequence;)L1java/lang/String;
+replaceAll
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;L1java/lang/String;)L1java/lang/String;
+replaceFirst
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;L1java/lang/String;)L1java/lang/String;
+split
+ (Ljava/lang/String;)[Ljava/lang/String;
+ (L1java/lang/String;)[1L1java/lang/String;
+split
+ (Ljava/lang/String;I)[Ljava/lang/String;
+ (L1java/lang/String;I)[1L1java/lang/String;
+startsWith
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+startsWith
+ (Ljava/lang/String;I)Z
+ (L1java/lang/String;I)Z
+strip
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+stripLeading
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+stripTrailing
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+subSequence
+ (II)Ljava/lang/CharSequence;
+ (II)L1java/lang/CharSequence;
+substring
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+substring
+ (II)Ljava/lang/String;
+ (II)L1java/lang/String;
+toCharArray
+ ()[C
+ ()[1C
+toLowerCase
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toLowerCase
+ (Ljava/util/Locale;)Ljava/lang/String;
+ (L1java/util/Locale;)L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toUpperCase
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toUpperCase
+ (Ljava/util/Locale;)Ljava/lang/String;
+ (L1java/util/Locale;)L1java/lang/String;
+trim
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+valueOf
+ (C)Ljava/lang/String;
+ (C)L1java/lang/String;
+valueOf
+ (D)Ljava/lang/String;
+ (D)L1java/lang/String;
+valueOf
+ (F)Ljava/lang/String;
+ (F)L1java/lang/String;
+valueOf
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+valueOf
+ (J)Ljava/lang/String;
+ (J)L1java/lang/String;
+valueOf
+ (Ljava/lang/Object;)Ljava/lang/String;
+ (L0java/lang/Object;)L1java/lang/String;
+valueOf
+ (Z)Ljava/lang/String;
+ (Z)L1java/lang/String;
+valueOf
+ ([C)Ljava/lang/String;
+ ([1C)L1java/lang/String;
+valueOf
+ ([CII)Ljava/lang/String;
+ ([1CII)L1java/lang/String;

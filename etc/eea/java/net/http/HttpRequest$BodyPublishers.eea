@@ -1,0 +1,10 @@
+class java/net/http/HttpRequest$BodyPublishers
+noBody
+ ()Ljava/net/http/HttpRequest$BodyPublisher;
+ ()L1java/net/http/HttpRequest$BodyPublisher;
+ofByteArray
+ ([B)Ljava/net/http/HttpRequest$BodyPublisher;
+ ([B)L1java/net/http/HttpRequest$BodyPublisher;
+ofByteArrays
+ (Ljava/lang/Iterable<[B>;)Ljava/net/http/HttpRequest$BodyPublisher;
+ (Ljava/lang/Iterable<[B>;)L1java/net/http/HttpRequest$BodyPublisher;

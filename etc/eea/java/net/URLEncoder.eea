@@ -1,0 +1,4 @@
+class java/net/URLEncoder
+encode
+ (Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;
+ (Ljava/lang/String;Ljava/nio/charset/Charset;)L1java/lang/String;

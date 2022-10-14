@@ -1,0 +1,31 @@
+class java/lang/Process
+children
+ ()Ljava/util/stream/Stream<Ljava/lang/ProcessHandle;>;
+ ()L1java/util/stream/Stream<L1java/lang/ProcessHandle;>;
+descendants
+ ()Ljava/util/stream/Stream<Ljava/lang/ProcessHandle;>;
+ ()L1java/util/stream/Stream<L1java/lang/ProcessHandle;>;
+destroyForcibly
+ ()Ljava/lang/Process;
+ ()L1java/lang/Process;
+getErrorStream
+ ()Ljava/io/InputStream;
+ ()L1java/io/InputStream;
+getInputStream
+ ()Ljava/io/InputStream;
+ ()L1java/io/InputStream;
+getOutputStream
+ ()Ljava/io/OutputStream;
+ ()L1java/io/OutputStream;
+info
+ ()Ljava/lang/ProcessHandle$Info;
+ ()L1java/lang/ProcessHandle$Info;
+onExit
+ ()Ljava/util/concurrent/CompletableFuture<Ljava/lang/Process;>;
+ ()L1java/util/concurrent/CompletableFuture<L1java/lang/Process;>;
+toHandle
+ ()Ljava/lang/ProcessHandle;
+ ()L1java/lang/ProcessHandle;
+waitFor
+ (JLjava/util/concurrent/TimeUnit;)Z
+ (JL1java/util/concurrent/TimeUnit;)Z

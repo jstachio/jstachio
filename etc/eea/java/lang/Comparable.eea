@@ -1,0 +1,4 @@
+class java/lang/Comparable
+compareTo
+ (TT;)I
+ (T1T;)I

@@ -1,0 +1,7 @@
+class java/nio/charset/Charset
+defaultCharset
+ ()Ljava/nio/charset/Charset;
+ ()L1java/nio/charset/Charset;
+forName
+ (Ljava/lang/String;)Ljava/nio/charset/Charset;
+ (Ljava/lang/String;)L1java/nio/charset/Charset;

@@ -1,0 +1,10 @@
+class java/lang/Appendable
+append
+ (C)Ljava/lang/Appendable;
+ (C)L1java/lang/Appendable;
+append
+ (Ljava/lang/CharSequence;)Ljava/lang/Appendable;
+ (L0java/lang/CharSequence;)L1java/lang/Appendable;
+append
+ (Ljava/lang/CharSequence;II)Ljava/lang/Appendable;
+ (L0java/lang/CharSequence;II)L1java/lang/Appendable;

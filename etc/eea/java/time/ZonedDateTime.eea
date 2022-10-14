@@ -1,0 +1,254 @@
+class java/time/ZonedDateTime
+equals
+ (Ljava/lang/Object;)Z
+ (Ljava/lang/Object;)Z
+format
+ (Ljava/time/format/DateTimeFormatter;)Ljava/lang/String;
+ (L1java/time/format/DateTimeFormatter;)L1java/lang/String;
+from
+ (Ljava/time/temporal/TemporalAccessor;)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalAccessor;)L1java/time/ZonedDateTime;
+get
+ (Ljava/time/temporal/TemporalField;)I
+ (L1java/time/temporal/TemporalField;)I
+getDayOfWeek
+ ()Ljava/time/DayOfWeek;
+ ()L1java/time/DayOfWeek;
+getLong
+ (Ljava/time/temporal/TemporalField;)J
+ (L1java/time/temporal/TemporalField;)J
+getMonth
+ ()Ljava/time/Month;
+ ()L1java/time/Month;
+getOffset
+ ()Ljava/time/ZoneOffset;
+ ()L1java/time/ZoneOffset;
+getZone
+ ()Ljava/time/ZoneId;
+ ()L1java/time/ZoneId;
+isSupported
+ (Ljava/time/temporal/TemporalField;)Z
+ (L1java/time/temporal/TemporalField;)Z
+isSupported
+ (Ljava/time/temporal/TemporalUnit;)Z
+ (L1java/time/temporal/TemporalUnit;)Z
+minus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/ZonedDateTime;
+ (JL1java/time/temporal/TemporalUnit;)Ljava/time/ZonedDateTime;
+minus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/chrono/ChronoZonedDateTime;
+ (JL1java/time/temporal/TemporalUnit;)Ljava/time/chrono/ChronoZonedDateTime;
+minus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/temporal/Temporal;
+ (JL1java/time/temporal/TemporalUnit;)Ljava/time/temporal/Temporal;
+minus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalAmount;)Ljava/time/ZonedDateTime;
+minus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/temporal/TemporalAmount;)Ljava/time/chrono/ChronoZonedDateTime;
+minus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/temporal/Temporal;
+ (L1java/time/temporal/TemporalAmount;)Ljava/time/temporal/Temporal;
+minusDays
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusHours
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusMinutes
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusMonths
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusNanos
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusSeconds
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusWeeks
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+minusYears
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+now
+ ()Ljava/time/ZonedDateTime;
+ ()L1java/time/ZonedDateTime;
+now
+ (Ljava/time/Clock;)Ljava/time/ZonedDateTime;
+ (L1java/time/Clock;)L1java/time/ZonedDateTime;
+now
+ (Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/ZoneId;)L1java/time/ZonedDateTime;
+of
+ (IIIIIIILjava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (IIIIIIIL1java/time/ZoneId;)L1java/time/ZonedDateTime;
+of
+ (Ljava/time/LocalDate;Ljava/time/LocalTime;Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/LocalDate;L1java/time/LocalTime;L1java/time/ZoneId;)L1java/time/ZonedDateTime;
+of
+ (Ljava/time/LocalDateTime;Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/LocalDateTime;L1java/time/ZoneId;)Ljava/time/ZonedDateTime;
+ofInstant
+ (Ljava/time/Instant;Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/Instant;L1java/time/ZoneId;)Ljava/time/ZonedDateTime;
+ofInstant
+ (Ljava/time/LocalDateTime;Ljava/time/ZoneOffset;Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/LocalDateTime;L1java/time/ZoneOffset;L1java/time/ZoneId;)Ljava/time/ZonedDateTime;
+ofLocal
+ (Ljava/time/LocalDateTime;Ljava/time/ZoneId;Ljava/time/ZoneOffset;)Ljava/time/ZonedDateTime;
+ (L1java/time/LocalDateTime;L1java/time/ZoneId;L0java/time/ZoneOffset;)Ljava/time/ZonedDateTime;
+ofStrict
+ (Ljava/time/LocalDateTime;Ljava/time/ZoneOffset;Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/LocalDateTime;L1java/time/ZoneOffset;L1java/time/ZoneId;)Ljava/time/ZonedDateTime;
+parse
+ (Ljava/lang/CharSequence;)Ljava/time/ZonedDateTime;
+ (L1java/lang/CharSequence;)Ljava/time/ZonedDateTime;
+parse
+ (Ljava/lang/CharSequence;Ljava/time/format/DateTimeFormatter;)Ljava/time/ZonedDateTime;
+ (L1java/lang/CharSequence;L1java/time/format/DateTimeFormatter;)Ljava/time/ZonedDateTime;
+plus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/ZonedDateTime;
+ (JL1java/time/temporal/TemporalUnit;)L1java/time/ZonedDateTime;
+plus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/chrono/ChronoZonedDateTime;
+ (JL1java/time/temporal/TemporalUnit;)L1java/time/chrono/ChronoZonedDateTime;
+plus
+ (JLjava/time/temporal/TemporalUnit;)Ljava/time/temporal/Temporal;
+ (JL1java/time/temporal/TemporalUnit;)L1java/time/temporal/Temporal;
+plus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalAmount;)L1java/time/ZonedDateTime;
+plus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/temporal/TemporalAmount;)L1java/time/chrono/ChronoZonedDateTime;
+plus
+ (Ljava/time/temporal/TemporalAmount;)Ljava/time/temporal/Temporal;
+ (L1java/time/temporal/TemporalAmount;)L1java/time/temporal/Temporal;
+plusDays
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusHours
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusMinutes
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusMonths
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusNanos
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusSeconds
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusWeeks
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+plusYears
+ (J)Ljava/time/ZonedDateTime;
+ (J)L1java/time/ZonedDateTime;
+query
+ <R:Ljava/lang/Object;>(Ljava/time/temporal/TemporalQuery<TR;>;)TR;
+ <R:Ljava/lang/Object;>(L1java/time/temporal/TemporalQuery<TR;>;)TR;
+range
+ (Ljava/time/temporal/TemporalField;)Ljava/time/temporal/ValueRange;
+ (L1java/time/temporal/TemporalField;)L1java/time/temporal/ValueRange;
+toLocalDate
+ ()Ljava/time/LocalDate;
+ ()L1java/time/LocalDate;
+toLocalDateTime
+ ()Ljava/time/LocalDateTime;
+ ()L1java/time/LocalDateTime;
+toLocalDateTime
+ ()Ljava/time/chrono/ChronoLocalDateTime;
+ ()L1java/time/chrono/ChronoLocalDateTime;
+toLocalTime
+ ()Ljava/time/LocalTime;
+ ()L1java/time/LocalTime;
+toOffsetDateTime
+ ()Ljava/time/OffsetDateTime;
+ ()L1java/time/OffsetDateTime;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+truncatedTo
+ (Ljava/time/temporal/TemporalUnit;)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalUnit;)L1java/time/ZonedDateTime;
+until
+ (Ljava/time/temporal/Temporal;Ljava/time/temporal/TemporalUnit;)J
+ (L1java/time/temporal/Temporal;L1java/time/temporal/TemporalUnit;)J
+with
+ (Ljava/time/temporal/TemporalAdjuster;)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalAdjuster;)L1java/time/ZonedDateTime;
+with
+ (Ljava/time/temporal/TemporalAdjuster;)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/temporal/TemporalAdjuster;)L1java/time/chrono/ChronoZonedDateTime;
+with
+ (Ljava/time/temporal/TemporalAdjuster;)Ljava/time/temporal/Temporal;
+ (L1java/time/temporal/TemporalAdjuster;)L1java/time/temporal/Temporal;
+with
+ (Ljava/time/temporal/TemporalField;J)Ljava/time/ZonedDateTime;
+ (L1java/time/temporal/TemporalField;J)L1java/time/ZonedDateTime;
+with
+ (Ljava/time/temporal/TemporalField;J)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/temporal/TemporalField;J)L1java/time/chrono/ChronoZonedDateTime;
+with
+ (Ljava/time/temporal/TemporalField;J)Ljava/time/temporal/Temporal;
+ (L1java/time/temporal/TemporalField;J)L1java/time/temporal/Temporal;
+withDayOfMonth
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withDayOfYear
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withEarlierOffsetAtOverlap
+ ()Ljava/time/ZonedDateTime;
+ ()L1java/time/ZonedDateTime;
+withEarlierOffsetAtOverlap
+ ()Ljava/time/chrono/ChronoZonedDateTime;
+ ()L1java/time/chrono/ChronoZonedDateTime;
+withFixedOffsetZone
+ ()Ljava/time/ZonedDateTime;
+ ()L1java/time/ZonedDateTime;
+withHour
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withLaterOffsetAtOverlap
+ ()Ljava/time/ZonedDateTime;
+ ()L1java/time/ZonedDateTime;
+withLaterOffsetAtOverlap
+ ()Ljava/time/chrono/ChronoZonedDateTime;
+ ()L1java/time/chrono/ChronoZonedDateTime;
+withMinute
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withMonth
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withNano
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withSecond
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withYear
+ (I)Ljava/time/ZonedDateTime;
+ (I)L1java/time/ZonedDateTime;
+withZoneSameInstant
+ (Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/ZoneId;)L1java/time/ZonedDateTime;
+withZoneSameInstant
+ (Ljava/time/ZoneId;)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/ZoneId;)L1java/time/chrono/ChronoZonedDateTime;
+withZoneSameLocal
+ (Ljava/time/ZoneId;)Ljava/time/ZonedDateTime;
+ (L1java/time/ZoneId;)L1java/time/ZonedDateTime;
+withZoneSameLocal
+ (Ljava/time/ZoneId;)Ljava/time/chrono/ChronoZonedDateTime;
+ (L1java/time/ZoneId;)L1java/time/chrono/ChronoZonedDateTime;
+

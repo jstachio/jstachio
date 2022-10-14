@@ -1,0 +1,4 @@
+class javax/lang/model/util/ElementFilter
+methodsIn
+ (Ljava/lang/Iterable<+Ljavax/lang/model/element/Element;>;)Ljava/util/List<Ljavax/lang/model/element/ExecutableElement;>;
+ (Ljava/lang/Iterable<+Ljavax/lang/model/element/Element;>;)L1java/util/List<Ljavax/lang/model/element/ExecutableElement;>;

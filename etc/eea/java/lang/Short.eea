@@ -1,0 +1,34 @@
+class java/lang/Short
+<init>
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+TYPE
+ Ljava/lang/Class<Ljava/lang/Short;>;
+ L1java/lang/Class<L1java/lang/Short;>;
+compareTo
+ (Ljava/lang/Short;)I
+ (L1java/lang/Short;)I
+decode
+ (Ljava/lang/String;)Ljava/lang/Short;
+ (L1java/lang/String;)L1java/lang/Short;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+parseShort
+ (Ljava/lang/String;)S
+ (L1java/lang/String;)S
+parseShort
+ (Ljava/lang/String;I)S
+ (L1java/lang/String;I)S
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ (S)Ljava/lang/String;
+ (S)L1java/lang/String;
+valueOf
+ (Ljava/lang/String;)Ljava/lang/Short;
+ (L1java/lang/String;)L1java/lang/Short;
+valueOf
+ (Ljava/lang/String;I)Ljava/lang/Short;
+ (L1java/lang/String;I)L1java/lang/Short;

@@ -1,0 +1,10 @@
+class java/net/http/HttpResponse$BodyHandlers
+discarding
+ ()Ljava/net/http/HttpResponse$BodyHandler<Ljava/lang/Void;>;
+ ()L1java/net/http/HttpResponse$BodyHandler<Ljava/lang/Void;>;
+ofByteArray
+ ()Ljava/net/http/HttpResponse$BodyHandler<[B>;
+ ()L1java/net/http/HttpResponse$BodyHandler<[1B>;
+ofInputStream
+ ()Ljava/net/http/HttpResponse$BodyHandler<Ljava/io/InputStream;>;
+ ()L1java/net/http/HttpResponse$BodyHandler<Ljava/io/InputStream;>;

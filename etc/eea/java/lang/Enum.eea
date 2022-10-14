@@ -1,0 +1,25 @@
+class java/lang/Enum
+<init>
+ (Ljava/lang/String;I)V
+ (L1java/lang/String;I)V
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+compareTo
+ (TE;)I
+ (T1E;)I
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getDeclaringClass
+ ()Ljava/lang/Class<TE;>;
+ ()L1java/lang/Class<TE;>;
+name
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+valueOf
+ <T:Ljava/lang/Enum<TT;>;>(Ljava/lang/Class<TT;>;Ljava/lang/String;)TT;
+ <T:Ljava/lang/Enum<TT;>;>(L1java/lang/Class<TT;>;L1java/lang/String;)T1T;

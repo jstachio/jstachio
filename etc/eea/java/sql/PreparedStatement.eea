@@ -1,0 +1,4 @@
+class java/sql/PreparedStatement
+executeQuery
+ ()Ljava/sql/ResultSet;
+ ()L1java/sql/ResultSet;

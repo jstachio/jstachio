@@ -1,0 +1,22 @@
+class java/util/Map$Entry
+comparingByKey
+ <K::Ljava/lang/Comparable<-TK;>;V:Ljava/lang/Object;>()Ljava/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+ <K::Ljava/lang/Comparable<-TK;>;V:Ljava/lang/Object;>()L1java/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+comparingByKey
+ <K:Ljava/lang/Object;V:Ljava/lang/Object;>(Ljava/util/Comparator<-TK;>;)Ljava/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+ <K:Ljava/lang/Object;V:Ljava/lang/Object;>(L1java/util/Comparator<-TK;>;)L1java/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+comparingByValue
+ <K:Ljava/lang/Object;V::Ljava/lang/Comparable<-TV;>;>()Ljava/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+ <K:Ljava/lang/Object;V::Ljava/lang/Comparable<-TV;>;>()L1java/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+comparingByValue
+ <K:Ljava/lang/Object;V:Ljava/lang/Object;>(Ljava/util/Comparator<-TV;>;)Ljava/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+ <K:Ljava/lang/Object;V:Ljava/lang/Object;>(L1java/util/Comparator<-TV;>;)L1java/util/Comparator<Ljava/util/Map$Entry<TK;TV;>;>;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getKey
+ ()TK;
+ ()T+K;
+getValue
+ ()TV;
+ ()T+V;

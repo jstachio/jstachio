@@ -1,0 +1,10 @@
+class javax/lang/model/type/TypeVisitor
+visitArray
+ (Ljavax/lang/model/type/ArrayType;TP;)TR;
+ (L1javax/lang/model/type/ArrayType;TP;)TR;
+visitDeclared
+ (Ljavax/lang/model/type/DeclaredType;TP;)TR;
+ (L1javax/lang/model/type/DeclaredType;TP;)TR;
+visitExecutable
+ (Ljavax/lang/model/type/ExecutableType;TP;)TR;
+ (L1javax/lang/model/type/ExecutableType;TP;)TR;

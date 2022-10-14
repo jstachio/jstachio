@@ -1,0 +1,4 @@
+class java/net/URLClassLoader
+getURLs
+ ()[Ljava/net/URL;
+ ()[1L1java/net/URL;

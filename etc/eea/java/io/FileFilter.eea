@@ -1,0 +1,4 @@
+class java/io/FileFilter
+accept
+ (Ljava/io/File;)Z
+ (L1java/io/File;)Z

@@ -1,0 +1,64 @@
+class java/lang/ProcessBuilder
+<init>
+ (Ljava/util/List<Ljava/lang/String;>;)V
+ (L1java/util/List<L1java/lang/String;>;)V
+<init>
+ ([Ljava/lang/String;)V
+ ([1L1java/lang/String;)V
+command
+ ()Ljava/util/List<Ljava/lang/String;>;
+ ()L1java/util/List<L1java/lang/String;>;
+command
+ (Ljava/util/List<Ljava/lang/String;>;)Ljava/lang/ProcessBuilder;
+ (L1java/util/List<L1java/lang/String;>;)L1java/lang/ProcessBuilder;
+command
+ ([Ljava/lang/String;)Ljava/lang/ProcessBuilder;
+ ([1L1java/lang/String;)L1java/lang/ProcessBuilder;
+directory
+ ()Ljava/io/File;
+ ()L0java/io/File;
+directory
+ (Ljava/io/File;)Ljava/lang/ProcessBuilder;
+ (L0java/io/File;)L1java/lang/ProcessBuilder;
+environment
+ ()Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+ ()L1java/util/Map<L1java/lang/String;L1java/lang/String;>;
+inheritIO
+ ()Ljava/lang/ProcessBuilder;
+ ()L1java/lang/ProcessBuilder;
+redirectError
+ ()Ljava/lang/ProcessBuilder$Redirect;
+ ()L1java/lang/ProcessBuilder$Redirect;
+redirectError
+ (Ljava/io/File;)Ljava/lang/ProcessBuilder;
+ (L1java/io/File;)L1java/lang/ProcessBuilder;
+redirectError
+ (Ljava/lang/ProcessBuilder$Redirect;)Ljava/lang/ProcessBuilder;
+ (L1java/lang/ProcessBuilder$Redirect;)L1java/lang/ProcessBuilder;
+redirectErrorStream
+ (Z)Ljava/lang/ProcessBuilder;
+ (Z)L1java/lang/ProcessBuilder;
+redirectInput
+ ()Ljava/lang/ProcessBuilder$Redirect;
+ ()L1java/lang/ProcessBuilder$Redirect;
+redirectInput
+ (Ljava/io/File;)Ljava/lang/ProcessBuilder;
+ (L1java/io/File;)L1java/lang/ProcessBuilder;
+redirectInput
+ (Ljava/lang/ProcessBuilder$Redirect;)Ljava/lang/ProcessBuilder;
+ (L1java/lang/ProcessBuilder$Redirect;)L1java/lang/ProcessBuilder;
+redirectOutput
+ ()Ljava/lang/ProcessBuilder$Redirect;
+ ()L1java/lang/ProcessBuilder$Redirect;
+redirectOutput
+ (Ljava/io/File;)Ljava/lang/ProcessBuilder;
+ (L1java/io/File;)L1java/lang/ProcessBuilder;
+redirectOutput
+ (Ljava/lang/ProcessBuilder$Redirect;)Ljava/lang/ProcessBuilder;
+ (L1java/lang/ProcessBuilder$Redirect;)L1java/lang/ProcessBuilder;
+start
+ ()Ljava/lang/Process;
+ ()L1java/lang/Process;
+startPipeline
+ (Ljava/util/List<Ljava/lang/ProcessBuilder;>;)Ljava/util/List<Ljava/lang/Process;>;
+ (L1java/util/List<L1java/lang/ProcessBuilder;>;)L1java/util/List<L1java/lang/Process;>;

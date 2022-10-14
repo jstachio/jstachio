@@ -1,0 +1,4 @@
+class java/util/concurrent/atomic/AtomicReference
+get
+ ()TV;
+ ()TV;

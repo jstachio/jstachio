@@ -1,0 +1,127 @@
+class java/lang/StringBuffer
+<init>
+ (Ljava/lang/CharSequence;)V
+ (L1java/lang/CharSequence;)V
+<init>
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+append
+ (C)Ljava/lang/StringBuffer;
+ (C)L1java/lang/StringBuffer;
+append
+ (D)Ljava/lang/StringBuffer;
+ (D)L1java/lang/StringBuffer;
+append
+ (F)Ljava/lang/StringBuffer;
+ (F)L1java/lang/StringBuffer;
+append
+ (I)Ljava/lang/StringBuffer;
+ (I)L1java/lang/StringBuffer;
+append
+ (J)Ljava/lang/StringBuffer;
+ (J)L1java/lang/StringBuffer;
+append
+ (Ljava/lang/CharSequence;)Ljava/lang/StringBuffer;
+ (L0java/lang/CharSequence;)L1java/lang/StringBuffer;
+append
+ (Ljava/lang/CharSequence;II)Ljava/lang/StringBuffer;
+ (L0java/lang/CharSequence;II)L1java/lang/StringBuffer;
+append
+ (Ljava/lang/Object;)Ljava/lang/StringBuffer;
+ (L0java/lang/Object;)L1java/lang/StringBuffer;
+append
+ (Ljava/lang/String;)Ljava/lang/StringBuffer;
+ (L0java/lang/String;)L1java/lang/StringBuffer;
+append
+ (Ljava/lang/StringBuffer;)Ljava/lang/StringBuffer;
+ (L0java/lang/StringBuffer;)L1java/lang/StringBuffer;
+append
+ (Z)Ljava/lang/StringBuffer;
+ (Z)L1java/lang/StringBuffer;
+append
+ ([C)Ljava/lang/StringBuffer;
+ ([1C)L1java/lang/StringBuffer;
+append
+ ([CII)Ljava/lang/StringBuffer;
+ ([1CII)L1java/lang/StringBuffer;
+appendCodePoint
+ (I)Ljava/lang/StringBuffer;
+ (I)L1java/lang/StringBuffer;
+compareTo
+ (Ljava/lang/StringBuffer;)I
+ (L1java/lang/StringBuffer;)I
+delete
+ (II)Ljava/lang/StringBuffer;
+ (II)L1java/lang/StringBuffer;
+deleteCharAt
+ (I)Ljava/lang/StringBuffer;
+ (I)L1java/lang/StringBuffer;
+getChars
+ (II[CI)V
+ (II[1CI)V
+indexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+indexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+insert
+ (IC)Ljava/lang/StringBuffer;
+ (IC)L1java/lang/StringBuffer;
+insert
+ (ID)Ljava/lang/StringBuffer;
+ (ID)L1java/lang/StringBuffer;
+insert
+ (IF)Ljava/lang/StringBuffer;
+ (IF)L1java/lang/StringBuffer;
+insert
+ (II)Ljava/lang/StringBuffer;
+ (II)L1java/lang/StringBuffer;
+insert
+ (IJ)Ljava/lang/StringBuffer;
+ (IJ)L1java/lang/StringBuffer;
+insert
+ (ILjava/lang/CharSequence;)Ljava/lang/StringBuffer;
+ (IL0java/lang/CharSequence;)L1java/lang/StringBuffer;
+insert
+ (ILjava/lang/CharSequence;II)Ljava/lang/StringBuffer;
+ (IL0java/lang/CharSequence;II)L1java/lang/StringBuffer;
+insert
+ (ILjava/lang/Object;)Ljava/lang/StringBuffer;
+ (IL0java/lang/Object;)L1java/lang/StringBuffer;
+insert
+ (ILjava/lang/String;)Ljava/lang/StringBuffer;
+ (IL0java/lang/String;)L1java/lang/StringBuffer;
+insert
+ (IZ)Ljava/lang/StringBuffer;
+ (IZ)L1java/lang/StringBuffer;
+insert
+ (I[C)Ljava/lang/StringBuffer;
+ (I[1C)L1java/lang/StringBuffer;
+insert
+ (I[CII)Ljava/lang/StringBuffer;
+ (I[1CII)L1java/lang/StringBuffer;
+lastIndexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+lastIndexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+replace
+ (IILjava/lang/String;)Ljava/lang/StringBuffer;
+ (IIL1java/lang/String;)L1java/lang/StringBuffer;
+reverse
+ ()Ljava/lang/StringBuffer;
+ ()L1java/lang/StringBuffer;
+subSequence
+ (II)Ljava/lang/CharSequence;
+ (II)L1java/lang/CharSequence;
+substring
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+substring
+ (II)Ljava/lang/String;
+ (II)L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

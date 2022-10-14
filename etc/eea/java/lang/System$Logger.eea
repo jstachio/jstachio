@@ -1,0 +1,31 @@
+class java/lang/System$Logger
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+isLoggable
+ (Ljava/lang/System$Logger$Level;)Z
+ (L1java/lang/System$Logger$Level;)Z
+log
+ (Ljava/lang/System$Logger$Level;Ljava/lang/Object;)V
+ (L1java/lang/System$Logger$Level;L1java/lang/Object;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/lang/String;)V
+ (L1java/lang/System$Logger$Level;L0java/lang/String;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/lang/String;Ljava/lang/Throwable;)V
+ (L1java/lang/System$Logger$Level;L0java/lang/String;L0java/lang/Throwable;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/lang/String;[Ljava/lang/Object;)V
+ (L1java/lang/System$Logger$Level;L0java/lang/String;[1L0java/lang/Object;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/util/ResourceBundle;Ljava/lang/String;Ljava/lang/Throwable;)V
+ (L1java/lang/System$Logger$Level;L0java/util/ResourceBundle;L0java/lang/String;L0java/lang/Throwable;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/util/ResourceBundle;Ljava/lang/String;[Ljava/lang/Object;)V
+ (L1java/lang/System$Logger$Level;L0java/util/ResourceBundle;L0java/lang/String;[1L0java/lang/Object;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/util/function/Supplier<Ljava/lang/String;>;)V
+ (L1java/lang/System$Logger$Level;L1java/util/function/Supplier<L0java/lang/String;>;)V
+log
+ (Ljava/lang/System$Logger$Level;Ljava/util/function/Supplier<Ljava/lang/String;>;Ljava/lang/Throwable;)V
+ (L1java/lang/System$Logger$Level;L1java/util/function/Supplier<L0java/lang/String;>;L0java/lang/Throwable;)V

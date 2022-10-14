@@ -1,0 +1,4 @@
+class java/net/http/HttpClient
+newHttpClient
+ ()Ljava/net/http/HttpClient;
+ ()L1java/net/http/HttpClient;

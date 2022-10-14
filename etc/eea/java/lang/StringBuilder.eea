@@ -1,0 +1,115 @@
+class java/lang/StringBuilder
+<init>
+ (Ljava/lang/CharSequence;)V
+ (L1java/lang/CharSequence;)V
+<init>
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+append
+ (C)Ljava/lang/StringBuilder;
+ (C)L1java/lang/StringBuilder;
+append
+ (D)Ljava/lang/StringBuilder;
+ (D)L1java/lang/StringBuilder;
+append
+ (F)Ljava/lang/StringBuilder;
+ (F)L1java/lang/StringBuilder;
+append
+ (I)Ljava/lang/StringBuilder;
+ (I)L1java/lang/StringBuilder;
+append
+ (J)Ljava/lang/StringBuilder;
+ (J)L1java/lang/StringBuilder;
+append
+ (Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;
+ (L0java/lang/CharSequence;)L1java/lang/StringBuilder;
+append
+ (Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;
+ (L0java/lang/CharSequence;II)L1java/lang/StringBuilder;
+append
+ (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+ (L0java/lang/Object;)L1java/lang/StringBuilder;
+append
+ (Ljava/lang/String;)Ljava/lang/StringBuilder;
+ (L0java/lang/String;)L1java/lang/StringBuilder;
+append
+ (Ljava/lang/StringBuffer;)Ljava/lang/StringBuilder;
+ (L0java/lang/StringBuffer;)L1java/lang/StringBuilder;
+append
+ (Z)Ljava/lang/StringBuilder;
+ (Z)L1java/lang/StringBuilder;
+append
+ ([C)Ljava/lang/StringBuilder;
+ ([1C)L1java/lang/StringBuilder;
+append
+ ([CII)Ljava/lang/StringBuilder;
+ ([1CII)L1java/lang/StringBuilder;
+appendCodePoint
+ (I)Ljava/lang/StringBuilder;
+ (I)L1java/lang/StringBuilder;
+compareTo
+ (Ljava/lang/StringBuilder;)I
+ (L1java/lang/StringBuilder;)I
+delete
+ (II)Ljava/lang/StringBuilder;
+ (II)L1java/lang/StringBuilder;
+deleteCharAt
+ (I)Ljava/lang/StringBuilder;
+ (I)L1java/lang/StringBuilder;
+indexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+indexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+insert
+ (IC)Ljava/lang/StringBuilder;
+ (IC)L1java/lang/StringBuilder;
+insert
+ (ID)Ljava/lang/StringBuilder;
+ (ID)L1java/lang/StringBuilder;
+insert
+ (IF)Ljava/lang/StringBuilder;
+ (IF)L1java/lang/StringBuilder;
+insert
+ (II)Ljava/lang/StringBuilder;
+ (II)L1java/lang/StringBuilder;
+insert
+ (IJ)Ljava/lang/StringBuilder;
+ (IJ)L1java/lang/StringBuilder;
+insert
+ (ILjava/lang/CharSequence;)Ljava/lang/StringBuilder;
+ (IL0java/lang/CharSequence;)L1java/lang/StringBuilder;
+insert
+ (ILjava/lang/CharSequence;II)Ljava/lang/StringBuilder;
+ (IL0java/lang/CharSequence;II)L1java/lang/StringBuilder;
+insert
+ (ILjava/lang/Object;)Ljava/lang/StringBuilder;
+ (IL0java/lang/Object;)L1java/lang/StringBuilder;
+insert
+ (ILjava/lang/String;)Ljava/lang/StringBuilder;
+ (IL0java/lang/String;)L1java/lang/StringBuilder;
+insert
+ (IZ)Ljava/lang/StringBuilder;
+ (IZ)L1java/lang/StringBuilder;
+insert
+ (I[C)Ljava/lang/StringBuilder;
+ (I[1C)L1java/lang/StringBuilder;
+insert
+ (I[CII)Ljava/lang/StringBuilder;
+ (I[1CII)L1java/lang/StringBuilder;
+lastIndexOf
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+lastIndexOf
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+replace
+ (IILjava/lang/String;)Ljava/lang/StringBuilder;
+ (IIL1java/lang/String;)L1java/lang/StringBuilder;
+reverse
+ ()Ljava/lang/StringBuilder;
+ ()L1java/lang/StringBuilder;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

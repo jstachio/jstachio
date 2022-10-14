@@ -1,0 +1,7 @@
+class java/nio/charset/StandardCharsets
+US_ASCII
+ Ljava/nio/charset/Charset;
+ L1java/nio/charset/Charset;
+UTF_8
+ Ljava/nio/charset/Charset;
+ L1java/nio/charset/Charset;

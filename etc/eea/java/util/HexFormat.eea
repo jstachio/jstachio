@@ -1,0 +1,4 @@
+class java/util/HexFormat
+formatHex
+ ([B)Ljava/lang/String;
+ ([1B)L1java/lang/String;

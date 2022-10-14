@@ -1,0 +1,76 @@
+class java/lang/Integer
+<init>
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+TYPE
+ Ljava/lang/Class<Ljava/lang/Integer;>;
+ L1java/lang/Class<L1java/lang/Integer;>;
+compareTo
+ (Ljava/lang/Integer;)I
+ (L1java/lang/Integer;)I
+decode
+ (Ljava/lang/String;)Ljava/lang/Integer;
+ (L1java/lang/String;)L1java/lang/Integer;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getInteger
+ (Ljava/lang/String;)Ljava/lang/Integer;
+ (L1java/lang/String;)L0java/lang/Integer;
+getInteger
+ (Ljava/lang/String;I)Ljava/lang/Integer;
+ (L1java/lang/String;I)L0java/lang/Integer;
+getInteger
+ (Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+ (L1java/lang/String;L0java/lang/Integer;)L0java/lang/Integer;
+parseInt
+ (Ljava/lang/CharSequence;III)I
+ (L1java/lang/CharSequence;III)I
+parseInt
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+parseInt
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+parseUnsignedInt
+ (Ljava/lang/CharSequence;III)I
+ (L1java/lang/CharSequence;III)I
+parseUnsignedInt
+ (Ljava/lang/String;)I
+ (L1java/lang/String;)I
+parseUnsignedInt
+ (Ljava/lang/String;I)I
+ (L1java/lang/String;I)I
+toBinaryString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+toHexString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+toOctalString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+toString
+ (II)Ljava/lang/String;
+ (II)L1java/lang/String;
+toUnsignedString
+ (I)Ljava/lang/String;
+ (I)L1java/lang/String;
+toUnsignedString
+ (II)Ljava/lang/String;
+ (II)L1java/lang/String;
+valueOf
+ (I)Ljava/lang/Integer;
+ (I)L1java/lang/Integer;
+valueOf
+ (Ljava/lang/String;)Ljava/lang/Integer;
+ (L1java/lang/String;)L1java/lang/Integer;
+valueOf
+ (Ljava/lang/String;I)Ljava/lang/Integer;
+ (L1java/lang/String;I)L1java/lang/Integer;

@@ -1,0 +1,7 @@
+class javax/lang/model/util/Types
+asElement
+ (Ljavax/lang/model/type/TypeMirror;)Ljavax/lang/model/element/Element;
+ (Ljavax/lang/model/type/TypeMirror;)L0javax/lang/model/element/Element;
+directSupertypes
+ (Ljavax/lang/model/type/TypeMirror;)Ljava/util/List<+Ljavax/lang/model/type/TypeMirror;>;
+ (Ljavax/lang/model/type/TypeMirror;)L1java/util/List<+L1javax/lang/model/type/TypeMirror;>;

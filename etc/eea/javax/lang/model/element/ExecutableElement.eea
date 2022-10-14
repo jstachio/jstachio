@@ -1,0 +1,7 @@
+class javax/lang/model/element/ExecutableElement
+getParameters
+ ()Ljava/util/List<+Ljavax/lang/model/element/VariableElement;>;
+ ()Ljava/util/List<+L1javax/lang/model/element/VariableElement;>;
+getReturnType
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;

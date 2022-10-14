@@ -1,0 +1,4 @@
+class java/lang/Readable
+read
+ (Ljava/nio/CharBuffer;)I
+ (L1java/nio/CharBuffer;)I

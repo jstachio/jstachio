@@ -1,0 +1,13 @@
+class java/nio/file/Files
+newBufferedWriter
+ (Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)Ljava/io/BufferedWriter;
+ (Ljava/nio/file/Path;Ljava/nio/charset/Charset;[Ljava/nio/file/OpenOption;)L1java/io/BufferedWriter;
+newInputStream
+ (Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;
+ (Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)L1java/io/InputStream;
+newOutputStream
+ (Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/OutputStream;
+ (Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)L1java/io/OutputStream;
+readAllBytes
+ (Ljava/nio/file/Path;)[B
+ (Ljava/nio/file/Path;)[1B

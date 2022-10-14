@@ -1,0 +1,85 @@
+class java/util/HashMap
+<init>
+ (Ljava/util/Map<+TK;+TV;>;)V
+ (L1java/util/Map<+TK;+TV;>;)V
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+compute
+ (TK;Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)TV;
+ (T0K;L1java/util/function/BiFunction<-TK;-TV;+TV;>;)T0V;
+computeIfAbsent
+ (TK;Ljava/util/function/Function<-TK;+TV;>;)TV;
+ (T0K;L1java/util/function/Function<-TK;+TV;>;)T0V;
+computeIfPresent
+ (TK;Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)TV;
+ (T0K;L1java/util/function/BiFunction<-TK;-TV;+TV;>;)T0V;
+containsKey
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+containsValue
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+entrySet
+ ()Ljava/util/Set<Ljava/util/Map$Entry<TK;TV;>;>;
+ ()L1java/util/Set<Ljava/util/Map$Entry<TK;TV;>;>;
+forEach
+ (Ljava/util/function/BiConsumer<-TK;-TV;>;)V
+ (L1java/util/function/BiConsumer<-TK;-TV;>;)V
+get
+ (Ljava/lang/Object;)TV;
+ (L0java/lang/Object;)T0V;
+getNode
+ (ILjava/lang/Object;)Ljava/util/HashMap$Node<TK;TV;>;
+ (IL0java/lang/Object;)L0java/util/HashMap$Node<TK;TV;>;
+hash
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+keySet
+ ()Ljava/util/Set<TK;>;
+ ()L1java/util/Set<TK;>;
+merge
+ (TK;TV;Ljava/util/function/BiFunction<-TV;-TV;+TV;>;)TV;
+ (T0K;T1V;L1java/util/function/BiFunction<-TV;-TV;+TV;>;)TV;
+put
+ (TK;TV;)TV;
+ (T0K;T0V;)T0V;
+putAll
+ (Ljava/util/Map<+TK;+TV;>;)V
+ (L1java/util/Map<+TK;+TV;>;)V
+putIfAbsent
+ (TK;TV;)TV;
+ (T0K;T0V;)T0V;
+putMapEntries
+ (Ljava/util/Map<+TK;+TV;>;Z)V
+ (L1java/util/Map<+TK;+TV;>;Z)V
+putVal
+ (ITK;TV;ZZ)TV;
+ (IT0K;T0V;ZZ)T0V;
+remove
+ (Ljava/lang/Object;)TV;
+ (L0java/lang/Object;)T0V;
+remove
+ (Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L0java/lang/Object;L0java/lang/Object;)Z
+removeNode
+ (ILjava/lang/Object;Ljava/lang/Object;ZZ)Ljava/util/HashMap$Node<TK;TV;>;
+ (IL0java/lang/Object;L0java/lang/Object;ZZ)L0java/util/HashMap$Node<TK;TV;>;
+replace
+ (TK;TV;)TV;
+ (T0K;T0V;)T0V;
+replace
+ (TK;TV;TV;)Z
+ (T0K;T0V;T0V;)Z
+replaceAll
+ (Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)V
+ (L1java/util/function/BiFunction<-TK;-TV;+TV;>;)V
+resize
+ ()[Ljava/util/HashMap$Node<TK;TV;>;
+ ()[L1java/util/HashMap$Node<TK;TV;>;
+treeifyBin
+ ([Ljava/util/HashMap$Node<TK;TV;>;I)V
+ ([L0java/util/HashMap$Node<TK;TV;>;I)V
+values
+ ()Ljava/util/Collection<TV;>;
+ ()L1java/util/Collection<TV;>;

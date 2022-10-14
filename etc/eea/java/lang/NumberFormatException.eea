@@ -1,0 +1,4 @@
+class java/lang/NumberFormatException
+<init>
+ (Ljava/lang/String;)V
+ (L0java/lang/String;)V

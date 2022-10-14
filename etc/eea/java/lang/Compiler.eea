@@ -1,0 +1,10 @@
+class java/lang/Compiler
+command
+ (Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;)L0java/lang/Object;
+compileClass
+ (Ljava/lang/Class<*>;)Z
+ (L1java/lang/Class<*>;)Z
+compileClasses
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z

@@ -1,0 +1,55 @@
+class java/lang/reflect/Method
+equals
+ (Ljava/lang/Object;)Z
+ (Ljava/lang/Object;)Z
+getAnnotatedReturnType
+ ()Ljava/lang/reflect/AnnotatedType;
+ ()L1java/lang/reflect/AnnotatedType;
+getAnnotation
+ <T::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TT;>;)TT;
+ <T::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TT;>;)T0T;
+getDeclaredAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getDeclaringClass
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getDefaultValue
+ ()Ljava/lang/Object;
+ ()L0java/lang/Object;
+getExceptionTypes
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getGenericExceptionTypes
+ ()[Ljava/lang/reflect/Type;
+ ()[1L1java/lang/reflect/Type;
+getGenericParameterTypes
+ ()[Ljava/lang/reflect/Type;
+ ()[1L1java/lang/reflect/Type;
+getGenericReturnType
+ ()Ljava/lang/reflect/Type;
+ ()L1java/lang/reflect/Type;
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getParameterAnnotations
+ ()[[Ljava/lang/annotation/Annotation;
+ ()[1[1L1java/lang/annotation/Annotation;
+getParameterTypes
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getReturnType
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getTypeParameters
+ ()[Ljava/lang/reflect/TypeVariable<Ljava/lang/reflect/Method;>;
+ ()[1L1java/lang/reflect/TypeVariable<Ljava/lang/reflect/Method;>;
+invoke
+ (Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+ (L0java/lang/Object;[0L0java/lang/Object;)L0java/lang/Object;
+toGenericString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

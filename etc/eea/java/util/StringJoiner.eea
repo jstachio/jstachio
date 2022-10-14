@@ -1,0 +1,19 @@
+class java/util/StringJoiner
+<init>
+ (Ljava/lang/CharSequence;)V
+ (L1java/lang/CharSequence;)V
+<init>
+ (Ljava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/CharSequence;)V
+ (L1java/lang/CharSequence;L1java/lang/CharSequence;L1java/lang/CharSequence;)V
+add
+ (Ljava/lang/CharSequence;)Ljava/util/StringJoiner;
+ (L0java/lang/CharSequence;)L1java/util/StringJoiner;
+merge
+ (Ljava/util/StringJoiner;)Ljava/util/StringJoiner;
+ (L1java/util/StringJoiner;)L1java/util/StringJoiner;
+setEmptyValue
+ (Ljava/lang/CharSequence;)Ljava/util/StringJoiner;
+ (L1java/lang/CharSequence;)Ljava/util/StringJoiner;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

@@ -1,0 +1,61 @@
+class java/util/concurrent/LinkedBlockingQueue
+contains
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+drainTo
+ (Ljava/util/Collection<-TE;>;)I
+ (L1java/util/Collection<-TE;>;)I
+drainTo
+ (Ljava/util/Collection<-TE;>;I)I
+ (L1java/util/Collection<-TE;>;I)I
+forEach
+ (Ljava/util/function/Consumer<-TE;>;)V
+ (L1java/util/function/Consumer<-TE;>;)V
+iterator
+ ()Ljava/util/Iterator<TE;>;
+ ()L1java/util/Iterator<TE;>;
+offer
+ (TE;)Z
+ (T1E;)Z
+offer
+ (TE;JLjava/util/concurrent/TimeUnit;)Z
+ (T1E;JL1java/util/concurrent/TimeUnit;)Z
+peek
+ ()TE;
+ ()T0E;
+poll
+ ()TE;
+ ()T0E;
+poll
+ (JLjava/util/concurrent/TimeUnit;)TE;
+ (JL1java/util/concurrent/TimeUnit;)T0E;
+put
+ (TE;)V
+ (T1E;)V
+remove
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+removeAll
+ (Ljava/util/Collection<*>;)Z
+ (L1java/util/Collection<*>;)Z
+removeIf
+ (Ljava/util/function/Predicate<-TE;>;)Z
+ (L1java/util/function/Predicate<-TE;>;)Z
+retainAll
+ (Ljava/util/Collection<*>;)Z
+ (L1java/util/Collection<*>;)Z
+spliterator
+ ()Ljava/util/Spliterator<TE;>;
+ ()L1java/util/Spliterator<TE;>;
+take
+ ()TE;
+ ()T1E;
+toArray
+ ()[Ljava/lang/Object;
+ ()[1L1java/lang/Object;
+toArray
+ <T:Ljava/lang/Object;>([TT;)[TT;
+ <T:Ljava/lang/Object;>([1T1T;)[1T1T;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

@@ -1,0 +1,10 @@
+class java/lang/EnumConstantNotPresentException
+<init>
+ (Ljava/lang/Class<+Ljava/lang/Enum;>;Ljava/lang/String;)V
+ (L1java/lang/Class<+Ljava/lang/Enum;>;L0java/lang/String;)V
+constantName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+enumType
+ ()Ljava/lang/Class<+Ljava/lang/Enum;>;
+ ()L1java/lang/Class<+Ljava/lang/Enum;>;

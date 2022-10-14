@@ -1,0 +1,58 @@
+class java/lang/Package
+getAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T0A;
+getAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getAnnotationsByType
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)[TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)[1T1A;
+getDeclaredAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T0A;
+getDeclaredAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getDeclaredAnnotationsByType
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)[TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)[1T1A;
+getImplementationTitle
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getImplementationVendor
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getImplementationVersion
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getPackage
+ (Ljava/lang/String;)Ljava/lang/Package;
+ (L1java/lang/String;)L0java/lang/Package;
+getPackages
+ ()[Ljava/lang/Package;
+ ()[1L1java/lang/Package;
+getSpecificationTitle
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getSpecificationVendor
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getSpecificationVersion
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+isAnnotationPresent
+ (Ljava/lang/Class<+Ljava/lang/annotation/Annotation;>;)Z
+ (L1java/lang/Class<+Ljava/lang/annotation/Annotation;>;)Z
+isCompatibleWith
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+isSealed
+ (Ljava/net/URL;)Z
+ (L1java/net/URL;)Z
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

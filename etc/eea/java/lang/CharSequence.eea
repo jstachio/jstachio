@@ -1,0 +1,16 @@
+class java/lang/CharSequence
+chars
+ ()Ljava/util/stream/IntStream;
+ ()L1java/util/stream/IntStream;
+codePoints
+ ()Ljava/util/stream/IntStream;
+ ()L1java/util/stream/IntStream;
+compare
+ (Ljava/lang/CharSequence;Ljava/lang/CharSequence;)I
+ (L1java/lang/CharSequence;L1java/lang/CharSequence;)I
+subSequence
+ (II)Ljava/lang/CharSequence;
+ (II)L1java/lang/CharSequence;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

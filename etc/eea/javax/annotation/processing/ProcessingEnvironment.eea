@@ -1,0 +1,13 @@
+class javax/annotation/processing/ProcessingEnvironment
+getElementUtils
+ ()Ljavax/lang/model/util/Elements;
+ ()L1javax/lang/model/util/Elements;
+getFiler
+ ()Ljavax/annotation/processing/Filer;
+ ()L1javax/annotation/processing/Filer;
+getMessager
+ ()Ljavax/annotation/processing/Messager;
+ ()L1javax/annotation/processing/Messager;
+getTypeUtils
+ ()Ljavax/lang/model/util/Types;
+ ()L1javax/lang/model/util/Types;

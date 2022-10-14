@@ -1,0 +1,4 @@
+class java/util/regex/Matcher
+replaceAll
+ (Ljava/util/function/Function<Ljava/util/regex/MatchResult;Ljava/lang/String;>;)Ljava/lang/String;
+ (Ljava/util/function/Function<Ljava/util/regex/MatchResult;Ljava/lang/String;>;)L1java/lang/String;

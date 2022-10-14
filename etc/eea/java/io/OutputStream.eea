@@ -1,0 +1,4 @@
+class java/io/OutputStream
+nullOutputStream
+ ()Ljava/io/OutputStream;
+ ()L1java/io/OutputStream;

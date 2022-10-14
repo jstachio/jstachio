@@ -1,0 +1,130 @@
+class java/util/Properties
+<init>
+ (Ljava/util/Properties;)V
+ (L0java/util/Properties;)V
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+compute
+ (Ljava/lang/Object;Ljava/util/function/BiFunction<-Ljava/lang/Object;-Ljava/lang/Object;*>;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/util/function/BiFunction<-1Ljava/lang/Object;-0Ljava/lang/Object;*0>;)L0java/lang/Object;
+computeIfAbsent
+ (Ljava/lang/Object;Ljava/util/function/Function<-Ljava/lang/Object;*>;)Ljava/lang/Object;
+ (L1java/lang/Object;Ljava/util/function/Function<-1Ljava/lang/Object;*0>;)L0java/lang/Object;
+computeIfPresent
+ (Ljava/lang/Object;Ljava/util/function/BiFunction<-Ljava/lang/Object;-Ljava/lang/Object;*>;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/util/function/BiFunction<-1Ljava/lang/Object;-1Ljava/lang/Object;*0>;)L0java/lang/Object;
+contains
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+containsKey
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+containsValue
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+elements
+ ()Ljava/util/Enumeration<Ljava/lang/Object;>;
+ ()L1java/util/Enumeration<L1java/lang/Object;>;
+entrySet
+ ()Ljava/util/Set<Ljava/util/Map$Entry<Ljava/lang/Object;Ljava/lang/Object;>;>;
+ ()L1java/util/Set<L1java/util/Map$Entry<L1java/lang/Object;L1java/lang/Object;>;>;
+enumerate
+ (Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)V
+ (L1java/util/Map<L1java/lang/String;L1java/lang/Object;>;)V
+enumerateStringProperties
+ (Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;)V
+ (L1java/util/Map<L1java/lang/String;L1java/lang/String;>;)V
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+forEach
+ (Ljava/util/function/BiConsumer<-Ljava/lang/Object;-Ljava/lang/Object;>;)V
+ (L1java/util/function/BiConsumer<-1Ljava/lang/Object;-1Ljava/lang/Object;>;)V
+get
+ (Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;)L0java/lang/Object;
+getOrDefault
+ (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+getProperty
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)L0java/lang/String;
+getProperty
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;L1java/lang/String;)L1java/lang/String;
+keySet
+ ()Ljava/util/Set<Ljava/lang/Object;>;
+ ()L1java/util/Set<L1java/lang/Object;>;
+keys
+ ()Ljava/util/Enumeration<Ljava/lang/Object;>;
+ ()L1java/util/Enumeration<L1java/lang/Object;>;
+list
+ (Ljava/io/PrintStream;)V
+ (L1java/io/PrintStream;)V
+list
+ (Ljava/io/PrintWriter;)V
+ (L1java/io/PrintWriter;)V
+load
+ (Ljava/io/InputStream;)V
+ (L1java/io/InputStream;)V
+load
+ (Ljava/io/Reader;)V
+ (L1java/io/Reader;)V
+loadFromXML
+ (Ljava/io/InputStream;)V
+ (L1java/io/InputStream;)V
+merge
+ (Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction<-Ljava/lang/Object;-Ljava/lang/Object;*>;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/lang/Object;Ljava/util/function/BiFunction<-1Ljava/lang/Object;-Ljava/lang/Object;*>;)L0java/lang/Object;
+propertyNames
+ ()Ljava/util/Enumeration<*>;
+ ()L1java/util/Enumeration<*>;
+put
+ (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/lang/Object;)L0java/lang/Object;
+putAll
+ (Ljava/util/Map<**>;)V
+ (L1java/util/Map<*1*1>;)V
+putIfAbsent
+ (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/lang/Object;)L0java/lang/Object;
+remove
+ (Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;)L0java/lang/Object;
+remove
+ (Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L1java/lang/Object;L1java/lang/Object;)Z
+replace
+ (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+ (L1java/lang/Object;L1java/lang/Object;)L0java/lang/Object;
+replace
+ (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L1java/lang/Object;L1java/lang/Object;L1java/lang/Object;)Z
+replaceAll
+ (Ljava/util/function/BiFunction<-Ljava/lang/Object;-Ljava/lang/Object;*>;)V
+ (L1java/util/function/BiFunction<-1Ljava/lang/Object;-1Ljava/lang/Object;*1>;)V
+setProperty
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+ (L1java/lang/String;L1java/lang/String;)L0java/lang/Object;
+store
+ (Ljava/io/Writer;Ljava/lang/String;)V
+ (L1java/io/Writer;L0java/lang/String;)V
+storeToXML
+ (Ljava/io/OutputStream;Ljava/lang/String;)V
+ (L1java/io/OutputStream;L0java/lang/String;)V
+storeToXML
+ (Ljava/io/OutputStream;Ljava/lang/String;Ljava/lang/String;)V
+ (L1java/io/OutputStream;L0java/lang/String;L1java/lang/String;)V
+storeToXML
+ (Ljava/io/OutputStream;Ljava/lang/String;Ljava/nio/charset/Charset;)V
+ (L1java/io/OutputStream;L0java/lang/String;L1java/nio/charset/Charset;)V
+stringPropertyNames
+ ()Ljava/util/Set<Ljava/lang/String;>;
+ ()L1java/util/Set<L1java/lang/String;>;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+values
+ ()Ljava/util/Collection<Ljava/lang/Object;>;
+ ()L1java/util/Collection<L1java/lang/Object;>;

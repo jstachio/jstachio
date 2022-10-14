@@ -1,0 +1,4 @@
+class java/util/concurrent/ConcurrentLinkedDeque
+pop
+ ()TE;
+ ()T1E;

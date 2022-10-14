@@ -1,0 +1,73 @@
+class java/util/LinkedList
+<init>
+ (Ljava/util/Collection<+TE;>;)V
+ (L1java/util/Collection<+TE;>;)V
+addAll
+ (ILjava/util/Collection<+TE;>;)Z
+ (IL1java/util/Collection<+TE;>;)Z
+addAll
+ (Ljava/util/Collection<+TE;>;)Z
+ (L1java/util/Collection<+TE;>;)Z
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+contains
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+descendingIterator
+ ()Ljava/util/Iterator<TE;>;
+ ()L1java/util/Iterator<TE;>;
+element
+ ()TE;
+ ()T0E;
+indexOf
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+lastIndexOf
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+linkBefore
+ (TE;Ljava/util/LinkedList$Node<TE;>;)V
+ (TE;L1java/util/LinkedList$Node<TE;>;)V
+listIterator
+ (I)Ljava/util/ListIterator<TE;>;
+ (I)L1java/util/ListIterator<TE;>;
+peek
+ ()TE;
+ ()T0E;
+peekFirst
+ ()TE;
+ ()T0E;
+peekLast
+ ()TE;
+ ()T0E;
+poll
+ ()TE;
+ ()T0E;
+pollFirst
+ ()TE;
+ ()T0E;
+pollLast
+ ()TE;
+ ()T0E;
+remove
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+removeFirstOccurrence
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+removeLastOccurrence
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+spliterator
+ ()Ljava/util/Spliterator<TE;>;
+ ()L1java/util/Spliterator<TE;>;
+toArray
+ ()[Ljava/lang/Object;
+ ()[L1java/lang/Object;
+toArray
+ <T:Ljava/lang/Object;>([TT;)[TT;
+ <T:Ljava/lang/Object;>([1TT;)[1TT;
+unlink
+ (Ljava/util/LinkedList$Node<TE;>;)TE;
+ (L1java/util/LinkedList$Node<TE;>;)TE;

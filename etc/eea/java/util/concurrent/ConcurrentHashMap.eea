@@ -1,0 +1,199 @@
+class java/util/concurrent/ConcurrentHashMap
+<init>
+ (Ljava/util/Map<+TK;+TV;>;)V
+ (L1java/util/Map<+TK;+TV;>;)V
+comparableClassFor
+ (Ljava/lang/Object;)Ljava/lang/Class<*>;
+ (L0java/lang/Object;)L0java/lang/Class<*>;
+compareComparables
+ (Ljava/lang/Class<*>;Ljava/lang/Object;Ljava/lang/Object;)I
+ (L0java/lang/Class<*>;L1java/lang/Object;L1java/lang/Object;)I
+compute
+ (TK;Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)TV;
+ (T1K;L1java/util/function/BiFunction<-TK;-TV;+TV;>;)T0V;
+computeIfAbsent
+ (TK;Ljava/util/function/Function<-TK;+TV;>;)TV;
+ (T1K;L1java/util/function/Function<-TK;+T0V;>;)T0V;
+computeIfPresent
+ (TK;Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)TV;
+ (T1K;L1java/util/function/BiFunction<-TK;-TV;+TV;>;)T0V;
+contains
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+containsKey
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+containsValue
+ (Ljava/lang/Object;)Z
+ (L1java/lang/Object;)Z
+elements
+ ()Ljava/util/Enumeration<TV;>;
+ ()L1java/util/Enumeration<TV;>;
+entrySet
+ ()Ljava/util/Set<Ljava/util/Map$Entry<TK;TV;>;>;
+ ()L1java/util/Set<Ljava/util/Map$Entry<TK;TV;>;>;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+forEach
+ (JLjava/util/function/BiConsumer<-TK;-TV;>;)V
+ (JL1java/util/function/BiConsumer<-TK;-TV;>;)V
+forEach
+ (Ljava/util/function/BiConsumer<-TK;-TV;>;)V
+ (L1java/util/function/BiConsumer<-TK;-TV;>;)V
+forEach
+ <U:Ljava/lang/Object;>(JLjava/util/function/BiFunction<-TK;-TV;+TU;>;Ljava/util/function/Consumer<-TU;>;)V
+ <U:Ljava/lang/Object;>(JL1java/util/function/BiFunction<-TK;-TV;+TU;>;L1java/util/function/Consumer<-TU;>;)V
+forEachEntry
+ (JLjava/util/function/Consumer<-Ljava/util/Map$Entry<TK;TV;>;>;)V
+ (JL1java/util/function/Consumer<-Ljava/util/Map$Entry<TK;TV;>;>;)V
+forEachEntry
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;Ljava/util/function/Consumer<-TU;>;)V
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;L1java/util/function/Consumer<-TU;>;)V
+forEachKey
+ (JLjava/util/function/Consumer<-TK;>;)V
+ (JL1java/util/function/Consumer<-TK;>;)V
+forEachKey
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TK;+TU;>;Ljava/util/function/Consumer<-TU;>;)V
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TK;+TU;>;L1java/util/function/Consumer<-TU;>;)V
+forEachValue
+ (JLjava/util/function/Consumer<-TV;>;)V
+ (JL1java/util/function/Consumer<-TV;>;)V
+forEachValue
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TV;+TU;>;Ljava/util/function/Consumer<-TU;>;)V
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TV;+TU;>;L1java/util/function/Consumer<-TU;>;)V
+get
+ (Ljava/lang/Object;)TV;
+ (L1java/lang/Object;)T0V;
+getOrDefault
+ (Ljava/lang/Object;TV;)TV;
+ (L1java/lang/Object;TV;)TV;
+keySet
+ ()Ljava/util/concurrent/ConcurrentHashMap$KeySetView<TK;TV;>;
+ ()L1java/util/concurrent/ConcurrentHashMap$KeySetView<TK;TV;>;
+keySet
+ (TV;)Ljava/util/concurrent/ConcurrentHashMap$KeySetView<TK;TV;>;
+ (T1V;)L1java/util/concurrent/ConcurrentHashMap$KeySetView<TK;TV;>;
+keys
+ ()Ljava/util/Enumeration<TK;>;
+ ()L1java/util/Enumeration<TK;>;
+merge
+ (TK;TV;Ljava/util/function/BiFunction<-TV;-TV;+TV;>;)TV;
+ (T1K;T1V;L1java/util/function/BiFunction<-TV;-TV;+TV;>;)T0V;
+newKeySet
+ <K:Ljava/lang/Object;>()Ljava/util/concurrent/ConcurrentHashMap$KeySetView<TK;Ljava/lang/Boolean;>;
+ <K:Ljava/lang/Object;>()L1java/util/concurrent/ConcurrentHashMap$KeySetView<TK;Ljava/lang/Boolean;>;
+newKeySet
+ <K:Ljava/lang/Object;>(I)Ljava/util/concurrent/ConcurrentHashMap$KeySetView<TK;Ljava/lang/Boolean;>;
+ <K:Ljava/lang/Object;>(I)L1java/util/concurrent/ConcurrentHashMap$KeySetView<TK;Ljava/lang/Boolean;>;
+put
+ (TK;TV;)TV;
+ (T1K;T1V;)T0V;
+putAll
+ (Ljava/util/Map<+TK;+TV;>;)V
+ (L1java/util/Map<+TK;+TV;>;)V
+putIfAbsent
+ (TK;TV;)TV;
+ (T1K;T1V;)T0V;
+putVal
+ (TK;TV;Z)TV;
+ (T1K;T1V;Z)T0V;
+reduce
+ <U:Ljava/lang/Object;>(JLjava/util/function/BiFunction<-TK;-TV;+TU;>;Ljava/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/BiFunction<-TK;-TV;+TU;>;L1java/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+reduceEntries
+ (JLjava/util/function/BiFunction<Ljava/util/Map$Entry<TK;TV;>;Ljava/util/Map$Entry<TK;TV;>;+Ljava/util/Map$Entry<TK;TV;>;>;)Ljava/util/Map$Entry<TK;TV;>;
+ (JL1java/util/function/BiFunction<Ljava/util/Map$Entry<TK;TV;>;Ljava/util/Map$Entry<TK;TV;>;+Ljava/util/Map$Entry<TK;TV;>;>;)Ljava/util/Map$Entry<TK;TV;>;
+reduceEntries
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;Ljava/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;L1java/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+reduceEntriesToDouble
+ (JLjava/util/function/ToDoubleFunction<Ljava/util/Map$Entry<TK;TV;>;>;DLjava/util/function/DoubleBinaryOperator;)D
+ (JL1java/util/function/ToDoubleFunction<Ljava/util/Map$Entry<TK;TV;>;>;DL1java/util/function/DoubleBinaryOperator;)D
+reduceEntriesToInt
+ (JLjava/util/function/ToIntFunction<Ljava/util/Map$Entry<TK;TV;>;>;ILjava/util/function/IntBinaryOperator;)I
+ (JL1java/util/function/ToIntFunction<Ljava/util/Map$Entry<TK;TV;>;>;IL1java/util/function/IntBinaryOperator;)I
+reduceEntriesToLong
+ (JLjava/util/function/ToLongFunction<Ljava/util/Map$Entry<TK;TV;>;>;JLjava/util/function/LongBinaryOperator;)J
+ (JL1java/util/function/ToLongFunction<Ljava/util/Map$Entry<TK;TV;>;>;JL1java/util/function/LongBinaryOperator;)J
+reduceKeys
+ (JLjava/util/function/BiFunction<-TK;-TK;+TK;>;)TK;
+ (JL1java/util/function/BiFunction<-TK;-TK;+TK;>;)TK;
+reduceKeys
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TK;+TU;>;Ljava/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TK;+TU;>;Ljava/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+reduceKeysToDouble
+ (JLjava/util/function/ToDoubleFunction<-TK;>;DLjava/util/function/DoubleBinaryOperator;)D
+ (JL1java/util/function/ToDoubleFunction<-TK;>;DL1java/util/function/DoubleBinaryOperator;)D
+reduceKeysToInt
+ (JLjava/util/function/ToIntFunction<-TK;>;ILjava/util/function/IntBinaryOperator;)I
+ (JL1java/util/function/ToIntFunction<-TK;>;IL1java/util/function/IntBinaryOperator;)I
+reduceKeysToLong
+ (JLjava/util/function/ToLongFunction<-TK;>;JLjava/util/function/LongBinaryOperator;)J
+ (JL1java/util/function/ToLongFunction<-TK;>;JL1java/util/function/LongBinaryOperator;)J
+reduceToDouble
+ (JLjava/util/function/ToDoubleBiFunction<-TK;-TV;>;DLjava/util/function/DoubleBinaryOperator;)D
+ (JL1java/util/function/ToDoubleBiFunction<-TK;-TV;>;DL1java/util/function/DoubleBinaryOperator;)D
+reduceToInt
+ (JLjava/util/function/ToIntBiFunction<-TK;-TV;>;ILjava/util/function/IntBinaryOperator;)I
+ (JL1java/util/function/ToIntBiFunction<-TK;-TV;>;IL1java/util/function/IntBinaryOperator;)I
+reduceToLong
+ (JLjava/util/function/ToLongBiFunction<-TK;-TV;>;JLjava/util/function/LongBinaryOperator;)J
+ (JL1java/util/function/ToLongBiFunction<-TK;-TV;>;JL1java/util/function/LongBinaryOperator;)J
+reduceValues
+ (JLjava/util/function/BiFunction<-TV;-TV;+TV;>;)TV;
+ (JL1java/util/function/BiFunction<-TV;-TV;+TV;>;)TV;
+reduceValues
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TV;+TU;>;Ljava/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TV;+TU;>;L1java/util/function/BiFunction<-TU;-TU;+TU;>;)TU;
+reduceValuesToDouble
+ (JLjava/util/function/ToDoubleFunction<-TV;>;DLjava/util/function/DoubleBinaryOperator;)D
+ (JL1java/util/function/ToDoubleFunction<-TV;>;DL1java/util/function/DoubleBinaryOperator;)D
+reduceValuesToInt
+ (JLjava/util/function/ToIntFunction<-TV;>;ILjava/util/function/IntBinaryOperator;)I
+ (JL1java/util/function/ToIntFunction<-TV;>;IL1java/util/function/IntBinaryOperator;)I
+reduceValuesToLong
+ (JLjava/util/function/ToLongFunction<-TV;>;JLjava/util/function/LongBinaryOperator;)J
+ (JL1java/util/function/ToLongFunction<-TV;>;JL1java/util/function/LongBinaryOperator;)J
+remove
+ (Ljava/lang/Object;)TV;
+ (L1java/lang/Object;)T0V;
+remove
+ (Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L1java/lang/Object;L0java/lang/Object;)Z
+removeEntryIf
+ (Ljava/util/function/Predicate<-Ljava/util/Map$Entry<TK;TV;>;>;)Z
+ (L1java/util/function/Predicate<-Ljava/util/Map$Entry<TK;TV;>;>;)Z
+removeValueIf
+ (Ljava/util/function/Predicate<-TV;>;)Z
+ (L1java/util/function/Predicate<-TV;>;)Z
+replace
+ (TK;TV;)TV;
+ (T1K;T1V;)T0V;
+replace
+ (TK;TV;TV;)Z
+ (T1K;T1V;T1V;)Z
+replaceAll
+ (Ljava/util/function/BiFunction<-TK;-TV;+TV;>;)V
+ (L1java/util/function/BiFunction<-TK;-TV;+TV;>;)V
+replaceNode
+ (Ljava/lang/Object;TV;Ljava/lang/Object;)TV;
+ (L1java/lang/Object;T0V;L0java/lang/Object;)T0V;
+search
+ <U:Ljava/lang/Object;>(JLjava/util/function/BiFunction<-TK;-TV;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/BiFunction<-TK;-TV;+TU;>;)TU;
+searchEntries
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<Ljava/util/Map$Entry<TK;TV;>;+TU;>;)TU;
+searchKeys
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TK;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TK;+TU;>;)TU;
+searchValues
+ <U:Ljava/lang/Object;>(JLjava/util/function/Function<-TV;+TU;>;)TU;
+ <U:Ljava/lang/Object;>(JL1java/util/function/Function<-TV;+TU;>;)TU;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+values
+ ()Ljava/util/Collection<TV;>;
+ ()L1java/util/Collection<TV;>;

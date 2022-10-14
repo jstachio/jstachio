@@ -1,0 +1,16 @@
+class javax/lang/model/element/Element
+asType
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;
+getAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)T0A;
+getAnnotationMirrors
+ ()Ljava/util/List<+Ljavax/lang/model/element/AnnotationMirror;>;
+ ()L1java/util/List<+L1javax/lang/model/element/AnnotationMirror;>;
+getKind
+ ()Ljavax/lang/model/element/ElementKind;
+ ()L1javax/lang/model/element/ElementKind;
+getModifiers
+ ()Ljava/util/Set<Ljavax/lang/model/element/Modifier;>;
+ ()L1java/util/Set<L1javax/lang/model/element/Modifier;>;

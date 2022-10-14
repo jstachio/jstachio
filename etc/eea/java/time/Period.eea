@@ -1,0 +1,7 @@
+class java/time/Period
+ofDays
+ (I)Ljava/time/Period;
+ (I)L1java/time/Period;
+parse
+ (Ljava/lang/CharSequence;)Ljava/time/Period;
+ (Ljava/lang/CharSequence;)L1java/time/Period;

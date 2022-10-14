@@ -1,0 +1,67 @@
+class java/util/Set
+addAll
+ (Ljava/util/Collection<+TE;>;)Z
+ (L1java/util/Collection<+TE;>;)Z
+containsAll
+ (Ljava/util/Collection<*>;)Z
+ (L1java/util/Collection<*>;)Z
+copyOf
+ <E:Ljava/lang/Object;>(Ljava/util/Collection<+TE;>;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(L1java/util/Collection<+TE;>;)L1java/util/Set<TE;>;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+iterator
+ ()Ljava/util/Iterator<TE;>;
+ ()L1java/util/Iterator<TE;>;
+of
+ <E:Ljava/lang/Object;>()Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>()L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>(TE;TE;TE;TE;TE;TE;TE;TE;TE;TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>(T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;T1E;)L1java/util/Set<TE;>;
+of
+ <E:Ljava/lang/Object;>([TE;)Ljava/util/Set<TE;>;
+ <E:Ljava/lang/Object;>([T1E;)L1java/util/Set<T1E;>;
+removeAll
+ (Ljava/util/Collection<*>;)Z
+ (L1java/util/Collection<*>;)Z
+retainAll
+ (Ljava/util/Collection<*>;)Z
+ (L1java/util/Collection<*>;)Z
+spliterator
+ ()Ljava/util/Spliterator<TE;>;
+ ()L1java/util/Spliterator<TE;>;
+toArray
+ ()[Ljava/lang/Object;
+ ()[1Ljava/lang/Object;
+toArray
+ <T:Ljava/lang/Object;>([TT;)[TT;
+ <T:Ljava/lang/Object;>([1TT;)[1TT;

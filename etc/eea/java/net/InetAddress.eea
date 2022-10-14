@@ -1,0 +1,10 @@
+class java/net/InetAddress
+getCanonicalHostName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getLocalHost
+ ()Ljava/net/InetAddress;
+ ()L1java/net/InetAddress;
+getLoopbackAddress
+ ()Ljava/net/InetAddress;
+ ()L1java/net/InetAddress;

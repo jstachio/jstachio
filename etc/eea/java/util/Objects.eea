@@ -1,0 +1,43 @@
+class java/util/Objects
+equals
+ (Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L0java/lang/Object;L0java/lang/Object;)Z
+deepEquals
+ (Ljava/lang/Object;Ljava/lang/Object;)Z
+ (L0java/lang/Object;L0java/lang/Object;)Z
+requireNonNull
+ <T:Ljava/lang/Object;>(TT;)TT;
+ <T:Ljava/lang/Object;>(T0T;)T1T;
+requireNonNull
+ <T:Ljava/lang/Object;>(TT;Ljava/lang/String;)TT;
+ <T:Ljava/lang/Object;>(T0T;Ljava/lang/String;)T1T;
+requireNonNull
+ <T:Ljava/lang/Object;>(TT;Ljava/util/function/Supplier<Ljava/lang/String;>;)TT;
+ <T:Ljava/lang/Object;>(T0T;L1java/util/function/Supplier<Ljava/lang/String;>;)T1T;
+requireNonNullElse
+ <T:Ljava/lang/Object;>(TT;TT;)TT;
+ <T:Ljava/lang/Object;>(T0T;T1T;)T1T;
+requireNonNullElseGet
+ <T:Ljava/lang/Object;>(TT;Ljava/util/function/Supplier<+TT;>;)TT;
+ <T:Ljava/lang/Object;>(T0T;L1java/util/function/Supplier<+1TT;>;)T1T;
+toString
+ (Ljava/lang/Object;)Ljava/lang/String;
+ (L0java/lang/Object;)L1java/lang/String;
+toString
+ (Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;
+ (L0java/lang/Object;L0java/lang/String;)L0java/lang/String;
+compare
+ <T:Ljava/lang/Object;>(TT;TT;Ljava/util/Comparator<-TT;>;)I
+ <T:Ljava/lang/Object;>(TT;TT;L1java/util/Comparator<-TT;>;)I
+isNull
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+nonNull
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+hashCode
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+hash
+ ([Ljava/lang/Object;)I
+ ([0L0java/lang/Object;)I

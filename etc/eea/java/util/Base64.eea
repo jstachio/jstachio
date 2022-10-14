@@ -1,0 +1,4 @@
+class java/util/Base64
+getEncoder
+ ()Ljava/util/Base64$Encoder;
+ ()L1java/util/Base64$Encoder;

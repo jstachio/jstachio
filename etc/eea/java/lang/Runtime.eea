@@ -1,0 +1,31 @@
+class java/lang/Runtime
+addShutdownHook
+ (Ljava/lang/Thread;)V
+ (L1java/lang/Thread;)V
+exec
+ (Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/Process;
+ (L1java/lang/String;[0L1java/lang/String;)L1java/lang/Process;
+exec
+ (Ljava/lang/String;[Ljava/lang/String;Ljava/io/File;)Ljava/lang/Process;
+ (L1java/lang/String;[0L1java/lang/String;L0java/io/File;)L1java/lang/Process;
+exec
+ ([Ljava/lang/String;)Ljava/lang/Process;
+ ([1L1java/lang/String;)L1java/lang/Process;
+exec
+ ([Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/Process;
+ ([1L1java/lang/String;[0L1java/lang/String;)L1java/lang/Process;
+exec
+ ([Ljava/lang/String;[Ljava/lang/String;Ljava/io/File;)Ljava/lang/Process;
+ ([1L1java/lang/String;[0L1java/lang/String;L0java/io/File;)L1java/lang/Process;
+getRuntime
+ ()Ljava/lang/Runtime;
+ ()L1java/lang/Runtime;
+loadLibrary
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+removeShutdownHook
+ (Ljava/lang/Thread;)Z
+ (L1java/lang/Thread;)Z
+version
+ ()Ljava/lang/Runtime$Version;
+ ()L1java/lang/Runtime$Version;

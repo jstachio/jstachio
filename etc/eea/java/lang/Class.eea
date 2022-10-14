@@ -1,0 +1,181 @@
+class java/lang/Class
+asSubclass
+ <U:Ljava/lang/Object;>(Ljava/lang/Class<TU;>;)Ljava/lang/Class<+TU;>;
+ <U:Ljava/lang/Object;>(L1java/lang/Class<TU;>;)L1java/lang/Class<+TU;>;
+cast
+ (Ljava/lang/Object;)TT;
+ (L0java/lang/Object;)TT;
+forName
+ (Ljava/lang/Module;Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L1java/lang/Module;L1java/lang/String;)L0java/lang/Class<*>;
+forName
+ (Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L1java/lang/String;)L1java/lang/Class<*>;
+forName
+ (Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class<*>;
+ (L1java/lang/String;ZL0java/lang/ClassLoader;)L1java/lang/Class<*>;
+getAnnotatedInterfaces
+ ()[Ljava/lang/reflect/AnnotatedType;
+ ()[1L1java/lang/reflect/AnnotatedType;
+getAnnotatedSuperclass
+ ()Ljava/lang/reflect/AnnotatedType;
+ ()L0java/lang/reflect/AnnotatedType;
+getAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T0A;
+getAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getAnnotationsByType
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)[TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)[1T1A;
+getCanonicalName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getClassLoader
+ ()Ljava/lang/ClassLoader;
+ ()L0java/lang/ClassLoader;
+getClasses
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getComponentType
+ ()Ljava/lang/Class<*>;
+ ()L0java/lang/Class<*>;
+getConstructor
+ ([Ljava/lang/Class<*>;)Ljava/lang/reflect/Constructor<TT;>;
+ ([0L0java/lang/Class<*>;)L1java/lang/reflect/Constructor<TT;>;
+getConstructors
+ ()[Ljava/lang/reflect/Constructor<*>;
+ ()[1L1java/lang/reflect/Constructor<*>;
+getDeclaredAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T1A;
+getDeclaredAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getDeclaredAnnotationsByType
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)[TA;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)[1T1A;
+getDeclaredClasses
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getDeclaredConstructor
+ ([Ljava/lang/Class<*>;)Ljava/lang/reflect/Constructor<TT;>;
+ ([0L0java/lang/Class<*>;)L1java/lang/reflect/Constructor<TT;>;
+getDeclaredConstructors
+ ()[Ljava/lang/reflect/Constructor<*>;
+ ()[1L1java/lang/reflect/Constructor<*>;
+getDeclaredField
+ (Ljava/lang/String;)Ljava/lang/reflect/Field;
+ (L1java/lang/String;)L1java/lang/reflect/Field;
+getDeclaredFields
+ ()[Ljava/lang/reflect/Field;
+ ()[1L1java/lang/reflect/Field;
+getDeclaredMethod
+ (Ljava/lang/String;[Ljava/lang/Class<*>;)Ljava/lang/reflect/Method;
+ (L1java/lang/String;[0L0java/lang/Class<*>;)L1java/lang/reflect/Method;
+getDeclaredMethods
+ ()[Ljava/lang/reflect/Method;
+ ()[1L1java/lang/reflect/Method;
+getDeclaringClass
+ ()Ljava/lang/Class<*>;
+ ()L0java/lang/Class<*>;
+getEnclosingClass
+ ()Ljava/lang/Class<*>;
+ ()L0java/lang/Class<*>;
+getEnclosingConstructor
+ ()Ljava/lang/reflect/Constructor<*>;
+ ()L0java/lang/reflect/Constructor<*>;
+getEnclosingMethod
+ ()Ljava/lang/reflect/Method;
+ ()L0java/lang/reflect/Method;
+getEnumConstants
+ ()[TT;
+ ()[0T1T;
+getField
+ (Ljava/lang/String;)Ljava/lang/reflect/Field;
+ (L1java/lang/String;)L1java/lang/reflect/Field;
+getFields
+ ()[Ljava/lang/reflect/Field;
+ ()[1L1java/lang/reflect/Field;
+getGenericInterfaces
+ ()[Ljava/lang/reflect/Type;
+ ()[1L1java/lang/reflect/Type;
+getGenericSuperclass
+ ()Ljava/lang/reflect/Type;
+ ()L0java/lang/reflect/Type;
+getInterfaces
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getMethod
+ (Ljava/lang/String;[Ljava/lang/Class<*>;)Ljava/lang/reflect/Method;
+ (L1java/lang/String;[0L0java/lang/Class<*>;)L1java/lang/reflect/Method;
+getMethods
+ ()[Ljava/lang/reflect/Method;
+ ()[1L1java/lang/reflect/Method;
+getModule
+ ()Ljava/lang/Module;
+ ()L1java/lang/Module;
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getNestHost
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getNestMembers
+ ()[Ljava/lang/Class<*>;
+ ()[1L1java/lang/Class<*>;
+getPackage
+ ()Ljava/lang/Package;
+ ()L0java/lang/Package;
+getPackageName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getProtectionDomain
+ ()Ljava/security/ProtectionDomain;
+ ()L1java/security/ProtectionDomain;
+getRecordComponents
+ ()[Ljava/lang/reflect/RecordComponent;
+ ()[0L1java/lang/reflect/RecordComponent;
+getResource
+ (Ljava/lang/String;)Ljava/net/URL;
+ (L1java/lang/String;)L0java/net/URL;
+getResourceAsStream
+ (Ljava/lang/String;)Ljava/io/InputStream;
+ (L1java/lang/String;)L0java/io/InputStream;
+getSigners
+ ()[Ljava/lang/Object;
+ ()[1L0java/lang/Object;
+getSimpleName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getSuperclass
+ ()Ljava/lang/Class<-TT;>;
+ ()L0java/lang/Class<-TT;>;
+getTypeName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getTypeParameters
+ ()[Ljava/lang/reflect/TypeVariable<Ljava/lang/Class<TT;>;>;
+ ()[1L1java/lang/reflect/TypeVariable<Ljava/lang/Class<TT;>;>;
+isAnnotationPresent
+ (Ljava/lang/Class<+Ljava/lang/annotation/Annotation;>;)Z
+ (L1java/lang/Class<+Ljava/lang/annotation/Annotation;>;)Z
+isAssignableFrom
+ (Ljava/lang/Class<*>;)Z
+ (L1java/lang/Class<*>;)Z
+isInstance
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+isNestmateOf
+ (Ljava/lang/Class<*>;)Z
+ (L1java/lang/Class<*>;)Z
+newInstance
+ ()TT;
+ ()TT;
+toGenericString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

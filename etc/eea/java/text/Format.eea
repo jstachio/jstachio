@@ -1,0 +1,20 @@
+class java/text/Format
+clone
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;
+format
+ (Ljava/lang/Object;)Ljava/lang/String;
+ (L1java/lang/Object;)L1java/lang/String;
+format
+ (Ljava/lang/Object;Ljava/lang/StringBuffer;Ljava/text/FieldPosition;)Ljava/lang/StringBuffer;
+ (L1java/lang/Object;L1java/lang/StringBuffer;L1java/text/FieldPosition;)L1java/lang/StringBuffer;
+formatToCharacterIterator
+ (Ljava/lang/Object;)Ljava/text/AttributedCharacterIterator;
+ (L1java/lang/Object;)L1java/text/AttributedCharacterIterator;
+parseObject
+ (Ljava/lang/String;)Ljava/lang/Object;
+ (L1java/lang/String;)L0java/lang/Object;
+parseObject
+ (Ljava/lang/String;Ljava/text/ParsePosition;)Ljava/lang/Object;
+ (L1java/lang/String;L1java/text/ParsePosition;)L0java/lang/Object;
+

@@ -1,0 +1,25 @@
+class java/util/stream/Collectors
+joining
+ ()Ljava/util/stream/Collector<Ljava/lang/CharSequence;*Ljava/lang/String;>;
+ ()L1java/util/stream/Collector<Ljava/lang/CharSequence;*L1java/lang/String;>;
+joining
+ (Ljava/lang/CharSequence;)Ljava/util/stream/Collector<Ljava/lang/CharSequence;*Ljava/lang/String;>;
+ (Ljava/lang/CharSequence;)L1java/util/stream/Collector<Ljava/lang/CharSequence;*L1java/lang/String;>;
+toCollection
+ <T:Ljava/lang/Object;C::Ljava/util/Collection<TT;>;>(Ljava/util/function/Supplier<TC;>;)Ljava/util/stream/Collector<TT;*TC;>;
+ <T:Ljava/lang/Object;C::Ljava/util/Collection<TT;>;>(L1java/util/function/Supplier<TC;>;)L1java/util/stream/Collector<TT;*T1C;>;
+toList
+ <T:Ljava/lang/Object;>()Ljava/util/stream/Collector<TT;*Ljava/util/List<TT;>;>;
+ <T:Ljava/lang/Object;>()L1java/util/stream/Collector<TT;*L1java/util/List<TT;>;>;
+toMap
+ <T:Ljava/lang/Object;K:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+TK;>;Ljava/util/function/Function<-TT;+TU;>;)Ljava/util/stream/Collector<TT;*Ljava/util/Map<TK;TU;>;>;
+ <T:Ljava/lang/Object;K:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+TK;>;Ljava/util/function/Function<-TT;+TU;>;)L1java/util/stream/Collector<TT;*L1java/util/Map<TK;TU;>;>;
+toSet
+ <T:Ljava/lang/Object;>()Ljava/util/stream/Collector<TT;*Ljava/util/Set<TT;>;>;
+ <T:Ljava/lang/Object;>()L1java/util/stream/Collector<TT;*L1java/util/Set<TT;>;>;
+toUnmodifiableMap
+ <T:Ljava/lang/Object;K:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+TK;>;Ljava/util/function/Function<-TT;+TU;>;)Ljava/util/stream/Collector<TT;*Ljava/util/Map<TK;TU;>;>;
+ <T:Ljava/lang/Object;K:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+TK;>;Ljava/util/function/Function<-TT;+TU;>;)L1java/util/stream/Collector<TT;*Ljava/util/Map<TK;TU;>;>;
+toUnmodifiableSet
+ <T:Ljava/lang/Object;>()Ljava/util/stream/Collector<TT;*Ljava/util/Set<TT;>;>;
+ <T:Ljava/lang/Object;>()L1java/util/stream/Collector<TT;*L1java/util/Set<TT;>;>;

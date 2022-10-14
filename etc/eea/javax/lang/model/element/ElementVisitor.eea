@@ -1,0 +1,4 @@
+class javax/lang/model/element/ElementVisitor
+visitExecutable
+ (Ljavax/lang/model/element/ExecutableElement;TP;)TR;
+ (L1javax/lang/model/element/ExecutableElement;TP;)TR;

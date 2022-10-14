@@ -1,0 +1,40 @@
+class java/util/EnumSet
+allOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/lang/Class<TE;>;)Ljava/util/EnumSet<TE;>;
+ <1E:Ljava/lang/Enum<TE;>;>(Ljava/lang/Class<TE;>;)L1java/util/EnumSet<T1E;>;
+noneOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/lang/Class<TE;>;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(L1java/lang/Class<TE;>;)L1java/util/EnumSet<TE;>;
+allOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/lang/Class<TE;>;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(L1java/lang/Class<TE;>;)L1java/util/EnumSet<TE;>;
+copyOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/util/EnumSet<TE;>;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(L1java/util/EnumSet<TE;>;)L1java/util/EnumSet<TE;>; 
+copyOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/util/Collection<TE;>;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(L1java/util/Collection<TE;>;)L1java/util/EnumSet<TE;>;
+complementOf
+ <E:Ljava/lang/Enum<TE;>;>(Ljava/util/EnumSet<TE;>;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(L1java/util/EnumSet<TE;>;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;T1E;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;TE;TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;T1E;T1E;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;TE;TE;TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;T1E;T1E;T1E;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;TE;TE;TE;TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;T1E;T1E;T1E;T1E;)L1java/util/EnumSet<TE;>;
+of
+ <E:Ljava/lang/Enum<TE;>;>(TE;[TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;[1TE;)L1java/util/EnumSet<TE;>;
+range
+ <E:Ljava/lang/Enum<TE;>;>(TE;TE;)Ljava/util/EnumSet<TE;>;
+ <E:Ljava/lang/Enum<TE;>;>(T1E;T1E;)L1java/util/EnumSet<T1E;>;

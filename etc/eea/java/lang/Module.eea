@@ -1,0 +1,61 @@
+class java/lang/Module
+addExports
+ (Ljava/lang/String;Ljava/lang/Module;)Ljava/lang/Module;
+ (L1java/lang/String;L1java/lang/Module;)Ljava/lang/Module;
+addOpens
+ (Ljava/lang/String;Ljava/lang/Module;)Ljava/lang/Module;
+ (L1java/lang/String;L1java/lang/Module;)Ljava/lang/Module;
+addReads
+ (Ljava/lang/Module;)Ljava/lang/Module;
+ (L1java/lang/Module;)L1java/lang/Module;
+addUses
+ (Ljava/lang/Class<*>;)Ljava/lang/Module;
+ (L1java/lang/Class<*>;)L1java/lang/Module;
+canRead
+ (Ljava/lang/Module;)Z
+ (L1java/lang/Module;)Z
+canUse
+ (Ljava/lang/Class<*>;)Z
+ (L1java/lang/Class<*>;)Z
+getAnnotation
+ <T::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TT;>;)TT;
+ <T::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TT;>;)T0T;
+getAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getClassLoader
+ ()Ljava/lang/ClassLoader;
+ ()L0java/lang/ClassLoader;
+getDeclaredAnnotations
+ ()[Ljava/lang/annotation/Annotation;
+ ()[1L1java/lang/annotation/Annotation;
+getDescriptor
+ ()Ljava/lang/module/ModuleDescriptor;
+ ()L0java/lang/module/ModuleDescriptor;
+getLayer
+ ()Ljava/lang/ModuleLayer;
+ ()L0java/lang/ModuleLayer;
+getName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getPackages
+ ()Ljava/util/Set<Ljava/lang/String;>;
+ ()L1java/util/Set<L1java/lang/String;>;
+getResourceAsStream
+ (Ljava/lang/String;)Ljava/io/InputStream;
+ (L1java/lang/String;)L0java/io/InputStream;
+isExported
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+isExported
+ (Ljava/lang/String;Ljava/lang/Module;)Z
+ (L1java/lang/String;L1java/lang/Module;)Z
+isOpen
+ (Ljava/lang/String;)Z
+ (L1java/lang/String;)Z
+isOpen
+ (Ljava/lang/String;Ljava/lang/Module;)Z
+ (L1java/lang/String;L1java/lang/Module;)Z
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

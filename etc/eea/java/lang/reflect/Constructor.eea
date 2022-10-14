@@ -1,0 +1,4 @@
+class java/lang/reflect/Constructor
+newInstance
+ ([Ljava/lang/Object;)TT;
+ ([Ljava/lang/Object;)T1T;

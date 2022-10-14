@@ -1,0 +1,4 @@
+class java/lang/invoke/MethodHandles
+lookup
+ ()Ljava/lang/invoke/MethodHandles$Lookup;
+ ()L1java/lang/invoke/MethodHandles$Lookup;

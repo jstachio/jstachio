@@ -1,0 +1,10 @@
+class java/net/http/HttpResponse$BodySubscribers
+mapping
+ <T:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/net/http/HttpResponse$BodySubscriber<TT;>;Ljava/util/function/Function<-TT;+TU;>;)Ljava/net/http/HttpResponse$BodySubscriber<TU;>;
+ <T:Ljava/lang/Object;U:Ljava/lang/Object;>(Ljava/net/http/HttpResponse$BodySubscriber<TT;>;Ljava/util/function/Function<-TT;+TU;>;)L1java/net/http/HttpResponse$BodySubscriber<TU;>;
+ofByteArray
+ ()Ljava/net/http/HttpResponse$BodySubscriber<[B>;
+ ()L1java/net/http/HttpResponse$BodySubscriber<[1B>;
+ofInputStream
+ ()Ljava/net/http/HttpResponse$BodySubscriber<Ljava/io/InputStream;>;
+ ()L1java/net/http/HttpResponse$BodySubscriber<L1java/io/InputStream;>;

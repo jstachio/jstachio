@@ -1,0 +1,31 @@
+class java/lang/Boolean
+FALSE
+ Ljava/lang/Boolean;
+ L1java/lang/Boolean;
+TRUE
+ Ljava/lang/Boolean;
+ L1java/lang/Boolean;
+compareTo
+ (Ljava/lang/Boolean;)I
+ (L1java/lang/Boolean;)I
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getBoolean
+ (Ljava/lang/String;)Z
+ (L0java/lang/String;)Z
+parseBoolean
+ (Ljava/lang/String;)Z
+ (L0java/lang/String;)Z
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ (Z)Ljava/lang/String;
+ (Z)L1java/lang/String;
+valueOf
+ (Ljava/lang/String;)Ljava/lang/Boolean;
+ (L0java/lang/String;)L1java/lang/Boolean;
+valueOf
+ (Z)Ljava/lang/Boolean;
+ (Z)L1java/lang/Boolean;

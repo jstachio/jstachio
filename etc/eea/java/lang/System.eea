@@ -1,0 +1,79 @@
+class java/lang/System
+arraycopy
+ (Ljava/lang/Object;ILjava/lang/Object;II)V
+ (L1java/lang/Object;IL1java/lang/Object;II)V
+clearProperty
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)L0java/lang/String;
+console
+ ()Ljava/io/Console;
+ ()L0java/io/Console;
+err
+ Ljava/io/PrintStream;
+ L0java/io/PrintStream;
+getLogger
+ (Ljava/lang/String;)Ljava/lang/System$Logger;
+ (L1java/lang/String;)L1java/lang/System$Logger;
+getLogger
+ (Ljava/lang/String;Ljava/util/ResourceBundle;)Ljava/lang/System$Logger;
+ (L1java/lang/String;L1java/util/ResourceBundle;)L1java/lang/System$Logger;
+getProperties
+ ()Ljava/util/Properties;
+ ()L1java/util/Properties;
+getProperty
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)L0java/lang/String;
+getProperty
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;L0java/lang/String;)L0java/lang/String;
+getSecurityManager
+ ()Ljava/lang/SecurityManager;
+ ()L0java/lang/SecurityManager;
+getenv
+ ()Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+ ()L1java/util/Map<L1java/lang/String;L1java/lang/String;>;
+getenv
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)L0java/lang/String;
+identityHashCode
+ (Ljava/lang/Object;)I
+ (L0java/lang/Object;)I
+in
+ Ljava/io/InputStream;
+ L0java/io/InputStream;
+inheritedChannel
+ ()Ljava/nio/channels/Channel;
+ ()L0java/nio/channels/Channel;
+lineSeparator
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+load
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+loadLibrary
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+mapLibraryName
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;)Ljava/lang/String;
+out
+ Ljava/io/PrintStream;
+ L0java/io/PrintStream;
+setErr
+ (Ljava/io/PrintStream;)V
+ (L0java/io/PrintStream;)V
+setIn
+ (Ljava/io/InputStream;)V
+ (L0java/io/InputStream;)V
+setOut
+ (Ljava/io/PrintStream;)V
+ (L0java/io/PrintStream;)V
+setProperties
+ (Ljava/util/Properties;)V
+ (L0java/util/Properties;)V
+setProperty
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+ (L1java/lang/String;L1java/lang/String;)L0java/lang/String;
+setSecurityManager
+ (Ljava/lang/SecurityManager;)V
+ (L0java/lang/SecurityManager;)V

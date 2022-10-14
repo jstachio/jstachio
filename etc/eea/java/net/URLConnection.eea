@@ -1,0 +1,4 @@
+class java/net/URLConnection
+getHeaderField
+ (Ljava/lang/String;)Ljava/lang/String;
+ (Ljava/lang/String;)L0java/lang/String;

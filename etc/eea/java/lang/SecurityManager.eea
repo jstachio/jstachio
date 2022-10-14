@@ -1,0 +1,67 @@
+class java/lang/SecurityManager
+checkAccept
+ (Ljava/lang/String;I)V
+ (L1java/lang/String;I)V
+checkAccess
+ (Ljava/lang/Thread;)V
+ (L1java/lang/Thread;)V
+checkAccess
+ (Ljava/lang/ThreadGroup;)V
+ (L1java/lang/ThreadGroup;)V
+checkConnect
+ (Ljava/lang/String;I)V
+ (L1java/lang/String;I)V
+checkConnect
+ (Ljava/lang/String;ILjava/lang/Object;)V
+ (L1java/lang/String;IL1java/lang/Object;)V
+checkDelete
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkExec
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkLink
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkMulticast
+ (Ljava/net/InetAddress;)V
+ (L1java/net/InetAddress;)V
+checkMulticast
+ (Ljava/net/InetAddress;B)V
+ (L1java/net/InetAddress;B)V
+checkPackageAccess
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkPackageDefinition
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkPermission
+ (Ljava/security/Permission;)V
+ (L1java/security/Permission;)V
+checkPermission
+ (Ljava/security/Permission;Ljava/lang/Object;)V
+ (L1java/security/Permission;L1java/lang/Object;)V
+checkPropertyAccess
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkRead
+ (Ljava/io/FileDescriptor;)V
+ (L1java/io/FileDescriptor;)V
+checkRead
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkRead
+ (Ljava/lang/String;Ljava/lang/Object;)V
+ (L1java/lang/String;L1java/lang/Object;)V
+checkSecurityAccess
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+checkWrite
+ (Ljava/io/FileDescriptor;)V
+ (L1java/io/FileDescriptor;)V
+checkWrite
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+getSecurityContext
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;

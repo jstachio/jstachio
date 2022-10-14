@@ -1,0 +1,7 @@
+class javax/lang/model/SourceVersion
+latest
+ ()Ljavax/lang/model/SourceVersion;
+ ()L1javax/lang/model/SourceVersion;
+latestSupported
+ ()Ljavax/lang/model/SourceVersion;
+ ()L1javax/lang/model/SourceVersion;

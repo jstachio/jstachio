@@ -1,0 +1,7 @@
+class javax/lang/model/util/SimpleTypeVisitor6
+visitArray
+ (Ljavax/lang/model/type/ArrayType;TP;)TR;
+ (L1javax/lang/model/type/ArrayType;TP;)TR;
+visitDeclared
+ (Ljavax/lang/model/type/DeclaredType;TP;)TR;
+ (L1javax/lang/model/type/DeclaredType;TP;)TR;

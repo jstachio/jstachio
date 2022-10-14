@@ -1,0 +1,52 @@
+class java/util/Optional
+empty
+ <T:Ljava/lang/Object;>()Ljava/util/Optional<TT;>;
+ <T:Ljava/lang/Object;>()L1java/util/Optional<TT;>;
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+filter
+ (Ljava/util/function/Predicate<-TT;>;)Ljava/util/Optional<TT;>;
+ (L1java/util/function/Predicate<-TT;>;)L1java/util/Optional<T1T;>;
+flatMap
+ <U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+Ljava/util/Optional<+TU;>;>;)Ljava/util/Optional<TU;>;
+ <U:Ljava/lang/Object;>(L1java/util/function/Function<-TT;+Ljava/util/Optional<+TU;>;>;)L1java/util/Optional<T1U;>;
+get
+ ()TT;
+ ()T1T;
+ifPresent
+ (Ljava/util/function/Consumer<-TT;>;)V
+ (L1java/util/function/Consumer<-T1T;>;)V
+ifPresentOrElse
+ (Ljava/util/function/Consumer<-TT;>;Ljava/lang/Runnable;)V
+ (L1java/util/function/Consumer<-T1T;>;L1java/lang/Runnable;)V
+map
+ <U:Ljava/lang/Object;>(Ljava/util/function/Function<-TT;+TU;>;)Ljava/util/Optional<TU;>;
+ <U:Ljava/lang/Object;>(L1java/util/function/Function<-T1T;+T0U;>;)L1java/util/Optional<T1U;>;
+of
+ <T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;
+ <T:Ljava/lang/Object;>(T1T;)L1java/util/Optional<T1T;>;
+ofNullable
+ <T:Ljava/lang/Object;>(TT;)Ljava/util/Optional<TT;>;
+ <T:Ljava/lang/Object;>(T0T;)L1java/util/Optional<T1T;>;
+or
+ (Ljava/util/function/Supplier<+Ljava/util/Optional<+TT;>;>;)Ljava/util/Optional<TT;>;
+ (L1java/util/function/Supplier<+Ljava/util/Optional<+TT;>;>;)L1java/util/Optional<T1T;>;
+orElse
+ (TT;)TT;
+ (T0T;)T0T;
+orElseGet
+ (Ljava/util/function/Supplier<+TT;>;)TT;
+ (L1java/util/function/Supplier<+TT;>;)TT;
+orElseThrow
+ ()TT;
+ ()T1T;
+orElseThrow
+ <X:Ljava/lang/Throwable;>(Ljava/util/function/Supplier<+TX;>;)TT;^TX;
+ <X:Ljava/lang/Throwable;>(L1java/util/function/Supplier<+TX;>;)T1T;
+stream
+ ()Ljava/util/stream/Stream<TT;>;
+ ()L1java/util/stream/Stream<T1T;>;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

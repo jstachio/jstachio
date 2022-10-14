@@ -1,0 +1,4 @@
+class java/lang/reflect/Executable
+getParameters
+ ()[Ljava/lang/reflect/Parameter;
+ ()[L1java/lang/reflect/Parameter;

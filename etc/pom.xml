@@ -8,5 +8,6 @@
   <artifactId>jstachio-etc-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
+      <module>eea</module>
   </modules>
 </project>

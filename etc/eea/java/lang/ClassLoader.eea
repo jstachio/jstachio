@@ -1,0 +1,115 @@
+class java/lang/ClassLoader
+<init>
+ (Ljava/lang/ClassLoader;)V
+ (L0java/lang/ClassLoader;)V
+<init>
+ (Ljava/lang/String;Ljava/lang/ClassLoader;)V
+ (L0java/lang/String;L0java/lang/ClassLoader;)V
+defineClass
+ (Ljava/lang/String;Ljava/nio/ByteBuffer;Ljava/security/ProtectionDomain;)Ljava/lang/Class<*>;
+ (L0java/lang/String;L1java/nio/ByteBuffer;L0java/security/ProtectionDomain;)L1java/lang/Class<*>;
+defineClass
+ (Ljava/lang/String;[BII)Ljava/lang/Class<*>;
+ (L0java/lang/String;[1BII)L1java/lang/Class<*>;
+defineClass
+ (Ljava/lang/String;[BIILjava/security/ProtectionDomain;)Ljava/lang/Class<*>;
+ (L0java/lang/String;[1BIIL0java/security/ProtectionDomain;)L1java/lang/Class<*>;
+defineClass
+ ([BII)Ljava/lang/Class<*>;
+ ([1BII)L1java/lang/Class<*>;
+definePackage
+ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/net/URL;)Ljava/lang/Package;
+ (L1java/lang/String;L0java/lang/String;L0java/lang/String;L0java/lang/String;L0java/lang/String;L0java/lang/String;L0java/lang/String;L0java/net/URL;)L1java/lang/Package;
+findClass
+ (Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L0java/lang/String;)L1java/lang/Class<*>;
+findClass
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L0java/lang/String;L0java/lang/String;)L0java/lang/Class<*>;
+findLibrary
+ (Ljava/lang/String;)Ljava/lang/String;
+ (L0java/lang/String;)L0java/lang/String;
+findLoadedClass
+ (Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L0java/lang/String;)L0java/lang/Class<*>;
+findResource
+ (Ljava/lang/String;)Ljava/net/URL;
+ (L0java/lang/String;)L0java/net/URL;
+findResource
+ (Ljava/lang/String;Ljava/lang/String;)Ljava/net/URL;
+ (L0java/lang/String;L0java/lang/String;)L0java/net/URL;
+findResources
+ (Ljava/lang/String;)Ljava/util/Enumeration<Ljava/net/URL;>;
+ (L0java/lang/String;)L1java/util/Enumeration<L1java/net/URL;>;
+findSystemClass
+ (Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L1java/lang/String;)L1java/lang/Class<*>;
+getClassLoadingLock
+ (Ljava/lang/String;)Ljava/lang/Object;
+ (L0java/lang/String;)L1java/lang/Object;
+getDefinedPackage
+ (Ljava/lang/String;)Ljava/lang/Package;
+ (L1java/lang/String;)L0java/lang/Package;
+getDefinedPackages
+ ()[Ljava/lang/Package;
+ ()[1L1java/lang/Package;
+getName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getPackage
+ (Ljava/lang/String;)Ljava/lang/Package;
+ (L1java/lang/String;)L0java/lang/Package;
+getPackages
+ ()[Ljava/lang/Package;
+ ()[1L1java/lang/Package;
+getParent
+ ()Ljava/lang/ClassLoader;
+ ()L0java/lang/ClassLoader;
+getPlatformClassLoader
+ ()Ljava/lang/ClassLoader;
+ ()L1java/lang/ClassLoader;
+getResource
+ (Ljava/lang/String;)Ljava/net/URL;
+ (L1java/lang/String;)L0java/net/URL;
+getResourceAsStream
+ (Ljava/lang/String;)Ljava/io/InputStream;
+ (L1java/lang/String;)L0java/io/InputStream;
+getResources
+ (Ljava/lang/String;)Ljava/util/Enumeration<Ljava/net/URL;>;
+ (L1java/lang/String;)L1java/util/Enumeration<L1java/net/URL;>;
+getSystemClassLoader
+ ()Ljava/lang/ClassLoader;
+ ()L1java/lang/ClassLoader;
+getSystemResource
+ (Ljava/lang/String;)Ljava/net/URL;
+ (L1java/lang/String;)L0java/net/URL;
+getSystemResourceAsStream
+ (Ljava/lang/String;)Ljava/io/InputStream;
+ (L1java/lang/String;)L0java/io/InputStream;
+getSystemResources
+ (Ljava/lang/String;)Ljava/util/Enumeration<Ljava/net/URL;>;
+ (L1java/lang/String;)L1java/util/Enumeration<L1java/net/URL;>;
+getUnnamedModule
+ ()Ljava/lang/Module;
+ ()L1java/lang/Module;
+loadClass
+ (Ljava/lang/String;)Ljava/lang/Class<*>;
+ (L1java/lang/String;)L1java/lang/Class<*>;
+loadClass
+ (Ljava/lang/String;Z)Ljava/lang/Class<*>;
+ (L1java/lang/String;Z)L1java/lang/Class<*>;
+resolveClass
+ (Ljava/lang/Class<*>;)V
+ (L1java/lang/Class<*>;)V
+resources
+ (Ljava/lang/String;)Ljava/util/stream/Stream<Ljava/net/URL;>;
+ (L1java/lang/String;)L1java/util/stream/Stream<L1java/net/URL;>;
+setClassAssertionStatus
+ (Ljava/lang/String;Z)V
+ (L0java/lang/String;Z)V
+setPackageAssertionStatus
+ (Ljava/lang/String;Z)V
+ (L0java/lang/String;Z)V
+setSigners
+ (Ljava/lang/Class<*>;[Ljava/lang/Object;)V
+ (L1java/lang/Class<*>;[1Ljava/lang/Object;)V

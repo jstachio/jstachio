@@ -1,0 +1,4 @@
+class javax/lang/model/type/TypeMirror
+getKind
+ ()Ljavax/lang/model/type/TypeKind;
+ ()L1javax/lang/model/type/TypeKind;

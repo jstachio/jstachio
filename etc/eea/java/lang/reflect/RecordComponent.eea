@@ -1,0 +1,4 @@
+class java/lang/reflect/RecordComponent
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

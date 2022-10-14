@@ -1,0 +1,4 @@
+class java/util/concurrent/Future
+get
+ (JLjava/util/concurrent/TimeUnit;)TV;
+ (JL1java/util/concurrent/TimeUnit;)TV;

@@ -1,0 +1,10 @@
+class java/lang/Iterable
+forEach
+ (Ljava/util/function/Consumer<-TT;>;)V
+ (L1java/util/function/Consumer<-TT;>;)V
+iterator
+ ()Ljava/util/Iterator<TT;>;
+ ()L1java/util/Iterator<TT;>;
+spliterator
+ ()Ljava/util/Spliterator<TT;>;
+ ()L1java/util/Spliterator<TT;>;

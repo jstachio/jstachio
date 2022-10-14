@@ -1,0 +1,31 @@
+class java/lang/StackTraceElement
+<init>
+ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+ (L1java/lang/String;L1java/lang/String;L0java/lang/String;I)V
+<init>
+ (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
+ (L0java/lang/String;L0java/lang/String;L0java/lang/String;L1java/lang/String;L1java/lang/String;L0java/lang/String;I)V
+equals
+ (Ljava/lang/Object;)Z
+ (L0java/lang/Object;)Z
+getClassLoaderName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getClassName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getFileName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getMethodName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getModuleName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getModuleVersion
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

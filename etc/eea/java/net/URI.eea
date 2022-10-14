@@ -1,0 +1,19 @@
+class java/net/URI
+create
+ (Ljava/lang/String;)Ljava/net/URI;
+ (L1java/lang/String;)L1java/net/URI;
+getHost
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getScheme
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+toASCIIString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+toURL
+ ()Ljava/net/URL;
+ ()L1java/net/URL;

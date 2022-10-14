@@ -1,0 +1,4 @@
+class java/util/concurrent/ThreadPoolExecutor
+<init>
+ (IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue<Ljava/lang/Runnable;>;Ljava/util/concurrent/RejectedExecutionHandler;)V
+ (IIJL1java/util/concurrent/TimeUnit;L1java/util/concurrent/BlockingQueue<L1java/lang/Runnable;>;L1java/util/concurrent/RejectedExecutionHandler;)V

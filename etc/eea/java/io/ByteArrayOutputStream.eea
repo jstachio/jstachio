@@ -1,0 +1,10 @@
+class java/io/ByteArrayOutputStream
+toByteArray
+ ()[B
+ ()[1B
+toString
+ (Ljava/lang/String;)Ljava/lang/String;
+ (Ljava/lang/String;)L1java/lang/String;
+toString
+ (Ljava/nio/charset/Charset;)Ljava/lang/String;
+ (Ljava/nio/charset/Charset;)L1java/lang/String;

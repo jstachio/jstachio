@@ -1,0 +1,4 @@
+class java/util/jar/Manifest
+getMainAttributes
+ ()Ljava/util/jar/Attributes;
+ ()L1java/util/jar/Attributes;

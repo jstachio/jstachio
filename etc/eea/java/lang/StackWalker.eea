@@ -1,0 +1,22 @@
+class java/lang/StackWalker
+forEach
+ (Ljava/util/function/Consumer<-Ljava/lang/StackWalker$StackFrame;>;)V
+ (L1java/util/function/Consumer<-1L1java/lang/StackWalker$StackFrame;>;)V
+getCallerClass
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
+getInstance
+ ()Ljava/lang/StackWalker;
+ ()L1java/lang/StackWalker;
+getInstance
+ (Ljava/lang/StackWalker$Option;)Ljava/lang/StackWalker;
+ (L1java/lang/StackWalker$Option;)L1java/lang/StackWalker;
+getInstance
+ (Ljava/util/Set<Ljava/lang/StackWalker$Option;>;)Ljava/lang/StackWalker;
+ (L1java/util/Set<L1java/lang/StackWalker$Option;>;)L1java/lang/StackWalker;
+getInstance
+ (Ljava/util/Set<Ljava/lang/StackWalker$Option;>;I)Ljava/lang/StackWalker;
+ (L1java/util/Set<L1java/lang/StackWalker$Option;>;I)L1java/lang/StackWalker;
+walk
+ <T:Ljava/lang/Object;>(Ljava/util/function/Function<-Ljava/util/stream/Stream<Ljava/lang/StackWalker$StackFrame;>;+TT;>;)TT;
+ <T:Ljava/lang/Object;>(L1java/util/function/Function<-1L1java/util/stream/Stream<L1java/lang/StackWalker$StackFrame;>;+1T1T;>;)T1T;

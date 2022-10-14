@@ -1,0 +1,4 @@
+class java/util/Spliterator
+tryAdvance
+ (Ljava/util/function/Consumer<-TT;>;)Z
+ (L1java/util/function/Consumer<-TT;>;)Z

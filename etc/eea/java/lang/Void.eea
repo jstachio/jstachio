@@ -1,0 +1,4 @@
+class java/lang/Void
+TYPE
+ Ljava/lang/Class<Ljava/lang/Void;>;
+ L1java/lang/Class<L1java/lang/Void;>;

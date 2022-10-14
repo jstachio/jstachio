@@ -1,0 +1,7 @@
+class java/util/concurrent/ConcurrentLinkedQueue
+peek
+ ()TE;
+ ()T0E;
+poll
+ ()TE;
+ ()T0E;

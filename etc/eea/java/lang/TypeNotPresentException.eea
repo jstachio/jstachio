@@ -1,0 +1,7 @@
+class java/lang/TypeNotPresentException
+<init>
+ (Ljava/lang/String;Ljava/lang/Throwable;)V
+ (L0java/lang/String;L0java/lang/Throwable;)V
+typeName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;

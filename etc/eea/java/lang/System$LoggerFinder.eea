@@ -1,0 +1,10 @@
+class java/lang/System$LoggerFinder
+getLocalizedLogger
+ (Ljava/lang/String;Ljava/util/ResourceBundle;Ljava/lang/Module;)Ljava/lang/System$Logger;
+ (L1java/lang/String;L0java/util/ResourceBundle;L1java/lang/Module;)L1java/lang/System$Logger;
+getLogger
+ (Ljava/lang/String;Ljava/lang/Module;)Ljava/lang/System$Logger;
+ (L1java/lang/String;L1java/lang/Module;)L1java/lang/System$Logger;
+getLoggerFinder
+ ()Ljava/lang/System$LoggerFinder;
+ ()L1java/lang/System$LoggerFinder;

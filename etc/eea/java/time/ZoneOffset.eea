@@ -1,0 +1,4 @@
+class java/time/ZoneOffset
+UTC
+ Ljava/time/ZoneOffset;
+ L1java/time/ZoneOffset;

@@ -1,0 +1,10 @@
+class java/lang/ClassValue
+computeValue
+ (Ljava/lang/Class<*>;)TT;
+ (L0java/lang/Class<*>;)T0T;
+get
+ (Ljava/lang/Class<*>;)TT;
+ (L1java/lang/Class<*>;)T0T;
+remove
+ (Ljava/lang/Class<*>;)V
+ (L1java/lang/Class<*>;)V

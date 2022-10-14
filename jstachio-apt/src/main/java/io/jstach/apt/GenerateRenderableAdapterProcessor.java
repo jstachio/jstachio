@@ -34,7 +34,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -100,9 +100,10 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 		return SourceVersion.latest();
 	}
 	
-    private static String formatErrorMessage(Position position, String message) {
+    private static String formatErrorMessage(Position position, @Nullable String message) {
+        message = message == null ? "" : message;
         String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
-        Object[] fields = new Object[] {
+        @Nullable Object @NonNull [] fields = new @Nullable Object @NonNull [] {
             position.fileName(),
             position.row(),
             message,
@@ -154,6 +155,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                     if (processingEnv.getTypeUtils().isSubtype(annotationMirror.getAnnotationType(), generateRenderableAdapterElement.asType()))
                         directive = annotationMirror;
                 }
+                assert directive != null;
                 writeRenderableAdapterClass(classElement, directive);
             }
             Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderers.class.getName());
@@ -169,6 +171,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                                 List<? extends AnnotationValue> directives = (List<? extends AnnotationValue>)entry.getValue().getValue();
                                 for (AnnotationValue directiveValue: directives) {
                                     AnnotationMirror directive = (AnnotationMirror)directiveValue.getValue();
+                                    assert directive != null;
                                     writeRenderableAdapterClass(classElement, directive);
                                 }
                             }
@@ -321,6 +324,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AutoFormat.class.getName());
             if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
                 templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
+                if (templateFormatElement == null) {
+                    throw new DeclarationException("Missing default TextFormat class of Html");
+                }
             }
             
             if (!element.getTypeParameters().isEmpty()) {
@@ -341,7 +347,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
                 
                 //TODO pass basepath
-                TextFileObject templateResource = new TextFileObject(processingEnv, templateCharset);
+                TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), templateCharset);
                 JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
                 CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, templatePaths, flags);
@@ -402,6 +408,8 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
             String packageName = packageElement.getQualifiedName().toString();
             TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
+            assert templateFormatAnnotation != null;
+            
 
             List<String> ifaceStrings = new ArrayList<String>(ifaces);
             //ifaces.stream().map(c -> c.getName()).forEach(ifaceStrings::add);

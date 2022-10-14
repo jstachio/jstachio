@@ -1,0 +1,7 @@
+class javax/lang/model/element/AnnotationMirror
+getAnnotationType
+ ()Ljavax/lang/model/type/DeclaredType;
+ ()L1javax/lang/model/type/DeclaredType;
+getElementValues
+ ()Ljava/util/Map<+Ljavax/lang/model/element/ExecutableElement;+Ljavax/lang/model/element/AnnotationValue;>;
+ ()L1java/util/Map<+L1javax/lang/model/element/ExecutableElement;+L1javax/lang/model/element/AnnotationValue;>;

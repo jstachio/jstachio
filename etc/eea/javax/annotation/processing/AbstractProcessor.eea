@@ -1,0 +1,7 @@
+class javax/annotation/processing/AbstractProcessor
+getSupportedAnnotationTypes
+ ()Ljava/util/Set<Ljava/lang/String;>;
+ ()L1java/util/Set<L1java/lang/String;>;
+process
+ (Ljava/util/Set<+Ljavax/lang/model/element/TypeElement;>;Ljavax/annotation/processing/RoundEnvironment;)Z
+ (L1java/util/Set<+L1javax/lang/model/element/TypeElement;>;L1javax/annotation/processing/RoundEnvironment;)Z

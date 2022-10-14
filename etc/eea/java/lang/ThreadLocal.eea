@@ -1,0 +1,10 @@
+class java/lang/ThreadLocal
+get
+ ()TT;
+ ()TT;
+set
+ (TT;)V
+ (TT;)V
+withInitial
+ <S:Ljava/lang/Object;>(Ljava/util/function/Supplier<+TS;>;)Ljava/lang/ThreadLocal<TS;>;
+ <S:Ljava/lang/Object;>(L1java/util/function/Supplier<+TS;>;)L1java/lang/ThreadLocal<TS;>;

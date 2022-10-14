@@ -1,0 +1,4 @@
+class java/text/NumberFormat
+format
+ (J)Ljava/lang/String;
+ (J)L1java/lang/String;

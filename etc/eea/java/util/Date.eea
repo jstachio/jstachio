@@ -1,0 +1,10 @@
+class java/util/Date
+from
+ (Ljava/time/Instant;)Ljava/util/Date;
+ (L1java/time/Instant;)L1java/util/Date;
+toInstant
+ ()Ljava/time/Instant;
+ ()L1java/time/Instant;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

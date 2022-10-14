@@ -1,0 +1,7 @@
+class java/math/BigInteger
+ZERO
+ Ljava/math/BigInteger;
+ L1java/math/BigInteger;
+valueOf
+ (J)Ljava/math/BigInteger;
+ (J)L1java/math/BigInteger;

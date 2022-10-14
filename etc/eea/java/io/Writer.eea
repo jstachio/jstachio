@@ -1,0 +1,13 @@
+class java/io/Writer
+write
+ (Ljava/lang/String;)V
+ (L1java/lang/String;)V
+write
+ (Ljava/lang/String;II)V
+ (L1java/lang/String;II)V
+write
+ ([C)V
+ ([1C)V
+write
+ ([CII)V
+ ([1CII)V

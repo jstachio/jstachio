@@ -1,0 +1,34 @@
+class java/lang/ThreadGroup
+<init>
+ (Ljava/lang/String;)V
+ (L0java/lang/String;)V
+<init>
+ (Ljava/lang/ThreadGroup;Ljava/lang/String;)V
+ (L1java/lang/ThreadGroup;L0java/lang/String;)V
+enumerate
+ ([Ljava/lang/Thread;)I
+ ([1L1java/lang/Thread;)I
+enumerate
+ ([Ljava/lang/Thread;Z)I
+ ([1L1java/lang/Thread;Z)I
+enumerate
+ ([Ljava/lang/ThreadGroup;)I
+ ([1L1java/lang/ThreadGroup;)I
+enumerate
+ ([Ljava/lang/ThreadGroup;IZ)I
+ ([1L1java/lang/ThreadGroup;IZ)I
+enumerate
+ ([Ljava/lang/ThreadGroup;Z)I
+ ([1L1java/lang/ThreadGroup;Z)I
+getName
+ ()Ljava/lang/String;
+ ()L0java/lang/String;
+getParent
+ ()Ljava/lang/ThreadGroup;
+ ()L0java/lang/ThreadGroup;
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+uncaughtException
+ (Ljava/lang/Thread;Ljava/lang/Throwable;)V
+ (L1java/lang/Thread;L1java/lang/Throwable;)V

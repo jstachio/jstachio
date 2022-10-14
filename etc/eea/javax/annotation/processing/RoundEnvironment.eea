@@ -1,0 +1,7 @@
+class javax/annotation/processing/RoundEnvironment
+getElementsAnnotatedWith
+ (Ljava/lang/Class<+Ljava/lang/annotation/Annotation;>;)Ljava/util/Set<+Ljavax/lang/model/element/Element;>;
+ (Ljava/lang/Class<+Ljava/lang/annotation/Annotation;>;)L1java/util/Set<+L1javax/lang/model/element/Element;>;
+getElementsAnnotatedWith
+ (Ljavax/lang/model/element/TypeElement;)Ljava/util/Set<+Ljavax/lang/model/element/Element;>;
+ (Ljavax/lang/model/element/TypeElement;)Ljava/util/Set<+L1javax/lang/model/element/Element;>;

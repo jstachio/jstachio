@@ -1,0 +1,7 @@
+class java/time/Clock
+systemDefaultZone
+ ()Ljava/time/Clock;
+ ()L1java/time/Clock;
+systemUTC
+ ()Ljava/time/Clock;
+ ()L1java/time/Clock;

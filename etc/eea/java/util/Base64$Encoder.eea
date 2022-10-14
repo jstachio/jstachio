@@ -1,0 +1,4 @@
+class java/util/Base64$Encoder
+encodeToString
+ ([B)Ljava/lang/String;
+ ([B)L1java/lang/String;

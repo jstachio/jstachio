@@ -1,0 +1,7 @@
+class java/lang/reflect/Parameter
+getName
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
+getType
+ ()Ljava/lang/Class<*>;
+ ()L1java/lang/Class<*>;
