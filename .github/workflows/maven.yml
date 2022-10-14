@@ -2,9 +2,9 @@ name: Build with Maven
 
 on:
   push:
-    branches: [ snaphop ]
+    branches: [ main ]
   pull_request:
-    branches: [ snaphop ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
