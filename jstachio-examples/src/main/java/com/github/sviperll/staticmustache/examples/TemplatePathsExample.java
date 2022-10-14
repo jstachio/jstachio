@@ -1,8 +1,8 @@
 package com.github.sviperll.staticmustache.examples;
 
-import io.jstach.GenerateRenderableAdapter;
-import io.jstach.Template;
-import io.jstach.TemplateMapping;
+import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.Template;
+import io.jstach.annotation.TemplateMapping;
 
 @GenerateRenderableAdapter(template = "template-paths-example.mustache")
 @TemplateMapping(@Template(name = "formerly-known-as-partial-include", path = "partial-include.mustache"))

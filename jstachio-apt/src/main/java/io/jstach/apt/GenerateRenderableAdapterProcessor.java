@@ -65,10 +65,12 @@ import javax.tools.JavaFileObject;
 
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.GenerateRenderableAdapter;
-import io.jstach.GenerateRenderableAdapters;
-import io.jstach.Template;
-import io.jstach.TemplateCompilerFlags;
+import io.jstach.annotation.AutoFormat;
+import io.jstach.annotation.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderableAdapters;
+import io.jstach.annotation.Template;
+import io.jstach.annotation.TemplateCompilerFlags;
+import io.jstach.annotation.TextFormat;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.context.JavaLanguageModel;
 import io.jstach.apt.context.RenderingCodeGenerator;
@@ -80,7 +82,7 @@ import io.jstach.text.Layoutable;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.Renderable;
 import io.jstach.text.RendererDefinition;
-import io.jstach.text.formats.TextFormat;
+import io.jstach.text.formats.Html;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
@@ -315,6 +317,15 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             if (templateFormatAnnotation == null) {
                 throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TextFormat.class.getName() + " annotation");
             }
+            
+            /*
+             * TODO clean this up to resolve format
+             */
+            var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AutoFormat.class.getName());
+            if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
+                templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
+            }
+            
             if (!element.getTypeParameters().isEmpty()) {
                 throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
             }

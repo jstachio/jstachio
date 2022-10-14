@@ -1,4 +1,4 @@
-package io.jstach;
+package io.jstach.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,16 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Documented
-public @interface TemplateLambda {
+public @interface TemplateMapping {
     
-    String name() default "";
+    public Template[] value() default {};
     
-//    String template() default "";
-//    
-//    String path() default "";
-
 }

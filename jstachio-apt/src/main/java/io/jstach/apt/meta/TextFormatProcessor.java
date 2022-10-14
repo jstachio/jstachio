@@ -47,7 +47,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
-import io.jstach.text.formats.TextFormat;
+import io.jstach.annotation.TextFormat;
 
 /**
  *

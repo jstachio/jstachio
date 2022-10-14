@@ -1,4 +1,4 @@
-package io.jstach;
+package io.jstach.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
+@Target(ElementType.TYPE)
 @Documented
-public @interface TemplateFormatterTypes {
-
-    public Class<?>[] types() default {};
-
-    public String[] patterns() default {};
+public @interface TemplateCompilerFlags {
+    
+    Flag[] flags();
+    
+    public enum Flag {
+        DEBUG
+    }
 }

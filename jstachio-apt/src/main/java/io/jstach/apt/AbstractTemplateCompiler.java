@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.TemplateCompilerFlags;
+import io.jstach.annotation.TemplateCompilerFlags;
 import io.jstach.apt.MustacheToken.NewlineChar;
 import io.jstach.apt.MustacheToken.SpecialChar;
 import io.jstach.apt.MustacheToken.TextToken;

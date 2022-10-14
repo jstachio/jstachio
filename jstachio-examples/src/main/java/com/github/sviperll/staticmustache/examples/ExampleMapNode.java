@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.jstach.ContextNode;
-import io.jstach.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template = "example-map-node.mustache")
 public class ExampleMapNode implements ContextNode {

@@ -33,6 +33,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.annotation.TextFormat;
+
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;

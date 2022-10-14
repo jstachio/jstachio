@@ -29,7 +29,7 @@
  */
 package com.github.sviperll.staticmustache.examples;
 
-import io.jstach.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderableAdapter;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.formats.Html;
 

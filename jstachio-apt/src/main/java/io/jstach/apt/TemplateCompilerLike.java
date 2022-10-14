@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.TemplateCompilerFlags;
+import io.jstach.annotation.TemplateCompilerFlags;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.context.TemplateStack;
 

@@ -1,4 +1,4 @@
-package io.jstach;
+package io.jstach.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface TemplateCompilerFlags {
+public @interface Template {
     
-    Flag[] flags();
+    String name();
+    String path() default "";
+    String template() default NOT_SET;
     
-    public enum Flag {
-        DEBUG
-    }
+    public static String NOT_SET = "__NOT_SET__";
 }

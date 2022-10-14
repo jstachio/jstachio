@@ -2,7 +2,7 @@ package com.github.sviperll.staticmustache.examples2;
 
 import java.util.UUID;
 
-import io.jstach.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template = "blah.mustache")
 public class Blah {

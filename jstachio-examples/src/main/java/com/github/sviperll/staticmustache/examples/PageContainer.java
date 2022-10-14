@@ -1,6 +1,6 @@
 package com.github.sviperll.staticmustache.examples;
 
-import io.jstach.GenerateRenderableAdapter;
+import io.jstach.annotation.GenerateRenderableAdapter;
 
 @GenerateRenderableAdapter(template = "page.mustache")
 public class PageContainer implements Mixin {

@@ -95,7 +95,7 @@ public class JavaLanguageModel {
         return this.elements;
     }
 
-    KnownTypes knownTypes() {
+    public KnownTypes knownTypes() {
         return knownTypes;
     }
 
@@ -103,10 +103,10 @@ public class JavaLanguageModel {
         return operations.getDeclaredType(element, typeArguments);
     }
 
-    boolean isSameType(TypeMirror first, TypeMirror second) {
+    public boolean isSameType(TypeMirror first, TypeMirror second) {
         return operations.isSameType(first, second);
     }
-
+    
     boolean isSubtype(TypeMirror subtype, TypeMirror supertype) {
         return operations.isSubtype(subtype, supertype);
     }

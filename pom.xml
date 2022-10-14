@@ -12,7 +12,7 @@
     <metainf-services.version>1.9</metainf-services.version>
   </properties>
   <modules>
-    <module>jstachio</module>
+    <module>api</module>
     <module>jstachio-examples</module>
     <module>jstachio-apt</module>
     <module>spec</module>

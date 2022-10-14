@@ -38,7 +38,7 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import io.jstach.TemplateCompilerFlags;
+import io.jstach.annotation.TemplateCompilerFlags;
 import io.jstach.apt.NamedTemplate.FileTemplate;
 import io.jstach.apt.NamedTemplate.InlineTemplate;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;

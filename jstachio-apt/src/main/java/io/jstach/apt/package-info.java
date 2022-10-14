@@ -29,15 +29,15 @@
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
 @net.java.dev.hickory.prism.GeneratePrisms({ //
-    @GeneratePrism(io.jstach.GenerateRenderableAdapters.class), //
-    @GeneratePrism(io.jstach.GenerateRenderableAdapter.class), //
-    @GeneratePrism(io.jstach.TemplateBasePath.class), //
-    @GeneratePrism(io.jstach.TemplateInterface.class), //
-    @GeneratePrism(io.jstach.TemplateMapping.class), //
-    @GeneratePrism(io.jstach.Template.class), //
-    @GeneratePrism(value = io.jstach.TemplateLambda.class, publicAccess = true), //
-    @GeneratePrism(io.jstach.TemplateFormatterTypes.class), //
-    @GeneratePrism(io.jstach.TemplateCompilerFlags.class), //
+    @GeneratePrism(io.jstach.annotation.GenerateRenderableAdapters.class), //
+    @GeneratePrism(io.jstach.annotation.GenerateRenderableAdapter.class), //
+    @GeneratePrism(io.jstach.annotation.TemplateBasePath.class), //
+    @GeneratePrism(io.jstach.annotation.TemplateInterface.class), //
+    @GeneratePrism(io.jstach.annotation.TemplateMapping.class), //
+    @GeneratePrism(io.jstach.annotation.Template.class), //
+    @GeneratePrism(value = io.jstach.annotation.TemplateLambda.class, publicAccess = true), //
+    @GeneratePrism(io.jstach.annotation.TemplateFormatterTypes.class), //
+    @GeneratePrism(io.jstach.annotation.TemplateCompilerFlags.class), //
 
 })
 package io.jstach.apt;

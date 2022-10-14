@@ -27,7 +27,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.jstach.text.formats;
+package io.jstach.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -36,45 +36,43 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks classes defining text format.
- * <p>
- * Each text format should be represented as a stand-alone class.
- * Each class should define pecularities specific for each text format.
- * Such classes should all be marked with TextFormat annotation.
- * <p>
- * There two requirements for marked class
- * <ul>
- *   <li>it should have no type variables
- *   <li>it should provide method with the following signature:
- * <blockquote><pre>{@code
- *     public static Appendable createEscapingAppendable(Appendable appendable)
- * }</pre></blockquote>
- * </ul>
  *
- * An implementation of createEscapingAppendable method should decorate given appendable argument
- * to create new appendable that will escape any special characters, specific to given format.
- * <p>
- * Decorated appendable should never buffer any data.
- * Escaped text should be written to original appendable immediately.
- * <p>
- * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
- * <p>
- * <pre>{@code
- *     Appendable htmlAppendable = Html.createEscapingAppendable(System.out);
- *     htmlAppendable.append(" if a < b & b < c then a < c ");
- * }</pre>
- * <p>
- * The result when running code above should be
- * <p>
- * <pre>{@code
- *  if a &lt; b &amp; b &lt; c then a &lt; c
- * }</pre>
- *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
-*/
-@Retention(RetentionPolicy.RUNTIME)
+ * @author Victor Nazarov <asviraspossible@gmail.com>
+ */
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Documented
-public @interface TextFormat {
-    String createEscapingAppendableMethodName() default "createEscapingAppendable";
+public @interface GenerateRenderableAdapter {
+    /**
+      * @return Path to mustache template */
+    String template();
+
+    /**
+     * Name of generated class.
+     * <p>
+     * adapterName can be omitted.
+     * "Renderable{{className}}Adapter" name is used by default.
+     * 
+     * @return Name of generated class */
+    String adapterName() default ":auto";
+
+    /**
+     * Class representing template format.
+     * <p>
+     * You can create custom formats using
+     * @TemplateFormat annotation.
+     *
+     * @return format of given template (HTML is default)
+     */
+    Class<?> templateFormat() default AutoFormat.class;
+
+    /**
+     * Encoding of given template file.
+     * <p>
+     * charset can be omitted. Default system charset is used by default.
+     * @return encoding of given template file
+     */
+    String charset() default ":default";
+
+    boolean isLayout() default false;
 }
