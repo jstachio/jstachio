@@ -1,0 +1,2 @@
+@io.jstach.TemplateFormatterTypes(patterns = ".*")
+package io.jstach.spec.mustache.spec.inheritance;

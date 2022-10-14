@@ -15,7 +15,7 @@
     <module>jstachio</module>
     <module>jstachio-examples</module>
     <module>jstachio-apt</module>
-    <module>jstachio-spec</module>
+    <module>spec</module>
   </modules>
   <scm>
     <connection>scm:git:https://github.com/jstachio/jstachio.git</connection>

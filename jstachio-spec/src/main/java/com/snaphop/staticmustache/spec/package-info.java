@@ -1,1 +1,0 @@
-package com.snaphop.staticmustache.spec;
