@@ -34,11 +34,11 @@ import com.samskivert.mustache.Template;
  */
 public class SpecGenerator {
     
-    PrintStream out = System.out;
+    static PrintStream out = System.out;
     
     public static void main(String[] args) {
         try {
-            System.out.println("Start");
+            out.println("Start");
             new SpecGenerator().generateAll();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -85,6 +85,10 @@ public class SpecGenerator {
 
     public record SpecItem (SpecGroup group, String name, String desc, String template, String json,
             Map<String, Object> data, String expected, Map<String, SpecPartial> partialMap) implements JavaItem {
+        
+        ClassRef specModelClass() {
+            return new ClassRef(SpecModel.class);
+        }
 
         ClassRef annotation() {
             return new ClassRef(io.jstach.GenerateRenderableAdapter.class);
@@ -124,6 +128,10 @@ public class SpecGenerator {
         @Override
         public String name() {
             return  StringUtils.capitalize(group().name()) + "SpecTemplate";
+        }
+        
+        public ClassRef specListingClass() {
+            return new ClassRef(SpecListing.class);
         }
     }
     
@@ -195,7 +203,7 @@ public class SpecGenerator {
         String javaTemplate = """
                 package {{packageName}};
                 
-                import com.snaphop.staticmustache.spec.SpecModel;
+                import {{specModelClass.namespace}};
                 import {{annotation.namespace}};
                 {{#hasPartials}}
                 import {{templatePathsAnnotation.namespace}};
@@ -246,10 +254,10 @@ public class SpecGenerator {
         String enumTemplate = """
                 package {{packageName}};
                 
-                import com.snaphop.staticmustache.spec.SpecListing;
+                import {{specListingClass.namespace}};
                 import java.util.Map;
                 
-                public enum {{className}} implements SpecListing {
+                public enum {{className}} implements {{specListingClass.name}} {
                     {{#items}}
                     {{enumName}}(
                         {{#enabled}}{{className}}.class{{/enabled}}{{^enabled}}null{{/enabled}},
@@ -425,11 +433,11 @@ public class SpecGenerator {
                  list.add(new SpecItem(group, name, desc, template, json, _data, expected, partials));
              } 
              else {
+                 out.println(String.format("Skipping because data is not valid json.  group: %s, name: %s, json: %s", group, name, json));
                  //String s = new ObjectMapper().readValue(json, String.class);
              }
         }
         return list;
-        // assertFalse(fail > 0);
         
     }
 
@@ -438,16 +446,6 @@ public class SpecGenerator {
         return output.replaceAll("\\s+", "");
     }
 
-    // protected DefaultMustacheFactory createMustacheFactory(final JsonNode
-    // test) {
-    // return new DefaultMustacheFactory("/spec/specs") {
-    // @Override
-    // public Reader getReader(String resourceName) {
-    // JsonNode partial = test.get("partials").get(resourceName);
-    // return new StringReader(partial == null ? "" : partial.asText());
-    // }
-    // };
-    // }
 
     private JsonNode getSpec(String spec) throws IOException {
         var is = SpecGenerator.class.getResourceAsStream("/spec-1.3.0/specs/" + spec);
