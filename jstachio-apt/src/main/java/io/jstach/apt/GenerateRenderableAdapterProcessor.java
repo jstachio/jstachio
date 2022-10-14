@@ -67,6 +67,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
+import io.jstach.RenderFunction;
+import io.jstach.Renderable;
+import io.jstach.RendererDefinition;
 import io.jstach.annotation.AutoFormat;
 import io.jstach.annotation.GenerateRenderer;
 import io.jstach.annotation.GenerateRenderers;
@@ -86,9 +89,6 @@ import io.jstach.apt.prism.TemplateFormatterTypesPrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.apt.prism.TemplateMappingPrism;
 import io.jstach.apt.prism.TemplatePrism;
-import io.jstach.text.RenderFunction;
-import io.jstach.text.Renderable;
-import io.jstach.text.RendererDefinition;
 import io.jstach.text.formats.Html;
 
 @MetaInfServices(value=Processor.class)

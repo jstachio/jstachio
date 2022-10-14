@@ -27,5 +27,41 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-@org.eclipse.jdt.annotation.NonNullByDefault
-package io.jstach.text;
+package io.jstach;
+
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.Nullable;
+
+import io.jstach.spi.Formatter;
+import io.jstach.spi.RenderService;
+
+/**
+ *
+ * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ */
+public interface RendererDefinition extends Formatter {
+    void render() throws IOException;
+    
+    public static RendererDefinition of(RendererDefinition definition) {
+        return definition;
+    }
+    
+    default boolean format(Appendable appendable, String path, @Nullable Object context) throws IOException {
+        return RenderService.findService().formatter(path, context).format(appendable, path, context);
+    }
+    
+    default boolean isFalsey(@Nullable Object context) {
+        if (context == null) {
+            return true;
+        }
+        if (Boolean.FALSE.equals(context)) {
+            return true;
+        }
+        if (context instanceof Iterable<?> it) {
+            return ! it.iterator().hasNext();
+        }
+        return false;
+    }
+    
+}

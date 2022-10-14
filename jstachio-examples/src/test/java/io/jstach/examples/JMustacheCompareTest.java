@@ -10,13 +10,13 @@ import java.util.UUID;
 
 import org.junit.Test;
 
+import io.jstach.RenderFunction;
 import io.jstach.examples.Blog;
 import io.jstach.examples.IdContainer;
 import io.jstach.examples.JMustacheRenderService;
 import io.jstach.examples.PageContainer;
 import io.jstach.examples.Post;
 import io.jstach.examples.User1;
-import io.jstach.text.RenderFunction;
 
 public class JMustacheCompareTest {
 

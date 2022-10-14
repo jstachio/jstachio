@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.text.RenderFunction;
+import io.jstach.RenderFunction;
 
 public interface RenderService {
     

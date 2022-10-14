@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import io.jstach.text.RenderFunction;
+import io.jstach.RenderFunction;
 
 enum RenderServiceResolver implements RenderService {
 

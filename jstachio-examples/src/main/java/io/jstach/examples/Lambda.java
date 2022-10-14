@@ -2,9 +2,9 @@ package io.jstach.examples;
 
 import java.io.IOException;
 
+import io.jstach.RenderFunction;
 import io.jstach.annotation.TemplateLambda;
 import io.jstach.context.ContextNode;
-import io.jstach.text.RenderFunction;
 
 public record Lambda(String name) {
     

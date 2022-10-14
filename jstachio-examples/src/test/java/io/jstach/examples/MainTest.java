@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import io.jstach.text.RenderFunction;
+import io.jstach.RenderFunction;
 
 public class MainTest {
 

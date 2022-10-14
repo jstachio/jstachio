@@ -29,8 +29,8 @@
  */
 package io.jstach.examples;
 
+import io.jstach.RenderFunction;
 import io.jstach.annotation.GenerateRenderer;
-import io.jstach.text.RenderFunction;
 import io.jstach.text.formats.Html;
 
 /**

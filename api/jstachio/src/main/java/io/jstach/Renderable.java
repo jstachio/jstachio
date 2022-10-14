@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,41 +27,46 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.jstach.text;
+package io.jstach;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
-
-import io.jstach.spi.Formatter;
 import io.jstach.spi.RenderService;
 
 /**
+ * Can be rendered.
+ * <p>
+ * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate html output.
+ * 
+ * @param <T>
+ *                marks given renderable with it's format
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public interface RendererDefinition extends Formatter {
-    void render() throws IOException;
+public abstract class Renderable<T> implements RenderFunction {
+
+    /**
+     * Creates Renderer object that can be called to write out actual rendered text.
+     * <p>
+     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
+     * 
+     * @param appendable
+     *                       appendable to write rendered text to
+     * @return Renderer object
+     */
+    protected abstract RendererDefinition createRenderer(Appendable appendable);
     
-    public static RendererDefinition of(RendererDefinition definition) {
-        return definition;
+    public abstract String getTemplate();
+    
+    public abstract Object getContext();
+    
+    @Override
+    public final void render(Appendable a) throws IOException {
+        RenderService rs = RenderService.findService();
+        var rf = rs.renderer(getTemplate(), getContext(), (writer) -> {
+            var r = createRenderer(writer);
+            r.render();
+        });
+        rf.render(a);
     }
-    
-    default boolean format(Appendable appendable, String path, @Nullable Object context) throws IOException {
-        return RenderService.findService().formatter(path, context).format(appendable, path, context);
-    }
-    
-    default boolean isFalsey(@Nullable Object context) {
-        if (context == null) {
-            return true;
-        }
-        if (Boolean.FALSE.equals(context)) {
-            return true;
-        }
-        if (context instanceof Iterable<?> it) {
-            return ! it.iterator().hasNext();
-        }
-        return false;
-    }
-    
 }

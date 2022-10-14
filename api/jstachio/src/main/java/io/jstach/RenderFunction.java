@@ -1,4 +1,4 @@
-package io.jstach.text;
+package io.jstach;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
