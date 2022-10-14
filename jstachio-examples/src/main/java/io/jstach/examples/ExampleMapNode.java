@@ -3,8 +3,8 @@ package io.jstach.examples;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.jstach.ContextNode;
 import io.jstach.annotation.GenerateRenderer;
+import io.jstach.context.ContextNode;
 
 @GenerateRenderer(template = "example-map-node.mustache")
 public class ExampleMapNode implements ContextNode {

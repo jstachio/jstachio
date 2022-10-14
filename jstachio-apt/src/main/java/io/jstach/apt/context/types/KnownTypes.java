@@ -42,7 +42,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import io.jstach.ContextNode;
+import io.jstach.context.ContextNode;
 import io.jstach.text.RenderFunction;
 
 /**
