@@ -47,13 +47,13 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import io.jstach.apt.AnnotatedException;
 import io.jstach.apt.FormatterTypes;
-import io.jstach.apt.TemplateLambdaPrism;
 import io.jstach.apt.context.Lambda.Lambdas;
 import io.jstach.apt.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.context.types.KnownType;
 import io.jstach.apt.context.types.KnownTypes;
 import io.jstach.apt.context.types.NativeType;
 import io.jstach.apt.context.types.ObjectType;
+import io.jstach.apt.prism.TemplateLambdaPrism;
 
 /**
  * This class allows to create TemplateCompilerContext instance

@@ -28,19 +28,7 @@
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
-@net.java.dev.hickory.prism.GeneratePrisms({ //
-    @GeneratePrism(io.jstach.annotation.GenerateRenderers.class), //
-    @GeneratePrism(io.jstach.annotation.GenerateRenderer.class), //
-    @GeneratePrism(io.jstach.annotation.TemplateBasePath.class), //
-    @GeneratePrism(io.jstach.annotation.TemplateInterface.class), //
-    @GeneratePrism(io.jstach.annotation.TemplateMapping.class), //
-    @GeneratePrism(io.jstach.annotation.Template.class), //
-    @GeneratePrism(value = io.jstach.annotation.TemplateLambda.class, publicAccess = true), //
-    @GeneratePrism(io.jstach.annotation.TemplateFormatterTypes.class), //
-    @GeneratePrism(io.jstach.annotation.TemplateCompilerFlags.class), //
 
-})
 package io.jstach.apt;
 
-import net.java.dev.hickory.prism.GeneratePrism;
 

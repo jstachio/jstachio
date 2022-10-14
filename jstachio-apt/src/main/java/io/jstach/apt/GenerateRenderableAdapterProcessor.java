@@ -77,6 +77,12 @@ import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
+import io.jstach.apt.prism.TemplateBasePathPrism;
+import io.jstach.apt.prism.TemplateCompilerFlagsPrism;
+import io.jstach.apt.prism.TemplateFormatterTypesPrism;
+import io.jstach.apt.prism.TemplateInterfacePrism;
+import io.jstach.apt.prism.TemplateMappingPrism;
+import io.jstach.apt.prism.TemplatePrism;
 import io.jstach.text.RenderFunction;
 import io.jstach.text.Renderable;
 import io.jstach.text.RendererDefinition;
@@ -254,7 +260,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
         Method adapterNameMethod;
         Method templateMethod;
         Method charsetMethod;
-        Method isLayoutMethod;
         try {
             templateFormatMethod = GenerateRenderer.class.getDeclaredMethod("templateFormat");
             adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
