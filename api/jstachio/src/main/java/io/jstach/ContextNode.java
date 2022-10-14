@@ -125,24 +125,25 @@ public interface ContextNode extends Iterable<ContextNode> {
         return Boolean.FALSE.equals(o);
     }
     
-    public record RootMapNode(Object object) implements ContextNode {
-        @Override
-        public String toString() {
-            return renderString();
-        }
+}
+
+record RootMapNode(Object object) implements ContextNode {
+    @Override
+    public String toString() {
+        return renderString();
     }
-    
-    public record NamedMapNode(ContextNode parent, Object object, String name) implements ContextNode {
-        @Override
-        public String toString() {
-            return renderString();
-        }
+}
+
+record NamedMapNode(ContextNode parent, Object object, String name) implements ContextNode {
+    @Override
+    public String toString() {
+        return renderString();
     }
-    
-    public record IndexedMapNode(ContextNode parent, Object object, int index) implements ContextNode {
-        @Override
-        public String toString() {
-            return renderString();
-        }
+}
+
+record IndexedMapNode(ContextNode parent, Object object, int index) implements ContextNode {
+    @Override
+    public String toString() {
+        return renderString();
     }
 }
