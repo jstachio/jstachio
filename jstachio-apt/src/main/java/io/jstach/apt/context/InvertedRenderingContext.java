@@ -41,9 +41,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author vir
  */
 class InvertedRenderingContext implements BooleanExpressionContext {
-    private final @Nullable BooleanExpressionContext parent;
+    private final BooleanExpressionContext parent;
 
-    InvertedRenderingContext(@Nullable RenderingContext parent) {
+    InvertedRenderingContext(RenderingContext parent) {
         this.parent = (BooleanExpressionContext) parent;
     }
 

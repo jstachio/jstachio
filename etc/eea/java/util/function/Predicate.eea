@@ -1,4 +1,7 @@
 class java/util/function/Predicate
+and
+ (Ljava/util/function/Predicate<-TT;>;)Ljava/util/function/Predicate<TT;>;
+ (Ljava/util/function/Predicate<-TT;>;)L1java/util/function/Predicate<TT;>;
 negate
  ()Ljava/util/function/Predicate<TT;>;
  ()L1java/util/function/Predicate<TT;>;

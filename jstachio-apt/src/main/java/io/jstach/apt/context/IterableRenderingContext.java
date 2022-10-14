@@ -33,6 +33,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -82,10 +83,15 @@ class IterableRenderingContext implements RenderingContext {
 
     JavaExpression elementExpession() {
         DeclaredType iterableType = expression.model().getSupertype((DeclaredType)expression.type(), expression.model().knownTypes()._Iterable);
+        if (iterableType == null) {
+            throw new IllegalStateException("expected iterable type. bug.");
+        }
         TypeMirror elementType = iterableType.getTypeArguments().iterator().next();
-        if (elementType instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType)elementType;
+        if (elementType instanceof @NonNull WildcardType wildcardType) {
             elementType = wildcardType.getExtendsBound();
+            if (elementType == null) {
+                throw new IllegalStateException("expected upper bounds. bug.");
+            }
         }
         return expression.model().expression(elementVariableName, elementType);
     }

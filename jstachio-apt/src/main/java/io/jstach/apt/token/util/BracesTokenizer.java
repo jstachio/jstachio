@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token.util;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.PositionedToken;
 import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
@@ -38,17 +40,17 @@ import io.jstach.apt.token.BracesToken;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class BracesTokenizer implements TokenProcessor<Character> {
-    static TokenProcessorDecorator<Character, BracesToken> decorator() {
-        return new TokenProcessorDecorator<Character, BracesToken>() {
+public class BracesTokenizer implements TokenProcessor<@Nullable Character> {
+    static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator() {
+        return new TokenProcessorDecorator<@Nullable Character, BracesToken>() {
             @Override
-            public TokenProcessor<Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
+            public TokenProcessor<@Nullable Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
                 return new BracesTokenizer(downstream);
             }
         };
     }
-    public static TokenProcessor<Character> createInstance(String fileName, TokenProcessor<PositionedToken<BracesToken>> downstream) {
-        TokenProcessor<PositionedToken<Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
+    public static TokenProcessor<@Nullable Character> createInstance(String fileName, TokenProcessor<PositionedToken<BracesToken>> downstream) {
+        TokenProcessor<PositionedToken<@Nullable Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
         return new PositionAnnotator(fileName, paransisTokenizer);
     }
 
@@ -60,7 +62,7 @@ public class BracesTokenizer implements TokenProcessor<Character> {
     }
 
     @Override
-    public void processToken(Character token) throws ProcessingException {
+    public void processToken(@Nullable Character token) throws ProcessingException {
         if (token == null) {
             if (state == State.WAS_OPEN) {
                 downstream.processToken(BracesToken.character('{'));

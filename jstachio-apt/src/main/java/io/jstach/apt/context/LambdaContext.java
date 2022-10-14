@@ -15,7 +15,7 @@ public class LambdaContext {
         return parent.get(name);
     }
 
-    public JavaExpression find(String name) throws ContextException {
+    public @Nullable JavaExpression find(String name) throws ContextException {
         return parent.find(name, (c) -> true);
     }
 

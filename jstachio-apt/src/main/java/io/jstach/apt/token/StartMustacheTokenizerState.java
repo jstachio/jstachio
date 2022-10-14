@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.ProcessingException;
 
 /**
@@ -43,31 +45,31 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void twoOpenBraces() throws ProcessingException {
+    public @Nullable Void twoOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void threeOpenBraces() throws ProcessingException {
+    public @Nullable Void threeOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void twoClosingBraces() throws ProcessingException {
+    public @Nullable Void twoClosingBraces() throws ProcessingException {
         tokenizer.error("Unexpected closing braces");
         return null;
     }
 
     @Override
-    public Void threeClosingBraces() throws ProcessingException {
+    public @Nullable Void threeClosingBraces() throws ProcessingException {
         tokenizer.error("Unexpected closing braces");
         return null;
     }
 
     @Override
-    public Void character(char c) throws ProcessingException {
+    public @Nullable Void character(char c) throws ProcessingException {
         switch (c) {
         case '#' -> tokenizer
                 .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
@@ -100,7 +102,7 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void endOfFile() throws ProcessingException {
+    public @Nullable Void endOfFile() throws ProcessingException {
         tokenizer.error("Unclosed field");
         return null;
     }

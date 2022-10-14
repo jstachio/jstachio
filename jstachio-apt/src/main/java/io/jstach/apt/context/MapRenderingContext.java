@@ -86,11 +86,10 @@ class MapRenderingContext implements RenderingContext {
     }
     
     @Override
-    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
         // For Maps we favor resolving from the parent first
         // Otherwise it is impossible to get out of the Map!
         JavaExpression r = parent.find(name, filter.and(c -> ! (c instanceof MapRenderingContext)));
-        System.out.println(name + " " + r);
         
         if (r == null && filter.test(this)) {
             r = get(name);

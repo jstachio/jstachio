@@ -34,6 +34,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -128,7 +129,7 @@ public class KnownTypes {
         this.nativeTypes = List.copyOf(b.nativeTypes);
         this.objectTypes = List.copyOf(b.objectTypes);
         
-        var typeElement = declarations.getTypeElement(Object.class.getName());
+        var typeElement = Objects.requireNonNull(declarations.getTypeElement(Object.class.getName()));
         var ot = new ObjectType(typeElement, Object.class);
         
         _Object = ot;
@@ -163,7 +164,7 @@ public class KnownTypes {
         }
         
         private ObjectType objectType(Class<?> type) {
-            var typeElement = elements.getTypeElement(type.getName());
+            var typeElement = Objects.requireNonNull(elements.getTypeElement(type.getName()));
             var ot = new ObjectType(typeElement, type);
             objectTypes.add(ot);
             return ot;

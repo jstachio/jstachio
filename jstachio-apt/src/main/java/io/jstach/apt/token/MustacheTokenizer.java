@@ -29,7 +29,7 @@
  */
 package io.jstach.apt.token;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.MustacheToken;
 import io.jstach.apt.Position;
@@ -52,22 +52,22 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
      * @param downstream TokenProcessor is invoked on each found MustacheToken
      * @return .
      */
-    public static TokenProcessor<@NonNull Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
+    public static TokenProcessor<@Nullable Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
         TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
         return BracesTokenizer.createInstance(fileName, mustacheTokenizer);
     }
 
     private final PositionHodingTokenProcessor<MustacheToken> downstream;
     private MustacheTokenizerState state = new OutsideMustacheTokenizerState(this);
-    private Position position;
+    private @Nullable Position position;
     MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
         this.downstream = downstream;
     }
 
     @Override
     public void processToken(PositionedToken<BracesToken> positionedToken) throws ProcessingException {
-        position = positionedToken.position();
-        downstream.setPosition(position);
+        var p = position = positionedToken.position();
+        downstream.setPosition(p);
         BracesToken token = positionedToken.innerToken();
         token.accept(state);
     }
@@ -78,7 +78,11 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
     }
 
     void error(String message) throws ProcessingException {
-        throw new ProcessingException(position, message);
+        var p = position;
+        if (p == null) {
+            p = new Position("", 0, "", 0);
+        }
+        throw new ProcessingException(p, message);
     }
 
     void emitToken(MustacheToken token) throws ProcessingException {

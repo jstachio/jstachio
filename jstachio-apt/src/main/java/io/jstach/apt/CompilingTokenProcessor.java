@@ -54,7 +54,7 @@ class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, P
         return null;
     }
     
-    public Void partial(String name) throws ProcessingException {
+    public @Nullable Void partial(String name) throws ProcessingException {
         templateCompiler._partial(name);
         return null;
     }

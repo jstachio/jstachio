@@ -40,7 +40,7 @@ import io.jstach.apt.context.ContextException;
 public class ProcessingException extends Exception {
     private final Position position;
 
-    private ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
+    protected ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
         this.position = position;
     }
@@ -75,5 +75,11 @@ public class ProcessingException extends Exception {
             return annotatedException;
         }
         
+    }
+    
+    public static class VariableNotFoundProcessingException extends ProcessingException {
+        public VariableNotFoundProcessingException(Position position, ContextException contextException, String message) {
+            super(position, message, contextException);
+        }
     }
 }

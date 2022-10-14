@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.ProcessingException;
 
 /**
@@ -45,19 +47,19 @@ class EndMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void twoOpenBraces() throws ProcessingException {
+    public @Nullable Void twoOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void threeOpenBraces() throws ProcessingException {
+    public @Nullable Void threeOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void twoClosingBraces() throws ProcessingException {
+    public @Nullable Void twoClosingBraces() throws ProcessingException {
         if (expectsThree)
             tokenizer.error("Expects three closing braces, not two");
         else
@@ -66,7 +68,7 @@ class EndMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void threeClosingBraces() throws ProcessingException {
+    public @Nullable Void threeClosingBraces() throws ProcessingException {
         if (expectsThree)
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
         else
@@ -75,7 +77,7 @@ class EndMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void character(char c) throws ProcessingException {
+    public @Nullable Void character(char c) throws ProcessingException {
         if (!Character.isWhitespace(c)) {
             tokenizer.error("Unrecognized character " + c);
         }
@@ -83,7 +85,7 @@ class EndMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void endOfFile() throws ProcessingException {
+    public @Nullable Void endOfFile() throws ProcessingException {
         tokenizer.error("Unclosed field at the end of file");
         return null;
     }

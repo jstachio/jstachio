@@ -37,7 +37,7 @@ class LambdaRenderingContext implements RenderingContext {
     }
 
     @Override
-    public @Nullable JavaExpression get() {
+    public JavaExpression get() {
         return parent.get();
     }
 

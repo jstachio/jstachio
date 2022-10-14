@@ -37,7 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <T>
  */
 public interface TokenProcessor<T> {
-    static Character EOF = null;
+    static @Nullable Character EOF = null;
 
-    void processToken(@Nullable T token) throws ProcessingException;
+    void processToken(T token) throws ProcessingException;
 }

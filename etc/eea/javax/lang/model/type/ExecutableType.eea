@@ -1,0 +1,7 @@
+class javax/lang/model/type/ExecutableType
+getReturnType
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;
+getThrownTypes
+ ()Ljava/util/List<+Ljavax/lang/model/type/TypeMirror;>;
+ ()L1java/util/List<+L1javax/lang/model/type/TypeMirror;>;

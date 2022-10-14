@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.MustacheToken;
 import io.jstach.apt.ProcessingException;
 
@@ -50,19 +52,19 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void twoOpenBraces() throws ProcessingException {
+    public @Nullable Void twoOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void threeOpenBraces() throws ProcessingException {
+    public @Nullable Void threeOpenBraces() throws ProcessingException {
         tokenizer.error("Unexpected open braces");
         return null;
     }
 
     @Override
-    public Void twoClosingBraces() throws ProcessingException {
+    public @Nullable Void twoClosingBraces() throws ProcessingException {
         if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
             tokenizer.error("Expecting three closing braces, not two");
         else
@@ -71,7 +73,7 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void threeClosingBraces() throws ProcessingException {
+    public @Nullable Void threeClosingBraces() throws ProcessingException {
         if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
         else
@@ -80,7 +82,7 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void character(char c) throws ProcessingException {
+    public @Nullable Void character(char c) throws ProcessingException {
         if (Character.isWhitespace(c)) {
             boolean expectsThree = kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES;
             tokenizer.setState(new EndMustacheTokenizerState(tokenizer, expectsThree));
@@ -91,7 +93,7 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void endOfFile() throws ProcessingException {
+    public @Nullable Void endOfFile() throws ProcessingException {
         tokenizer.error("Unclosed field at the end of file");
         return null;
     }

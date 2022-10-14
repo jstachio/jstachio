@@ -1,0 +1,4 @@
+class javax/tools/FileObject
+openInputStream
+ ()Ljava/io/InputStream;
+ ()L1java/io/InputStream;

@@ -34,7 +34,6 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.annotation.TemplateCompilerFlags;
@@ -88,7 +87,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     
     String indent = "";
     
-    private final TemplateCompilerLike parent;
+    private final @Nullable TemplateCompilerLike parent;
     
     private @Nullable ParameterPartial _partial;
 
@@ -97,7 +96,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     protected @Nullable HiddenCodeAppendable _parentBlockOutput;
 
     private TemplateCompiler(NamedReader reader, 
-            TemplateCompilerLike parent, 
+            @Nullable TemplateCompilerLike parent, 
             TemplateCompilerContext context) {
         this.reader = reader;
         this.parent = parent;
@@ -105,7 +104,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
 
     public void run() throws ProcessingException, IOException {
-        TokenProcessor<@NonNull Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
+        TokenProcessor<@Nullable Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
         int readResult;
         while ((readResult = reader.read()) >= 0) {
             processor.processToken((char)readResult);
@@ -601,8 +600,8 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
         } catch (ContextException ex) {
             var templateStack = context.getTemplateStack();
-            System.out.println("Variable not found." + " var: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + context.printStack() + "\n");
-            throw new ProcessingException(position, ex);
+            String message = "Variable not found." + " var: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + context.printStack() + "\n";
+            throw new ProcessingException.VariableNotFoundProcessingException(position, ex, message);
         }
     }
     

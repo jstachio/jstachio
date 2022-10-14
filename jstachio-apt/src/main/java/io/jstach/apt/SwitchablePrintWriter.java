@@ -36,6 +36,7 @@ import java.io.Writer;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
+@SuppressWarnings("null")
 class SwitchablePrintWriter extends PrintWriter implements CodeAppendable {
     static SwitchablePrintWriter createInstance(Writer writer) {
         if (writer instanceof SwitchableWriter)
@@ -43,7 +44,7 @@ class SwitchablePrintWriter extends PrintWriter implements CodeAppendable {
         else
             return new SwitchablePrintWriter(new SwitchableWriter(writer));
     }
-
+    
     private final SwitchableWriter out;
 
     private SwitchablePrintWriter(SwitchableWriter out) {

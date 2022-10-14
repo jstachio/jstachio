@@ -1,0 +1,4 @@
+class java/io/StringWriter
+toString
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

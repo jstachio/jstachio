@@ -1,6 +1,7 @@
 package io.jstach.apt;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -13,10 +14,10 @@ import io.jstach.apt.MustacheToken.TextToken;
 
 public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
     
-    private ArrayDeque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(5);
+    private Deque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(5);
     protected boolean atStartOfLine = true;
     protected @Nullable PositionedToken<MustacheToken> lastProcessedToken = null;
-    protected Position position = null;
+    protected @Nullable Position position = null;
     protected String partialIndent = "";
     
 

@@ -74,12 +74,13 @@ public class VariableContext {
         return new VariableContext(unescapedWriter, unescapedWriter, variables, parent);
     }
 
-    private Integer lookupVariable(String baseName) {
+    private @Nullable Integer lookupVariable(String baseName) {
         Integer result = variables.get(baseName);
-        if (result != null || parent == null)
+        var p = parent;
+        if (result != null || p == null)
             return result;
         else
-            return parent.lookupVariable(baseName);
+            return p.lookupVariable(baseName);
     }
 
     public String introduceNewNameLike(String baseName) {

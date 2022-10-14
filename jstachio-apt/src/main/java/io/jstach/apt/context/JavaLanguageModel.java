@@ -31,6 +31,7 @@ package io.jstach.apt.context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.processing.Messager;
@@ -56,7 +57,7 @@ import io.jstach.apt.context.types.ObjectType;
  */
 public class JavaLanguageModel {
     
-    private static JavaLanguageModel INSTANCE;
+    private static @Nullable JavaLanguageModel INSTANCE;
     
     public static JavaLanguageModel createInstance(Types types, Elements elements, Messager messager) {
         KnownTypes knownTypes = KnownTypes.createInstace(elements, types);
@@ -66,7 +67,7 @@ public class JavaLanguageModel {
     }
     
     public static JavaLanguageModel getInstance() {
-        return INSTANCE;
+        return Objects.requireNonNull(INSTANCE);
     }
 
     private final Types operations;
@@ -167,7 +168,7 @@ public class JavaLanguageModel {
     }
 
     TypeElement asElement(DeclaredType declaredType) {
-        return (TypeElement)operations.asElement(declaredType);
+        return Objects.requireNonNull((TypeElement)operations.asElement(declaredType));
     }
     
     
@@ -182,8 +183,10 @@ public class JavaLanguageModel {
         
     }
     public Optional<KnownType> resolveType(TypeMirror type) throws TypeException {
-        if (type instanceof WildcardType) {
-            return resolveType(((WildcardType)type).getExtendsBound());
+        if (type instanceof WildcardType wt) {
+            var eb = wt.getExtendsBound();
+            if (eb == null) return Optional.empty();
+            return resolveType(eb);
         }
         else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
             return  Optional.of(knownTypes._Renderable);

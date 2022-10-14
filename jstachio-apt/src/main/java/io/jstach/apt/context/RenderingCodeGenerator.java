@@ -76,15 +76,13 @@ public class RenderingCodeGenerator {
     private final KnownTypes knownTypes;
     private final JavaLanguageModel javaModel;
     private final FormatterTypes formatterTypes;
-    private final TypeElement templateFormatElement;
 
     private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes, TypeElement formatClass) {
         this.knownTypes = types;
         this.javaModel = javaModel;
         this.formatterTypes = formatterTypes;
-        this.templateFormatElement = formatClass;
-
     }
+    
     String generateRenderingCode(JavaExpression expression, VariableContext variables, String path) throws TypeException {
         TypeMirror type = expression.type();
         final String text = expression.text();

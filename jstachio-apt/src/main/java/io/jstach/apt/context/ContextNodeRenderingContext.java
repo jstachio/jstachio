@@ -7,6 +7,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 public class ContextNodeRenderingContext extends MapRenderingContext {
 
     ContextNodeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
@@ -14,7 +16,7 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
     }
     
     @Override
-    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
         //See MapNode.find
         //Currently this only works if MapNode is the root context
         var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);

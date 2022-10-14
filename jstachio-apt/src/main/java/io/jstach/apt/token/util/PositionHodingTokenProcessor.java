@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token.util;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.Position;
 import io.jstach.apt.PositionedToken;
 import io.jstach.apt.ProcessingException;
@@ -41,7 +43,7 @@ import io.jstach.apt.TokenProcessor;
  */
 public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
     private final TokenProcessor<PositionedToken<T>> downstream;
-    private Position position = null;
+    private @Nullable Position position = null;
 
     public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
         this.downstream = downstream;
@@ -53,6 +55,10 @@ public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
 
     @Override
     public void processToken(T transformedToken) throws ProcessingException {
+        var position = this.position;
+        if (position == null) {
+            throw new IllegalStateException("position was not set");
+        }
         downstream.processToken(new PositionedToken<T>(position, transformedToken));
     }
 

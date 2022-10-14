@@ -95,19 +95,19 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         allMethods.addAll(methods);
         
         
-        JavaExpression result = getMethodEntryOrDefault(allMethods, name, null);
+        JavaExpression result = getMethodEntryOrDefault(allMethods, name);
         if (result != null)
             return result;
-        result = getMethodEntryOrDefault(allMethods, getterName(name), null);
+        result = getMethodEntryOrDefault(allMethods, getterName(name));
         if (result != null)
             return result;
-        result = getFieldEntryOrDefault(enclosedElements, name, null);
+        result = getFieldEntryOrDefault(enclosedElements, name);
         
         return result;
     }
 
     @Override
-    public JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
         JavaExpression result = null;
         if (filter.test(this)) {
             result = get(name);
@@ -118,7 +118,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         return result;
     }
 
-    private JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName, JavaExpression defaultValue) throws ContextException {
+    private @Nullable JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName) throws ContextException {
         boolean nameFound = false;
         for (Element element: elements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
@@ -147,7 +147,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
             }
         }
         if (!nameFound)
-            return defaultValue;
+            return null;
         else {
             //We need to return null to let the lambda context to be found
             //TODO maybe declared type should check handle lambdas?
@@ -157,7 +157,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         }
     }
 
-    private JavaExpression getFieldEntryOrDefault(List<? extends Element> enclosedElements, String name, JavaExpression defaultValue) throws ContextException {
+    private @Nullable JavaExpression getFieldEntryOrDefault(List<? extends Element> enclosedElements, String name) throws ContextException {
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
                 if (element.getModifiers().contains(Modifier.PRIVATE)) {
@@ -171,7 +171,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
                 return expression.fieldAccess(element);
             }
         }
-        return defaultValue;
+        return null;
     }
 
     private String getterName(String name) {

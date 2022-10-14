@@ -29,8 +29,6 @@
  */
 package io.jstach.apt;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -39,7 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PositionedToken<T> {
     private final Position position;
     private final T innerToken;
-    public PositionedToken(Position position, @Nullable T innerToken) {
+    public PositionedToken(Position position, T innerToken) {
         this.position = position;
         this.innerToken = innerToken;
     }

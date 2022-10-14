@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -338,9 +339,7 @@ public class TemplateCompilerContext {
             entry = enclosing.find(name, c -> true);
         }
         if (entry == null) {
-            //TODO remove this system out
-            Thread.dumpStack();
-            System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
+            //System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
             throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }
         RenderingContext enclosedField;
@@ -359,13 +358,17 @@ public class TemplateCompilerContext {
     public boolean isEnclosed() {
         return enclosedRelation != null;
     }
-
-    public String currentEnclosedContextName() {
-        return enclosedRelation.name();
+    
+    public Optional<EnclosedRelation> enclosed() {
+        return Optional.ofNullable(enclosedRelation);
     }
 
+    public String currentEnclosedContextName() {
+        return enclosed().orElseThrow().name();
+    }
+    
     public TemplateCompilerContext parentContext() {
-        return enclosedRelation.parentContext();
+        return enclosed().orElseThrow().parentContext();
     }
 
     public String unescapedWriterExpression() {

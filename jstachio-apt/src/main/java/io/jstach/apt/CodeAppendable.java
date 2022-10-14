@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 public interface CodeAppendable extends Appendable {
     
     default void print(String s) {
@@ -26,18 +28,27 @@ public interface CodeAppendable extends Appendable {
 
     public void disableOutput();
     
-    public record HiddenCodeAppendable(Consumer<CharSequence> sink)   implements CodeAppendable {
+    public class HiddenCodeAppendable  implements CodeAppendable {
+        private final Consumer<CharSequence> sink;
         
-        
+        public HiddenCodeAppendable(Consumer<CharSequence> sink) {
+            super();
+            this.sink = sink;
+        }
+
         @Override
-        public HiddenCodeAppendable append(CharSequence csq) {
-            sink.accept(csq);
+        public HiddenCodeAppendable append(@Nullable CharSequence csq) {
+            if (csq != null) {
+                sink.accept(csq);
+            }
             return this;
         }
 
         @Override
-        public HiddenCodeAppendable append(CharSequence csq, int start, int end) {
-            sink.accept(csq);
+        public HiddenCodeAppendable append(@Nullable CharSequence csq, int start, int end) {
+            if (csq != null) {
+                sink.accept(csq);
+            }
             return this;
         }
 
@@ -81,13 +92,13 @@ public interface CodeAppendable extends Appendable {
         }
 
         @Override
-        public StringCodeAppendable append(CharSequence csq) {
+        public StringCodeAppendable append(@Nullable CharSequence csq) {
             buffer.append(csq);
             return this;
         }
 
         @Override
-        public StringCodeAppendable append(CharSequence csq, int start, int end) {
+        public StringCodeAppendable append(@Nullable CharSequence csq, int start, int end) {
             buffer.append(csq, start, end);
             return this;
         }

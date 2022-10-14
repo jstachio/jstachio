@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.token;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.ProcessingException;
 
 class CommentMustacheTokenizerState implements MustacheTokenizerState {
@@ -43,33 +45,33 @@ class CommentMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void twoOpenBraces() throws ProcessingException {
+    public @Nullable Void twoOpenBraces() throws ProcessingException {
         return null;
     }
 
     @Override
-    public Void threeOpenBraces() throws ProcessingException {
+    public @Nullable Void threeOpenBraces() throws ProcessingException {
         return null;
     }
 
     @Override
-    public Void twoClosingBraces() throws ProcessingException {
+    public @Nullable Void twoClosingBraces() throws ProcessingException {
         tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
         return null;
     }
 
     @Override
-    public Void threeClosingBraces() throws ProcessingException {
+    public @Nullable Void threeClosingBraces() throws ProcessingException {
         tokenizer.error("Two closing braces should close comment, not three");
         return null;
     }
     @Override
-    public Void character(char c) throws ProcessingException {
+    public @Nullable Void character(char c) throws ProcessingException {
         return null;
     }
 
     @Override
-    public Void endOfFile() throws ProcessingException {
+    public @Nullable Void endOfFile() throws ProcessingException {
         tokenizer.error("Unexpected end of file: comment not closed");
         return null;
     }

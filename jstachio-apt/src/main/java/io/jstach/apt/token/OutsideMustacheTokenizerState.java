@@ -29,10 +29,12 @@
  */
 package io.jstach.apt.token;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.MustacheToken;
-import io.jstach.apt.ProcessingException;
 import io.jstach.apt.MustacheToken.NewlineChar;
 import io.jstach.apt.MustacheToken.SpecialChar;
+import io.jstach.apt.ProcessingException;
 
 /**
  *
@@ -48,31 +50,31 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void twoOpenBraces() throws ProcessingException {
+    public @Nullable Void twoOpenBraces() throws ProcessingException {
         tokenizer.setState(new StartMustacheTokenizerState(tokenizer));
         return null;
     }
 
     @Override
-    public Void threeOpenBraces() throws ProcessingException {
+    public @Nullable Void threeOpenBraces() throws ProcessingException {
         tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES, tokenizer));
         return null;
     }
 
     @Override
-    public Void threeClosingBraces() throws ProcessingException {
+    public @Nullable Void threeClosingBraces() throws ProcessingException {
         text.append("}}}");
         return null;
     }
 
     @Override
-    public Void twoClosingBraces() throws ProcessingException {
+    public @Nullable Void twoClosingBraces() throws ProcessingException {
         text.append("}}");
         return null;
     }
 
     @Override
-    public Void character(char c) throws ProcessingException {
+    public @Nullable Void character(char c) throws ProcessingException {
         switch (c) {
         case '\n' -> {
             tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
@@ -102,14 +104,14 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
     }
 
     @Override
-    public Void endOfFile() throws ProcessingException {
+    public @Nullable Void endOfFile() throws ProcessingException {
         tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
         tokenizer.emitToken(new MustacheToken.EndOfFileToken());
         return null;
     }
 
     @Override
-    public void beforeStateChange() throws ProcessingException {
+    public  void beforeStateChange() throws ProcessingException {
         if (text.length() > 0) {
             tokenizer.emitToken(new MustacheToken.TextToken(text.toString()));
         }
