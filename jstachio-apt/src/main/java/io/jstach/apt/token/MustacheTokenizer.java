@@ -59,7 +59,8 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 
     private final PositionHodingTokenProcessor<MustacheToken> downstream;
     private MustacheTokenizerState state = new OutsideMustacheTokenizerState(this);
-    private @Nullable Position position;
+    private Position position = Position.noPosition();
+    
     MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
         this.downstream = downstream;
     }
@@ -78,11 +79,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
     }
 
     void error(String message) throws ProcessingException {
-        var p = position;
-        if (p == null) {
-            p = new Position("", 0, "", 0);
-        }
-        throw new ProcessingException(p, message);
+        throw new ProcessingException(position, message);
     }
 
     void emitToken(MustacheToken token) throws ProcessingException {

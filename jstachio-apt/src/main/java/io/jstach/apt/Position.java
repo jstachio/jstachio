@@ -35,7 +35,6 @@ import java.io.Serializable;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@SuppressWarnings("serial")
 public class Position implements Serializable {
     private final String fileName;
     private final int row;
@@ -68,6 +67,10 @@ public class Position implements Serializable {
     public String toString() {
         return "Position [fileName=" + fileName + ", row=" + row + ", currentLine=" + currentLine + ", col=" + col
                 + "]";
+    }
+    
+    public static Position noPosition() {
+        return new Position("", 0, "", 0);
     }
 
 }

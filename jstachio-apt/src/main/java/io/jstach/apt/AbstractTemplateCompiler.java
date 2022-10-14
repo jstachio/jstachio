@@ -17,7 +17,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     private Deque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(5);
     protected boolean atStartOfLine = true;
     protected @Nullable PositionedToken<MustacheToken> lastProcessedToken = null;
-    protected @Nullable Position position = null;
+    protected Position position = Position.noPosition();
     protected String partialIndent = "";
     
 
