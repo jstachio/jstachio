@@ -69,6 +69,7 @@ import org.kohsuke.MetaInfServices;
 
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
+import io.jstach.Renderer;
 import io.jstach.RendererDefinition;
 import io.jstach.annotation.AutoFormat;
 import io.jstach.annotation.GenerateRenderer;
@@ -402,7 +403,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             codeWriter.println(s);
         }
 
-        private void writeRenderableAdapterClass(String adapterClassSimpleName,
+        private void writeRenderableAdapterClass(String rendererClassSimpleName,
                        TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException, AnnotatedException {
             String className = element.getQualifiedName().toString();
             PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
@@ -421,14 +422,36 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             String extendsString = " extends " 
                     + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
             
+            String rendererImplements = " implements " 
+                    + Renderer.class.getName()  + "<" + className + ">";
+            
             String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
             
+            String adapterClassSimpleName = rendererClassSimpleName + "Definition";
+
             println("package " + packageName + ";");
             println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
-            println(modifier + "class " + adapterClassSimpleName + extendsString + implementsString +" {");
+            
+            println(modifier + "class " + rendererClassSimpleName + rendererImplements +" {");
+
+            println("    public " + rendererClassSimpleName + "() {" );
+            
+            println("    }" );
+            println("");
+            println("    public void render(" + className + " model, Appendable appendable) throws java.io.IOException {");
+            println("        new " + adapterClassSimpleName + "(model).render(appendable);");
+            println("    }");
+            println("");
+            println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
+            println("        return new " + adapterClassSimpleName + "(data);");
+            println("    }");
+            println("}");
+            
+
+            println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
             println("    public static final String TEMPLATE = \"" + templateName + "\";");
             println("    private final " + className + " data;");
-            String constructorModifier = "private";
+            String constructorModifier = "protected";
             println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
             println("        this.data = data;");
             println("    }");
