@@ -1,5 +1,7 @@
 package io.jstach.context;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -114,15 +116,29 @@ public interface ContextNode extends Iterable<ContextNode> {
             return StreamSupport.stream(it.spliterator(), false)
                     .map( i -> this.ofChild(index.getAndIncrement(),  i)).iterator();
         }
-        else if (isFalsey()) {
+        else if (o == null || Boolean.FALSE.equals(o)) {
             return Collections.emptyIterator();
         }
         return Collections.singletonList(this).iterator();
     }
     
-    default boolean isFalsey() {
-        Object o = object();
-        return Boolean.FALSE.equals(o);
+    static boolean isFalsey(@Nullable Object context) {
+        if (context == null) {
+            return true;
+        }
+        if (Boolean.FALSE.equals(context)) {
+            return true;
+        }
+        if (context instanceof Collection<?> c) {
+            return c.isEmpty();
+        }
+        if (context instanceof Iterable<?> it) {
+            return ! it.iterator().hasNext();
+        }
+        if (context.getClass().isArray() && Array.getLength(context) == 0) {
+            return false;
+        }
+        return false;
     }
     
 }

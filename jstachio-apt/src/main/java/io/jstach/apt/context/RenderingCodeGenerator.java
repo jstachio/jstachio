@@ -279,10 +279,9 @@ public class RenderingCodeGenerator {
             DeclaredType dt = (DeclaredType) expression.type();
             OptionalRenderingContext declaredContext = new OptionalRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null", declaredContext);
-        } else if (javaModel.isType(expression.type(), knownTypes._MapNode) && expression.type() instanceof DeclaredType dt) {
-            //DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
+        } else if (javaModel.isType(expression.type(), knownTypes._MapNode) && expression.type() instanceof @NonNull DeclaredType dt) {
             ContextNodeRenderingContext c = new ContextNodeRenderingContext(expression, javaModel.asElement(dt) , enclosing);
-            return new BooleanRenderingContext("isFalsey(" + expression.text() + ")", c);
+            return new BooleanRenderingContext( knownTypes._MapNode.typeElement().getQualifiedName().toString() + ".isFalsey(" + expression.text() + ")", c);
         } else if (expression.type() instanceof DeclaredType dt) {
             DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression, javaModel.asElement(dt), enclosing);
             return new BooleanRenderingContext("(" + expression.text() + ") == null || Boolean.FALSE.equals(" + expression.text() + ")", declaredContext);

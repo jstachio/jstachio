@@ -51,17 +51,4 @@ public interface RendererDefinition extends Formatter {
         return RenderService.findService().formatter(path, context).format(appendable, path, context);
     }
     
-    default boolean isFalsey(@Nullable Object context) {
-        if (context == null) {
-            return true;
-        }
-        if (Boolean.FALSE.equals(context)) {
-            return true;
-        }
-        if (context instanceof Iterable<?> it) {
-            return ! it.iterator().hasNext();
-        }
-        return false;
-    }
-    
 }
