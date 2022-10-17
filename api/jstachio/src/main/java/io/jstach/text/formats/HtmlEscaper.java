@@ -2,9 +2,9 @@ package io.jstach.text.formats;
 
 import java.io.IOException;
 
-import io.jstach.spi.Escaper;
+import io.jstach.Appender;
 
-public class HtmlEscaper implements Escaper {
+public class HtmlEscaper implements Appender {
 
 
     private static final String QUOT = "&quot;";
@@ -20,58 +20,56 @@ public class HtmlEscaper implements Escaper {
 
     @Override
     public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
-        var downstream = getDownstream();
         csq = csq == null ? "null" : csq;
         for (int i = start; i < end; i++) {
             char c = csq.charAt(i);
             switch (c) {
             case '&' -> {
-                downstream.append(a, csq, start, i);
+                a.append(csq, start, i);
                 start = i + 1;
-                downstream.append(a, AMP);
+                a.append(AMP);
 
             }
             case '<' -> {
-                downstream.append(a, csq, start, i);
+                a.append(csq, start, i);
                 start = i + 1;
-                downstream.append(a, LT);
+                a.append(LT);
 
             }
             case '>' -> {
-                downstream.append(a, csq, start, i);
+                a.append(csq, start, i);
                 start = i + 1;
-                downstream.append(a, GT);
+                a.append(GT);
             }
             case '"' -> {
-                downstream.append(a, csq, start, i);
+                a.append(csq, start, i);
                 start = i + 1;
-                downstream.append(a, QUOT);
+                a.append(QUOT);
             }
 
             }
         }
-        downstream.append(a, csq, start, end);
+        a.append(csq, start, end);
 
     }
 
     @Override
     public void append(Appendable a, char c) throws IOException {
-        var downstream = getDownstream();
         switch (c) {
         case '&' -> {
-            downstream.append(a, AMP);
+            a.append(AMP);
         }
         case '<' -> {
-            downstream.append(a, LT);
+            a.append(LT);
         }
         case '>' -> {
-            downstream.append(a, GT);
+            a.append(GT);
         }
         case '"' -> {
-            downstream.append(a, QUOT);
+            a.append(QUOT);
         }
         default -> {
-            downstream.append(a, c);
+            a.append(c);
         }
         }
     }

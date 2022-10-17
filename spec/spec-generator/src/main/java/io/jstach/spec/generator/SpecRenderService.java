@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.spi.Appender;
+import io.jstach.Appender;
 import io.jstach.spi.Formatter;
 import io.jstach.spi.Formatter.DownstreamFormatter;
 import io.jstach.spi.RenderService;

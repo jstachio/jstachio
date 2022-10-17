@@ -29,8 +29,8 @@
  */
 package io.jstach.text.formats;
 
+import io.jstach.Appender;
 import io.jstach.annotation.TextFormat;
-import io.jstach.spi.Appender;
 
 /**
  *
