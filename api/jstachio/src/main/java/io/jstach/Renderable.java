@@ -33,40 +33,21 @@ import java.io.IOException;
 
 import io.jstach.spi.RenderService;
 
-/**
- * Can be rendered.
- * <p>
- * <tt>{@code Renderable&lt;Html&gt; }</tt> is supposed to generate html output.
- * 
- * @param <T>
- *                marks given renderable with it's format
- *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
- */
-public abstract class Renderable<T> implements RenderFunction {
 
-    /**
-     * Creates Renderer object that can be called to write out actual rendered text.
-     * <p>
-     * Any appendable can be used as argument: StringBuilder, Writer, OutputStream
-     * 
-     * @param appendable
-     *                       appendable to write rendered text to
-     * @return Renderer object
-     */
-    protected abstract RendererDefinition createRenderer(Appendable appendable);
+public abstract class Renderable<F,T> implements RenderFunction {
     
     public abstract String getTemplate();
     
-    public abstract Object getContext();
+    public abstract T getContext();
+    
+    protected RenderFunction renderFunction = this::doRender;
+    
+    protected abstract void doRender(Appendable appendable) throws IOException;
     
     @Override
     public final void render(Appendable a) throws IOException {
         RenderService rs = RenderService.findService();
-        var rf = rs.renderer(getTemplate(), getContext(), (writer) -> {
-            var r = createRenderer(writer);
-            r.render();
-        });
+        var rf = rs.renderer(getTemplate(), getContext(), renderFunction);
         rf.render(a);
     }
 }

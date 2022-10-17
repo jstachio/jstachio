@@ -2,8 +2,7 @@ package io.jstach.spi;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
-
+import io.jstach.Appender;
 import io.jstach.RenderFunction;
 
 public interface RenderService {
@@ -12,12 +11,16 @@ public interface RenderService {
         return previous;
     }
     
-    default Formatter formatter(String path, @Nullable Object context, Formatter previous) {
+    default Formatter formatter(Formatter previous) {
     	return previous;
     }
     
-    default Formatter formatter(String path, @Nullable Object context) {
-        return formatter(path, context, Formatter.DefaultFormatter.INSTANCE);
+    default Formatter formatter() {
+        return formatter(Formatter.DefaultFormatter.INSTANCE);
+    }
+    
+    default Appender appender() {
+        return Appender.DefaultAppender.INSTANCE;
     }
     
     public static RenderService findService() {

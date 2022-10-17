@@ -14,7 +14,7 @@ import io.jstach.spi.RenderService;
 public class SpecRenderService implements RenderService {
 
     @Override
-    public Formatter formatter(String path, @Nullable Object context, Formatter previous) {
+    public Formatter formatter(Formatter previous) {
         return MyFormatter.INSTANCE;
     }
     

@@ -22,7 +22,6 @@ enum RenderServiceResolver implements RenderService {
             this.renderServices = renderServices;
         }
 
-        @SuppressWarnings("null")
         private static Holder of() {
             Iterable<RenderService> it = ServiceLoader.load(RenderService.class);
             List<RenderService> svs = new ArrayList<>();
@@ -41,10 +40,10 @@ enum RenderServiceResolver implements RenderService {
     }
 
     @Override
-    public Formatter formatter(String path, Object context, Formatter formatter) {
+    public Formatter formatter(Formatter formatter) {
         Formatter current = formatter;
         for (var rs : Holder.INSTANCE.renderServices) {
-            current = rs.formatter(path, context, current);
+            current = rs.formatter(current);
         }
         return current;
     }

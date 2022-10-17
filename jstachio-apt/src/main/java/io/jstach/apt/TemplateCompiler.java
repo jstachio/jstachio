@@ -254,7 +254,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
     }
     
     private void printIndent() {
-        for (int i = 0; i <= depth + 2; i++) {
+        for (int i = 0; i <= depth + 1; i++) {
             currentWriter().print("    ");
         }
     }

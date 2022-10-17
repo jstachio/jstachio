@@ -71,7 +71,6 @@ import io.jstach.Appender;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
 import io.jstach.Renderer;
-import io.jstach.RendererDefinition;
 import io.jstach.annotation.AutoFormat;
 import io.jstach.annotation.GenerateRenderer;
 import io.jstach.annotation.GenerateRenderers;
@@ -91,11 +90,13 @@ import io.jstach.apt.prism.TemplateFormatterTypesPrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.apt.prism.TemplateMappingPrism;
 import io.jstach.apt.prism.TemplatePrism;
+import io.jstach.spi.Formatter;
+import io.jstach.spi.RenderService;
 import io.jstach.text.formats.Html;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
-public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
+public class GenerateRendererProcessor extends AbstractProcessor {
 	
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
@@ -407,7 +408,7 @@ class ClassWriter {
                 ifaceStrings.stream().collect(Collectors.joining(", "));
         
         String extendsString = " extends " 
-                + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + ">";
+                + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + "," + className + ">";
         
         String rendererImplements = " implements " 
                 + Renderer.class.getName()  + "<" + className + ">";
@@ -417,7 +418,7 @@ class ClassWriter {
         String adapterClassSimpleName = rendererClassSimpleName + "Definition";
 
         println("package " + packageName + ";");
-        println("// @javax.annotation.Generated(\"" + GenerateRenderableAdapterProcessor.class.getName() + "\")");
+        println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
         
         println(modifier + "class " + rendererClassSimpleName + rendererImplements +" {");
 
@@ -438,9 +439,19 @@ class ClassWriter {
         println("    }");
         println("}");
         
+        String _Appender = Appender.class.getName();
+        String _Appendable = Appendable.class.getName();
+        String _Formatter = Formatter.class.getName();
+        String _RenderService = RenderService.class.getName();
 
         println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
         println("    public static final String TEMPLATE = \"" + templateName + "\";");
+        
+        println("    " + _Appender + " appender = " + _RenderService  + ".findService().appender();"   );
+        println("    " + _Appender + " escaper = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.providesMethod() + "();");
+        println("    " + _Formatter + " formatter = " + _RenderService + ".findService().formatter" + "();");
+
+        
         println("    private final " + className + " data;");
         String constructorModifier = "protected";
         println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
@@ -453,53 +464,50 @@ class ClassWriter {
         println("    }");
         
         println("    @Override");
-        println("    public Object " + "getContext() {");
+        println("    public " + className  + " getContext() {");
         println("        return this.data;");
         println("    }");
-        println("");
+        
+        //private static <M> void _render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
+        println("    @Override");
+        println("    protected void " + "doRender("+ _Appendable + " a) throws java.io.IOException {");
+        println("        _render(data, a, appender, escaper, formatter);");
+        println("    }");
+        
         println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
         println("        return new " + adapterClassSimpleName + "(data);");
         println("    }");
         
-        String adapterRendererClassSimpleName = adapterClassSimpleName + "Renderer";
-        String adapterRendererClassName = adapterClassSimpleName + "." + adapterRendererClassSimpleName;
-
-        println("    @Override");
-        println("    protected " + RendererDefinition.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
-        println("        " + Appender.class.getName() + " appender = " + Appender.DefaultAppender.class.getCanonicalName()  + ".INSTANCE;"   );
-        println("        " + Appender.class.getName() + " escaper = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.providesMethod() + "();");
-        println("        return new " + adapterRendererClassName + "(data, appender, escaper, unescapedWriter);");
-        println("    }");
-
-        writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompilerType.SIMPLE);
+        writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE);
         println("}");
     }
 
-    private void writeRendererDefinitionClass(String adapterRendererClassSimpleName, TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException, AnnotatedException {
-        String className = element.getQualifiedName().toString();
-        println("    private static class " + adapterRendererClassSimpleName + " implements " + RendererDefinition.class.getName() + " {");
 
+    
+
+    
+    private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException, AnnotatedException {
         VariableContext variables = VariableContext.createDefaultContext();
         String dataName = variables.introduceNewNameLike("data");
+        String className = element.getQualifiedName().toString();
+        String _Appender = Appender.class.getName();
+        String _Appendable = Appendable.class.getName();
+        String _Formatter = Formatter.class.getName();
+
+        //private static <M> void render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
+
+        String idt = "\n        ";
+        println("    private static void _render(" + className + " " + dataName 
+                + idt + ", " + _Appendable + " " + variables.unescapedWriter()
+                + idt + ", " + _Appender + " " + variables.appender() 
+                + idt + ", " + _Appender + " " + variables.writer()
+                + idt + ", " + _Formatter + " " + variables.formatter() 
+                + idt + ") throws java.io.IOException {");
         TemplateCompilerContext context = codeWriter.createTemplateContext(templateName, element, dataName, variables);
-        println("        private final " + Appender.class.getName()  + " " + variables.appender() + ";");
-        println("        private final " + Appender.class.getName()  + " " + variables.writer() + ";");
-        println("        private final " + Appendable.class.getName() + " " + variables.unescapedWriter() + ";");
-        println("        private final " + className + " " + dataName + ";");
-        println("        public " + adapterRendererClassSimpleName 
-                + "(" + className + " data, " 
-                + Appender.class.getName() + " appender, " 
-                + Appender.class.getName() + " escaper, " 
-                + Appendable.class.getName() + " unescapedWriter) {");
-        println("            this." + variables.appender() + " = appender;");
-        println("            this." + variables.writer() + " = escaper;");
-        println("            this." + variables.unescapedWriter() + " = unescapedWriter;");
-        println("            this." + dataName + " = data;");
-        println("        }");
-        println("        @Override");
-        println("        public void render() throws " + IOException.class.getName() + " {");
         codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
-        println("        }");
+        println("");
         println("    }");
+
     }
+    
 }

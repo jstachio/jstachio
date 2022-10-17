@@ -98,13 +98,14 @@ public class RenderingCodeGenerator {
         
         KnownType knownType = javaModel.resolveType(type).orElse(null);
         
+        
         if (knownType != null && knownType instanceof ObjectType) {
             String cname = knownType.renderClassName() + ".class";
             return renderFormatCall(variables, path, text, cname);
 
         }
         else if (knownType != null && knownType instanceof NativeType) {
-            return "format(" + variables.writer() //
+            return variables.formatter()  +".format(" + variables.writer() //
                     + ", " + variables.unescapedWriter()   //
                     + ", " + "\"" + path + "\""  //
                     + ", " + text + ");"; 
@@ -120,7 +121,7 @@ public class RenderingCodeGenerator {
                 .format("Can''t render {0} expression of {1} type as it is not an allowed type to format. ", text, type));
     }
     private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
-        return "format(" + variables.writer() //
+        return variables.formatter() + ".format(" + variables.writer() //
                 + ", " + variables.unescapedWriter() //
                 + ", " + "\"" + path + "\"" //
                 + ", " + cname //
