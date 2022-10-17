@@ -39,27 +39,40 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class VariableContext {
+    
+    public static String APPENDER = "appender";
+    public static String ESCAPER = "escaper";
+    public static String APPENDABLE = "unescapedWriter";
+    
     public static VariableContext createDefaultContext() {
         TreeMap<String, Integer> variables = new TreeMap<String, Integer>();
-        variables.put("writer", 1);
-        variables.put("unescapedWriter", 1);
-        return new VariableContext("writer", "unescapedWriter", variables, null);
+        variables.put(ESCAPER, 1);
+        variables.put(APPENDER, 1);
+
+        variables.put(APPENDABLE, 1);
+        return new VariableContext(APPENDER, ESCAPER, APPENDABLE, variables, null);
     }
 
-    private final String writer;
+    private final String appender;
+    private final String escaper;
     private final String unescapedWriter;
     private final Map<String, Integer> variables;
     private final @Nullable VariableContext parent;
 
-    VariableContext(String writer, String unescapedWriter, Map<String, Integer> variables, @Nullable VariableContext parent) {
-        this.writer = writer;
+    VariableContext(String appender, String escaper, String unescapedWriter, Map<String, Integer> variables, @Nullable VariableContext parent) {
+        this.appender = appender;
+        this.escaper = escaper;
         this.unescapedWriter = unescapedWriter;
         this.variables = variables;
         this.parent = parent;
     }
 
     public String writer() {
-        return writer;
+        return escaper;
+    }
+    
+    public String appender() {
+        return appender;
     }
 
     public String unescapedWriter() {
@@ -71,7 +84,7 @@ public class VariableContext {
     }
 
     VariableContext unescaped() {
-        return new VariableContext(unescapedWriter, unescapedWriter, variables, parent);
+        return new VariableContext(appender, appender, unescapedWriter, variables, parent);
     }
 
     private @Nullable Integer lookupVariable(String baseName) {
@@ -108,6 +121,6 @@ public class VariableContext {
     }
 
     VariableContext createEnclosedContext() {
-        return new VariableContext(writer, unescapedWriter, new TreeMap<String, Integer>(), this);
+        return new VariableContext(appender, escaper, unescapedWriter, new TreeMap<String, Integer>(), this);
     }
 }

@@ -2,7 +2,7 @@ module io.jstach.spec.generator {
     
     exports io.jstach.spec.generator;
     
-    requires io.jstach;
+    requires transitive io.jstach;
     
     requires static org.eclipse.jdt.annotation;
     

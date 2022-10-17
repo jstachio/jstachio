@@ -41,7 +41,7 @@ enum RenderServiceResolver implements RenderService {
     }
 
     @Override
-    public Formatter formatter(String path, Object context, Formatter formatter) throws IOException {
+    public Formatter formatter(String path, Object context, Formatter formatter) {
         Formatter current = formatter;
         for (var rs : Holder.INSTANCE.renderServices) {
             current = rs.formatter(path, context, current);

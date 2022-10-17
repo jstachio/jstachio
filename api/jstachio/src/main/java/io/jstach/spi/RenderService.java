@@ -12,11 +12,11 @@ public interface RenderService {
         return previous;
     }
     
-    default Formatter formatter(String path, @Nullable Object context, Formatter previous) throws IOException {
+    default Formatter formatter(String path, @Nullable Object context, Formatter previous) {
     	return previous;
     }
     
-    default Formatter formatter(String path, @Nullable Object context) throws IOException {
+    default Formatter formatter(String path, @Nullable Object context) {
         return formatter(path, context, Formatter.DefaultFormatter.INSTANCE);
     }
     

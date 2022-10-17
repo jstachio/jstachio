@@ -30,6 +30,7 @@
 package io.jstach.text.formats;
 
 import io.jstach.annotation.TextFormat;
+import io.jstach.spi.Appender;
 
 /**
  *
@@ -37,10 +38,7 @@ import io.jstach.annotation.TextFormat;
  */
 @TextFormat
 public class PlainText {
-    public static Appendable createEscapingAppendable(Appendable appendable) {
-        return appendable;
-    }
-
-    private PlainText() {
+    public static Appender provides() {
+        return Appender.DefaultAppender.INSTANCE;
     }
 }

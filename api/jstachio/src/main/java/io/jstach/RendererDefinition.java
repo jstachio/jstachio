@@ -31,8 +31,6 @@ package io.jstach;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import io.jstach.spi.Formatter;
 import io.jstach.spi.RenderService;
 
@@ -40,15 +38,12 @@ import io.jstach.spi.RenderService;
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-public interface RendererDefinition extends Formatter {
+public interface RendererDefinition extends Formatter.ForwardingFormatter {
     void render() throws IOException;
     
-    public static RendererDefinition of(RendererDefinition definition) {
-        return definition;
-    }
-    
-    default boolean format(Appendable appendable, String path, @Nullable Object context) throws IOException {
-        return RenderService.findService().formatter(path, context).format(appendable, path, context);
+    @Override
+    default Formatter formatter() {
+        return RenderService.findService().formatter("", this);
     }
     
 }

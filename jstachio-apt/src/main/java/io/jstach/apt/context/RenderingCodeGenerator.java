@@ -104,7 +104,10 @@ public class RenderingCodeGenerator {
 
         }
         else if (knownType != null && knownType instanceof NativeType) {
-            return "format(" + variables.writer() + ", " + "\"" + path + "\"" + ", " + text + ");"; 
+            return "format(" + variables.writer() //
+                    + ", " + variables.unescapedWriter()   //
+                    + ", " + "\"" + path + "\""  //
+                    + ", " + text + ");"; 
         }
         else if (type instanceof @NonNull DeclaredType dt) {
             String cname = javaModel.eraseType(dt);
@@ -118,6 +121,7 @@ public class RenderingCodeGenerator {
     }
     private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
         return "format(" + variables.writer() //
+                + ", " + variables.unescapedWriter() //
                 + ", " + "\"" + path + "\"" //
                 + ", " + cname //
                 + ", " + text + ");";

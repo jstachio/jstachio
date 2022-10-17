@@ -76,5 +76,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface TextFormat {
-    String createEscapingAppendableMethodName() default "createEscapingAppendable";
+    String providesMethod() default "provides";
 }

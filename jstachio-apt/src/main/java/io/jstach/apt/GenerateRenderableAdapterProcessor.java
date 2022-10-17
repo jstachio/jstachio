@@ -90,6 +90,7 @@ import io.jstach.apt.prism.TemplateFormatterTypesPrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.apt.prism.TemplateMappingPrism;
 import io.jstach.apt.prism.TemplatePrism;
+import io.jstach.spi.Appender;
 import io.jstach.text.formats.Html;
 
 @MetaInfServices(value=Processor.class)
@@ -465,8 +466,9 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
 
             println("    @Override");
             println("    protected " + RendererDefinition.class.getName() + " createRenderer(" + Appendable.class.getName() + " unescapedWriter) {");
-            println("        " + Appendable.class.getName() + " writer = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.createEscapingAppendableMethodName() + "(unescapedWriter);");
-            println("        return " + RendererDefinition.class.getName() + ".of(new " + adapterRendererClassName + "(data, writer, unescapedWriter));");
+            println("        " + Appender.class.getName() + " appender = " + Appender.DefaultAppender.class.getCanonicalName()  + ".INSTANCE;"   );
+            println("        " + Appender.class.getName() + " escaper = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.providesMethod() + "();");
+            println("        return new " + adapterRendererClassName + "(data, appender, escaper, unescapedWriter);");
             println("    }");
 
             writeRendererDefinitionClass(adapterRendererClassSimpleName, TemplateCompilerType.SIMPLE);
@@ -480,14 +482,17 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             VariableContext variables = VariableContext.createDefaultContext();
             String dataName = variables.introduceNewNameLike("data");
             TemplateCompilerContext context = codeWriter.createTemplateContext(templateName, element, dataName, variables);
+            println("        private final " + Appender.class.getName()  + " " + variables.appender() + ";");
+            println("        private final " + Appender.class.getName()  + " " + variables.writer() + ";");
             println("        private final " + Appendable.class.getName() + " " + variables.unescapedWriter() + ";");
-            println("        private final " + Appendable.class.getName() + " " + variables.writer() + ";");
             println("        private final " + className + " " + dataName + ";");
             println("        public " + adapterRendererClassSimpleName 
                     + "(" + className + " data, " 
-                    + Appendable.class.getName() + " writer, " 
+                    + Appender.class.getName() + " appender, " 
+                    + Appender.class.getName() + " escaper, " 
                     + Appendable.class.getName() + " unescapedWriter) {");
-            println("            this." + variables.writer() + " = writer;");
+            println("            this." + variables.appender() + " = appender;");
+            println("            this." + variables.writer() + " = escaper;");
             println("            this." + variables.unescapedWriter() + " = unescapedWriter;");
             println("            this." + dataName + " = data;");
             println("        }");
