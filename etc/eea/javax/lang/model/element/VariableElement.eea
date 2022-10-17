@@ -1,0 +1,4 @@
+class javax/lang/model/element/VariableElement
+asType
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;

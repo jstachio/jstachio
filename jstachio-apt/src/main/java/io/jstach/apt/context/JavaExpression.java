@@ -131,6 +131,10 @@ class JavaExpression {
     public String toString() {
         return "JavaExpression [text=" + text + ", type=" + type + ", path=" + path + "]";
     }
+
+    JavaExpression listSize() {
+        return new JavaExpression(model, text + ".size()", model.knownTypes()._int.typeMirror(), concatPath("size"));
+    }
     
     
 }

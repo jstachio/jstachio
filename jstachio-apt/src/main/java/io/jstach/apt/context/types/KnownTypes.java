@@ -78,6 +78,8 @@ public class KnownTypes {
     public final ObjectType _String;
     public final ObjectType _Boolean;
     public final ObjectType _Iterable;
+    public final ObjectType _List;
+
     public final ObjectType _Map;
     public final ObjectType _MapNode;
 
@@ -121,6 +123,8 @@ public class KnownTypes {
         _Optional = b.objectType(Optional.class);
         _MapNode = b.objectType(ContextNode.class); // MapNode needs to be above _Iterable
         _Iterable = b.objectType(Iterable.class);
+        _List = b.objectType(List.class);
+
         _Map = b.objectType(Map.class);
         _UUID = b.objectType(UUID.class);
         _URI = b.objectType(URI.class);

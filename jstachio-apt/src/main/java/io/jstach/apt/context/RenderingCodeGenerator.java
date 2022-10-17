@@ -195,6 +195,8 @@ public class RenderingCodeGenerator {
         return createTemplateCompilerContext(templateStack, element, expression, variables);
     }
 
+    private boolean USE_LIST_CONTEXT = Boolean.getBoolean("USE_LIST_CONTEXT");
+    
     RenderingContext createRenderingContext(ContextType childType, JavaExpression expression, RenderingContext enclosing) throws TypeException {
         if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
             return switch(childType) {
@@ -219,6 +221,13 @@ public class RenderingCodeGenerator {
             DeclaredType declaredType = (DeclaredType)expression.type();
             // We do not give optional a nullable rendering context. If you make optional nullable your are dumb.
             return new OptionalRenderingContext(expression, javaModel.asElement(declaredType), enclosing);
+        } else if (USE_LIST_CONTEXT && javaModel.isType(expression.type(), knownTypes._List)) {
+            RenderingContext nullable = nullableRenderingContext(expression, enclosing);
+            VariableContext variableContext = nullable.createEnclosedVariableContext();
+            String indexVariableName = variableContext.introduceNewNameLike("i");
+            RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
+            ListRenderingContext list = new ListRenderingContext(expression, indexVariableName, variables);
+            return createRenderingContext(childType,list.componentExpession(), list);
         } else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
             return createIterableContext(childType, expression, enclosing);
         } else if (javaModel.isType(expression.type(), knownTypes._Map)) {
