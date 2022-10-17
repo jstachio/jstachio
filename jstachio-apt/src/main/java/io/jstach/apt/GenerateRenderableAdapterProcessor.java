@@ -268,20 +268,6 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
     
     
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
-//        Method templateFormatMethod;
-//        Method adapterNameMethod;
-//        Method templateMethod;
-//        Method charsetMethod;
-//        try {
-//            templateFormatMethod = GenerateRenderer.class.getDeclaredMethod("templateFormat");
-//            adapterNameMethod = GenerateRenderer.class.getDeclaredMethod("adapterName");
-//            templateMethod = GenerateRenderer.class.getDeclaredMethod("template");
-//            charsetMethod = GenerateRenderer.class.getDeclaredMethod("charset");
-//        } catch (NoSuchMethodException ex) {
-//            throw new RuntimeException(ex);
-//        } catch (SecurityException ex) {
-//            throw new RuntimeException(ex);
-//        }
 
         String templatePath = null;
         String directiveAdapterName = null;
@@ -442,6 +428,10 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("        new " + adapterClassSimpleName + "(model).render(appendable);");
             println("    }");
             println("");
+            println("    public boolean supportsType(Class<?> type) {");
+            println("        return " + className + ".class.isAssignableFrom(type);");
+            println("    }");
+            println("");
             println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
             println("        return new " + adapterClassSimpleName + "(data);");
             println("    }");
@@ -465,6 +455,7 @@ public class GenerateRenderableAdapterProcessor extends AbstractProcessor {
             println("    public Object " + "getContext() {");
             println("        return this.data;");
             println("    }");
+            println("");
             println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
             println("        return new " + adapterClassSimpleName + "(data);");
             println("    }");
