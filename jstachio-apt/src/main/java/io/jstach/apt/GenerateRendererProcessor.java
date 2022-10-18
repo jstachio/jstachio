@@ -76,8 +76,10 @@ import io.jstach.annotation.AutoFormat;
 import io.jstach.annotation.JStach;
 import io.jstach.annotation.JStachContentType;
 import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStachFlags.Flag;
 import io.jstach.annotation.JStachPartial;
 import io.jstach.annotation.JStachRenderers;
+import io.jstach.apt.GenerateRendererProcessor.RendererModel;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.context.JavaLanguageModel;
 import io.jstach.apt.context.RenderingCodeGenerator;
@@ -256,15 +258,13 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return Collections.unmodifiableSet(flags);
     }
 
-    
-    
     private String getTypeName(TypeMirror tm) {
        var e = ((DeclaredType) tm).asElement();
        var te = (TypeElement) e;
        return te.getQualifiedName().toString();
     }
     
-    private FormatterTypes getFormatterTypes(TypeElement element) {
+    private FormatterTypes resolveFormatterTypes(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         JStachFormatterTypesPrism prism = JStachFormatterTypesPrism.getInstanceOn(packageElement);
         if (prism == null) {
@@ -275,84 +275,68 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
     }
     
-    
-    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
+    record RendererModel(
+            TypeElement element, 
+            ClassRef rendererClassRef, 
+            String path,
+            String template,
+            Charset charset,
+            TypeElement contentTypeElement,
+            FormatterTypes formatterTypes, 
+            Map<String, NamedTemplate> partials, 
+            List<String> ifaces, 
+            Set<Flag> flags) {
+        
+    }
+
+    private RendererModel model(TypeElement element, AnnotationMirror directiveMirror)
+            throws DeclarationException, AnnotatedException, DeclarationException {
+        
+        if (!element.getTypeParameters().isEmpty()) {
+            throw new DeclarationException("Can't generate renderer for class with type variables: " + element.getQualifiedName());
+        }
         
         JStachPrism gp = JStachPrism.getInstance(directiveMirror);
         
         if (gp == null) {
             throw new AnnotatedException(element, "Missing annotation. bug.");
         }
+
+        TypeElement contentTypeElement = resolveContentType(gp);
+        Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
+        String path = resolveTemplatePath(element, gp);
+        String template =  gp.template();
+        assert template != null;
+        List<String> ifaces = resolveBaseInterface(element);
+        ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
+        FormatterTypes formatterTypes = resolveFormatterTypes(element);
+        Map<String, NamedTemplate> partials = resolvePartials(element);
+        Set<JStachFlags.Flag> flags = resolveFlags(element);
         
-        try {
-            
-            if (!element.getTypeParameters().isEmpty()) {
-                throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
-            }
-            
-
-            TypeElement templateFormatElement = resolveContentType(gp);
-            Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
-            String adapterClassSimpleName = resolveAdapterName(element, gp);
-            String templatePath = resolveTemplatePath(element, gp);
-            List<String> ifaces = resolveBaseInterface(element);
-            String adapterClassName = resolveAdapterClassName(element, adapterClassSimpleName);
-            FormatterTypes formatterTypes = getFormatterTypes(element);
-            Map<String, NamedTemplate> templatePaths = resolvePartials(element);
-            Set<JStachFlags.Flag> flags = resolveFlags(element);
-            
-            StringWriter stringWriter = new StringWriter();
-            try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
-                //TODO pass basepath
-                TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), charset);
-                JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
-                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
-                CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, templatePaths, flags);
-                ClassWriter writer = new ClassWriter(codeWriter, element, templateResource, templatePath);
-
-                writer.writeRenderableAdapterClass(adapterClassSimpleName, templateFormatElement, ifaces);
-            }
-            
-            JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(adapterClassName, element);
-            OutputStream stream = sourceFile.openOutputStream();
-            try {
-                Writer outputWriter = new OutputStreamWriter(stream, Charset.defaultCharset());
-                try {
-                    outputWriter.append(stringWriter.getBuffer().toString());
-                } finally {
-                    outputWriter.close();
-                }
-            } finally {
-                try {
-                    stream.close();
-                } catch (Exception ex) {
-                    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
-                }
-            }
-        } catch (ProcessingException ex) {
-            String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
-            errors.add(ElementMessage.of(element, errorMessage));
-        } catch (DeclarationException ex) {
-            errors.add(ElementMessage.of(element, ex.toString()));
-        } catch (IOException ex) {
-            errors.add(ElementMessage.of(element, Throwables.render(ex)));
-        } catch (RuntimeException ex) {
-            errors.add(ElementMessage.of(element, Throwables.render(ex)));
-        }
+        var model = new RendererModel(element, rendererClassRef, path, template, charset, contentTypeElement, formatterTypes, partials, ifaces, flags);
+        return model;
     }
 
-    private String resolveAdapterClassName(TypeElement element, String adapterClassSimpleName) {
+
+    private ClassRef resolveRendererClassRef(TypeElement element, JStachPrism gp) {
+        String rendererPackageName =  resolveRendererPackageName(element);
+        String rendererClassSimpleName = resolveAdapterName(element, gp);
+        ClassRef rendererClassRef = new ClassRef(rendererPackageName, rendererClassSimpleName);
+        return rendererClassRef;
+    }
+
+    private String resolveRendererPackageName(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         String packageName = packageElement.getQualifiedName().toString();
-        String adapterClassName = packageName + "." + adapterClassSimpleName;
-        return adapterClassName;
+        //String adapterClassName = packageName + "." + adapterClassSimpleName;
+        return packageName;
     }
 
     private String resolveTemplatePath(TypeElement element, JStachPrism gp) {
         String templatePath = null;
         templatePath = gp.path();
         String basePath = resolveBasePath(element);
-        if (! templatePath.startsWith("/")) {
+        if (! templatePath.isBlank() &&  ! templatePath.startsWith("/")) {
             templatePath = basePath + templatePath;
         }
         return templatePath;
@@ -396,16 +380,57 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         }
         return adapterClassSimpleName;
     }
+    
+    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
+        
+        try {
+            
+            var model = model(element, directiveMirror);
+            
+            StringWriter stringWriter = new StringWriter();
+            try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
+                TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), model.charset());
+                JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
+                RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, model.formatterTypes());
+                CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, model.partials(), model.flags());
+                ClassWriter writer = new ClassWriter(codeWriter, templateResource);
+
+                writer.writeRenderableAdapterClass(model);
+            }
+            
+            JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(model.rendererClassRef().getName(), element);
+            OutputStream stream = sourceFile.openOutputStream();
+            try {
+                Writer outputWriter = new OutputStreamWriter(stream, Charset.defaultCharset());
+                try {
+                    outputWriter.append(stringWriter.getBuffer().toString());
+                } finally {
+                    outputWriter.close();
+                }
+            } finally {
+                try {
+                    stream.close();
+                } catch (Exception ex) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
+                }
+            }
+        } catch (ProcessingException ex) {
+            String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
+            errors.add(ElementMessage.of(element, errorMessage));
+        } catch (DeclarationException ex) {
+            errors.add(ElementMessage.of(element, ex.toString()));
+        } catch (IOException ex) {
+            errors.add(ElementMessage.of(element, Throwables.render(ex)));
+        } catch (RuntimeException ex) {
+            errors.add(ElementMessage.of(element, Throwables.render(ex)));
+        }
+    }
 }
 class ClassWriter {
     private final CodeWriter codeWriter;
-    private final TypeElement element;
     private final TextFileObject templateLoader;
-    private final String templateName;
-    ClassWriter(CodeWriter compilerManager, TypeElement element, TextFileObject templateLoader, String templateName) {
+    ClassWriter(CodeWriter compilerManager, TextFileObject templateLoader) {
         this.codeWriter = compilerManager;
-        this.element = element;
-        this.templateName = templateName;
         this.templateLoader = templateLoader;
     }
 
@@ -413,8 +438,12 @@ class ClassWriter {
         codeWriter.println(s);
     }
 
-    void writeRenderableAdapterClass(String rendererClassSimpleName,
-                   TypeElement templateFormatElement, List<String> ifaces) throws IOException, ProcessingException, AnnotatedException {
+    void writeRenderableAdapterClass(RendererModel model) throws IOException, ProcessingException, AnnotatedException {
+        var element = model.element();
+        var templateFormatElement = model.contentTypeElement();
+        var ifaces = model.ifaces();
+        var renderClassRef = model.rendererClassRef();
+        var templateName = model.path();
         String className = element.getQualifiedName().toString();
         PackageElement packageElement = JavaLanguageModel.getInstance().getElements().getPackageOf(element);
         String packageName = packageElement.getQualifiedName().toString();
@@ -436,6 +465,8 @@ class ClassWriter {
                 + Renderer.class.getName()  + "<" + className + ">";
         
         String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
+        
+        String rendererClassSimpleName = renderClassRef.getSimpleName();
         
         String adapterClassSimpleName = rendererClassSimpleName + "Definition";
 
@@ -500,15 +531,15 @@ class ClassWriter {
         println("        return new " + adapterClassSimpleName + "(data);");
         println("    }");
         
-        writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE);
+        writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
         println("}");
     }
 
 
     
-
-    
-    private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType ) throws IOException, ProcessingException, AnnotatedException {
+    private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model ) throws IOException, ProcessingException, AnnotatedException {
+        var element = model.element();
+        String templateName = model.path();
         VariableContext variables = VariableContext.createDefaultContext();
         String dataName = variables.introduceNewNameLike("data");
         String className = element.getQualifiedName().toString();
@@ -517,8 +548,6 @@ class ClassWriter {
         String _Formatter = Formatter.class.getName();
         
         String generic = "<A extends " + _Appendable + ">";
-
-        //private static <M> void render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
 
         String idt = "\n        ";
         println("    public static " + generic + " void render(" + className + " " + dataName 

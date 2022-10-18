@@ -68,16 +68,16 @@ public class RenderingCodeGenerator {
      * @param formatClass type declaration denoting text format. formatClass should not contain type variables.
      * @return
      */
-    public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes, TypeElement formatClass
+    public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes
             ) {
-        return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes, formatClass);
+        return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes);
     }
 
     private final KnownTypes knownTypes;
     private final JavaLanguageModel javaModel;
     private final FormatterTypes formatterTypes;
 
-    private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes, TypeElement formatClass) {
+    private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes) {
         this.knownTypes = types;
         this.javaModel = javaModel;
         this.formatterTypes = formatterTypes;
