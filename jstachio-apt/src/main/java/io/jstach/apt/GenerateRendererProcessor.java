@@ -471,7 +471,7 @@ class ClassWriter {
         //private static <M> void _render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
         println("    @Override");
         println("    protected void " + "doRender("+ _Appendable + " a) throws java.io.IOException {");
-        println("        _render(data, a, appender, escaper, formatter);");
+        println("        render(data, a, appender, escaper, formatter);");
         println("    }");
         
         println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
@@ -497,7 +497,7 @@ class ClassWriter {
         //private static <M> void render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
 
         String idt = "\n        ";
-        println("    private static void _render(" + className + " " + dataName 
+        println("    public static void render(" + className + " " + dataName 
                 + idt + ", " + _Appendable + " " + variables.unescapedWriter()
                 + idt + ", " + _Appender + " " + variables.appender() 
                 + idt + ", " + _Appender + " " + variables.writer()

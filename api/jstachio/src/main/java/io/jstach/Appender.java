@@ -48,5 +48,16 @@ public interface Appender {
             a.append(c);
         }
     }
+    
+//    public class StringBuilderAppender implements Appender {
+//        private final StringBuilder buffer;
+//
+//        public StringBuilderAppender(StringBuilder buffer) {
+//            super();
+//            this.buffer = buffer;
+//        }
+//        
+//        
+//    }
 
 }

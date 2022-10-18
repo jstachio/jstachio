@@ -96,19 +96,19 @@ public class RenderingCodeGenerator {
             return text + ".render(" + variables.unescapedWriter()  + "); ";
         }
         
+        
         KnownType knownType = javaModel.resolveType(type).orElse(null);
-        
-        
-        if (knownType != null && knownType instanceof ObjectType) {
-            String cname = knownType.renderClassName() + ".class";
-            return renderFormatCall(variables, path, text, cname);
 
-        }
-        else if (knownType != null && knownType instanceof NativeType) {
+        if (knownType != null && ((knownType instanceof NativeType) || knownType.equals(knownTypes._String))) {
             return variables.formatter()  +".format(" + variables.writer() //
                     + ", " + variables.unescapedWriter()   //
                     + ", " + "\"" + path + "\""  //
                     + ", " + text + ");"; 
+        }
+        else if (knownType != null && knownType instanceof ObjectType) {
+            String cname = knownType.renderClassName() + ".class";
+            return renderFormatCall(variables, path, text, cname);
+
         }
         else if (type instanceof @NonNull DeclaredType dt) {
             String cname = javaModel.eraseType(dt);
