@@ -1,11 +1,14 @@
 package io.jstach.spi;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.jstach.Appender;
+import io.jstach.Formatter;
 import io.jstach.RenderFunction;
+import io.jstach.Renderer;
 
-public interface TemplateServices {
+public interface JStachServices {
     
     default RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
         return previous;
@@ -13,6 +16,10 @@ public interface TemplateServices {
     
     default Formatter formatter(Formatter previous) {
     	return previous;
+    }
+    
+    default List<Renderer<?>> findRenderers() {
+        return List.of();
     }
     
     default Formatter formatter() {
@@ -23,8 +30,8 @@ public interface TemplateServices {
         return Appender.DefaultAppender.INSTANCE;
     }
     
-    public static TemplateServices findService() {
-        return TemplateServicesResolver.INSTANCE;
+    public static JStachServices findService() {
+        return JStachServicesResolver.INSTANCE;
     }
 
 }

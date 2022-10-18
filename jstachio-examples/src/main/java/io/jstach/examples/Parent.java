@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 
-@GenerateRenderer(template="parent.mustache")
+@JStach(path="parent.mustache")
 public record Parent(String message) {
     
 }

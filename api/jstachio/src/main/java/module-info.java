@@ -1,4 +1,4 @@
-import io.jstach.spi.TemplateServices;
+import io.jstach.spi.JStachServices;
 
 module io.jstach {
 	exports io.jstach;
@@ -10,7 +10,7 @@ module io.jstach {
 	
 	requires static org.eclipse.jdt.annotation;
 	
-	uses TemplateServices;
+	uses JStachServices;
 	
 	
 }

@@ -68,31 +68,31 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.Appender;
+import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
 import io.jstach.Renderer;
 import io.jstach.annotation.AutoFormat;
-import io.jstach.annotation.GenerateRenderer;
-import io.jstach.annotation.GenerateRenderers;
-import io.jstach.annotation.Template;
-import io.jstach.annotation.TemplateCompilerFlags;
-import io.jstach.annotation.TextFormat;
+import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStachContentType;
+import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStachPartial;
+import io.jstach.annotation.JStachRenderers;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.context.JavaLanguageModel;
 import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
-import io.jstach.apt.prism.GenerateRendererPrism;
-import io.jstach.apt.prism.TemplateBasePathPrism;
-import io.jstach.apt.prism.TemplateCompilerFlagsPrism;
-import io.jstach.apt.prism.TemplateFormatterTypesPrism;
+import io.jstach.apt.prism.JStachBasePathPrism;
+import io.jstach.apt.prism.JStachFlagsPrism;
+import io.jstach.apt.prism.JStachFormatterTypesPrism;
+import io.jstach.apt.prism.JStachPartialMappingPrism;
+import io.jstach.apt.prism.JStachPartialPrism;
+import io.jstach.apt.prism.JStachPrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
-import io.jstach.apt.prism.TemplateMappingPrism;
-import io.jstach.apt.prism.TemplatePrism;
 import io.jstach.escapers.Html;
-import io.jstach.spi.Formatter;
-import io.jstach.spi.TemplateServices;
+import io.jstach.spi.JStachServices;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
@@ -149,8 +149,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
              * Lets just bind the damn utils so that we do not have to pass them around everywhere
              */
             JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(), processingEnv.getMessager());
-            Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderer.class.getName());
-            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderer.class)) {
+            Element generateRenderableAdapterElement = processingEnv.getElementUtils().getTypeElement(JStach.class.getName());
+            for (Element element: roundEnv.getElementsAnnotatedWith(JStach.class)) {
                 TypeElement classElement = (TypeElement)element;
                 List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
                 AnnotationMirror directive = null;
@@ -161,8 +161,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                 assert directive != null;
                 writeRenderableAdapterClass(classElement, directive);
             }
-            Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(GenerateRenderers.class.getName());
-            for (Element element: roundEnv.getElementsAnnotatedWith(GenerateRenderers.class)) {
+            Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(JStachRenderers.class.getName());
+            for (Element element: roundEnv.getElementsAnnotatedWith(JStachRenderers.class)) {
                 TypeElement classElement = (TypeElement)element;
                 List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
                 for (AnnotationMirror mirror: annotationMirrors) {
@@ -189,7 +189,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
     
     private String resolveBasePath(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        TemplateBasePathPrism prism = TemplateBasePathPrism.getInstanceOn(packageElement);
+        JStachBasePathPrism prism = JStachBasePathPrism.getInstanceOn(packageElement);
         if (prism == null) {
             return "";
         }
@@ -211,40 +211,47 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return List.of();
     }
     
-    private Map<String, NamedTemplate> resolveTemplatePaths(TypeElement element) {
+    private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
 
         Map<String, NamedTemplate> paths = new LinkedHashMap<>();
-        var prism = TemplateMappingPrism.getInstanceOn(element);
+        var prism = JStachPartialMappingPrism.getInstanceOn(element);
         if (prism != null) {
             var tps = prism.value();
-            for (TemplatePrism tp : tps) {
+            for (JStachPartialPrism tp : tps) {
                 NamedTemplate nt;
                 String path = tp.path();
                 String name = tp.name();
                 assert name != null;
                 String template = tp.template();
                 
-                if (! path.isBlank() ) {
-                    nt = new NamedTemplate.FileTemplate(name, path);
-                }
-                else if (! template.equals(Template.NOT_SET)) {
-                    nt = new NamedTemplate.InlineTemplate(name, template);
-                }
-                else {
-                    nt = new NamedTemplate.FileTemplate(name, name);
-
-                }
+                nt = resolveNamedTemplate(name, path, template);
                 paths.put(name, nt);
             }
         }
         return paths;
     }
+
+    private NamedTemplate resolveNamedTemplate(@Nullable String name, @Nullable String path, @Nullable String template) {
+        NamedTemplate nt;
+        assert name != null;
+        if (path != null && ! path.isBlank() ) {
+            nt = new NamedTemplate.FileTemplate(name, path);
+        }
+        else if (template != null &&  ! template.equals(JStachPartial.NOT_SET)) {
+            nt = new NamedTemplate.InlineTemplate(name, template);
+        }
+        else {
+            nt = new NamedTemplate.FileTemplate(name, name);
+
+        }
+        return nt;
+    }
     
-    private Set<TemplateCompilerFlags.Flag> resolveFlags(TypeElement element) {
-        var prism = TemplateCompilerFlagsPrism.getInstanceOn(element);
-        var flags = EnumSet.noneOf(TemplateCompilerFlags.Flag.class);
+    private Set<JStachFlags.Flag> resolveFlags(TypeElement element) {
+        var prism = JStachFlagsPrism.getInstanceOn(element);
+        var flags = EnumSet.noneOf(JStachFlags.Flag.class);
         if (prism != null) {
-            prism.flags().stream().map(TemplateCompilerFlags.Flag::valueOf).forEach(flags::add);
+            prism.flags().stream().map(JStachFlags.Flag::valueOf).forEach(flags::add);
         }
         return Collections.unmodifiableSet(flags);
     }
@@ -259,7 +266,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
     
     private FormatterTypes getFormatterTypes(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        TemplateFormatterTypesPrism prism = TemplateFormatterTypesPrism.getInstanceOn(packageElement);
+        JStachFormatterTypesPrism prism = JStachFormatterTypesPrism.getInstanceOn(packageElement);
         if (prism == null) {
             return FormatterTypes.acceptOnlyKnownTypes();
         }
@@ -267,6 +274,47 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         List<String> patterns = prism.patterns().stream().toList();
         return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
     }
+    
+//    private RootTemplate createTemplateModel(TypeElement element, AnnotationMirror directiveMirror) throws DeclarationException, AnnotatedException {
+//        
+//        JStachPrism gp = JStachPrism.getInstance(directiveMirror);
+//        
+//        if (gp == null) {
+//            throw new AnnotatedException(element, "Missing annotation. bug.");
+//        }
+//        
+//        TypeMirror templateFormatType = gp.templateFormat();
+//        TypeElement templateFormatElement = null;
+//        if (templateFormatType instanceof DeclaredType dt) {
+//            templateFormatElement = (TypeElement) dt.asElement();
+//        }
+//        else {
+//            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
+//        }
+//        
+//        @Nullable JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
+//        if (templateFormatAnnotation == null) {
+//            throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStachContentType.class.getName() + " annotation");
+//        }
+//        
+//        
+//        String adapterName = ":auto".equals(gp.adapterName()) ? element.getSimpleName().toString() + "Renderer" : gp.adapterName();
+//        String directiveCharset = gp.charset();
+//        
+//        String className = "";
+//        String name = className;
+//        String template = gp.template();
+//        String path = gp.path();
+//        String basePath = "";
+//        Charset charset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
+//
+//        Type type = null;
+//        
+//        RootTemplate rt = new RootTemplate(name, className, adapterName, template, path, basePath, charset, type);
+//        
+//        return rt;
+//    }
+    
     
     
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
@@ -276,12 +324,12 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         String directiveCharset = null;
         TypeElement templateFormatElement = null;
         
-        GenerateRendererPrism gp = GenerateRendererPrism.getInstance(directiveMirror);
+        JStachPrism gp = JStachPrism.getInstance(directiveMirror);
         
         if (gp == null) {
             throw new AnnotatedException(element, "Missing annotation. bug.");
         }
-        templatePath = gp.template();
+        templatePath = gp.path();
         directiveAdapterName = gp.adapterName();
         directiveCharset = gp.charset();
         TypeMirror templateFormatType = gp.templateFormat();
@@ -302,9 +350,9 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         }
         Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
-            @Nullable TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
+            @Nullable JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
             if (templateFormatAnnotation == null) {
-                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + TextFormat.class.getName() + " annotation");
+                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStachContentType.class.getName() + " annotation");
             }
             
             /*
@@ -329,8 +377,9 @@ public class GenerateRendererProcessor extends AbstractProcessor {
             }
             List<String> ifaces = resolveBaseInterface(element);
             FormatterTypes formatterTypes = getFormatterTypes(element);
-            Map<String,NamedTemplate> templatePaths = resolveTemplatePaths(element);
-            Set<TemplateCompilerFlags.Flag> flags = resolveFlags(element);
+            Map<String, NamedTemplate> templatePaths = resolvePartials(element);
+            Set<JStachFlags.Flag> flags = resolveFlags(element);
+            
             
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
@@ -396,7 +445,7 @@ class ClassWriter {
         String className = element.getQualifiedName().toString();
         PackageElement packageElement = JavaLanguageModel.getInstance().getElements().getPackageOf(element);
         String packageName = packageElement.getQualifiedName().toString();
-        TextFormat templateFormatAnnotation = templateFormatElement.getAnnotation(TextFormat.class);
+        JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
         assert templateFormatAnnotation != null;
         
 
@@ -442,7 +491,7 @@ class ClassWriter {
         String _Appender = Appender.class.getName();
         String _Appendable = Appendable.class.getName();
         String _Formatter = Formatter.class.getName();
-        String _RenderService = TemplateServices.class.getName();
+        String _RenderService = JStachServices.class.getName();
 
         println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
         println("    public static final String TEMPLATE = \"" + templateName + "\";");

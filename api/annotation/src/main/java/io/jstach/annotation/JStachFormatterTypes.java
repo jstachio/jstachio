@@ -9,6 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
 @Documented
-public @interface TemplateBasePath {
-    public String value() default "";
+public @interface JStachFormatterTypes {
+
+    public Class<?>[] types() default {};
+
+    public String[] patterns() default {};
 }

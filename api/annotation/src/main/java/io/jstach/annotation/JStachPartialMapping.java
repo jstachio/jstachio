@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface TemplateMapping {
+public @interface JStachPartialMapping {
     
-    public Template[] value() default {};
+    public JStachPartial[] value() default {};
     
 }

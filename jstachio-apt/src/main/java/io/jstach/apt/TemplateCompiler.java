@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.TemplateCompilerFlags;
+import io.jstach.annotation.JStachFlags;
 import io.jstach.apt.CodeAppendable.HiddenCodeAppendable;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.MustacheToken.NewlineChar;
@@ -61,7 +61,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             CodeAppendable writer,
             TemplateCompilerContext context,
             TemplateCompilerType compilerType,
-            Set<TemplateCompilerFlags.Flag> flags
+            Set<JStachFlags.Flag> flags
             ) throws IOException {
         
        return switch (compilerType) {
@@ -689,14 +689,14 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         
         private final TemplateLoader templateLoader;
         private final CodeAppendable writer;
-        private final Set<TemplateCompilerFlags.Flag> flags;
+        private final Set<JStachFlags.Flag> flags;
         
         public RootTemplateCompiler(
                 String templateName,
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context, 
-                Set<TemplateCompilerFlags.Flag> flags
+                Set<JStachFlags.Flag> flags
                 ) throws IOException {
             super(templateLoader.open(templateName), null, context);
             this.templateLoader = templateLoader;
@@ -720,7 +720,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         }
         
         @Override
-        public Set<TemplateCompilerFlags.Flag> flags() {
+        public Set<JStachFlags.Flag> flags() {
             return this.flags;
         }
         
@@ -732,7 +732,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context,
-                Set<TemplateCompilerFlags.Flag> flags
+                Set<JStachFlags.Flag> flags
                 ) throws IOException {
             super(templateName, templateLoader, writer, context, flags);
         }

@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.sections;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderer(template = "sections/IndentedStandaloneLines.mustache")
+@JStach(path = "sections/IndentedStandaloneLines.mustache")
 public class IndentedStandaloneLines extends SpecModel {
 }

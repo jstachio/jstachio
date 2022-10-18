@@ -1,7 +1,7 @@
 import javax.annotation.processing.Processor;
 
 import io.jstach.examples.JMustacheRenderService;
-import io.jstach.spi.TemplateServices;
+import io.jstach.spi.JStachServices;
 
 module io.jstach.examples {
     requires io.jstach;
@@ -14,6 +14,6 @@ module io.jstach.examples {
     opens io.jstach.examples to com.samskivert.jmustache;
 
     uses Processor;
-    uses TemplateServices;
-    provides TemplateServices with JMustacheRenderService;
+    uses JStachServices;
+    provides JStachServices with JMustacheRenderService;
 }

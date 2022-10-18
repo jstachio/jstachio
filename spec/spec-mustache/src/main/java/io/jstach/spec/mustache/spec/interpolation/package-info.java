@@ -1,2 +1,2 @@
-@io.jstach.annotation.TemplateFormatterTypes(patterns = ".*")
+@io.jstach.annotation.JStachFormatterTypes(patterns = ".*")
 package io.jstach.spec.mustache.spec.interpolation;

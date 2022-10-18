@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.ANNOTATION_TYPE)
 @Documented
-public @interface Template {
+public @interface JStachPartial {
     
     String name();
     String path() default "";

@@ -1,6 +1,6 @@
 package io.jstach.annotation;
 
-@TextFormat
+@JStachContentType
 public final class AutoFormat {
 
 }

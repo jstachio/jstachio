@@ -2,16 +2,16 @@ package io.jstach.examples;
 
 import java.util.Map;
 
-import io.jstach.annotation.GenerateRenderer;
-import io.jstach.annotation.TemplateCompilerFlags;
-import io.jstach.annotation.TemplateLambda;
-import io.jstach.annotation.TemplateCompilerFlags.Flag;
+import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStachLambda;
+import io.jstach.annotation.JStachFlags.Flag;
 
-@GenerateRenderer(template = "lambda-example.mustache")
-@TemplateCompilerFlags(flags = { Flag.DEBUG })
+@JStach(path = "lambda-example.mustache")
+@JStachFlags(flags = { Flag.DEBUG })
 public record LambdaExample(String name, Map<String, String> props) implements Lambdas {
 
-    @TemplateLambda
+    @JStachLambda
     public String hello(String html, String name) {
         return "<hello>" + html + "</hello>: " + name;
     }

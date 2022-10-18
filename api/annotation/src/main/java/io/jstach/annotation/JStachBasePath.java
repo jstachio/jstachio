@@ -7,13 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.PACKAGE)
 @Documented
-public @interface TemplateCompilerFlags {
-    
-    Flag[] flags();
-    
-    public enum Flag {
-        DEBUG
-    }
+public @interface JStachBasePath {
+    public String value() default "";
 }

@@ -1,13 +1,13 @@
 package io.jstach.spec.mustache.spec.partials;
 
-import io.jstach.annotation.GenerateRenderer;
-import io.jstach.annotation.Template;
-import io.jstach.annotation.TemplateMapping;
+import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStachPartial;
+import io.jstach.annotation.JStachPartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderer(template = "partials/StandaloneWithoutNewline.mustache")
-@TemplateMapping({
-@Template(name="partial", template=">\n>"),
+@JStach(path = "partials/StandaloneWithoutNewline.mustache")
+@JStachPartialMapping({
+@JStachPartial(name="partial", template=">\n>"),
 })
 public class StandaloneWithoutNewline extends SpecModel {
 }

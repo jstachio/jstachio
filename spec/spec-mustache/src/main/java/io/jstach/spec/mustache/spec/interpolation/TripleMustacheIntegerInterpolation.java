@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.interpolation;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderer(template = "interpolation/TripleMustacheIntegerInterpolation.mustache")
+@JStach(path = "interpolation/TripleMustacheIntegerInterpolation.mustache")
 public class TripleMustacheIntegerInterpolation extends SpecModel {
 }

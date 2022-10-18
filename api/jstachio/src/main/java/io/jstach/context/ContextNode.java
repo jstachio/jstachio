@@ -31,7 +31,7 @@ public interface ContextNode extends Iterable<ContextNode> {
         if (o instanceof ContextNode n) {
             return n;
         }
-        return new RootMapNode(o);
+        return new RootContextNode(o);
         
     }
     
@@ -40,9 +40,9 @@ public interface ContextNode extends Iterable<ContextNode> {
             return null;
         }
         if ( o instanceof ContextNode) {
-            throw new IllegalArgumentException("Cannot wrap MapNode around another MapNode");
+            throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
         }
-        return new NamedMapNode(this, o, name);
+        return new NamedContextNode(this, o, name);
     }
     
     default @Nullable ContextNode ofChild(int index, @Nullable Object o) {
@@ -50,13 +50,13 @@ public interface ContextNode extends Iterable<ContextNode> {
             return null;
         }
         if ( o instanceof ContextNode) {
-            throw new IllegalArgumentException("Cannot wrap MapNode around another MapNode");
+            throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
         }
-        return new IndexedMapNode(this, o, index);
+        return new IndexedContextNode(this, o, index);
     }
     
     /**
-     * Gets a field from java.util.Map if MapNode is wrapping one.
+     * Gets a field from java.util.Map if ContextNode is wrapping one.
      * This is direct access and does not check the parents.
      * 
      * Just like java.util.Map null will be returned if no field is found.
@@ -80,7 +80,7 @@ public interface ContextNode extends Iterable<ContextNode> {
      */
     default @Nullable ContextNode find(String field) {
         /*
-         * In theory we could make a special RenderingContext for MapNode
+         * In theory we could make a special RenderingContext for ContextNode
          * to go up the stack (generated code) but it would probably look similar
          * to the following.
          */
@@ -143,21 +143,21 @@ public interface ContextNode extends Iterable<ContextNode> {
     
 }
 
-record RootMapNode(Object object) implements ContextNode {
+record RootContextNode(Object object) implements ContextNode {
     @Override
     public String toString() {
         return renderString();
     }
 }
 
-record NamedMapNode(ContextNode parent, Object object, String name) implements ContextNode {
+record NamedContextNode(ContextNode parent, Object object, String name) implements ContextNode {
     @Override
     public String toString() {
         return renderString();
     }
 }
 
-record IndexedMapNode(ContextNode parent, Object object, int index) implements ContextNode {
+record IndexedContextNode(ContextNode parent, Object object, int index) implements ContextNode {
     @Override
     public String toString() {
         return renderString();

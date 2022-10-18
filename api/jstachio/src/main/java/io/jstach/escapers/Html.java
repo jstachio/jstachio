@@ -29,13 +29,13 @@
  */
 package io.jstach.escapers;
 
-import io.jstach.annotation.TextFormat;
+import io.jstach.annotation.JStachContentType;
 
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-@TextFormat
+@JStachContentType
 public class Html {
     
     public static HtmlEscaper provides() {

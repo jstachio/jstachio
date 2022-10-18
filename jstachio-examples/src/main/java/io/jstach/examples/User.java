@@ -31,15 +31,15 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@GenerateRenderer(
+@JStach(
     // points to src/main/resources/user.mustache file
-    template = "user.mustache"
+    path = "user.mustache"
 
     // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
     )

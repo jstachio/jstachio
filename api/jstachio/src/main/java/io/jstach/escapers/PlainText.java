@@ -30,13 +30,13 @@
 package io.jstach.escapers;
 
 import io.jstach.Appender;
-import io.jstach.annotation.TextFormat;
+import io.jstach.annotation.JStachContentType;
 
 /**
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
-@TextFormat
+@JStachContentType
 public class PlainText {
     public static Appender.DefaultAppender provides() {
         return Appender.DefaultAppender.INSTANCE;

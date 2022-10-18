@@ -12,9 +12,9 @@ import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
 import io.jstach.RenderFunction;
-import io.jstach.spi.TemplateServices;
+import io.jstach.spi.JStachServices;
 
-public class JMustacheRenderService implements TemplateServices {
+public class JMustacheRenderService implements JStachServices {
 
     
     private static final ThreadLocal<Boolean> enabled = ThreadLocal.withInitial(() -> false);

@@ -7,11 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
+@Target(ElementType.TYPE)
 @Documented
-public @interface TemplateFormatterTypes {
-
-    public Class<?>[] types() default {};
-
-    public String[] patterns() default {};
+public @interface JStachFlags {
+    
+    Flag[] flags();
+    
+    public enum Flag {
+        DEBUG
+    }
 }

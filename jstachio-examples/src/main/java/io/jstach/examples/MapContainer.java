@@ -2,9 +2,9 @@ package io.jstach.examples;
 
 import java.util.Map;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 
-@GenerateRenderer(template="map.mustache")
+@JStach(path="map.mustache")
 public record MapContainer(Map<String, String> fields, Map<String, MapContainer> containers) {
 
 }

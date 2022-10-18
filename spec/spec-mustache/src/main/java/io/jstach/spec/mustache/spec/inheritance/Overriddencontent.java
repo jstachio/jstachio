@@ -1,13 +1,13 @@
 package io.jstach.spec.mustache.spec.inheritance;
 
-import io.jstach.annotation.GenerateRenderer;
-import io.jstach.annotation.Template;
-import io.jstach.annotation.TemplateMapping;
+import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStachPartial;
+import io.jstach.annotation.JStachPartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderer(template = "inheritance/Overriddencontent.mustache")
-@TemplateMapping({
-@Template(name="super", template="...{{$title}}Default title{{/title}}..."),
+@JStach(path = "inheritance/Overriddencontent.mustache")
+@JStachPartialMapping({
+@JStachPartial(name="super", template="...{{$title}}Default title{{/title}}..."),
 })
 public class Overriddencontent extends SpecModel {
 }

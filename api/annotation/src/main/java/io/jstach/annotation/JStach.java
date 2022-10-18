@@ -36,16 +36,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * Generates a JStachio Renderer.
+ * 
+ * Template resolution is as follows
+ * <ol>
+ *  <li> <code>path</code> which is a classpath with slashes following the same format as the ClassLoader resources
+ *  <li> <code>template</code> which if not empty is used as the template contents
+ *  <li> if the above is not set then the name of the class suffixed with ".mustache" is used as the resource
+ * </ol>
+ * @author agentgt
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 @Documented
-public @interface GenerateRenderer {
+public @interface JStach {
     /**
+     * Resource path to template
+     * 
       * @return Path to mustache template */
-    String template();
+    String path() default "";
+    
+    /**
+     * 
+     * @return An inline template
+     */
+    String template() default "";
 
     /**
      * Name of generated class.
@@ -60,7 +75,7 @@ public @interface GenerateRenderer {
      * Class representing template format.
      * <p>
      * You can create custom formats using
-     * @TemplateFormat annotation.
+     * @JStachContentType annotation.
      *
      * @return format of given template (HTML is default)
      */

@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.inheritance;
 
-import io.jstach.annotation.GenerateRenderer;
+import io.jstach.annotation.JStach;
 import io.jstach.spec.generator.SpecModel;
 
-@GenerateRenderer(template = "inheritance/TripleMustache.mustache")
+@JStach(path = "inheritance/TripleMustache.mustache")
 public class TripleMustache extends SpecModel {
 }
