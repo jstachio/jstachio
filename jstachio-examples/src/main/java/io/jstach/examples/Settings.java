@@ -31,7 +31,7 @@ package io.jstach.examples;
 
 import io.jstach.RenderFunction;
 import io.jstach.annotation.GenerateRenderer;
-import io.jstach.text.formats.Html;
+import io.jstach.escapers.Html;
 
 /**
  *

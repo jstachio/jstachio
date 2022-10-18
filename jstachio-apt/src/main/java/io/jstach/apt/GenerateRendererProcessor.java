@@ -90,9 +90,9 @@ import io.jstach.apt.prism.TemplateFormatterTypesPrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.apt.prism.TemplateMappingPrism;
 import io.jstach.apt.prism.TemplatePrism;
+import io.jstach.escapers.Html;
 import io.jstach.spi.Formatter;
-import io.jstach.spi.RenderService;
-import io.jstach.text.formats.Html;
+import io.jstach.spi.TemplateServices;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
@@ -442,7 +442,7 @@ class ClassWriter {
         String _Appender = Appender.class.getName();
         String _Appendable = Appendable.class.getName();
         String _Formatter = Formatter.class.getName();
-        String _RenderService = RenderService.class.getName();
+        String _RenderService = TemplateServices.class.getName();
 
         println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
         println("    public static final String TEMPLATE = \"" + templateName + "\";");
@@ -493,14 +493,16 @@ class ClassWriter {
         String _Appender = Appender.class.getName();
         String _Appendable = Appendable.class.getName();
         String _Formatter = Formatter.class.getName();
+        
+        String generic = "<A extends " + _Appendable + ">";
 
         //private static <M> void render(M model, Appendable appendable, Appender appender, Appender escaper, Formatter formatter);
 
         String idt = "\n        ";
-        println("    public static void render(" + className + " " + dataName 
-                + idt + ", " + _Appendable + " " + variables.unescapedWriter()
-                + idt + ", " + _Appender + " " + variables.appender() 
-                + idt + ", " + _Appender + " " + variables.writer()
+        println("    public static " + generic + " void render(" + className + " " + dataName 
+                + idt + ", " + "A" + " " + variables.unescapedWriter()
+                + idt + ", " + _Appender + "<A> " + variables.appender() 
+                + idt + ", " + _Appender + "<? super A> " + variables.writer()
                 + idt + ", " + _Formatter + " " + variables.formatter() 
                 + idt + ") throws java.io.IOException {");
         TemplateCompilerContext context = codeWriter.createTemplateContext(templateName, element, dataName, variables);

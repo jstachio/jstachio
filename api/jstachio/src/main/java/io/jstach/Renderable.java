@@ -31,7 +31,7 @@ package io.jstach;
 
 import java.io.IOException;
 
-import io.jstach.spi.RenderService;
+import io.jstach.spi.TemplateServices;
 
 
 public abstract class Renderable<F,T> implements RenderFunction {
@@ -46,7 +46,7 @@ public abstract class Renderable<F,T> implements RenderFunction {
     
     @Override
     public final void render(Appendable a) throws IOException {
-        RenderService rs = RenderService.findService();
+        TemplateServices rs = TemplateServices.findService();
         var rf = rs.renderer(getTemplate(), getContext(), renderFunction);
         rf.render(a);
     }

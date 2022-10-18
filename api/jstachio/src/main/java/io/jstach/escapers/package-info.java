@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2015, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,19 +27,5 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.jstach.text.formats;
-
-import io.jstach.annotation.TextFormat;
-
-/**
- *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
- */
-@TextFormat
-public class Html {
-    
-    public static HtmlEscaper provides() {
-        return new HtmlEscaper();
-    }
-
-}
+@org.eclipse.jdt.annotation.NonNullByDefault
+package io.jstach.escapers;

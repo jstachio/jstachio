@@ -27,7 +27,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package io.jstach.text.formats;
+package io.jstach.escapers;
 
 import io.jstach.Appender;
 import io.jstach.annotation.TextFormat;
@@ -38,7 +38,7 @@ import io.jstach.annotation.TextFormat;
  */
 @TextFormat
 public class PlainText {
-    public static Appender provides() {
+    public static Appender.DefaultAppender provides() {
         return Appender.DefaultAppender.INSTANCE;
     }
 }

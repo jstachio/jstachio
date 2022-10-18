@@ -7,23 +7,23 @@ import org.kohsuke.MetaInfServices;
 
 import io.jstach.Appender;
 import io.jstach.spi.Formatter;
-import io.jstach.spi.Formatter.DownstreamFormatter;
-import io.jstach.spi.RenderService;
+import io.jstach.spi.TemplateServices;
 
-@MetaInfServices(RenderService.class)
-public class SpecRenderService implements RenderService {
+@MetaInfServices(TemplateServices.class)
+public class SpecRenderService implements TemplateServices {
 
     @Override
     public Formatter formatter(Formatter previous) {
         return MyFormatter.INSTANCE;
     }
     
-    private enum MyFormatter implements DownstreamFormatter {
+    private enum MyFormatter implements Formatter {
         INSTANCE;
-
+        
         @Override
-        public void format(Appender downstream, Appendable a, String path, Class<?> type, @Nullable Object o)
-                throws IOException {
+        public <A extends Appendable, APPENDER extends Appender<A>> 
+        void format(APPENDER downstream, A a, String path,
+                Class<?> c, @Nullable Object o) throws IOException {
             if (o != null) {
                 downstream.append(a, String.valueOf(o));
             }

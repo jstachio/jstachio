@@ -33,8 +33,8 @@ import java.util.List;
 
 import io.jstach.annotation.GenerateRenderer;
 import io.jstach.annotation.GenerateRenderers;
-import io.jstach.text.formats.Html;
-import io.jstach.text.formats.PlainText;
+import io.jstach.escapers.Html;
+import io.jstach.escapers.PlainText;
 
 /**
  *

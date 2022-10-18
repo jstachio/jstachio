@@ -7,7 +7,7 @@ import java.util.ServiceLoader;
 
 import io.jstach.RenderFunction;
 
-enum RenderServiceResolver implements RenderService {
+enum TemplateServicesResolver implements TemplateServices {
 
     INSTANCE;
 
@@ -15,16 +15,16 @@ enum RenderServiceResolver implements RenderService {
 
         private static Holder INSTANCE = Holder.of();
 
-        private final Iterable<RenderService> renderServices;
+        private final Iterable<TemplateServices> renderServices;
 
-        private Holder(Iterable<RenderService> renderServices) {
+        private Holder(Iterable<TemplateServices> renderServices) {
             super();
             this.renderServices = renderServices;
         }
 
         private static Holder of() {
-            Iterable<RenderService> it = ServiceLoader.load(RenderService.class);
-            List<RenderService> svs = new ArrayList<>();
+            Iterable<TemplateServices> it = ServiceLoader.load(TemplateServices.class);
+            List<TemplateServices> svs = new ArrayList<>();
             it.forEach(svs::add);
             return new Holder(List.copyOf(svs));
         }

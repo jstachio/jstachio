@@ -1,10 +1,10 @@
-package io.jstach.text.formats;
+package io.jstach.escapers;
 
 import java.io.IOException;
 
 import io.jstach.Appender;
 
-public class HtmlEscaper implements Appender {
+public class HtmlEscaper implements Appender<Appendable> {
 
 
     private static final String QUOT = "&quot;";

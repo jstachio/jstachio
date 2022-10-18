@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.jstach.Appender;
 import io.jstach.RenderFunction;
 
-public interface RenderService {
+public interface TemplateServices {
     
     default RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
         return previous;
@@ -19,12 +19,12 @@ public interface RenderService {
         return formatter(Formatter.DefaultFormatter.INSTANCE);
     }
     
-    default Appender appender() {
+    default Appender<? extends Appendable> appender() {
         return Appender.DefaultAppender.INSTANCE;
     }
     
-    public static RenderService findService() {
-        return RenderServiceResolver.INSTANCE;
+    public static TemplateServices findService() {
+        return TemplateServicesResolver.INSTANCE;
     }
 
 }
