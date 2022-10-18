@@ -1,11 +1,8 @@
 package io.jstach.examples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import io.jstach.examples.Parent;
-import io.jstach.examples.Parent2;
 
 public class ParentTest {
 

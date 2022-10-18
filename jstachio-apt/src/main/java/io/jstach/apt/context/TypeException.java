@@ -34,6 +34,8 @@ package io.jstach.apt.context;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TypeException extends Exception {
+    private static final long serialVersionUID = -7859371208493958518L;
+
     public TypeException(String message) {
         super(message);
     }

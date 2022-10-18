@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.jstach.examples.LambdaExample;
-
 public class LambdaTest {
 
     @Test

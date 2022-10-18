@@ -29,13 +29,11 @@
  */
 package io.jstach.apt;
 
-import java.io.Serializable;
-
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class Position implements Serializable {
+public class Position {
     private final String fileName;
     private final int row;
     private final String currentLine;

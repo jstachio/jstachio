@@ -74,7 +74,7 @@ public class SpecGenerator {
 
     }
     
-    public record ClassRef(Class<?> klass) {
+    record ClassRef(Class<?> klass) {
         public String namespace() {
             return klass.getCanonicalName();
         }
@@ -83,7 +83,7 @@ public class SpecGenerator {
         }
     }
 
-    public record SpecItem (SpecGroup group, String name, String desc, String template, String json,
+    record SpecItem (SpecGroup group, String name, String desc, String template, String json,
             Map<String, Object> data, String expected, Map<String, SpecPartial> partialMap) implements JavaItem {
         
         ClassRef specModelClass() {
@@ -194,7 +194,7 @@ public class SpecGenerator {
 
     }
     
-    public void generate(SpecGroup group) throws IOException {
+    protected void generate(SpecGroup group) throws IOException {
         
         String specFile = group.fileName();
         

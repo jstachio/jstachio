@@ -36,6 +36,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class ContextException extends Exception {
+    private static final long serialVersionUID = -1496891677459676774L;
+
     ContextException(@Nullable String message, TypeException ex) {
         super(message + ": type error: " + ex.getMessage(), ex);
     }
@@ -45,6 +47,8 @@ public class ContextException extends Exception {
     }
     
     public static class FieldNotFoundContextException extends ContextException {
+        private static final long serialVersionUID = -4520709629488727676L;
+
         FieldNotFoundContextException(String message) {
             super(message);
         }

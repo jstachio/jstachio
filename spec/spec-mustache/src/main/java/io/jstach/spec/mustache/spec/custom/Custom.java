@@ -1,7 +1,6 @@
 package io.jstach.spec.mustache.spec.custom;
 
 import io.jstach.annotation.GenerateRenderer;
-import io.jstach.spec.mustache.spec.custom.Custom.DottedNamesTruthy.A;
 import io.jstach.spec.mustache.spec.interpolation.InterpolationSpecTemplate;
 import io.jstach.spec.mustache.spec.inverted.InvertedSpecTemplate;
 import io.jstach.spec.mustache.spec.sections.SectionsSpecTemplate;

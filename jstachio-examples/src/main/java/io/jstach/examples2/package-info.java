@@ -3,5 +3,3 @@
 @io.jstach.annotation.TemplateFormatterTypes(types= {io.jstach.examples2.SomeUnknownType.class})
 
 package io.jstach.examples2;
-
-import java.util.UUID;

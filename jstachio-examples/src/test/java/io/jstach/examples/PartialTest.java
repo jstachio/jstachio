@@ -1,11 +1,8 @@
 package io.jstach.examples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import io.jstach.examples.PartialExample;
-import io.jstach.examples.TemplatePathsExample;
 
 public class PartialTest {
 

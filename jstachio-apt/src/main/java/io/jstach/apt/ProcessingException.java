@@ -38,6 +38,7 @@ import io.jstach.apt.context.ContextException;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class ProcessingException extends Exception {
+    private static final long serialVersionUID = 7396512855619812062L;
     private final Position position;
 
     protected ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
@@ -64,6 +65,7 @@ public class ProcessingException extends Exception {
     
     public static class AnnotationProcessingException extends ProcessingException {
         
+        private static final long serialVersionUID = 7475603035389163831L;
         private final AnnotatedException annotatedException;
        
         public AnnotationProcessingException(Position position, AnnotatedException annotedException) {
@@ -78,6 +80,8 @@ public class ProcessingException extends Exception {
     }
     
     public static class VariableNotFoundProcessingException extends ProcessingException {
+        private static final long serialVersionUID = -6932648568571932099L;
+
         public VariableNotFoundProcessingException(Position position, ContextException contextException, String message) {
             super(position, message, contextException);
         }
