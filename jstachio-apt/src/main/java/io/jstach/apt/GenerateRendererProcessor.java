@@ -275,117 +275,36 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
     }
     
-//    private RootTemplate createTemplateModel(TypeElement element, AnnotationMirror directiveMirror) throws DeclarationException, AnnotatedException {
-//        
-//        JStachPrism gp = JStachPrism.getInstance(directiveMirror);
-//        
-//        if (gp == null) {
-//            throw new AnnotatedException(element, "Missing annotation. bug.");
-//        }
-//        
-//        TypeMirror templateFormatType = gp.templateFormat();
-//        TypeElement templateFormatElement = null;
-//        if (templateFormatType instanceof DeclaredType dt) {
-//            templateFormatElement = (TypeElement) dt.asElement();
-//        }
-//        else {
-//            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
-//        }
-//        
-//        @Nullable JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
-//        if (templateFormatAnnotation == null) {
-//            throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStachContentType.class.getName() + " annotation");
-//        }
-//        
-//        
-//        String adapterName = ":auto".equals(gp.adapterName()) ? element.getSimpleName().toString() + "Renderer" : gp.adapterName();
-//        String directiveCharset = gp.charset();
-//        
-//        String className = "";
-//        String name = className;
-//        String template = gp.template();
-//        String path = gp.path();
-//        String basePath = "";
-//        Charset charset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
-//
-//        Type type = null;
-//        
-//        RootTemplate rt = new RootTemplate(name, className, adapterName, template, path, basePath, charset, type);
-//        
-//        return rt;
-//    }
-    
-    
     
     private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
-
-        String templatePath = null;
-        String directiveAdapterName = null;
-        String directiveCharset = null;
-        TypeElement templateFormatElement = null;
         
         JStachPrism gp = JStachPrism.getInstance(directiveMirror);
         
         if (gp == null) {
             throw new AnnotatedException(element, "Missing annotation. bug.");
         }
-        templatePath = gp.path();
-        directiveAdapterName = gp.adapterName();
-        directiveCharset = gp.charset();
-        TypeMirror templateFormatType = gp.templateFormat();
-        if (templateFormatType instanceof DeclaredType dt) {
-            templateFormatElement = (TypeElement) dt.asElement();
-        }
-        else {
-            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
-        }
         
-
-        String adapterClassSimpleName;
-        if (!directiveAdapterName.equals(":auto"))
-            adapterClassSimpleName = directiveAdapterName;
-        else {
-            adapterClassSimpleName = element.getSimpleName().toString() + "Renderer";
-
-        }
-        Charset templateCharset = directiveCharset.equals(":default") ? Charset.defaultCharset() : Charset.forName(directiveCharset);
         try {
-            @Nullable JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
-            if (templateFormatAnnotation == null) {
-                throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStachContentType.class.getName() + " annotation");
-            }
-            
-            /*
-             * TODO clean this up to resolve format
-             */
-            var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AutoFormat.class.getName());
-            if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
-                templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
-                if (templateFormatElement == null) {
-                    throw new DeclarationException("Missing default TextFormat class of Html");
-                }
-            }
             
             if (!element.getTypeParameters().isEmpty()) {
                 throw new DeclarationException("Can't generate renderable adapter for class with type variables: " + element.getQualifiedName());
             }
-            StringWriter stringWriter = new StringWriter();
             
-            String basePath = resolveBasePath(element);
-            if (! templatePath.startsWith("/")) {
-                templatePath = basePath + templatePath;
-            }
+
+            TypeElement templateFormatElement = resolveContentType(gp);
+            Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
+            String adapterClassSimpleName = resolveAdapterName(element, gp);
+            String templatePath = resolveTemplatePath(element, gp);
             List<String> ifaces = resolveBaseInterface(element);
+            String adapterClassName = resolveAdapterClassName(element, adapterClassSimpleName);
             FormatterTypes formatterTypes = getFormatterTypes(element);
             Map<String, NamedTemplate> templatePaths = resolvePartials(element);
             Set<JStachFlags.Flag> flags = resolveFlags(element);
             
-            
+            StringWriter stringWriter = new StringWriter();
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
-                //FileObject templateBinaryResource = processingEnv.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", templatePath);
-                
                 //TODO pass basepath
-                TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), templateCharset);
+                TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), charset);
                 JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
                 RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel, formatterTypes, templateFormatElement);
                 CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, templatePaths, flags);
@@ -393,9 +312,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
                 writer.writeRenderableAdapterClass(adapterClassSimpleName, templateFormatElement, ifaces);
             }
-            PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-            String packageName = packageElement.getQualifiedName().toString();
-            String adapterClassName = packageName + "." + adapterClassSimpleName;
+            
             JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(adapterClassName, element);
             OutputStream stream = sourceFile.openOutputStream();
             try {
@@ -422,6 +339,62 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         } catch (RuntimeException ex) {
             errors.add(ElementMessage.of(element, Throwables.render(ex)));
         }
+    }
+
+    private String resolveAdapterClassName(TypeElement element, String adapterClassSimpleName) {
+        PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+        String packageName = packageElement.getQualifiedName().toString();
+        String adapterClassName = packageName + "." + adapterClassSimpleName;
+        return adapterClassName;
+    }
+
+    private String resolveTemplatePath(TypeElement element, JStachPrism gp) {
+        String templatePath = null;
+        templatePath = gp.path();
+        String basePath = resolveBasePath(element);
+        if (! templatePath.startsWith("/")) {
+            templatePath = basePath + templatePath;
+        }
+        return templatePath;
+    }
+
+    private TypeElement resolveContentType(JStachPrism gp) throws DeclarationException {
+        TypeElement templateFormatElement = null;
+        TypeMirror templateFormatType = gp.templateFormat();
+        if (templateFormatType instanceof DeclaredType dt) {
+            templateFormatElement = (TypeElement) dt.asElement();
+        }
+        else {
+            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
+        }
+        @Nullable JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
+        if (templateFormatAnnotation == null) {
+            throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStachContentType.class.getName() + " annotation");
+        }
+        
+        /*
+         * TODO clean this up to resolve format
+         */
+        var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AutoFormat.class.getName());
+        if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
+            templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
+            if (templateFormatElement == null) {
+                throw new DeclarationException("Missing default TextFormat class of Html");
+            }
+        }
+        return templateFormatElement;
+    }
+
+    private String resolveAdapterName(TypeElement element, JStachPrism gp) {
+        String directiveAdapterName = null;
+        directiveAdapterName = gp.adapterName();
+        String adapterClassSimpleName;
+        if (!directiveAdapterName.equals(":auto"))
+            adapterClassSimpleName = directiveAdapterName;
+        else {
+            adapterClassSimpleName = element.getSimpleName().toString() + "Renderer";
+        }
+        return adapterClassSimpleName;
     }
 }
 class ClassWriter {
