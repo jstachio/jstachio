@@ -1,5 +1,7 @@
 package io.jstach.apt;
 
+import java.util.Objects;
+
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -64,11 +66,35 @@ public class ClassRef {
         return new ClassRef(packageName, simpleName, binaryName, qualifiedName);
     }
     
+    public static ClassRef of(Class<?> c) {
+        return ClassRef.ofBinaryName(c.getName());
+    }
     
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(binaryName);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ClassRef other = (ClassRef) obj;
+        return Objects.equals(binaryName, other.binaryName);
+    }
+
     public @Nullable String getCanonicalName() {
         return canonicalName;
     }
     
+    public String requireCanonicalName() {
+        return Objects.requireNonNull(canonicalName);
+    }
     
     public String getBinaryName() {
         return binaryName;
@@ -82,7 +108,11 @@ public class ClassRef {
         return simpleName;
     }
     
-    public String getName() {
-        return packageName + "." + simpleName;
+    public String getBinaryNameMinusPackage() {
+        if (packageName.isEmpty()) {
+            return binaryName;
+        }
+        //The length will include the "."
+        return binaryName.substring(packageName.length() + 1);
     }
 }

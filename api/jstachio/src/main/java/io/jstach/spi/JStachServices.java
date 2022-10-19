@@ -1,7 +1,6 @@
 package io.jstach.spi;
 
 import java.io.IOException;
-import java.util.List;
 
 import io.jstach.Appender;
 import io.jstach.Formatter;
@@ -19,8 +18,8 @@ public interface JStachServices {
     	return previous;
     }
     
-    default List<Renderer<?>> findRenderers() {
-        return List.of();
+    public static <T> Renderer<T> renderer(Class<T> modelType) {
+       return  JStachServicesResolver._renderer(modelType);
     }
     
     default Formatter formatter() {

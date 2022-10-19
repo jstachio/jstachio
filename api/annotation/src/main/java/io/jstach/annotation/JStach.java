@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  * </ol>
  * @author agentgt
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStach {

@@ -1,3 +1,4 @@
+import io.jstach.Renderer;
 import io.jstach.spi.JStachServices;
 
 module io.jstach {
@@ -12,5 +13,5 @@ module io.jstach {
 	
 	uses JStachServices;
 	
-	
+	uses Renderer;
 }

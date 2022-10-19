@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -99,12 +100,14 @@ import io.jstach.spi.JStachServices;
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
 public class GenerateRendererProcessor extends AbstractProcessor {
-	
-	@Override
-	public SourceVersion getSupportedSourceVersion() {
-		return SourceVersion.latest();
-	}
-	
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
+
+    Set<ClassRef> rendererClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    
     private static String formatErrorMessage(Position position, @Nullable String message) {
         message = message == null ? "" : message;
         String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
@@ -146,6 +149,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                 TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
             }
+            ClassRef serviceClass = ClassRef.of(Renderer.class);
+            ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass, rendererClasses);
         } else {
             /*
              * Lets just bind the damn utils so that we do not have to pass them around everywhere
@@ -161,7 +166,10 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                         directive = annotationMirror;
                 }
                 assert directive != null;
-                writeRenderableAdapterClass(classElement, directive);
+                ClassRef ref = writeRenderableAdapterClass(classElement, directive);
+                if (ref != null) {
+                    rendererClasses.add(ref);
+                }
             }
             Element generateRenderableAdaptersElement = processingEnv.getElementUtils().getTypeElement(JStachRenderers.class.getName());
             for (Element element: roundEnv.getElementsAnnotatedWith(JStachRenderers.class)) {
@@ -177,7 +185,10 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                                 for (AnnotationValue directiveValue: directives) {
                                     AnnotationMirror directive = (AnnotationMirror)directiveValue.getValue();
                                     assert directive != null;
-                                    writeRenderableAdapterClass(classElement, directive);
+                                    ClassRef ref = writeRenderableAdapterClass(classElement, directive);
+                                    if (ref != null) {
+                                        rendererClasses.add(ref);
+                                    }
                                 }
                             }
                         }
@@ -384,17 +395,16 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         if (!directiveAdapterName.equals(":auto"))
             adapterClassSimpleName = directiveAdapterName;
         else {
-            adapterClassSimpleName = element.getSimpleName().toString() + "Renderer";
+            ClassRef ref = ClassRef.of(element);
+            adapterClassSimpleName = ref.getSimpleName() + "Renderer";    //ref.getBinaryNameMinusPackage().replace("$", "_") + "Renderer";
         }
         return adapterClassSimpleName;
     }
     
-    private void writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
+    private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror) throws AnnotatedException {
         
         try {
-            
             var model = model(element, directiveMirror);
-            
             StringWriter stringWriter = new StringWriter();
             try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)){
                 TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv), model.charset());
@@ -406,7 +416,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                 writer.writeRenderableAdapterClass(model);
             }
             
-            JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(model.rendererClassRef().getName(), element);
+            JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(model.rendererClassRef().requireCanonicalName(), element);
             OutputStream stream = sourceFile.openOutputStream();
             try {
                 Writer outputWriter = new OutputStreamWriter(stream, Charset.defaultCharset());
@@ -422,6 +432,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
                 }
             }
+            return model.rendererClassRef();
         } catch (ProcessingException ex) {
             String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
             errors.add(ElementMessage.of(element, errorMessage));
@@ -432,6 +443,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         } catch (RuntimeException ex) {
             errors.add(ElementMessage.of(element, Throwables.render(ex)));
         }
+        return null;
     }
 }
 class ClassWriter {
