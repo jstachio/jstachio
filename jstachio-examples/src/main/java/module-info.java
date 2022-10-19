@@ -2,7 +2,7 @@ import javax.annotation.processing.Processor;
 
 import io.jstach.Renderer;
 import io.jstach.examples.JMustacheRenderService;
-import io.jstach.spi.JStachServices;
+import io.jstach.spi.JStacheServices;
 
 module io.jstach.examples {
     requires transitive io.jstach;
@@ -19,8 +19,8 @@ module io.jstach.examples {
 
     
     uses Processor;
-    uses JStachServices;
+    uses JStacheServices;
     uses Renderer;
     
-    provides JStachServices with JMustacheRenderService;
+    provides JStacheServices with JMustacheRenderService;
 }

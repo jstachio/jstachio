@@ -1,5 +1,5 @@
 import io.jstach.Renderer;
-import io.jstach.spi.JStachServices;
+import io.jstach.spi.JStacheServices;
 
 module io.jstach {
 	exports io.jstach;
@@ -11,7 +11,7 @@ module io.jstach {
 	
 	requires static org.eclipse.jdt.annotation;
 	
-	uses JStachServices;
+	uses JStacheServices;
 	
 	uses Renderer;
 }

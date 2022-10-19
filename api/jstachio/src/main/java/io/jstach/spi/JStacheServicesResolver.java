@@ -10,7 +10,7 @@ import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
 
-enum JStachServicesResolver implements JStachServices {
+enum JStacheServicesResolver implements JStacheServices {
 
     INSTANCE;
 
@@ -18,16 +18,16 @@ enum JStachServicesResolver implements JStachServices {
         
         private static Holder INSTANCE = Holder.of();
 
-        private final Iterable<JStachServices> services;
+        private final Iterable<JStacheServices> services;
 
-        private Holder(Iterable<JStachServices> services) {
+        private Holder(Iterable<JStacheServices> services) {
             super();
             this.services = services;
         }
 
         private static Holder of() {
-            Iterable<JStachServices> it = ServiceLoader.load(JStachServices.class);
-            List<JStachServices> svs = new ArrayList<>();
+            Iterable<JStacheServices> it = ServiceLoader.load(JStacheServices.class);
+            List<JStacheServices> svs = new ArrayList<>();
             it.forEach(svs::add);
             return new Holder(List.copyOf(svs));
         }

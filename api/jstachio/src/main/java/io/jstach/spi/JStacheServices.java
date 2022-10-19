@@ -8,7 +8,7 @@ import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
 
-public interface JStachServices {
+public interface JStacheServices {
     
     default RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
         return previous;
@@ -19,7 +19,7 @@ public interface JStachServices {
     }
     
     public static <T> Renderer<T> renderer(Class<T> modelType) {
-       return  JStachServicesResolver._renderer(modelType);
+       return  JStacheServicesResolver._renderer(modelType);
     }
     
     default Formatter formatter() {
@@ -30,8 +30,8 @@ public interface JStachServices {
         return Appender.DefaultAppender.INSTANCE;
     }
     
-    public static JStachServices findService() {
-        return JStachServicesResolver.INSTANCE;
+    public static JStacheServices findService() {
+        return JStacheServicesResolver.INSTANCE;
     }
 
 }

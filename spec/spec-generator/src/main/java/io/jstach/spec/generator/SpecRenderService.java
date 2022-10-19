@@ -7,10 +7,10 @@ import org.kohsuke.MetaInfServices;
 
 import io.jstach.Appender;
 import io.jstach.Formatter;
-import io.jstach.spi.JStachServices;
+import io.jstach.spi.JStacheServices;
 
-@MetaInfServices(JStachServices.class)
-public class SpecRenderService implements JStachServices {
+@MetaInfServices(JStacheServices.class)
+public class SpecRenderService implements JStacheServices {
 
     @Override
     public Formatter formatter(Formatter previous) {

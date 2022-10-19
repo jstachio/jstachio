@@ -6,14 +6,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import io.jstach.JStachio;
 import io.jstach.annotation.JStache;
-import io.jstach.spi.JStachServices;
 
 public class ServiceTest {
     
     @Test
     public void testFindRenderer() throws IOException {
-        String actual = JStachServices.renderer(InlineExample.class).render(new InlineExample("Blah"));
+        String actual = JStachio.render(new InlineExample("Blah"));
         assertEquals("Hello Blah!", actual);
     }
     

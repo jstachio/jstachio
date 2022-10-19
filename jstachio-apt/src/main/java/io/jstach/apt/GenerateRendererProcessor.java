@@ -95,7 +95,7 @@ import io.jstach.apt.prism.JStachePartialPrism;
 import io.jstach.apt.prism.JStachePrism;
 import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.escapers.Html;
-import io.jstach.spi.JStachServices;
+import io.jstach.spi.JStacheServices;
 
 @MetaInfServices(value=Processor.class)
 @SupportedAnnotationTypes("*")
@@ -520,7 +520,7 @@ class ClassWriter {
         String _Appender = Appender.class.getName();
         String _Appendable = Appendable.class.getName();
         String _Formatter = Formatter.class.getName();
-        String _RenderService = JStachServices.class.getName();
+        String _RenderService = JStacheServices.class.getName();
 
         println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
         println("    public static final String TEMPLATE_PATH = \"" + templatePath  + "\";");
