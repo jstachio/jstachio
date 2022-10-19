@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(path="parent2.mustache")
+@JStache(path="parent2.mustache")
 public record Parent2(String message) {
     
 }

@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.inverted;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "inverted/NestedTruthy.mustache")
+@JStache(path = "inverted/NestedTruthy.mustache")
 public class NestedTruthy extends SpecModel {
 }

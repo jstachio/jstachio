@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import io.jstach.Renderer;
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
 
 class Renderers {
@@ -62,7 +62,7 @@ class Renderers {
     
     private static String resolveName(Class<?> c) {
         //c.getName().replace("$", "_") + IMPLEMENTATION_SUFFIX;
-        var a = c.getAnnotation(JStach.class);
+        var a = c.getAnnotation(JStache.class);
         String cname;
         if (a != null && ! ":auto".equals(a.adapterName())) {
             cname = a.adapterName();

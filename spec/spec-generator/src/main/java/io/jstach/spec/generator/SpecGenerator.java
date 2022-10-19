@@ -25,7 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Escaper;
 
-import io.jstach.annotation.JStachFormatterTypes;
+import io.jstach.annotation.JStacheFormatterTypes;
 
 import com.samskivert.mustache.Template;
 
@@ -91,15 +91,15 @@ public class SpecGenerator {
         }
 
         ClassRef annotation() {
-            return new ClassRef(io.jstach.annotation.JStach.class);
+            return new ClassRef(io.jstach.annotation.JStache.class);
         }
         
         ClassRef templatePathsAnnotation() {
-            return new ClassRef(io.jstach.annotation.JStachPartialMapping.class);
+            return new ClassRef(io.jstach.annotation.JStachePartialMapping.class);
         }
         
         ClassRef templatePathAnnotation() {
-            return new ClassRef(io.jstach.annotation.JStachPartial.class);
+            return new ClassRef(io.jstach.annotation.JStachePartial.class);
         }
         
         String templateName() {
@@ -370,7 +370,7 @@ public class SpecGenerator {
         Files.writeString(Path.of(templateList.javaFilePath()), enumCode);
 
         
-        Map<String, String> model = Map.of("formatterAnnotation", JStachFormatterTypes.class.getName(),
+        Map<String, String> model = Map.of("formatterAnnotation", JStacheFormatterTypes.class.getName(),
                 "packageName", templateList.packageName());
         
         String packageInfoTemplate = """

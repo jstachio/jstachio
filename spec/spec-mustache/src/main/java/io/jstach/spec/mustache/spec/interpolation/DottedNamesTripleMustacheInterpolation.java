@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.interpolation;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "interpolation/DottedNamesTripleMustacheInterpolation.mustache")
+@JStache(path = "interpolation/DottedNamesTripleMustacheInterpolation.mustache")
 public class DottedNamesTripleMustacheInterpolation extends SpecModel {
 }

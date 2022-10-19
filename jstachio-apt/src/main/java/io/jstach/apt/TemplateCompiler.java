@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.CodeAppendable.HiddenCodeAppendable;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.MustacheToken.NewlineChar;
@@ -61,7 +61,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
             CodeAppendable writer,
             TemplateCompilerContext context,
             TemplateCompilerType compilerType,
-            Set<JStachFlags.Flag> flags
+            Set<JStacheFlags.Flag> flags
             ) throws IOException {
         
        return switch (compilerType) {
@@ -689,14 +689,14 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         
         private final TemplateLoader templateLoader;
         private final CodeAppendable writer;
-        private final Set<JStachFlags.Flag> flags;
+        private final Set<JStacheFlags.Flag> flags;
         
         public RootTemplateCompiler(
                 String templateName,
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context, 
-                Set<JStachFlags.Flag> flags
+                Set<JStacheFlags.Flag> flags
                 ) throws IOException {
             super(templateLoader.open(templateName), null, context);
             this.templateLoader = templateLoader;
@@ -720,7 +720,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
         }
         
         @Override
-        public Set<JStachFlags.Flag> flags() {
+        public Set<JStacheFlags.Flag> flags() {
             return this.flags;
         }
         
@@ -732,7 +732,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
                 TemplateLoader templateLoader,
                 CodeAppendable writer,
                 TemplateCompilerContext context,
-                Set<JStachFlags.Flag> flags
+                Set<JStacheFlags.Flag> flags
                 ) throws IOException {
             super(templateName, templateLoader, writer, context, flags);
         }

@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(template = """
+@JStache(template = """
         Hello {{name}}!""")
 public record InlineExample(String name) {
 

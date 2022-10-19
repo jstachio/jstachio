@@ -38,7 +38,7 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.NamedTemplate.FileTemplate;
 import io.jstach.apt.NamedTemplate.InlineTemplate;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
@@ -57,13 +57,13 @@ class CodeWriter {
     private final SwitchablePrintWriter writer;
     private final RenderingCodeGenerator codeGenerator;
     private final Map<String, NamedTemplate> partials;
-    private final Set<JStachFlags.Flag> flags;
+    private final Set<JStacheFlags.Flag> flags;
 
     CodeWriter( 
             SwitchablePrintWriter writer, 
             RenderingCodeGenerator codeGenerator, 
             Map<String, NamedTemplate> partials,
-            Set<JStachFlags.Flag> flags) {
+            Set<JStacheFlags.Flag> flags) {
         this.writer = writer;
         this.codeGenerator = codeGenerator;
         this.partials = partials;

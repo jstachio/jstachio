@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.sections;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "sections/Variabletest.mustache")
+@JStache(path = "sections/Variabletest.mustache")
 public class Variabletest extends SpecModel {
 }

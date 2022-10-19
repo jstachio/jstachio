@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(path="context-example.mustache")
+@JStache(path="context-example.mustache")
 public record ContextExample(String a, String b, Sec sec, C c ) {
 
     public record Sec(String b) {}

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
 
 interface TemplateCompilerLike extends AutoCloseable {
@@ -33,7 +33,7 @@ interface TemplateCompilerLike extends AutoCloseable {
         return Objects.requireNonNull(getCaller()).getWriter();
     }
     
-    default Set<JStachFlags.Flag> flags() {
+    default Set<JStacheFlags.Flag> flags() {
         return Objects.requireNonNull(getCaller()).flags();
     }
     

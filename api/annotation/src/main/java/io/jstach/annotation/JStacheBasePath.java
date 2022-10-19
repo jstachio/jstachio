@@ -6,16 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target(ElementType.PACKAGE)
 @Documented
-public @interface JStachLambda {
-    
-    String name() default "";
-    
-//    String template() default "";
-//    
-//    String path() default "";
-
+public @interface JStacheBasePath {
+    public String value() default "";
 }

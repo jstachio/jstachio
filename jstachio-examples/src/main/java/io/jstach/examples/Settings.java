@@ -30,14 +30,14 @@
 package io.jstach.examples;
 
 import io.jstach.RenderFunction;
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.escapers.Html;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@JStach(path = "settings.mustache", templateFormat = Html.class)
+@JStache(path = "settings.mustache", templateFormat = Html.class)
 public class Settings {
     final RenderFunction info;
     final boolean isEnabled;

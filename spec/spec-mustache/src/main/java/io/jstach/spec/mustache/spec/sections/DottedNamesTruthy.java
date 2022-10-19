@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.sections;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "sections/DottedNamesTruthy.mustache")
+@JStache(path = "sections/DottedNamesTruthy.mustache")
 public class DottedNamesTruthy extends SpecModel {
 }

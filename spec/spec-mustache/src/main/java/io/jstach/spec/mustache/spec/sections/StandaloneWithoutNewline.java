@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.sections;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "sections/StandaloneWithoutNewline.mustache")
+@JStache(path = "sections/StandaloneWithoutNewline.mustache")
 public class StandaloneWithoutNewline extends SpecModel {
 }

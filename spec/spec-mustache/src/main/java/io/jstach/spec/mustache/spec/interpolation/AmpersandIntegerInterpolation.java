@@ -1,8 +1,8 @@
 package io.jstach.spec.mustache.spec.interpolation;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spec.generator.SpecModel;
 
-@JStach(path = "interpolation/AmpersandIntegerInterpolation.mustache")
+@JStache(path = "interpolation/AmpersandIntegerInterpolation.mustache")
 public class AmpersandIntegerInterpolation extends SpecModel {
 }

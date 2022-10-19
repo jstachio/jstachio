@@ -9,8 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface JStachPartialMapping {
+public @interface JStacheFlags {
     
-    public JStachPartial[] value() default {};
+    Flag[] flags();
     
+    public enum Flag {
+        DEBUG
+    }
 }

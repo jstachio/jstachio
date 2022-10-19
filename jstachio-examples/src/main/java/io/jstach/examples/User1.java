@@ -31,8 +31,8 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.JStach;
-import io.jstach.annotation.JStachRenderers;
+import io.jstach.annotation.JStache;
+import io.jstach.annotation.JStaches;
 import io.jstach.escapers.Html;
 import io.jstach.escapers.PlainText;
 
@@ -40,9 +40,9 @@ import io.jstach.escapers.PlainText;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@JStachRenderers({
-    @JStach(path = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
-    @JStach(path = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
+@JStaches({
+    @JStache(path = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
+    @JStache(path = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
 })
 public class User1 {
     public final String name;

@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 import io.jstach.spi.JStachServices;
 
 public class ServiceTest {
@@ -17,7 +17,7 @@ public class ServiceTest {
         assertEquals("Hello Blah!", actual);
     }
     
-    @JStach(template="Hello {{name}}")
+    @JStache(template="Hello {{name}}")
     public record SomeView(String name) {}
     
 //    @Test

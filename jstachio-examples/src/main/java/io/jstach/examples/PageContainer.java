@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(path = "page.mustache")
+@JStache(path = "page.mustache")
 public class PageContainer implements Mixin {
 
 	private final IdContainer container;

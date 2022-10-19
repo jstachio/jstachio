@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStachFlags;
+import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.MustacheToken.NewlineChar;
 import io.jstach.apt.MustacheToken.SpecialChar;
 import io.jstach.apt.MustacheToken.TextToken;
@@ -37,7 +37,7 @@ public abstract class AbstractTemplateCompiler implements TemplateCompilerLike, 
     }
     
     protected boolean isDebug() {
-        return flags().contains(JStachFlags.Flag.DEBUG);
+        return flags().contains(JStacheFlags.Flag.DEBUG);
     }
     
     private void processTokens() throws ProcessingException {

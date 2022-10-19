@@ -2,16 +2,16 @@ package io.jstach.examples;
 
 import java.util.Map;
 
-import io.jstach.annotation.JStach;
-import io.jstach.annotation.JStachFlags;
-import io.jstach.annotation.JStachLambda;
-import io.jstach.annotation.JStachFlags.Flag;
+import io.jstach.annotation.JStache;
+import io.jstach.annotation.JStacheFlags;
+import io.jstach.annotation.JStacheLambda;
+import io.jstach.annotation.JStacheFlags.Flag;
 
-@JStach(path = "lambda-example.mustache")
-@JStachFlags(flags = { Flag.DEBUG })
+@JStache(path = "lambda-example.mustache")
+@JStacheFlags(flags = { Flag.DEBUG })
 public record LambdaExample(String name, Map<String, String> props) implements Lambdas {
 
-    @JStachLambda
+    @JStacheLambda
     public String hello(String html, String name) {
         return "<hello>" + html + "</hello>: " + name;
     }

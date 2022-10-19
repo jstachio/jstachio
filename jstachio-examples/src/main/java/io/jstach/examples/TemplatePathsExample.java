@@ -1,11 +1,11 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
-import io.jstach.annotation.JStachPartial;
-import io.jstach.annotation.JStachPartialMapping;
+import io.jstach.annotation.JStache;
+import io.jstach.annotation.JStachePartial;
+import io.jstach.annotation.JStachePartialMapping;
 
-@JStach(path = "template-paths-example.mustache")
-@JStachPartialMapping(@JStachPartial(name = "formerly-known-as-partial-include", path = "partial-include.mustache"))
+@JStache(path = "template-paths-example.mustache")
+@JStachePartialMapping(@JStachePartial(name = "formerly-known-as-partial-include", path = "partial-include.mustache"))
 public record TemplatePathsExample(String name) {
 
 }

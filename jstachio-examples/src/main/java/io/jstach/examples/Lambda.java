@@ -3,17 +3,17 @@ package io.jstach.examples;
 import java.io.IOException;
 
 import io.jstach.RenderFunction;
-import io.jstach.annotation.JStachLambda;
+import io.jstach.annotation.JStacheLambda;
 import io.jstach.context.ContextNode;
 
 public record Lambda(String name) {
     
-    @JStachLambda
+    @JStacheLambda
     public String prefix(String n) {
         return "Sir " + n;
     }
     
-    @JStachLambda
+    @JStacheLambda
     public void suffix(Appendable a, RenderFunction block) throws IOException {
         block.accept(a);
         a.append(" Esquire");

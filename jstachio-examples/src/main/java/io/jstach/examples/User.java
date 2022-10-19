@@ -31,13 +31,13 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
 /**
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-@JStach(
+@JStache(
     // points to src/main/resources/user.mustache file
     path = "user.mustache"
 

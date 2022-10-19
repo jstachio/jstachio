@@ -53,7 +53,7 @@ import io.jstach.apt.context.types.KnownType;
 import io.jstach.apt.context.types.KnownTypes;
 import io.jstach.apt.context.types.NativeType;
 import io.jstach.apt.context.types.ObjectType;
-import io.jstach.apt.prism.JStachLambdaPrism;
+import io.jstach.apt.prism.JStacheLambdaPrism;
 
 /**
  * This class allows to create TemplateCompilerContext instance
@@ -136,12 +136,12 @@ public class RenderingCodeGenerator {
                 .filter(e -> 
                         e.getModifiers().contains(Modifier.PUBLIC) 
                         && e.getReturnType().getKind() != TypeKind.VOID)
-                .filter(e -> JStachLambdaPrism.getInstanceOn(e) != null)
+                .filter(e -> JStacheLambdaPrism.getInstanceOn(e) != null)
                 .toList();
         Map<String, Lambda> lambdas = new LinkedHashMap<>();
         
         for (ExecutableElement lm : lambdaMethods) {
-            JStachLambdaPrism p = JStachLambdaPrism.getInstanceOn(lm);
+            JStacheLambdaPrism p = JStacheLambdaPrism.getInstanceOn(lm);
             String name = p.name();
             //String path = p.path();
             Lambda lambda;

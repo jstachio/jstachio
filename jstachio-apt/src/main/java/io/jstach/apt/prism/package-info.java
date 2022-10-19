@@ -1,14 +1,14 @@
 
 @net.java.dev.hickory.prism.GeneratePrisms({ //
-    @GeneratePrism(value = io.jstach.annotation.JStachRenderers.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStach.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachBasePath.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStaches.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStache.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStacheBasePath.class, publicAccess = true), //
     @GeneratePrism(value = io.jstach.annotation.TemplateInterface.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachPartialMapping.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachPartial.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachLambda.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachFormatterTypes.class, publicAccess = true), //
-    @GeneratePrism(value = io.jstach.annotation.JStachFlags.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStachePartialMapping.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStachePartial.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStacheLambda.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStacheFormatterTypes.class, publicAccess = true), //
+    @GeneratePrism(value = io.jstach.annotation.JStacheFlags.class, publicAccess = true), //
 
 })
 @org.eclipse.jdt.annotation.NonNullByDefault({DefaultLocation.TYPE_ARGUMENT})

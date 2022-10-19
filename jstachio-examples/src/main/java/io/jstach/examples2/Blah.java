@@ -2,9 +2,9 @@ package io.jstach.examples2;
 
 import java.util.UUID;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(path = "blah.mustache")
+@JStache(path = "blah.mustache")
 public class Blah {
     
     private final String name;

@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStach;
+import io.jstach.annotation.JStache;
 
-@JStach(path="partial-example.mustache")
+@JStache(path="partial-example.mustache")
 public record PartialExample(String name) {
 
 }
