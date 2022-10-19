@@ -1,6 +1,7 @@
 package io.jstach.examples;
 
 import static java.util.Objects.requireNonNull;
+import static org.junit.Assert.assertEquals;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import org.junit.Test;
 import io.jstach.RenderFunction;
 
 public class MainTest {
+
+    PrintStream out = System.out;
 
     int[][] array = new int[][] { new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 },
             new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 } };
@@ -42,9 +45,17 @@ public class MainTest {
 
                 ))));
 
-        PrintStream out = System.out;
         render.render(out);
 
+    }
+    
+    @Test
+    public void testInline() throws Exception {
+        InlineExample inline = new InlineExample("Adam");
+        RenderFunction rf = InlineExampleRenderer.of(inline);
+        String actual = rf.renderString();
+        assertEquals("Hello Adam!", actual);
+        
     }
 
 }

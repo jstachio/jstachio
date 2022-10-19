@@ -1,4 +1,4 @@
-package com.github.sviperll.staticmustache.apt.test;
+package io.jstach.apt.test;
 
 import static org.junit.Assert.*;
 

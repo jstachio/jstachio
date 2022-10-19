@@ -34,9 +34,7 @@ import java.io.IOException;
 import io.jstach.spi.JStachServices;
 
 
-public abstract class Renderable<F,T> implements RenderFunction {
-    
-    public abstract String getTemplate();
+public abstract class Renderable<F,T> implements RenderFunction, TemplateInfo {
     
     public abstract T getContext();
     
@@ -47,7 +45,7 @@ public abstract class Renderable<F,T> implements RenderFunction {
     @Override
     public final void render(Appendable a) throws IOException {
         JStachServices rs = JStachServices.findService();
-        var rf = rs.renderer(getTemplate(), getContext(), renderFunction);
+        var rf = rs.renderer(this, getContext(), renderFunction);
         rf.render(a);
     }
 }

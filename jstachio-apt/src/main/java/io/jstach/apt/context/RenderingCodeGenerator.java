@@ -186,10 +186,6 @@ public class RenderingCodeGenerator {
         return new TemplateCompilerContext(templateStack, lambdas, this, variables, rootRenderingContext, ContextType.ROOT);
     }
     
-    public TemplateCompilerContext createTemplateCompilerContext(String templateName, TypeElement element, String expression, VariableContext variables) throws AnnotatedException {
-        return createTemplateCompilerContext(TemplateStack.of(templateName), element, expression, variables);
-    }
-    
     public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, DeclaredType type, String expression, VariableContext variables) throws AnnotatedException {
         TypeElement element = javaModel.asElement(type);
         return createTemplateCompilerContext(templateStack, element, expression, variables);

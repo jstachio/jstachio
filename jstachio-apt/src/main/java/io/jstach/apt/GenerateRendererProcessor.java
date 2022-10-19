@@ -202,7 +202,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return basePath;
     }
     
-    private List<String> resolveBaseInterface(TypeElement element) {
+    private List<String> resolveBaseInterfaces(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
         TemplateInterfacePrism prism = TemplateInterfacePrism.getInstanceOn(packageElement);
         if (prism != null) {
@@ -233,7 +233,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         return paths;
     }
 
-    private NamedTemplate resolveNamedTemplate(@Nullable String name, @Nullable String path, @Nullable String template) {
+    private static NamedTemplate resolveNamedTemplate(@Nullable String name, @Nullable String path, @Nullable String template) {
         NamedTemplate nt;
         assert name != null;
         if (path != null && ! path.isBlank() ) {
@@ -287,6 +287,20 @@ public class GenerateRendererProcessor extends AbstractProcessor {
             List<String> ifaces, 
             Set<Flag> flags) {
         
+        public NamedTemplate namedTemplate() {
+            String name = element.getQualifiedName().toString() + ".mustache";
+            String path = path();
+            String template = null;
+            if (! path.isBlank()) {
+                name = path;
+            }
+            if (! template().isBlank()) {
+                template = template();
+            }
+            return resolveNamedTemplate(name, path, template);
+            
+        }
+        
     }
 
     private RendererModel model(TypeElement element, AnnotationMirror directiveMirror)
@@ -307,7 +321,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         String path = resolveTemplatePath(element, gp);
         String template =  gp.template();
         assert template != null;
-        List<String> ifaces = resolveBaseInterface(element);
+        List<String> ifaces = resolveBaseInterfaces(element);
         ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
         FormatterTypes formatterTypes = resolveFormatterTypes(element);
         Map<String, NamedTemplate> partials = resolvePartials(element);
@@ -319,17 +333,11 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
 
     private ClassRef resolveRendererClassRef(TypeElement element, JStachPrism gp) {
-        String rendererPackageName =  resolveRendererPackageName(element);
         String rendererClassSimpleName = resolveAdapterName(element, gp);
-        ClassRef rendererClassRef = new ClassRef(rendererPackageName, rendererClassSimpleName);
-        return rendererClassRef;
-    }
-
-    private String resolveRendererPackageName(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        String packageName = packageElement.getQualifiedName().toString();
-        //String adapterClassName = packageName + "." + adapterClassSimpleName;
-        return packageName;
+        assert packageElement != null;
+        ClassRef rendererClassRef = ClassRef.of(packageElement, rendererClassSimpleName);
+        return rendererClassRef;
     }
 
     private String resolveTemplatePath(TypeElement element, JStachPrism gp) {
@@ -443,20 +451,17 @@ class ClassWriter {
         var templateFormatElement = model.contentTypeElement();
         var ifaces = model.ifaces();
         var renderClassRef = model.rendererClassRef();
-        var templateName = model.path();
-        String className = element.getQualifiedName().toString();
-        PackageElement packageElement = JavaLanguageModel.getInstance().getElements().getPackageOf(element);
-        String packageName = packageElement.getQualifiedName().toString();
+        ClassRef modelClassRef = ClassRef.of(element);
+        String className = modelClassRef.getCanonicalName();
+        if (className == null) {
+            throw new AnnotatedException(element, "Anonymous classes can not be used as models");
+        }
+        String packageName = modelClassRef.getPackageName();
         JStachContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStachContentType.class);
         assert templateFormatAnnotation != null;
         
-
-        List<String> ifaceStrings = new ArrayList<String>(ifaces);
-        //ifaces.stream().map(c -> c.getName()).forEach(ifaceStrings::add);
-        
-        
-        String implementsString = ifaceStrings.isEmpty() ? "" : " implements " +
-                ifaceStrings.stream().collect(Collectors.joining(", "));
+        String implementsString = ifaces.isEmpty() ? "" : " implements " +
+                ifaces.stream().collect(Collectors.joining(", "));
         
         String extendsString = " extends " 
                 + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName() + "," + className + ">";
@@ -469,6 +474,14 @@ class ClassWriter {
         String rendererClassSimpleName = renderClassRef.getSimpleName();
         
         String adapterClassSimpleName = rendererClassSimpleName + "Definition";
+        
+        NamedTemplate namedTemplate = model.namedTemplate();
+        
+        String templateName = namedTemplate.name();
+        String templatePath = namedTemplate.path();
+        String templateString = namedTemplate.template();
+        
+        String templateStringJava = CodeAppendable.stringConcat(templateString);
 
         println("package " + packageName + ";");
         println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
@@ -498,7 +511,11 @@ class ClassWriter {
         String _RenderService = JStachServices.class.getName();
 
         println("class " + adapterClassSimpleName + extendsString + implementsString +" {");
-        println("    public static final String TEMPLATE = \"" + templateName + "\";");
+        println("    public static final String TEMPLATE_PATH = \"" + templatePath  + "\";");
+        println("    public static final String TEMPLATE_STRING = " + templateStringJava + ";");
+        println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
+
+
         
         println("    " + _Appender + " appender = " + _RenderService  + ".findService().appender();"   );
         println("    " + _Appender + " escaper = " + templateFormatElement.getQualifiedName() + "." + templateFormatAnnotation.providesMethod() + "();");
@@ -512,8 +529,18 @@ class ClassWriter {
         println("    }");
         
         println("    @Override");
-        println("    public String " + "getTemplate() {");
-        println("        return TEMPLATE;");
+        println("    public String " + "templatePath() {");
+        println("        return TEMPLATE_PATH;");
+        println("    }");
+        
+        println("    @Override");
+        println("    public String " + "templateName() {");
+        println("        return TEMPLATE_NAME;");
+        println("    }");
+        
+        println("    @Override");
+        println("    public String " + "templateString() {");
+        println("        return TEMPLATE_STRING;");
         println("    }");
         
         println("    @Override");
@@ -539,7 +566,6 @@ class ClassWriter {
     
     private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model ) throws IOException, ProcessingException, AnnotatedException {
         var element = model.element();
-        String templateName = model.path();
         VariableContext variables = VariableContext.createDefaultContext();
         String dataName = variables.introduceNewNameLike("data");
         String className = element.getQualifiedName().toString();
@@ -556,7 +582,7 @@ class ClassWriter {
                 + idt + ", " + _Appender + "<? super A> " + variables.writer()
                 + idt + ", " + _Formatter + " " + variables.formatter() 
                 + idt + ") throws java.io.IOException {");
-        TemplateCompilerContext context = codeWriter.createTemplateContext(templateName, element, dataName, variables);
+        TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName, variables);
         codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
         println("");
         println("    }");

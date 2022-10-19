@@ -7,6 +7,7 @@ import java.util.ServiceLoader;
 
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
+import io.jstach.TemplateInfo;
 
 enum JStachServicesResolver implements JStachServices {
 
@@ -32,7 +33,7 @@ enum JStachServicesResolver implements JStachServices {
     }
 
     @Override
-    public RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
+    public RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
         RenderFunction current = previous;
         for (var rs : Holder.INSTANCE.services) {
             current = rs.renderer(template, context, current);

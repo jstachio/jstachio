@@ -11,9 +11,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.annotation.JStachFlags;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
-import io.jstach.apt.context.TemplateStack;
 
-interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
+interface TemplateCompilerLike extends AutoCloseable {
 
     void run() throws ProcessingException, IOException;
 
@@ -53,7 +52,6 @@ interface TemplateCompilerLike extends AutoCloseable, TemplateStack {
     }
     
     interface TemplateLoader {
-
         NamedReader open(String name) throws IOException;
     }
     

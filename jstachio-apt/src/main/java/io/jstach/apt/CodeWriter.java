@@ -45,6 +45,8 @@ import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
 import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
+import io.jstach.apt.context.TemplateStack;
+import io.jstach.apt.context.TemplateStack.RootTemplateStack;
 import io.jstach.apt.context.VariableContext;
 
 /**
@@ -54,22 +56,22 @@ import io.jstach.apt.context.VariableContext;
 class CodeWriter {
     private final SwitchablePrintWriter writer;
     private final RenderingCodeGenerator codeGenerator;
-    private final Map<String, NamedTemplate> templatePaths;
+    private final Map<String, NamedTemplate> partials;
     private final Set<JStachFlags.Flag> flags;
 
     CodeWriter( 
             SwitchablePrintWriter writer, 
             RenderingCodeGenerator codeGenerator, 
-            Map<String, NamedTemplate>templatePaths,
+            Map<String, NamedTemplate> partials,
             Set<JStachFlags.Flag> flags) {
         this.writer = writer;
         this.codeGenerator = codeGenerator;
-        this.templatePaths = templatePaths;
+        this.partials = partials;
         this.flags = flags;
     }
 
-    TemplateCompilerContext createTemplateContext(String templateName, TypeElement element, String rootExpression, VariableContext variableContext) throws AnnotatedException {
-        return codeGenerator.createTemplateCompilerContext(templateName, element, rootExpression, variableContext);
+    TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression, VariableContext variableContext) throws AnnotatedException {
+        return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template), element, rootExpression, variableContext);
     }
 
     void println(String s) {
@@ -81,11 +83,27 @@ class CodeWriter {
             TemplateCompilerType templateCompilerType) 
             throws IOException, ProcessingException {
         
-        String templateName = context.getTemplateStack().getTemplateName();
+        
+        TemplateStack stack = context.getTemplateStack();
+        String templateName = stack.getTemplateName();
+        
+        NamedTemplate rootTemplate;
+        
+        if (stack instanceof RootTemplateStack rt) {
+            rootTemplate = rt.template();
+        }
+        else {
+            throw new IllegalStateException("Expected root template");
+        }
         
         TemplateLoader templateLoader = (name) -> { 
-            
-            NamedTemplate nt = templatePaths.get(name);
+            NamedTemplate nt;
+            if (name.equals(templateName)) {
+                 nt = rootTemplate;
+            }
+            else {
+                nt = partials.get(name);
+            }
             if (nt == null) {
                 nt = new FileTemplate(name, name);
             }
@@ -110,31 +128,6 @@ class CodeWriter {
         try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType, flags)) {
             templateCompiler.run();
         }
-        
-//        try(InputStream inputStream = resource.openInputStream(templateName)) {
-//            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-//            try {
-//                Reader inputReader = new InputStreamReader(inputStream, resource.charset());
-//                try {
-//                    NamedReader reader = new NamedReader(inputReader, templateName);
-//                    try {
-//                        //      factory.createTemplateCompiler(templateLoader, templateName, writer, context);
-//                        TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType);
-//                        templateCompiler.run();
-//                    } finally {
-//                        reader.close();
-//                    }
-//                } finally {
-//                    inputReader.close();
-//                }
-//            } finally {
-//                try {
-//                    bufferedInputStream.close();
-//                } catch (Exception ex) {
-//                    messager.printMessage(Diagnostic.Kind.ERROR, ex.getMessage());
-//                }
-//            }
-//        }
     }
 
 

@@ -144,7 +144,29 @@ public interface CodeAppendable extends Appendable {
         return result;
     }
     
-    static List<String> split(String s , String delim) {
+    public static String stringConcat(String s) {
+        int i = 0;
+        StringBuilder code = new StringBuilder();
+        for (String line : split(s, "\n")) {
+            if (i > 0) {
+                code.append(" +");
+            }
+            code.append("\n    \"");
+            code.append(escapeJava(line));
+            code.append("\"");
+            i++;
+        }
+        String result = code.toString();
+        if (result.isEmpty()) {
+            result = "\"\"";
+        }
+        return result;
+    }
+    
+    /*
+     * This splits while retaining the delimiter
+     */
+    public static List<String> split(String s, String delim) {
         int dl = delim.length();
         int sl = s.length();
         List<String> tokens = new ArrayList<>();

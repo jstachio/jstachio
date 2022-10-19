@@ -1,7 +1,5 @@
 package io.jstach.apt;
 
-import java.nio.charset.Charset;
-
 public sealed interface NamedTemplate {
     
     String name();
@@ -18,6 +16,10 @@ public sealed interface NamedTemplate {
         public Type type() {
             return Type.FILE;
         }
+        @Override
+        public String template() {
+            return "";
+        }
     }
     
     public record InlineTemplate(String name, String template) implements NamedTemplate {
@@ -25,18 +27,14 @@ public sealed interface NamedTemplate {
         public Type type() {
             return Type.INLINE;
         }
+        @Override
+        public String path() {
+            return "";
+        }
     }
     
-    public record RootTemplate(
-            String name,
-            String className,
-            String adapterName,
-            String template, 
-            String path, 
-            String basePath,
-            Charset charset,
-            Type type) implements NamedTemplate  {
-        
-    }
+    public String path();
+    
+    public String template();
 
 }

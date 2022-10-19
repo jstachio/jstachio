@@ -2,3 +2,6 @@ class javax/lang/model/util/Elements
 getAllAnnotationMirrors
  (Ljavax/lang/model/element/Element;)Ljava/util/List<+Ljavax/lang/model/element/AnnotationMirror;>;
  (L1javax/lang/model/element/Element;)Ljava/util/List<+L1javax/lang/model/element/AnnotationMirror;>;
+getPackageOf
+ (Ljavax/lang/model/element/Element;)Ljavax/lang/model/element/PackageElement;
+ (Ljavax/lang/model/element/Element;)L0javax/lang/model/element/PackageElement;

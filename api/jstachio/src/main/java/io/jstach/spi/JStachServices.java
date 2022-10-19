@@ -7,10 +7,11 @@ import io.jstach.Appender;
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
+import io.jstach.TemplateInfo;
 
 public interface JStachServices {
     
-    default RenderFunction renderer(String template, Object context, RenderFunction previous) throws IOException {
+    default RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
         return previous;
     }
     
