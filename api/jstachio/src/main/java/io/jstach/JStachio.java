@@ -18,7 +18,7 @@ public enum JStachio {
     }
     
     @SuppressWarnings("unchecked")
-	public static String render(Object model) throws IOException {
+	public static String render(Object model) {
     	@SuppressWarnings("rawtypes")
 		Renderer r = JStacheServices.renderer(model.getClass());
     	return r.render(model);

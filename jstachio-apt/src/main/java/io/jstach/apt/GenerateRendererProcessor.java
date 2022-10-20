@@ -594,7 +594,7 @@ class ClassWriter {
                 + idt + ", " + _Appender + "<? super A> " + variables.writer()
                 + idt + ", " + _Formatter + " " + variables.formatter() 
                 + idt + ") throws java.io.IOException {");
-        TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName, variables);
+        TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName, variables, model.flags());
         codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
         println("");
         println("    }");

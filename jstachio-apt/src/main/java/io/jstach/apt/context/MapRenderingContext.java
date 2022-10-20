@@ -42,7 +42,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class MapRenderingContext implements RenderingContext {
+class MapRenderingContext implements RenderingContext, InvertedExpressionContext {
     protected final JavaExpression expression;
     protected final TypeElement definitionElement;
     private final RenderingContext parent;
@@ -90,6 +90,11 @@ class MapRenderingContext implements RenderingContext {
     @Override
     public JavaExpression currentExpression() {
         return expression;
+    }
+    
+    @Override
+    public String invertedExpression() {
+        return "( " + expression.text() + " == null )";
     }
 
     @Override

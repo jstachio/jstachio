@@ -339,13 +339,16 @@ public class TemplateCompilerContext {
             entry = enclosing.find(name, c -> true);
         }
         if (entry == null) {
-            //System.out.println("Field not found." + " field: " + name +  ", template: " +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
+            if (getTemplateStack().isDebug()) {
+                getTemplateStack().debug("Field not found." + " field: " + name +  ", template: " 
+                        +  templateStack.describeTemplateStack() + " context stack: " + enclosing.printStack() + " direct: " + direct + "\n");
+            }
             throw new FieldNotFoundContextException(MessageFormat.format("Field not found in current context: ''{0}'' , template: " + templateStack.describeTemplateStack(), name));
         }
         RenderingContext enclosedField;
         enclosedField = switch (childType) {
         case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH -> generator.createRenderingContext(childType,entry, enclosing);
-        case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing));
+        case INVERTED -> new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing), direct);
         case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
         case PARTIAL -> throw new IllegalStateException("partial not allowed here");
         case BLOCK -> throw new IllegalStateException("block not allowed here");

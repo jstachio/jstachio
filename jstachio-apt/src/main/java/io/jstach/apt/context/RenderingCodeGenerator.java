@@ -269,8 +269,10 @@ public class RenderingCodeGenerator {
         RenderingContext nullable = nullableRenderingContext(expression, enclosing);
         VariableContext variableContext = nullable.createEnclosedVariableContext();
         String elementVariableName = variableContext.introduceNewNameLike("element");
+        String indexVariableName = variableContext.introduceNewNameLike("i");
+
         RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
-        IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName, variables);
+        IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName,indexVariableName, variables);
         if (expression.model().isType(expression.type(), knownTypes._MapNode)) {
             return createMapNodeContext(iterable.elementExpession(), iterable);
         }

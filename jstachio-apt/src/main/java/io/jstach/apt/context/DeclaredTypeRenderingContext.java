@@ -50,7 +50,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class DeclaredTypeRenderingContext implements RenderingContext {
+class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressionContext {
     private final JavaExpression expression;
     private final TypeElement definitionElement;
     private final RenderingContext parent;
@@ -189,6 +189,11 @@ class DeclaredTypeRenderingContext implements RenderingContext {
     @Override
     public @Nullable RenderingContext getParent() {
         return this.parent;
+    }
+    
+    @Override
+    public String invertedExpression() {
+        return "(" + currentExpression().text() + " == null )"; 
     }
     
     @Override

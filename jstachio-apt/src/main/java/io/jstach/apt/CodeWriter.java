@@ -70,8 +70,8 @@ class CodeWriter {
         this.flags = flags;
     }
 
-    TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression, VariableContext variableContext) throws AnnotatedException {
-        return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template), element, rootExpression, variableContext);
+    TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression, VariableContext variableContext, Set<JStacheFlags.Flag> flags) throws AnnotatedException {
+        return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template, flags), element, rootExpression, variableContext);
     }
 
     void println(String s) {

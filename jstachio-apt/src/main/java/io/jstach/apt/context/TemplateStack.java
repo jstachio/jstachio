@@ -1,10 +1,14 @@
 package io.jstach.apt.context;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.annotation.JStacheFlags;
+import io.jstach.apt.LoggingSupport;
 import io.jstach.apt.NamedTemplate;
 
-public sealed interface TemplateStack {
+public sealed interface TemplateStack extends LoggingSupport {
     
     public String getTemplateName();
     
@@ -32,8 +36,23 @@ public sealed interface TemplateStack {
         return new SimpleTemplateStack(templateName, this);
     }
     
-    public static TemplateStack ofRoot(NamedTemplate template) {
-        return new RootTemplateStack(template);
+    public static TemplateStack ofRoot(NamedTemplate template, Set<JStacheFlags.Flag> flags) {
+        return new RootTemplateStack(template, flags);
+    }
+    
+    default void debug(CharSequence message) {
+        if (isDebug()) {
+            var out = System.out;
+            if (out != null) {
+                out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
+            }
+        }
+    }
+    
+
+    
+    default boolean isDebug() {
+        return flags().contains(JStacheFlags.Flag.DEBUG);
     }
     
     record SimpleTemplateStack(String templateName, @Nullable TemplateStack caller) implements TemplateStack {
@@ -47,7 +66,7 @@ public sealed interface TemplateStack {
         }
     }
     
-    record RootTemplateStack(NamedTemplate template) implements TemplateStack {
+    record RootTemplateStack(NamedTemplate template, Set<JStacheFlags.Flag> flags) implements TemplateStack {
         
         public String getTemplateName() {
             return template.name();
@@ -56,6 +75,14 @@ public sealed interface TemplateStack {
         public @Nullable TemplateStack getCaller() {
             return null;
         }
+    }
+    
+    default Set<JStacheFlags.Flag> flags() {
+        var caller = getCaller();
+        if (caller != null) {
+            return caller.flags();
+        }
+        return Set.of();
     }
 
 }

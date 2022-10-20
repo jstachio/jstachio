@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -42,30 +43,30 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 class InvertedRenderingContext implements BooleanExpressionContext {
     private final BooleanExpressionContext parent;
+    private final boolean dottedName;
 
-    InvertedRenderingContext(RenderingContext parent) {
+    InvertedRenderingContext(RenderingContext parent, boolean dottedName) {
         this.parent = (BooleanExpressionContext) parent;
+        this.dottedName = dottedName;
     }
 
     @Override
     public String beginSectionRenderingCode() {
-        List<BooleanExpressionContext> expressions = booleanExpressions();
-        
-        StringBuilder sb = new StringBuilder();
-        //sb.append("/* inverted */ ");
-        sb.append("if (");
-        boolean first = true;
-        for (var e : expressions) {
-            if (first) {
-                first = false;
-            }
-            else {
-                sb.append(" || ");
-            }
-            sb.append(e.getExpression());
+        //List<BooleanExpressionContext> expressions = booleanExpressions();
+        String debug = ""; //"/*\n" + printStack() + "\n*/\n";
+        var e = parent;
+        String ifexp; 
+        if (dottedName) {
+            List<String> exps = nullableExpressions().stream().map(ne -> ne.invertedExpression())
+                    .collect(Collectors.toCollection(ArrayList::new));
+            exps.add(e.getExpression());
+            ifexp = "if (" +  exps.stream().collect(Collectors.joining(" || ")) + ") {";
         }
-        sb.append(") {");
-        return sb.toString();
+        else {
+            ifexp = "if (" + e.getExpression() + ") {";
+        }
+        String s = debug + ifexp;
+        return s;
     }
 
     private List<BooleanExpressionContext> booleanExpressions() {
@@ -76,6 +77,20 @@ class InvertedRenderingContext implements BooleanExpressionContext {
                 if (! be.getExpression().isBlank()) {
                     expressions.add(be);
                 }
+            }
+            p = p.getParent();
+        }
+        
+        //Collections.reverse(expressions);
+        return expressions;
+    }
+    
+    private List<InvertedExpressionContext> nullableExpressions() {
+        RenderingContext p = getParent();
+        List<InvertedExpressionContext> expressions = new ArrayList<>();
+        while (p != null) {
+            if (p instanceof @NonNull InvertedExpressionContext ne) {
+                expressions.add(ne);
             }
             p = p.getParent();
         }
