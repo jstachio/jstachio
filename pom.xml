@@ -15,8 +15,8 @@
   <modules>
     <module>etc</module>
     <module>api</module>
-    <module>jstachio-examples</module>
-    <module>jstachio-apt</module>
+    <module>test</module>
+    <module>compiler</module>
     <module>spec</module>
   </modules>
   <scm>
