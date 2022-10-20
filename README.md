@@ -1,13 +1,11 @@
-Static mustache
-===============
+JStachio
+========
 
 A typesafe Java Mustache templating engine.
 
 Templates are compiled into readable Java source code and value bindings are statically checked.
 
-**N.B. this is the SnapHop fork of https://github.com/sviperll/static-mustache .**
-
-**This project will be renamed soon and heavily refactored. Updated link to come soon.**
+(formerly called [static-mustache](https://github.com/sviperll/static-mustache))
 
 Features
 --------
@@ -16,6 +14,10 @@ Features
 
  * [Mustache (v 1.3)](https://github.com/mustache/spec) syntax.
 
+   * Full support of non-optional Mustache spec v1.3.0 requirements (including whitespace)
+   * Optional inheritance support with some caveats
+   * Optional lambda support with some differences due to static nature
+ 
  * Templates are compiled into effective code
 
  * Value bindings are statically checked.
@@ -26,40 +28,71 @@ Features
 
  * Zero configuration. No plugins or tweaks are required.
    Everything is done with standard javac with any IDE and/or build-system.
-
- * Non-HTML templates are supported. Set of supported formats is extensible.
-
- * Layouts are supported, i. e. generation of header and footer from one template.
  
+ * Non-HTML templates are supported. Set of supported formats is extensible.
+ * Layouts are supported, i. e. generation of header and footer from one template.
+ * RenderService extension point via ServiceLoader
+ * Customize allowed types that can be outputted otherwise compiler error (to avoid toString on classes that do not have a friendly toString).
+ * Formatter for custom `toString` of variables at runtime
+ * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
+ * `Map<String, ?>` support
+ * `Optional<?>` support
+
 Installation
 ------------
 
-Use maven dependency:
+
+### Maven
+
 
 ```xml
+<properties>
+    <io.jstach.version>0.6.0-SNAPSHOT</io.jstach.version>
+</properties>
+...
+<dependencies>
     <dependency>
-        <groupId>com.snaphop.staticmustache</groupId>
-        <artifactId>static-mustache</artifactId>
-        <version>(see release tags)</version>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio</artifactId>
+        <version>${io.jstach.version}</version>
     </dependency>
+</dependencies>
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>17</source> <!-- 17 is the minimum -->
+                <target>17</target> <!-- 17 is the minimum -->
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>io.jstach</groupId>
+                        <artifactId>jstachio-apt</artifactId>
+                        <version>${io.jstach.version}</version>
+                    </path>
+                    <!-- other annotation processors -->
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+
+### Gradle
+
+```gradle
+dependencies {
+ 
+    implementation 'io.jstach:jstachio:VERSION'
+ 
+    annotationProcessor 'io.jstach:jstachio-apt:VERSION'
+}
 ```
 
 
-
-
-SnapHop additions
------------------
-
- * Full support of non-optional Mustache spec v1.3.0 requirements (including whitespace)
-   * Optional inheritance support with some caveats
-   * Optional lambda support with some differences due to static nature
- * RenderService extension point via ServiceLoader
- * Formatter for custom `toString` of variables
- * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
- * Compound dotted path like variables similar to Handlebars.
- * `Map<String, ?>` support
- * `Optional<?>` support
- * Customize allowed types that can be outputted otherwise compiler error (to avoid toString on classes that do not have a friendly toString).
 
 Example
 -------
@@ -99,26 +132,17 @@ Example
 Following class can be used to provide actual data to fill into above template.
 
 ```java
-@GenerateRenderableAdapter(
+@JStache(
     // points to src/main/resources/user.mustache file
-    template = "user.mustache",
+    path = "user.mustache",
+   
+    // or alternatively you can inline the template
+    template = "", 
 
-    // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
-    adapterName = "RenderableHtmlUserAdapter")
-public class User {
-    final String name;
-    final int age;
-    final String[] array;
-    final List<Item<String>> list1;
+    )
+public record User(String name, int age, String[] array, List<Item<String>> list) {
 
-    public User(String name, int age, String[] array, List<Item<String>> list1) {
-        this.name = name;
-        this.age = age;
-        this.array = array;
-        this.list1 = list1;
-    }
-
-    public static class Item<T> {
+   public static class Item<T> {
         private final T value;
         public Item(T value) {
             this.value = value;
@@ -133,19 +157,15 @@ public class User {
 
 ### Rendering ###
 
-New class `RenderableHtmlUserAdapter` will be mechanically generated with the above code. This class can be used to render template filled with actual data. To render template following code can be used:
+New class `UserRenderer` will be mechanically generated with the above code. 
+This class can be used to render template filled with actual data. To render template following code can be used:
 
 ```java
 class Main {
     public static void main(String[] args) throws IOException {
         User user = new User("John Doe", 21, new String[] {"Knowns nothing"}, list);
-        Renderable<Html> renderable = RenderableHtmlUserAdapter.of(user);
-
-        // Any appendable will do: StringBuilder, Writer, OutputStream
-        Renderer renderer = renderable.createRenderer(System.out);
-
-        // Write rendered template
-        renderer.render();
+        StringBuilder appendable = new StringBuilder();
+        JStachio.render(user, appendable);
     }
 }
 ```
@@ -197,14 +217,15 @@ target/classes/user.mustache:5: error: Unable to render field: type error: Can't
   location: mustache template
 ```
 
-See `static-mustache-examples` project for more examples.
+See `test/examples` project for more examples.
 
-Current differences from mustache
----------------------------------
+Current differences from mustache spec
+--------------------------------------
 
- * Lambdas are not supported (yet)
  * Delimiter redefinition is not supported
  * Whitespace in block tags is explicit (currently the [spec is ill-defined on this](https://github.com/mustache/spec/pull/131)) 
+ * Inheritance block scoping is eager: https://github.com/mustache/spec/pull/129
+   * I hope to fix that soon
 
 Design
 ------
@@ -231,7 +252,8 @@ Interpretation of Java-types and values
 
 See [mustache manual (v 1.3)](https://jgonggrijp.gitlab.io/wontache/mustache.5.html) .
 
-~~When some value is null nothing is rendered for this mustache-variable or mustache-section anyway.~~ Configurable via `@TemplateFormatterTypes` as well as the RenderService SPI.
+~~When some value is null nothing is rendered for this mustache-variable or mustache-section anyway.~~ 
+Configurable via `@TemplateFormatterTypes` as well as the JStachioServices SPI.
 
 Boxed and unboxed booleans can be used for mustache-sections. Section is only rendered if value is true.
 
@@ -280,4 +302,4 @@ Rendering of other Java-types as mustache-variable is currently compile-time err
 License
 -------
 
-Static mustache is under BSD 3-clause license.
+JStachio is under BSD 3-clause license.

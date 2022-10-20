@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
 @Documented
-public @interface TemplateInterface {
+public @interface JStacheInterfaces {
     public Class<?> value();
 }

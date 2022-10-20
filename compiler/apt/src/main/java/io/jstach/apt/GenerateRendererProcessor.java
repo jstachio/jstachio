@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
@@ -90,10 +91,10 @@ import io.jstach.apt.meta.ElementMessage;
 import io.jstach.apt.prism.JStacheBasePathPrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterTypesPrism;
+import io.jstach.apt.prism.JStacheInterfacesPrism;
 import io.jstach.apt.prism.JStachePartialMappingPrism;
 import io.jstach.apt.prism.JStachePartialPrism;
 import io.jstach.apt.prism.JStachePrism;
-import io.jstach.apt.prism.TemplateInterfacePrism;
 import io.jstach.escapers.Html;
 import io.jstach.spi.JStacheServices;
 
@@ -215,7 +216,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
     
     private List<String> resolveBaseInterfaces(TypeElement element) {
         PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-        TemplateInterfacePrism prism = TemplateInterfacePrism.getInstanceOn(packageElement);
+        JStacheInterfacesPrism prism = JStacheInterfacesPrism.getInstanceOn(packageElement);
         if (prism != null) {
             var tm =  prism.value();
             assert tm != null;
