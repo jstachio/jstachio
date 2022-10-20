@@ -34,9 +34,14 @@ Features
  * RenderService extension point via ServiceLoader
  * Customize allowed types that can be outputted otherwise compiler error (to avoid toString on classes that do not have a friendly toString).
  * Formatter for custom `toString` of variables at runtime
- * Add extra `implements` interfaces to generated code for trait like add ons (`@TemplateInterface`)
+ * Add extra `implements` interfaces to generated code for trait like add ons (`@JStacheInterfaces`)
+ * Powerful Lambda support
  * `Map<String, ?>` support
  * `Optional<?>` support
+ * Compatible with [JMustache](https://github.com/samskivert/jmustache#-first-and--last) and [Handlebars](https://handlebarsjs.com/api-reference/data-variables.html#root) list index extensions
+ * You can safely fallback to reflection based runtime rendering via [JMustache](https://github.com/samskivert/jmustache) and [mustache.java](https://github.com/spullara/mustache.java) (useful for development)
+ * It is by far the fastest Java Mustache implementations and arguably most compliant 
+ * Planned zero runtime dependency option (as in all the code needed is generated)
 
 Installation
 ------------
@@ -81,6 +86,8 @@ Installation
 </build>
 ```
 
+*N.B. The annotations jar (jstachio-annotation) is pulled in transitively*
+
 ### Gradle
 
 ```gradle
@@ -99,7 +106,7 @@ Example
 
 ### user.mustache ###
 
-```
+```hbs
 {{#name}}
 <p>Name: {{.}}, Name Length is {{length}}</p>
 {{/name}}
@@ -172,7 +179,7 @@ class Main {
 
 The result of running this code will be
 
-```
+```html
 <p>Name: John Doe, Name Length is 8</p>
 
 
