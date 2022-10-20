@@ -60,16 +60,6 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         this.definitionElement = element;
         this.parent = parent;
     }
-
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode();
-    }
-
-    @Override
-    public String endSectionRenderingCode() {
-        return parent.endSectionRenderingCode();
-    }
     
     @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
@@ -95,13 +85,13 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         allMethods.addAll(methods);
         
         
-        JavaExpression result = getMethodEntryOrDefault(allMethods, name);
+        JavaExpression result = getMethodEntry(allMethods, name);
         if (result != null)
             return result;
-        result = getMethodEntryOrDefault(allMethods, getterName(name));
+        result = getMethodEntry(allMethods, getterName(name));
         if (result != null)
             return result;
-        result = getFieldEntryOrDefault(enclosedElements, name);
+        result = getFieldEntry(enclosedElements, name);
         
         return result;
     }
@@ -118,7 +108,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         return result;
     }
 
-    private @Nullable JavaExpression getMethodEntryOrDefault(List<? extends Element> elements, String methodName) throws ContextException {
+    private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String methodName) throws ContextException {
         boolean nameFound = false;
         for (Element element: elements) {
             if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
@@ -157,7 +147,7 @@ class DeclaredTypeRenderingContext implements RenderingContext {
         }
     }
 
-    private @Nullable JavaExpression getFieldEntryOrDefault(List<? extends Element> enclosedElements, String name) throws ContextException {
+    private @Nullable JavaExpression getFieldEntry(List<? extends Element> enclosedElements, String name) throws ContextException {
         for (Element element: enclosedElements) {
             if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
                 if (element.getModifiers().contains(Modifier.PRIVATE)) {

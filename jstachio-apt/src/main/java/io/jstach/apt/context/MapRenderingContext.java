@@ -54,16 +54,6 @@ class MapRenderingContext implements RenderingContext {
     }
 
     @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode();
-    }
-
-    @Override
-    public String endSectionRenderingCode() {
-        return parent.endSectionRenderingCode();
-    }
-
-    @Override
     public @Nullable JavaExpression get(String name) throws ContextException {
         
         if (name.equals(".")) {

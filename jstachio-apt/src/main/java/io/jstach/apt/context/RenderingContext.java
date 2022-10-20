@@ -35,8 +35,20 @@ import org.eclipse.jdt.annotation.Nullable;
 
 
 interface RenderingContext {
-    String beginSectionRenderingCode();
-    String endSectionRenderingCode();
+    default String beginSectionRenderingCode() {
+        var p = getParent();
+        if (p != null) {
+            return p.beginSectionRenderingCode();
+        }
+        return "";
+    }
+    default String endSectionRenderingCode() {
+        var p = getParent();
+        if (p != null) {
+            return p.endSectionRenderingCode();
+        }
+        return "";
+    }
     
     /**
      * Gets the method (or field) directly in this context.
