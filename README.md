@@ -306,6 +306,21 @@ Strings are rendered as is.
 
 Rendering of other Java-types as mustache-variable is currently compile-time error.
 
+
+## Performance
+
+*It is not a goal of this project to be the fastest templating engine*.
+
+Not that peformance matters much with templating languges 
+(it is rarely the bottleneck) but JStachio is very fast and is basically equivalent to jte.
+
+![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
+
+The one called Manual is as the name implies. Raw Java code.
+
+JStachio has to do a lot of null checking for falsey and from my testing that is what is just ever so slighly making it slower than the fastest. I hope to add `@Nullable` annotation checking in the future but not really for performance.
+
+
 License
 -------
 

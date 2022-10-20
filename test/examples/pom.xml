@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.jstach</groupId>
-    <artifactId>jstachio-maven-parent</artifactId>
+    <artifactId>jstachio-test-parent</artifactId>
     <version>0.6.0-SNAPSHOT</version>
   </parent>
   <artifactId>jstachio-examples</artifactId>
