@@ -74,7 +74,6 @@ import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
 import io.jstach.Renderer;
-import io.jstach.annotation.AutoFormat;
 import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheContentType;
 import io.jstach.annotation.JStacheFlags;
@@ -364,12 +363,12 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
     private TypeElement resolveContentType(JStachePrism gp) throws DeclarationException {
         TypeElement templateFormatElement = null;
-        TypeMirror templateFormatType = gp.templateFormat();
+        TypeMirror templateFormatType = gp.contentType();
         if (templateFormatType instanceof DeclaredType dt) {
             templateFormatElement = (TypeElement) dt.asElement();
         }
         else {
-            throw new ClassCastException("Expecting DeclaredType for templateFormat " + gp.templateFormat());
+            throw new ClassCastException("Expecting DeclaredType for contentType " + gp.contentType());
         }
         @Nullable JStacheContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStacheContentType.class);
         if (templateFormatAnnotation == null) {
@@ -379,7 +378,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         /*
          * TODO clean this up to resolve format
          */
-        var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AutoFormat.class.getName());
+        var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(JStache.AutoContentType.class.getName());
         if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
             templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
             if (templateFormatElement == null) {

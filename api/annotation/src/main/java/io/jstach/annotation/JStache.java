@@ -72,14 +72,14 @@ public @interface JStache {
     String adapterName() default ":auto";
 
     /**
-     * Class representing template format.
+     * Class representing template content type to be used by escapers
      * <p>
-     * You can create custom formats using
+     * You can create custom escapers using
      * @JStachContentType annotation.
      *
      * @return format of given template (HTML is default)
      */
-    Class<?> templateFormat() default AutoFormat.class;
+    Class<?> contentType() default AutoContentType.class;
 
     /**
      * Encoding of given template file.
@@ -88,5 +88,10 @@ public @interface JStache {
      * @return encoding of given template file
      */
     String charset() default ":default";
+    
+    @JStacheContentType
+    public final class AutoContentType {
+
+    }
 
 }

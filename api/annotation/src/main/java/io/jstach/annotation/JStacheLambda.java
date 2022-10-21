@@ -11,11 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Documented
 public @interface JStacheLambda {
-    
+
     String name() default "";
-    
-//    String template() default "";
-//    
-//    String path() default "";
 
 }

@@ -41,8 +41,8 @@ import io.jstach.escapers.PlainText;
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @JStaches({
-    @JStache(path = "user1.mustache", templateFormat = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
-    @JStache(path = "user1.mustache", templateFormat = Html.class, adapterName = "RenderableHtmlUser1Adapter")
+    @JStache(path = "user1.mustache", contentType = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
+    @JStache(path = "user1.mustache", contentType = Html.class, adapterName = "RenderableHtmlUser1Adapter")
 })
 public class User1 {
     public final String name;
