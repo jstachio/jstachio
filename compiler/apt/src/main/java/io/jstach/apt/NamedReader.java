@@ -35,34 +35,38 @@ import java.io.Reader;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class NamedReader extends Reader {
-    private final Reader reader;
-    private final String name;
-    private final String path;
-    public NamedReader(Reader reader, String name, String path) {
-        this.reader = reader;
-        this.name = name;
-        this.path = path;
-    }
 
-    @Override
-    public int read(char @Nullable [] cbuf, int off, int len) throws IOException {
-        return reader.read(cbuf, off, len);
-    }
+	private final Reader reader;
 
-    @Override
-    public void close() throws IOException {
-        reader.close();
-    }
+	private final String name;
 
-    public String name() {
-        return name;
-    }
-    
-    public String path() {
-        return path;
-    }
+	private final String path;
+
+	public NamedReader(Reader reader, String name, String path) {
+		this.reader = reader;
+		this.name = name;
+		this.path = path;
+	}
+
+	@Override
+	public int read(char @Nullable [] cbuf, int off, int len) throws IOException {
+		return reader.read(cbuf, off, len);
+	}
+
+	@Override
+	public void close() throws IOException {
+		reader.close();
+	}
+
+	public String name() {
+		return name;
+	}
+
+	public String path() {
+		return path;
+	}
+
 }

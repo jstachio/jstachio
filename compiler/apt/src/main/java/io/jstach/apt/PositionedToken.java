@@ -30,30 +30,31 @@
 package io.jstach.apt;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  * @param <T>
  */
 public class PositionedToken<T> {
-    private final Position position;
-    private final T innerToken;
-    public PositionedToken(Position position, T innerToken) {
-        this.position = position;
-        this.innerToken = innerToken;
-    }
 
-    public Position position() {
-        return position;
-    }
+	private final Position position;
 
-    public T innerToken() {
-        return innerToken;
-    }
+	private final T innerToken;
 
-    @Override
-    public String toString() {
-        return "PositionedToken [position=" + position + ", innerToken=" + innerToken + "]";
-    }
-    
-    
+	public PositionedToken(Position position, T innerToken) {
+		this.position = position;
+		this.innerToken = innerToken;
+	}
+
+	public Position position() {
+		return position;
+	}
+
+	public T innerToken() {
+		return innerToken;
+	}
+
+	@Override
+	public String toString() {
+		return "PositionedToken [position=" + position + ", innerToken=" + innerToken + "]";
+	}
+
 }

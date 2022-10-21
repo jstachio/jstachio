@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/DottedNamesContextPrecedence.mustache")
 public class DottedNamesContextPrecedence extends SpecModel {
+
 }

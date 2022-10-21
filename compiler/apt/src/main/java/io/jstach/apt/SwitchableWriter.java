@@ -33,42 +33,44 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class SwitchableWriter extends Writer {
-    private final Writer writer;
-    private boolean suppressesOutput = false;
 
-    public SwitchableWriter(Writer writer) {
-        this.writer = writer;
-    }
+	private final Writer writer;
 
-    @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
-        if (!suppressesOutput)
-            writer.write(cbuf, off, len);
-    }
+	private boolean suppressesOutput = false;
 
-    public boolean suppressesOutput() {
-        return suppressesOutput;
-    }
+	public SwitchableWriter(Writer writer) {
+		this.writer = writer;
+	}
 
-    public void enableOutput() {
-        suppressesOutput = false;
-    }
+	@Override
+	public void write(char[] cbuf, int off, int len) throws IOException {
+		if (!suppressesOutput)
+			writer.write(cbuf, off, len);
+	}
 
-    public void disableOutput() {
-        suppressesOutput = true;
-    }
+	public boolean suppressesOutput() {
+		return suppressesOutput;
+	}
 
-    @Override
-    public void flush() throws IOException {
-        writer.flush();
-    }
+	public void enableOutput() {
+		suppressesOutput = false;
+	}
 
-    @Override
-    public void close() throws IOException {
-        writer.close();
-    }
+	public void disableOutput() {
+		suppressesOutput = true;
+	}
+
+	@Override
+	public void flush() throws IOException {
+		writer.flush();
+	}
+
+	@Override
+	public void close() throws IOException {
+		writer.close();
+	}
+
 }

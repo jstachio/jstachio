@@ -8,31 +8,30 @@ import org.junit.Test;
 
 import io.jstach.JStachio;
 
-
 public class IterableTest {
 
-    @Test
-    public void test() {
-        String actual = JStachio.render(new IterableExample(List.of("Kenny", "Eric", "Stan"), true));
-        String expected = """
+	@Test
+	public void test() {
+		String actual = JStachio.render(new IterableExample(List.of("Kenny", "Eric", "Stan"), true));
+		String expected = """
 
 
-                I am first Kenny
-                    My one based index is 1
-                    My zero based index is 0
+				I am first Kenny
+				    My one based index is 1
+				    My zero based index is 0
 
-                -------
-                 Eric
-                    My one based index is 2
-                    My zero based index is 1
+				-------
+				 Eric
+				    My one based index is 2
+				    My zero based index is 1
 
-                -------
-                I am last Stan
-                    My one based index is 3
-                    My zero based index is 2
-                                """;
-        
-        assertEquals(expected, actual);
-    }
+				-------
+				I am last Stan
+				    My one based index is 3
+				    My zero based index is 2
+				                """;
+
+		assertEquals(expected, actual);
+	}
 
 }

@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Variable.mustache")
 public class Variable extends SpecModel {
+
 }

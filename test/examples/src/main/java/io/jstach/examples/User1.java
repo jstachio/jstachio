@@ -37,35 +37,43 @@ import io.jstach.escapers.Html;
 import io.jstach.escapers.PlainText;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @JStaches({
-    @JStache(path = "user1.mustache", contentType = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
-    @JStache(path = "user1.mustache", contentType = Html.class, adapterName = "RenderableHtmlUser1Adapter")
-})
+		@JStache(path = "user1.mustache", contentType = PlainText.class, adapterName = "RenderableTextUser1Adapter"),
+		@JStache(path = "user1.mustache", contentType = Html.class, adapterName = "RenderableHtmlUser1Adapter") })
 public class User1 {
-    public final String name;
-    public final int age;
-    public final String[] array;
-    public final int[][] array1;
-    public final List<? extends Item<? extends String>> list1;
 
-    public User1(String name, int age, String[] array, int[][] array1, List<? extends Item<? extends String>> list1) {
-        this.name = name;
-        this.age = age;
-        this.array = array;
-        this.array1 = array1;
-        this.list1 = list1;
-    }
+	public final String name;
 
-    public static class Item<T> {
-        private final T value;
-        public Item(T value) {
-            this.value = value;
-        }
-        T value() {
-            return value;
-        }
-    }
+	public final int age;
+
+	public final String[] array;
+
+	public final int[][] array1;
+
+	public final List<? extends Item<? extends String>> list1;
+
+	public User1(String name, int age, String[] array, int[][] array1, List<? extends Item<? extends String>> list1) {
+		this.name = name;
+		this.age = age;
+		this.array = array;
+		this.array1 = array1;
+		this.list1 = list1;
+	}
+
+	public static class Item<T> {
+
+		private final T value;
+
+		public Item(T value) {
+			this.value = value;
+		}
+
+		T value() {
+			return value;
+		}
+
+	}
+
 }

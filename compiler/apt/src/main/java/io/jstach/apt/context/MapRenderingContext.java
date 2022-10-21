@@ -39,71 +39,73 @@ import javax.lang.model.util.ElementFilter;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class MapRenderingContext implements RenderingContext, InvertedExpressionContext {
-    protected final JavaExpression expression;
-    protected final TypeElement definitionElement;
-    private final RenderingContext parent;
 
-    MapRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
-        this.expression = expression;
-        this.definitionElement = element;
-        this.parent = parent;
-    }
+	protected final JavaExpression expression;
 
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        
-        if (name.equals(".")) {
-            return currentExpression();
-        }
-        
-        var all = expression.model().getElements().getAllMembers(definitionElement);
-        
-        var getMethod = ElementFilter.methodsIn(all).stream()
-                .filter(e -> "get".equals(e.getSimpleName().toString())
-                        && e.getModifiers().contains(Modifier.PUBLIC) 
-                        && ! e.getModifiers().contains(Modifier.STATIC)
-                        && e.getReturnType().getKind() != TypeKind.VOID
-                        && e.getParameters().size() == 1 ).findFirst().orElse(null);
-        
-        if (getMethod == null) {
-            return null;
-        }
-        return expression.mapGet(getMethod, name);
-    }
-    
-    @Override
-    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
-        // For Maps we favor resolving from the parent first
-        // Otherwise it is impossible to get out of the Map!
-        JavaExpression r = parent.find(name, filter.and(c -> ! (c instanceof MapRenderingContext)));
-        
-        if (r == null && filter.test(this)) {
-            r = get(name);
-        }
-        return r;
-    }
+	protected final TypeElement definitionElement;
 
-    @Override
-    public JavaExpression currentExpression() {
-        return expression;
-    }
-    
-    @Override
-    public String invertedExpression() {
-        return "( " + expression.text() + " == null )";
-    }
+	private final RenderingContext parent;
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return this.parent;
-    }
+	MapRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
+		this.expression = expression;
+		this.definitionElement = element;
+		this.parent = parent;
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+
+		if (name.equals(".")) {
+			return currentExpression();
+		}
+
+		var all = expression.model().getElements().getAllMembers(definitionElement);
+
+		var getMethod = ElementFilter.methodsIn(all).stream()
+				.filter(e -> "get".equals(e.getSimpleName().toString()) && e.getModifiers().contains(Modifier.PUBLIC)
+						&& !e.getModifiers().contains(Modifier.STATIC) && e.getReturnType().getKind() != TypeKind.VOID
+						&& e.getParameters().size() == 1)
+				.findFirst().orElse(null);
+
+		if (getMethod == null) {
+			return null;
+		}
+		return expression.mapGet(getMethod, name);
+	}
+
+	@Override
+	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+		// For Maps we favor resolving from the parent first
+		// Otherwise it is impossible to get out of the Map!
+		JavaExpression r = parent.find(name, filter.and(c -> !(c instanceof MapRenderingContext)));
+
+		if (r == null && filter.test(this)) {
+			r = get(name);
+		}
+		return r;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return expression;
+	}
+
+	@Override
+	public String invertedExpression() {
+		return "( " + expression.text() + " == null )";
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return this.parent;
+	}
+
 }

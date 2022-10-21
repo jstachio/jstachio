@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/DottedNamesArbitraryDepth.mustache")
 public class DottedNamesArbitraryDepth extends SpecModel {
+
 }

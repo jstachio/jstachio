@@ -33,34 +33,35 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @SuppressWarnings("null")
 class SwitchablePrintWriter extends PrintWriter implements CodeAppendable {
-    static SwitchablePrintWriter createInstance(Writer writer) {
-        if (writer instanceof SwitchableWriter)
-            return new SwitchablePrintWriter((SwitchableWriter)writer);
-        else
-            return new SwitchablePrintWriter(new SwitchableWriter(writer));
-    }
-    
-    private final SwitchableWriter out;
 
-    private SwitchablePrintWriter(SwitchableWriter out) {
-        super(out);
-        this.out = out;
-    }
+	static SwitchablePrintWriter createInstance(Writer writer) {
+		if (writer instanceof SwitchableWriter)
+			return new SwitchablePrintWriter((SwitchableWriter) writer);
+		else
+			return new SwitchablePrintWriter(new SwitchableWriter(writer));
+	}
 
-    public boolean suppressesOutput() {
-        return out.suppressesOutput();
-    }
+	private final SwitchableWriter out;
 
-    public void enableOutput() {
-        out.enableOutput();
-    }
+	private SwitchablePrintWriter(SwitchableWriter out) {
+		super(out);
+		this.out = out;
+	}
 
-    public void disableOutput() {
-        out.disableOutput();
-    }
+	public boolean suppressesOutput() {
+		return out.suppressesOutput();
+	}
+
+	public void enableOutput() {
+		out.enableOutput();
+	}
+
+	public void disableOutput() {
+		out.disableOutput();
+	}
+
 }

@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Overriddenparent.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="parent", template="{{$stuff}}...{{/stuff}}"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "parent", template = "{{$stuff}}...{{/stuff}}"), })
 public class Overriddenparent extends SpecModel {
+
 }

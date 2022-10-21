@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PACKAGE)
 @Documented
 public @interface JStacheBasePath {
-    public String value() default "";
+
+	public String value() default "";
+
 }

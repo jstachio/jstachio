@@ -33,80 +33,81 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-
 interface RenderingContext {
-    default String beginSectionRenderingCode() {
-        var p = getParent();
-        if (p != null) {
-            return p.beginSectionRenderingCode();
-        }
-        return "";
-    }
-    default String endSectionRenderingCode() {
-        var p = getParent();
-        if (p != null) {
-            return p.endSectionRenderingCode();
-        }
-        return "";
-    }
-    
-    /**
-     * Gets the method (or field) directly in this context.
-     * This is for dotted names as they cannot look up the context stack.
-     * 
-     * @param name
-     * @return
-     * @throws ContextException
-     */
-    @Nullable JavaExpression get(String name) throws ContextException;
-    
-    /**
-     * This should be mostly equivalent to {{.}}
-     * @return
-     */
-    default JavaExpression get() {
-        return currentExpression();
-    }
 
+	default String beginSectionRenderingCode() {
+		var p = getParent();
+		if (p != null) {
+			return p.beginSectionRenderingCode();
+		}
+		return "";
+	}
 
-    /**
-     * Looks for a method or or field up the context stack starting
-     * in the current context first and then delgating to the parent.
-     * 
-     * @param name
-     * @return
-     * @throws ContextException
-     */
-   // @Nullable JavaExpression find(String name) throws ContextException;
-    
-    default @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
-        var p = getParent();
-        if (p != null) {
-            return p.find(name, filter);
-        }
-        return null;
-    }
+	default String endSectionRenderingCode() {
+		var p = getParent();
+		if (p != null) {
+			return p.endSectionRenderingCode();
+		}
+		return "";
+	}
 
+	/**
+	 * Gets the method (or field) directly in this context. This is for dotted names as
+	 * they cannot look up the context stack.
+	 * @param name
+	 * @return
+	 * @throws ContextException
+	 */
+	@Nullable
+	JavaExpression get(String name) throws ContextException;
 
-    
-    JavaExpression currentExpression();
-    VariableContext createEnclosedVariableContext();
-    @Nullable RenderingContext getParent();
-    
-    default String printStack() {
-        StringBuilder sb = new StringBuilder();
-        @Nullable
-        RenderingContext parent = this;
-        while(parent != null) {
-            sb.append("\n\t<- ");
-            sb.append(parent.description());
-            parent = parent.getParent();
-        }
+	/**
+	 * This should be mostly equivalent to {{.}}
+	 * @return
+	 */
+	default JavaExpression get() {
+		return currentExpression();
+	}
 
-        return sb.toString();
-    }
-    
-    default String description() {
-        return getClass().getName();
-    }
+	/**
+	 * Looks for a method or or field up the context stack starting in the current context
+	 * first and then delgating to the parent.
+	 * @param name
+	 * @return
+	 * @throws ContextException
+	 */
+	// @Nullable JavaExpression find(String name) throws ContextException;
+
+	default @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+		var p = getParent();
+		if (p != null) {
+			return p.find(name, filter);
+		}
+		return null;
+	}
+
+	JavaExpression currentExpression();
+
+	VariableContext createEnclosedVariableContext();
+
+	@Nullable
+	RenderingContext getParent();
+
+	default String printStack() {
+		StringBuilder sb = new StringBuilder();
+		@Nullable
+		RenderingContext parent = this;
+		while (parent != null) {
+			sb.append("\n\t<- ");
+			sb.append(parent.description());
+			parent = parent.getParent();
+		}
+
+		return sb.toString();
+	}
+
+	default String description() {
+		return getClass().getName();
+	}
+
 }

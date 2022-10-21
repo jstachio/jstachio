@@ -52,156 +52,160 @@ import io.jstach.apt.context.types.NativeType;
 import io.jstach.apt.context.types.ObjectType;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class JavaLanguageModel {
-    
-    private static @Nullable JavaLanguageModel INSTANCE;
-    
-    public static JavaLanguageModel createInstance(Types types, Elements elements, Messager messager) {
-        KnownTypes knownTypes = KnownTypes.createInstace(elements, types);
-        var self = new JavaLanguageModel(types, elements, messager, knownTypes);
-        INSTANCE = self;
-        return self;
-    }
-    
-    public static JavaLanguageModel getInstance() {
-        return Objects.requireNonNull(INSTANCE);
-    }
 
-    private final Types operations;
-    private final Elements elements;
-    private final Messager messager;
-    
-    private final KnownTypes knownTypes;
-    JavaLanguageModel(Types operations, Elements elements, Messager messager, KnownTypes knownTypes) {
-        this.operations = operations;
-        this.knownTypes = knownTypes;
-        this.elements = elements;
-        this.messager = messager;
-    }
-    
-    
-    
-    public Messager getMessager() {
-        return messager;
-    }
-    
-    public Types getTypes() {
-        return operations;
-    }
-    
-    public Elements getElements() {
-        return this.elements;
-    }
+	private static @Nullable JavaLanguageModel INSTANCE;
 
-    public KnownTypes knownTypes() {
-        return knownTypes;
-    }
+	public static JavaLanguageModel createInstance(Types types, Elements elements, Messager messager) {
+		KnownTypes knownTypes = KnownTypes.createInstace(elements, types);
+		var self = new JavaLanguageModel(types, elements, messager, knownTypes);
+		INSTANCE = self;
+		return self;
+	}
 
-    DeclaredType getDeclaredType(TypeElement element, TypeMirror... typeArguments) {
-        return operations.getDeclaredType(element, typeArguments);
-    }
+	public static JavaLanguageModel getInstance() {
+		return Objects.requireNonNull(INSTANCE);
+	}
 
-    public boolean isSameType(TypeMirror first, TypeMirror second) {
-        return operations.isSameType(first, second);
-    }
-    
-    boolean isSubtype(TypeMirror subtype, TypeMirror supertype) {
-        return operations.isSubtype(subtype, supertype);
-    }
+	private final Types operations;
 
-    boolean isUncheckedException(TypeMirror exceptionType) {
-        return operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._Error.typeElement()))
-               || operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._RuntimeException.typeElement()));
-    }
+	private final Elements elements;
 
-    TypeMirror getArrayType(TypeMirror elementType) {
-        return operations.getArrayType(elementType);
-    }
+	private final Messager messager;
 
-    TypeMirror asMemberOf(DeclaredType containing, Element element) {
-        return operations.asMemberOf(containing, element);
-    }
+	private final KnownTypes knownTypes;
 
-    JavaExpression expression(String text, NativeType type) {
-        return new JavaExpression(this, text, type.typeMirror(), List.of());
-    }
-    
-    JavaExpression expression(String text, TypeMirror type) {
-        return new JavaExpression(this, text, type, List.of());
-    }
-    
-    String eraseType(DeclaredType dt) {
-       return operations.erasure(dt).toString();
-    }
+	JavaLanguageModel(Types operations, Elements elements, Messager messager, KnownTypes knownTypes) {
+		this.operations = operations;
+		this.knownTypes = knownTypes;
+		this.elements = elements;
+		this.messager = messager;
+	}
 
-    TypeMirror getGenericDeclaredType(TypeElement element) {
-        List<? extends TypeParameterElement> typeParameters = element.getTypeParameters();
-        int numberOfParameters = typeParameters.size();
-        List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(numberOfParameters);
-        for (int i = 0; i < numberOfParameters; i++) {
-            typeArguments.add(operations.getWildcardType(null, null));
-        }
-        TypeMirror[] typeArgumentArray = new TypeMirror[typeArguments.size()];
-        typeArgumentArray = typeArguments.toArray(typeArgumentArray);
-        return getDeclaredType(element, typeArgumentArray);
-    }
+	public Messager getMessager() {
+		return messager;
+	}
 
-    @Nullable DeclaredType getSupertype(DeclaredType type, ObjectType supertypeDeclaration) {
-        return getSupertype(type, supertypeDeclaration.typeElement());
-    }
-    
-    @Nullable DeclaredType getSupertype(DeclaredType type, TypeElement supertypeDeclaration) {
-        if (type.asElement().equals(supertypeDeclaration))
-            return type;
-        else {
-            List<? extends TypeMirror> supertypes = operations.directSupertypes(type);
-            for (TypeMirror supertype: supertypes) {
-                DeclaredType result = getSupertype((DeclaredType)supertype, supertypeDeclaration);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
-    }
+	public Types getTypes() {
+		return operations;
+	}
 
-    TypeElement asElement(DeclaredType declaredType) {
-        return Objects.requireNonNull((TypeElement)operations.asElement(declaredType));
-    }
-    
-    
-    boolean isType(TypeMirror type, KnownType knownType) {
-        if (knownType instanceof NativeType nativeType) {
-            return isSameType(type, nativeType.typeMirror());
-        }
-        if (knownType instanceof ObjectType objectType) {
-            return isSubtype(type, getDeclaredType(objectType.typeElement()));
-        }
-        throw new IllegalStateException();
-        
-    }
-    public Optional<KnownType> resolveType(TypeMirror type) throws TypeException {
-        if (type instanceof WildcardType wt) {
-            var eb = wt.getExtendsBound();
-            if (eb == null) return Optional.empty();
-            return resolveType(eb);
-        }
-        else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
-            return  Optional.of(knownTypes._Renderable);
-        } 
-        for (var nt : knownTypes.getNativeTypes()) {
-            if (isType(type, nt)) {
-                return Optional.of(nt);
-            }
-        }
-        for (var ot : knownTypes.getObjectTypes()) {
-            if (isType(type, ot)) {
-                return Optional.of(ot);
-            }
-        }
-        return Optional.empty();
-    }
-    
+	public Elements getElements() {
+		return this.elements;
+	}
+
+	public KnownTypes knownTypes() {
+		return knownTypes;
+	}
+
+	DeclaredType getDeclaredType(TypeElement element, TypeMirror... typeArguments) {
+		return operations.getDeclaredType(element, typeArguments);
+	}
+
+	public boolean isSameType(TypeMirror first, TypeMirror second) {
+		return operations.isSameType(first, second);
+	}
+
+	boolean isSubtype(TypeMirror subtype, TypeMirror supertype) {
+		return operations.isSubtype(subtype, supertype);
+	}
+
+	boolean isUncheckedException(TypeMirror exceptionType) {
+		return operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._Error.typeElement()))
+				|| operations.isAssignable(exceptionType,
+						operations.getDeclaredType(knownTypes._RuntimeException.typeElement()));
+	}
+
+	TypeMirror getArrayType(TypeMirror elementType) {
+		return operations.getArrayType(elementType);
+	}
+
+	TypeMirror asMemberOf(DeclaredType containing, Element element) {
+		return operations.asMemberOf(containing, element);
+	}
+
+	JavaExpression expression(String text, NativeType type) {
+		return new JavaExpression(this, text, type.typeMirror(), List.of());
+	}
+
+	JavaExpression expression(String text, TypeMirror type) {
+		return new JavaExpression(this, text, type, List.of());
+	}
+
+	String eraseType(DeclaredType dt) {
+		return operations.erasure(dt).toString();
+	}
+
+	TypeMirror getGenericDeclaredType(TypeElement element) {
+		List<? extends TypeParameterElement> typeParameters = element.getTypeParameters();
+		int numberOfParameters = typeParameters.size();
+		List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(numberOfParameters);
+		for (int i = 0; i < numberOfParameters; i++) {
+			typeArguments.add(operations.getWildcardType(null, null));
+		}
+		TypeMirror[] typeArgumentArray = new TypeMirror[typeArguments.size()];
+		typeArgumentArray = typeArguments.toArray(typeArgumentArray);
+		return getDeclaredType(element, typeArgumentArray);
+	}
+
+	@Nullable
+	DeclaredType getSupertype(DeclaredType type, ObjectType supertypeDeclaration) {
+		return getSupertype(type, supertypeDeclaration.typeElement());
+	}
+
+	@Nullable
+	DeclaredType getSupertype(DeclaredType type, TypeElement supertypeDeclaration) {
+		if (type.asElement().equals(supertypeDeclaration))
+			return type;
+		else {
+			List<? extends TypeMirror> supertypes = operations.directSupertypes(type);
+			for (TypeMirror supertype : supertypes) {
+				DeclaredType result = getSupertype((DeclaredType) supertype, supertypeDeclaration);
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
+	}
+
+	TypeElement asElement(DeclaredType declaredType) {
+		return Objects.requireNonNull((TypeElement) operations.asElement(declaredType));
+	}
+
+	boolean isType(TypeMirror type, KnownType knownType) {
+		if (knownType instanceof NativeType nativeType) {
+			return isSameType(type, nativeType.typeMirror());
+		}
+		if (knownType instanceof ObjectType objectType) {
+			return isSubtype(type, getDeclaredType(objectType.typeElement()));
+		}
+		throw new IllegalStateException();
+
+	}
+
+	public Optional<KnownType> resolveType(TypeMirror type) throws TypeException {
+		if (type instanceof WildcardType wt) {
+			var eb = wt.getExtendsBound();
+			if (eb == null)
+				return Optional.empty();
+			return resolveType(eb);
+		}
+		else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
+			return Optional.of(knownTypes._Renderable);
+		}
+		for (var nt : knownTypes.getNativeTypes()) {
+			if (isType(type, nt)) {
+				return Optional.of(nt);
+			}
+		}
+		for (var ot : knownTypes.getObjectTypes()) {
+			if (isType(type, ot)) {
+				return Optional.of(ot);
+			}
+		}
+		return Optional.empty();
+	}
+
 }

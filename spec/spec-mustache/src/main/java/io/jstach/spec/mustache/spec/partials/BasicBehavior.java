@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "partials/BasicBehavior.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="text", template="from partial"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "text", template = "from partial"), })
 public class BasicBehavior extends SpecModel {
+
 }

@@ -34,12 +34,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 public class Throwables {
-	public static String render(
-			Throwable exception) {
+
+	public static String render(Throwable exception) {
 		StringWriter message = new StringWriter();
 		PrintWriter writer = new PrintWriter(message);
 		exception.printStackTrace(writer);
@@ -47,5 +46,7 @@ public class Throwables {
 		return message.toString();
 	}
 
-	private Throwables() {}
+	private Throwables() {
+	}
+
 }

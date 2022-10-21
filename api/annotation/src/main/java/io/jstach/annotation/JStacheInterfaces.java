@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PACKAGE)
 @Documented
 public @interface JStacheInterfaces {
-    public Class<?> value();
+
+	public Class<?> value();
+
 }

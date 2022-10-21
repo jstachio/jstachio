@@ -11,8 +11,8 @@ import io.jstach.annotation.JStacheFlags.Flag;
 @JStacheFlags(flags = { Flag.DEBUG })
 public record LambdaExample(String name, Map<String, String> props) implements Lambdas {
 
-    @JStacheLambda
-    public String hello(String html, String name) {
-        return "<hello>" + html + "</hello>: " + name;
-    }
+	@JStacheLambda
+	public String hello(String html, String name) {
+		return "<hello>" + html + "</hello>: " + name;
+	}
 }

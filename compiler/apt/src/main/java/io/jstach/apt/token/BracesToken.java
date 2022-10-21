@@ -30,68 +30,83 @@
 package io.jstach.apt.token;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public abstract class BracesToken {
-    public static BracesToken twoOpenBraces() {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.twoOpenBraces();
-            }
-        };
-    }
-    public static BracesToken twoClosingBraces() {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.twoClosingBraces();
-            }
-        };
-    }
-    public static BracesToken threeOpenBraces() {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.threeOpenBraces();
-            }
-        };
-    }
-    public static BracesToken threeClosingBraces() {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.threeClosingBraces();
-            }
-        };
-    }
-    public static BracesToken character(final char s) {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.character(s);
-            }
-        };
-    }
-    public static BracesToken endOfFile() {
-        return new BracesToken() {
-            @Override
-            public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-                return visitor.endOfFile();
-            }
-        };
-    }
-    public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
-    private BracesToken() {
-    }
 
-    public interface Visitor<R, E extends Exception> {
-        R twoOpenBraces() throws E;
-        R twoClosingBraces() throws E;
-        R threeOpenBraces() throws E;
-        R threeClosingBraces() throws E;
-        R character(char c) throws E;
-        R endOfFile() throws E;
-    }
+	public static BracesToken twoOpenBraces() {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.twoOpenBraces();
+			}
+		};
+	}
+
+	public static BracesToken twoClosingBraces() {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.twoClosingBraces();
+			}
+		};
+	}
+
+	public static BracesToken threeOpenBraces() {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.threeOpenBraces();
+			}
+		};
+	}
+
+	public static BracesToken threeClosingBraces() {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.threeClosingBraces();
+			}
+		};
+	}
+
+	public static BracesToken character(final char s) {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.character(s);
+			}
+		};
+	}
+
+	public static BracesToken endOfFile() {
+		return new BracesToken() {
+			@Override
+			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+				return visitor.endOfFile();
+			}
+		};
+	}
+
+	public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
+
+	private BracesToken() {
+	}
+
+	public interface Visitor<R, E extends Exception> {
+
+		R twoOpenBraces() throws E;
+
+		R twoClosingBraces() throws E;
+
+		R threeOpenBraces() throws E;
+
+		R threeClosingBraces() throws E;
+
+		R character(char c) throws E;
+
+		R endOfFile() throws E;
+
+	}
+
 }

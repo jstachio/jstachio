@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/Padding.mustache")
 public class Padding extends SpecModel {
+
 }

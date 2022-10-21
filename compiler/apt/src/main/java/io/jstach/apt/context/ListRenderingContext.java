@@ -39,80 +39,74 @@ import javax.lang.model.util.ElementFilter;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class ListRenderingContext implements RenderingContext {
-    private final JavaExpression listExpression;
-    private final String indexVariableName;
-    private final RenderingContext parent;
 
-    public ListRenderingContext(JavaExpression listExpression, String indexVariableName, RenderingContext parent) {
-        this.listExpression = listExpression;
-        this.indexVariableName = indexVariableName;
-        this.parent = parent;
-    }
+	private final JavaExpression listExpression;
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode()
-               + String.format("for (int %s = 0; %s < %s; %s++) { ",
-                               indexVariableName,
-                               indexExpression().text(),
-                               listExpression.listSize().text(),
-                               indexExpression().text());
-    }
+	private final String indexVariableName;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return "}" + parent.endSectionRenderingCode();
-    }
+	private final RenderingContext parent;
 
-    JavaExpression componentExpession() {
-        var model = listExpression.model();
-        DeclaredType dt = (DeclaredType) listExpression.type();
-        var all = model.getElements().getAllMembers((TypeElement) dt.asElement());
-        ExecutableElement getMethod = ElementFilter.methodsIn(all).stream()
-                .filter(e -> "get".equals(e.getSimpleName().toString())
-                        && e.getModifiers().contains(Modifier.PUBLIC) 
-                        && ! e.getModifiers().contains(Modifier.STATIC)
-                        && e.getReturnType().getKind() != TypeKind.VOID
-                        && e.getParameters().size() == 1 
-                        && model.isType(e.getParameters().get(0).asType(), model.knownTypes()._int)
-                        ).findFirst().orElse(null);
-        
-        if (getMethod == null) {
-            throw new IllegalStateException("List missing get? bug.");
-        }
-        return listExpression.methodCall(getMethod, indexExpression());
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        
+	public ListRenderingContext(JavaExpression listExpression, String indexVariableName, RenderingContext parent) {
+		this.listExpression = listExpression;
+		this.indexVariableName = indexVariableName;
+		this.parent = parent;
+	}
 
-        
-        return null;
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode()
+				+ String.format("for (int %s = 0; %s < %s; %s++) { ", indexVariableName, indexExpression().text(),
+						listExpression.listSize().text(), indexExpression().text());
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        return listExpression;
-    }
-    
+	@Override
+	public String endSectionRenderingCode() {
+		return "}" + parent.endSectionRenderingCode();
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
+	JavaExpression componentExpession() {
+		var model = listExpression.model();
+		DeclaredType dt = (DeclaredType) listExpression.type();
+		var all = model.getElements().getAllMembers((TypeElement) dt.asElement());
+		ExecutableElement getMethod = ElementFilter.methodsIn(all).stream()
+				.filter(e -> "get".equals(e.getSimpleName().toString()) && e.getModifiers().contains(Modifier.PUBLIC)
+						&& !e.getModifiers().contains(Modifier.STATIC) && e.getReturnType().getKind() != TypeKind.VOID
+						&& e.getParameters().size() == 1
+						&& model.isType(e.getParameters().get(0).asType(), model.knownTypes()._int))
+				.findFirst().orElse(null);
 
-    private JavaExpression indexExpression() {
-        return listExpression.model().expression(indexVariableName, listExpression.model().knownTypes()._int);
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return parent;
-    }
+		if (getMethod == null) {
+			throw new IllegalStateException("List missing get? bug.");
+		}
+		return listExpression.methodCall(getMethod, indexExpression());
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+
+		return null;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return listExpression;
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	private JavaExpression indexExpression() {
+		return listExpression.model().expression(indexVariableName, listExpression.model().knownTypes()._int);
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
+	}
 
 }

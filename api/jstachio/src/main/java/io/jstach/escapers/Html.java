@@ -32,14 +32,13 @@ package io.jstach.escapers;
 import io.jstach.annotation.JStacheContentType;
 
 /**
- *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 @JStacheContentType
 public class Html {
-    
-    public static HtmlEscaper provides() {
-        return new HtmlEscaper();
-    }
+
+	public static HtmlEscaper provides() {
+		return new HtmlEscaper();
+	}
 
 }

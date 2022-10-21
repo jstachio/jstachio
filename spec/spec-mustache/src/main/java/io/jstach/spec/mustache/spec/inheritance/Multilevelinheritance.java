@@ -8,11 +8,10 @@ import io.jstach.annotation.JStacheFlags.Flag;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Multilevelinheritance.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="parent", template="{{<older}}{{$a}}p{{/a}}{{/older}}"),
-@JStachePartial(name="older", template="{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}"),
-@JStachePartial(name="grandParent", template="{{$a}}g{{/a}}"),
-})
-@JStacheFlags(flags= {Flag.DEBUG })
+@JStachePartialMapping({ @JStachePartial(name = "parent", template = "{{<older}}{{$a}}p{{/a}}{{/older}}"),
+		@JStachePartial(name = "older", template = "{{<grandParent}}{{$a}}o{{/a}}{{/grandParent}}"),
+		@JStachePartial(name = "grandParent", template = "{{$a}}g{{/a}}"), })
+@JStacheFlags(flags = { Flag.DEBUG })
 public class Multilevelinheritance extends SpecModel {
+
 }

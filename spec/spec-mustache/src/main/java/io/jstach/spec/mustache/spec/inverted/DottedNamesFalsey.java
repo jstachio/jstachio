@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inverted/DottedNamesFalsey.mustache")
 public class DottedNamesFalsey extends SpecModel {
+
 }

@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Inherit.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="include", template="{{$foo}}default content{{/foo}}"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "include", template = "{{$foo}}default content{{/foo}}"), })
 public class Inherit extends SpecModel {
+
 }

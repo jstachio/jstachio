@@ -35,14 +35,15 @@ package io.jstach.apt.token;
  */
 public enum MustacheTagKind {
 
-    VARIABLE, //
-    UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES, PARTIAL, BEGIN_SECTION, END_SECTION, //
-    BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION;
+	VARIABLE, //
+	UNESCAPED_VARIABLE_TWO_BRACES, UNESCAPED_VARIABLE_THREE_BRACES, PARTIAL, BEGIN_SECTION, END_SECTION, //
+	BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION;
 
-    public boolean isSection() {
-        return switch (this) {
-        case VARIABLE, UNESCAPED_VARIABLE_THREE_BRACES, UNESCAPED_VARIABLE_TWO_BRACES, PARTIAL -> false;
-        default -> true;
-        };
-    }
+	public boolean isSection() {
+		return switch (this) {
+			case VARIABLE, UNESCAPED_VARIABLE_THREE_BRACES, UNESCAPED_VARIABLE_TWO_BRACES, PARTIAL -> false;
+			default -> true;
+		};
+	}
+
 }

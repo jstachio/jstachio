@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Datadoesnotoverrideblock.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="include", template="{{$var}}var in include{{/var}}"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "include", template = "{{$var}}var in include{{/var}}"), })
 public class Datadoesnotoverrideblock extends SpecModel {
+
 }

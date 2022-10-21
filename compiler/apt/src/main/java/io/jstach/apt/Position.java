@@ -30,45 +30,49 @@
 package io.jstach.apt;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class Position {
-    private final String fileName;
-    private final int row;
-    private final String currentLine;
-    private final int col;
-    public Position(String fileName, int row, String currentLine, int col) {
-        this.fileName = fileName;
-        this.row = row;
-        this.currentLine = currentLine;
-        this.col = col;
-    }
 
-    public String fileName() {
-        return fileName;
-    }
+	private final String fileName;
 
-    public String currentLine() {
-        return currentLine;
-    }
+	private final int row;
 
-    public int row() {
-        return row;
-    }
+	private final String currentLine;
 
-    public int col() {
-        return col;
-    }
+	private final int col;
 
-    @Override
-    public String toString() {
-        return "Position [fileName=" + fileName + ", row=" + row + ", currentLine=" + currentLine + ", col=" + col
-                + "]";
-    }
-    
-    public static Position noPosition() {
-        return new Position("", 0, "", 0);
-    }
+	public Position(String fileName, int row, String currentLine, int col) {
+		this.fileName = fileName;
+		this.row = row;
+		this.currentLine = currentLine;
+		this.col = col;
+	}
+
+	public String fileName() {
+		return fileName;
+	}
+
+	public String currentLine() {
+		return currentLine;
+	}
+
+	public int row() {
+		return row;
+	}
+
+	public int col() {
+		return col;
+	}
+
+	@Override
+	public String toString() {
+		return "Position [fileName=" + fileName + ", row=" + row + ", currentLine=" + currentLine + ", col=" + col
+				+ "]";
+	}
+
+	public static Position noPosition() {
+		return new Position("", 0, "", 0);
+	}
 
 }

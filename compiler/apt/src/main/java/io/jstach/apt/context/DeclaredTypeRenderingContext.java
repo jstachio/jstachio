@@ -47,165 +47,173 @@ import javax.lang.model.util.ElementFilter;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressionContext {
-    private final JavaExpression expression;
-    private final TypeElement definitionElement;
-    private final RenderingContext parent;
 
-    DeclaredTypeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
-        this.expression = expression;
-        this.definitionElement = element;
-        this.parent = parent;
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        
-        List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
-        
-        var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
-        
-        var methods = ElementFilter.methodsIn(all).stream()
-                .filter(e -> e.getModifiers().contains(Modifier.PUBLIC) 
-                        && ! e.getModifiers().contains(Modifier.STATIC)
-                        && e.getReturnType().getKind() != TypeKind.VOID
-                        && e.getParameters().isEmpty()).toList();
-        
-        List<Element> allMethods = new ArrayList<>();
-        /*
-         * We add the enclosed methods which may include protected methods first.
-         */
-        allMethods.addAll(ElementFilter.methodsIn(enclosedElements));
-        /*
-         * Then we add all the other inherited methods that are public and not static
-         */
-        allMethods.addAll(methods);
-        
-        
-        JavaExpression result = getMethodEntry(allMethods, name);
-        if (result != null)
-            return result;
-        result = getMethodEntry(allMethods, getterName(name));
-        if (result != null)
-            return result;
-        result = getFieldEntry(enclosedElements, name);
-        
-        return result;
-    }
+	private final JavaExpression expression;
 
-    @Override
-    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
-        JavaExpression result = null;
-        if (filter.test(this)) {
-            result = get(name);
-        }
-        if (result == null) {
-            result = parent.find(name, filter);
-        }
-        return result;
-    }
+	private final TypeElement definitionElement;
 
-    private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String methodName) throws ContextException {
-        boolean nameFound = false;
-        for (Element element: elements) {
-            if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
-                nameFound = true;
-                ExecutableType method;
-                try {
-                    method = expression.methodSignature(element);
-                } catch (IllegalArgumentException ex) {
-                    throw new IllegalArgumentException("Unable to get " + element + " method signature for " + expression.type() + " type, defined at " + definitionElement, ex);
-                }
-                if (method.getParameterTypes().isEmpty()) {
-                    if (element.getModifiers().contains(Modifier.PRIVATE)) {
-                        throw new ContextException(MessageFormat.format("Refence to private method: ''{0}'': use package (default) access modifier to access method instead",
-                                                                        methodName));
-                    }
-                    if (element.getModifiers().contains(Modifier.STATIC)) {
-                        throw new ContextException(MessageFormat.format("Refence to static method: ''{0}'': only instance methods are accessible",
-                                                                        methodName));
-                    }
-                    if (!areUnchecked(method.getThrownTypes())) {
-                        throw new ContextException(MessageFormat.format("Refence to method throwing checked exceptions: ''{0}'': only unchecked exceptions are allowed",
-                                                                        methodName));
-                    }
-                    return expression.methodCall(element);
-                }
-            }
-        }
-        if (!nameFound)
-            return null;
-        else {
-            //We need to return null to let the lambda context to be found
-            //TODO maybe declared type should check handle lambdas?
-            return null;
-//            throw new ContextException(MessageFormat.format("Refence to method with non-empty list of parameters: ''{0}'': only methods without parameters are supported",
-//                                                            methodName));
-        }
-    }
+	private final RenderingContext parent;
 
-    private @Nullable JavaExpression getFieldEntry(List<? extends Element> enclosedElements, String name) throws ContextException {
-        for (Element element: enclosedElements) {
-            if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
-                if (element.getModifiers().contains(Modifier.PRIVATE)) {
-                    throw new ContextException(MessageFormat.format("Refence to private field: ''{0}'': use package (default) access modifier to access field instead",
-                                                                    name));
-                }
-                if (element.getModifiers().contains(Modifier.STATIC)) {
-                    throw new ContextException(MessageFormat.format("Refence to static field: ''{0}'': only instance fields are accessible",
-                                                                    name));
-                }
-                return expression.fieldAccess(element);
-            }
-        }
-        return null;
-    }
+	DeclaredTypeRenderingContext(JavaExpression expression, TypeElement element, RenderingContext parent) {
+		this.expression = expression;
+		this.definitionElement = element;
+		this.parent = parent;
+	}
 
-    private String getterName(String name) {
-        return "get" + name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
-    }
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
 
-    private boolean areUnchecked(List<? extends TypeMirror> thrownTypes) {
-        for (TypeMirror thrownType: thrownTypes) {
-            if (!expression.model().isUncheckedException(thrownType))
-                return false;
-        }
-        return true;
-    }
+		List<? extends Element> enclosedElements = definitionElement.getEnclosedElements();
 
-    @Override
-    public JavaExpression currentExpression() {
-        return expression;
-    }
+		var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return this.parent;
-    }
-    
-    @Override
-    public String invertedExpression() {
-        return "(" + currentExpression().text() + " == null )"; 
-    }
-    
-    @Override
-    public String description() {
-        return toString();
-    }
+		var methods = ElementFilter.methodsIn(all).stream()
+				.filter(e -> e.getModifiers().contains(Modifier.PUBLIC) && !e.getModifiers().contains(Modifier.STATIC)
+						&& e.getReturnType().getKind() != TypeKind.VOID && e.getParameters().isEmpty())
+				.toList();
 
-    @Override
-    public String toString() {
-        return "DeclaredTypeRenderingContext [\n\t\texpression=" + expression + ",\n\t\tdefinitionElement=" + definitionElement
-                + ",\n\t\tparent=" + parent + "]";
-    }
-    
-    
+		List<Element> allMethods = new ArrayList<>();
+		/*
+		 * We add the enclosed methods which may include protected methods first.
+		 */
+		allMethods.addAll(ElementFilter.methodsIn(enclosedElements));
+		/*
+		 * Then we add all the other inherited methods that are public and not static
+		 */
+		allMethods.addAll(methods);
+
+		JavaExpression result = getMethodEntry(allMethods, name);
+		if (result != null)
+			return result;
+		result = getMethodEntry(allMethods, getterName(name));
+		if (result != null)
+			return result;
+		result = getFieldEntry(enclosedElements, name);
+
+		return result;
+	}
+
+	@Override
+	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+		JavaExpression result = null;
+		if (filter.test(this)) {
+			result = get(name);
+		}
+		if (result == null) {
+			result = parent.find(name, filter);
+		}
+		return result;
+	}
+
+	private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String methodName)
+			throws ContextException {
+		boolean nameFound = false;
+		for (Element element : elements) {
+			if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
+				nameFound = true;
+				ExecutableType method;
+				try {
+					method = expression.methodSignature(element);
+				}
+				catch (IllegalArgumentException ex) {
+					throw new IllegalArgumentException("Unable to get " + element + " method signature for "
+							+ expression.type() + " type, defined at " + definitionElement, ex);
+				}
+				if (method.getParameterTypes().isEmpty()) {
+					if (element.getModifiers().contains(Modifier.PRIVATE)) {
+						throw new ContextException(MessageFormat.format(
+								"Refence to private method: ''{0}'': use package (default) access modifier to access method instead",
+								methodName));
+					}
+					if (element.getModifiers().contains(Modifier.STATIC)) {
+						throw new ContextException(MessageFormat.format(
+								"Refence to static method: ''{0}'': only instance methods are accessible", methodName));
+					}
+					if (!areUnchecked(method.getThrownTypes())) {
+						throw new ContextException(MessageFormat.format(
+								"Refence to method throwing checked exceptions: ''{0}'': only unchecked exceptions are allowed",
+								methodName));
+					}
+					return expression.methodCall(element);
+				}
+			}
+		}
+		if (!nameFound)
+			return null;
+		else {
+			// We need to return null to let the lambda context to be found
+			// TODO maybe declared type should check handle lambdas?
+			return null;
+			// throw new ContextException(MessageFormat.format("Refence to method with
+			// non-empty list of parameters: ''{0}'': only methods without parameters are
+			// supported",
+			// methodName));
+		}
+	}
+
+	private @Nullable JavaExpression getFieldEntry(List<? extends Element> enclosedElements, String name)
+			throws ContextException {
+		for (Element element : enclosedElements) {
+			if (element.getKind() == ElementKind.FIELD && element.getSimpleName().contentEquals(name)) {
+				if (element.getModifiers().contains(Modifier.PRIVATE)) {
+					throw new ContextException(MessageFormat.format(
+							"Refence to private field: ''{0}'': use package (default) access modifier to access field instead",
+							name));
+				}
+				if (element.getModifiers().contains(Modifier.STATIC)) {
+					throw new ContextException(MessageFormat
+							.format("Refence to static field: ''{0}'': only instance fields are accessible", name));
+				}
+				return expression.fieldAccess(element);
+			}
+		}
+		return null;
+	}
+
+	private String getterName(String name) {
+		return "get" + name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
+	}
+
+	private boolean areUnchecked(List<? extends TypeMirror> thrownTypes) {
+		for (TypeMirror thrownType : thrownTypes) {
+			if (!expression.model().isUncheckedException(thrownType))
+				return false;
+		}
+		return true;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return expression;
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return this.parent;
+	}
+
+	@Override
+	public String invertedExpression() {
+		return "(" + currentExpression().text() + " == null )";
+	}
+
+	@Override
+	public String description() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return "DeclaredTypeRenderingContext [\n\t\texpression=" + expression + ",\n\t\tdefinitionElement="
+				+ definitionElement + ",\n\t\tparent=" + parent + "]";
+	}
+
 }

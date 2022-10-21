@@ -40,50 +40,54 @@ import io.jstach.apt.token.util.BracesTokenizer;
 import io.jstach.apt.token.util.PositionHodingTokenProcessor;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesToken>> {
-    /**
-     * Creates TokenProcessor to be feed one-by-one with each character of mustache template.
-     * Last fed character must be TokenProcessor#EOF wich denotes end of file.
-     *
-     * @param fileName fileName used in error messages. It can be custom string like "&lt;stdin&gt;"
-     * @param downstream TokenProcessor is invoked on each found MustacheToken
-     * @return .
-     */
-    public static TokenProcessor<@Nullable Character> createInstance(String fileName, TokenProcessor<PositionedToken<MustacheToken>> downstream) {
-        TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<MustacheToken>(downstream));
-        return BracesTokenizer.createInstance(fileName, mustacheTokenizer);
-    }
 
-    private final PositionHodingTokenProcessor<MustacheToken> downstream;
-    private MustacheTokenizerState state = new OutsideMustacheTokenizerState(this);
-    private Position position = Position.noPosition();
-    
-    MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
-        this.downstream = downstream;
-    }
+	/**
+	 * Creates TokenProcessor to be feed one-by-one with each character of mustache
+	 * template. Last fed character must be TokenProcessor#EOF wich denotes end of file.
+	 * @param fileName fileName used in error messages. It can be custom string like
+	 * "&lt;stdin&gt;"
+	 * @param downstream TokenProcessor is invoked on each found MustacheToken
+	 * @return .
+	 */
+	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
+			TokenProcessor<PositionedToken<MustacheToken>> downstream) {
+		TokenProcessor<PositionedToken<BracesToken>> mustacheTokenizer = new MustacheTokenizer(
+				new PositionHodingTokenProcessor<MustacheToken>(downstream));
+		return BracesTokenizer.createInstance(fileName, mustacheTokenizer);
+	}
 
-    @Override
-    public void processToken(PositionedToken<BracesToken> positionedToken) throws ProcessingException {
-        var p = position = positionedToken.position();
-        downstream.setPosition(p);
-        BracesToken token = positionedToken.innerToken();
-        token.accept(state);
-    }
+	private final PositionHodingTokenProcessor<MustacheToken> downstream;
 
-    void setState(MustacheTokenizerState newState) throws ProcessingException {
-        state.beforeStateChange();
-        state = newState;
-    }
+	private MustacheTokenizerState state = new OutsideMustacheTokenizerState(this);
 
-    void error(String message) throws ProcessingException {
-        throw new ProcessingException(position, message);
-    }
+	private Position position = Position.noPosition();
 
-    void emitToken(MustacheToken token) throws ProcessingException {
-        downstream.processToken(token);
-    }
+	MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
+		this.downstream = downstream;
+	}
+
+	@Override
+	public void processToken(PositionedToken<BracesToken> positionedToken) throws ProcessingException {
+		var p = position = positionedToken.position();
+		downstream.setPosition(p);
+		BracesToken token = positionedToken.innerToken();
+		token.accept(state);
+	}
+
+	void setState(MustacheTokenizerState newState) throws ProcessingException {
+		state.beforeStateChange();
+		state = newState;
+	}
+
+	void error(String message) throws ProcessingException {
+		throw new ProcessingException(position, message);
+	}
+
+	void emitToken(MustacheToken token) throws ProcessingException {
+		downstream.processToken(token);
+	}
 
 }

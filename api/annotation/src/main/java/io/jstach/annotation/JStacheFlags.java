@@ -10,10 +10,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStacheFlags {
-    
-    Flag[] flags();
-    
-    public enum Flag {
-        DEBUG
-    }
+
+	Flag[] flags();
+
+	public enum Flag {
+
+		DEBUG
+
+	}
+
 }

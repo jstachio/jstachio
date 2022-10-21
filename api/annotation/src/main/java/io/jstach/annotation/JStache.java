@@ -37,12 +37,14 @@ import java.lang.annotation.Target;
 
 /**
  * Generates a JStachio Renderer.
- * 
+ *
  * Template resolution is as follows
  * <ol>
- *  <li> <code>path</code> which is a classpath with slashes following the same format as the ClassLoader resources
- *  <li> <code>template</code> which if not empty is used as the template contents
- *  <li> if the above is not set then the name of the class suffixed with ".mustache" is used as the resource
+ * <li><code>path</code> which is a classpath with slashes following the same format as
+ * the ClassLoader resources
+ * <li><code>template</code> which if not empty is used as the template contents
+ * <li>if the above is not set then the name of the class suffixed with ".mustache" is
+ * used as the resource
  * </ol>
  * @author agentgt
  */
@@ -50,48 +52,47 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStache {
-    /**
-     * Resource path to template
-     * 
-      * @return Path to mustache template */
-    String path() default "";
-    
-    /**
-     * 
-     * @return An inline template
-     */
-    String template() default "";
 
-    /**
-     * Name of generated class.
-     * <p>
-     * adapterName can be omitted.
-     * "Renderable{{className}}Adapter" name is used by default.
-     * 
-     * @return Name of generated class */
-    String adapterName() default ":auto";
+	/**
+	 * Resource path to template
+	 * @return Path to mustache template
+	 */
+	String path() default "";
 
-    /**
-     * Class representing template content type to be used by escapers
-     * <p>
-     * You can create custom escapers using
-     * @JStachContentType annotation.
-     *
-     * @return format of given template (HTML is default)
-     */
-    Class<?> contentType() default AutoContentType.class;
+	/**
+	 * @return An inline template
+	 */
+	String template() default "";
 
-    /**
-     * Encoding of given template file.
-     * <p>
-     * charset can be omitted. Default system charset is used by default.
-     * @return encoding of given template file
-     */
-    String charset() default ":default";
-    
-    @JStacheContentType
-    public final class AutoContentType {
+	/**
+	 * Name of generated class.
+	 * <p>
+	 * adapterName can be omitted. "Renderable{{className}}Adapter" name is used by
+	 * default.
+	 * @return Name of generated class
+	 */
+	String adapterName() default ":auto";
 
-    }
+	/**
+	 * Class representing template content type to be used by escapers
+	 * <p>
+	 * You can create custom escapers using
+	 * @JStachContentType annotation.
+	 * @return format of given template (HTML is default)
+	 */
+	Class<?> contentType() default AutoContentType.class;
+
+	/**
+	 * Encoding of given template file.
+	 * <p>
+	 * charset can be omitted. Default system charset is used by default.
+	 * @return encoding of given template file
+	 */
+	String charset() default ":default";
+
+	@JStacheContentType
+	public final class AutoContentType {
+
+	}
 
 }

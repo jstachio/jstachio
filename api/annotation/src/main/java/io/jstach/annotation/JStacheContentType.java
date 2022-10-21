@@ -38,24 +38,24 @@ import java.lang.annotation.Target;
 /**
  * Marks classes defining text format.
  * <p>
- * Each text format should be represented as a stand-alone class.
- * Each class should define pecularities specific for each text format.
- * Such classes should all be marked with TextFormat annotation.
+ * Each text format should be represented as a stand-alone class. Each class should define
+ * pecularities specific for each text format. Such classes should all be marked with
+ * TextFormat annotation.
  * <p>
  * There two requirements for marked class
  * <ul>
- *   <li>it should have no type variables
- *   <li>it should provide method with the following signature:
- * <blockquote><pre>{@code
+ * <li>it should have no type variables
+ * <li>it should provide method with the following signature: <blockquote><pre>{@code
  *     public static Appendable createEscapingAppendable(Appendable appendable)
  * }</pre></blockquote>
  * </ul>
  *
- * An implementation of createEscapingAppendable method should decorate given appendable argument
- * to create new appendable that will escape any special characters, specific to given format.
+ * An implementation of createEscapingAppendable method should decorate given appendable
+ * argument to create new appendable that will escape any special characters, specific to
+ * given format.
  * <p>
- * Decorated appendable should never buffer any data.
- * Escaped text should be written to original appendable immediately.
+ * Decorated appendable should never buffer any data. Escaped text should be written to
+ * original appendable immediately.
  * <p>
  * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
  * <p>
@@ -71,10 +71,12 @@ import java.lang.annotation.Target;
  * }</pre>
  *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
-*/
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStacheContentType {
-    String providesMethod() default "provides";
+
+	String providesMethod() default "provides";
+
 }

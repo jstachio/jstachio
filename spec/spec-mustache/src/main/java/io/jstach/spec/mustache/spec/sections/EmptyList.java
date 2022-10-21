@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/EmptyList.mustache")
 public class EmptyList extends SpecModel {
+
 }

@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inverted/Context.mustache")
 public class Context extends SpecModel {
+
 }

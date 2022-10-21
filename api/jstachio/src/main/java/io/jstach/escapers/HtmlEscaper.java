@@ -6,72 +6,74 @@ import io.jstach.Appender;
 
 public class HtmlEscaper implements Appender<Appendable> {
 
+	private static final String QUOT = "&quot;";
 
-    private static final String QUOT = "&quot;";
-    private static final String GT = "&gt;";
-    private static final String LT = "&lt;";
-    private static final String AMP = "&amp;";
+	private static final String GT = "&gt;";
 
-    @Override
-    public void append(Appendable a, CharSequence s) throws IOException {
-        s = s == null ? "null" : s;
-        append(a , s, 0, s.length());
-    }
+	private static final String LT = "&lt;";
 
-    @Override
-    public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
-        csq = csq == null ? "null" : csq;
-        for (int i = start; i < end; i++) {
-            char c = csq.charAt(i);
-            switch (c) {
-            case '&' -> {
-                a.append(csq, start, i);
-                start = i + 1;
-                a.append(AMP);
+	private static final String AMP = "&amp;";
 
-            }
-            case '<' -> {
-                a.append(csq, start, i);
-                start = i + 1;
-                a.append(LT);
+	@Override
+	public void append(Appendable a, CharSequence s) throws IOException {
+		s = s == null ? "null" : s;
+		append(a, s, 0, s.length());
+	}
 
-            }
-            case '>' -> {
-                a.append(csq, start, i);
-                start = i + 1;
-                a.append(GT);
-            }
-            case '"' -> {
-                a.append(csq, start, i);
-                start = i + 1;
-                a.append(QUOT);
-            }
+	@Override
+	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
+		csq = csq == null ? "null" : csq;
+		for (int i = start; i < end; i++) {
+			char c = csq.charAt(i);
+			switch (c) {
+				case '&' -> {
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(AMP);
 
-            }
-        }
-        a.append(csq, start, end);
+				}
+				case '<' -> {
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(LT);
 
-    }
+				}
+				case '>' -> {
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(GT);
+				}
+				case '"' -> {
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(QUOT);
+				}
 
-    @Override
-    public void append(Appendable a, char c) throws IOException {
-        switch (c) {
-        case '&' -> {
-            a.append(AMP);
-        }
-        case '<' -> {
-            a.append(LT);
-        }
-        case '>' -> {
-            a.append(GT);
-        }
-        case '"' -> {
-            a.append(QUOT);
-        }
-        default -> {
-            a.append(c);
-        }
-        }
-    }
+			}
+		}
+		a.append(csq, start, end);
+
+	}
+
+	@Override
+	public void append(Appendable a, char c) throws IOException {
+		switch (c) {
+			case '&' -> {
+				a.append(AMP);
+			}
+			case '<' -> {
+				a.append(LT);
+			}
+			case '>' -> {
+				a.append(GT);
+			}
+			case '"' -> {
+				a.append(QUOT);
+			}
+			default -> {
+				a.append(c);
+			}
+		}
+	}
 
 }

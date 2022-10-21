@@ -37,29 +37,30 @@ import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  * @param <T>
  */
 public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
-    private final TokenProcessor<PositionedToken<T>> downstream;
-    private @Nullable Position position = null;
 
-    public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
-        this.downstream = downstream;
-    }
+	private final TokenProcessor<PositionedToken<T>> downstream;
 
-    public void setPosition(Position position) {
-        this.position = position;
-    }
+	private @Nullable Position position = null;
 
-    @Override
-    public void processToken(T transformedToken) throws ProcessingException {
-        var position = this.position;
-        if (position == null) {
-            throw new IllegalStateException("position was not set");
-        }
-        downstream.processToken(new PositionedToken<T>(position, transformedToken));
-    }
+	public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
+		this.downstream = downstream;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
+	}
+
+	@Override
+	public void processToken(T transformedToken) throws ProcessingException {
+		var position = this.position;
+		if (position == null) {
+			throw new IllegalStateException("position was not set");
+		}
+		downstream.processToken(new PositionedToken<T>(position, transformedToken));
+	}
 
 }

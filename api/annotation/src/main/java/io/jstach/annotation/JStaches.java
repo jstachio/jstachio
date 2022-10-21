@@ -43,7 +43,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStaches {
-    /**
-      * @return several templates to generate adapters */
-    JStache[] value();
+
+	/**
+	 * @return several templates to generate adapters
+	 */
+	JStache[] value();
+
 }

@@ -34,11 +34,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.ProcessingException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 interface MustacheTokenizerState extends BracesToken.Visitor<@Nullable Void, ProcessingException> {
 
-    void beforeStateChange() throws ProcessingException;
+	void beforeStateChange() throws ProcessingException;
 
 }

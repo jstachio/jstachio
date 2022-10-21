@@ -35,101 +35,106 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class VariableContext {
-    
-    public static String APPENDER = "appender";
-    public static String ESCAPER = "escaper";
-    public static String APPENDABLE = "unescapedWriter";
-    public static String FORMATTER = "formatter";
-    
-    public static VariableContext createDefaultContext() {
-        TreeMap<String, Integer> variables = new TreeMap<String, Integer>();
-        variables.put(ESCAPER, 1);
-        variables.put(APPENDER, 1);
-        variables.put(APPENDABLE, 1);
-        variables.put(FORMATTER, 1);
-        return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables, null);
-    }
 
-    private final String appender;
-    private final String escaper;
-    private final String unescapedWriter;
-    private final String formatter;
-    private final Map<String, Integer> variables;
-    private final @Nullable VariableContext parent;
+	public static String APPENDER = "appender";
 
-    VariableContext(
-            String appender, 
-            String escaper, 
-            String unescapedWriter, 
-            String formatter,
-            Map<String, Integer> variables, @Nullable VariableContext parent) {
-        this.appender = appender;
-        this.escaper = escaper;
-        this.unescapedWriter = unescapedWriter;
-        this.formatter = formatter;
-        this.variables = variables;
-        this.parent = parent;
-    }
+	public static String ESCAPER = "escaper";
 
-    public String writer() {
-        return escaper;
-    }
-    
-    public String appender() {
-        return appender;
-    }
+	public static String APPENDABLE = "unescapedWriter";
 
-    public String unescapedWriter() {
-        return unescapedWriter;
-    }
-    
-    public String formatter() {
-        return formatter;
-    }
+	public static String FORMATTER = "formatter";
 
-    VariableContext unescaped() {
-        return new VariableContext(appender, appender, unescapedWriter, formatter, variables, parent);
-    }
+	public static VariableContext createDefaultContext() {
+		TreeMap<String, Integer> variables = new TreeMap<String, Integer>();
+		variables.put(ESCAPER, 1);
+		variables.put(APPENDER, 1);
+		variables.put(APPENDABLE, 1);
+		variables.put(FORMATTER, 1);
+		return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables, null);
+	}
 
-    private @Nullable Integer lookupVariable(String baseName) {
-        Integer result = variables.get(baseName);
-        var p = parent;
-        if (result != null || p == null)
-            return result;
-        else
-            return p.lookupVariable(baseName);
-    }
+	private final String appender;
 
-    public String introduceNewNameLike(String baseName) {
-        int subscriptIndex = baseName.length();
-        while (Character.isDigit(baseName.charAt(subscriptIndex - 1))) {
-            subscriptIndex--;
-        }
-        if (subscriptIndex == baseName.length()) {
-            Integer count = lookupVariable(baseName);
-            if (count == null) {
-                variables.put(baseName, 1);
-                return baseName;
-            } else {
-                variables.put(baseName, count + 1);
-                return baseName + count;
-            }
-        } else {
-            Integer requestedCount = Integer.parseInt(baseName.substring(subscriptIndex));
-            baseName = baseName.substring(0, subscriptIndex);
-            Integer currentCount = lookupVariable(baseName);
-            int count = currentCount == null || currentCount < requestedCount ? requestedCount : currentCount;
-            variables.put(baseName, count + 1);
-            return baseName + count;
-        }
-    }
+	private final String escaper;
 
-    VariableContext createEnclosedContext() {
-        return new VariableContext(appender, escaper, unescapedWriter, formatter,new TreeMap<String, Integer>(), this);
-    }
+	private final String unescapedWriter;
+
+	private final String formatter;
+
+	private final Map<String, Integer> variables;
+
+	private final @Nullable VariableContext parent;
+
+	VariableContext(String appender, String escaper, String unescapedWriter, String formatter,
+			Map<String, Integer> variables, @Nullable VariableContext parent) {
+		this.appender = appender;
+		this.escaper = escaper;
+		this.unescapedWriter = unescapedWriter;
+		this.formatter = formatter;
+		this.variables = variables;
+		this.parent = parent;
+	}
+
+	public String writer() {
+		return escaper;
+	}
+
+	public String appender() {
+		return appender;
+	}
+
+	public String unescapedWriter() {
+		return unescapedWriter;
+	}
+
+	public String formatter() {
+		return formatter;
+	}
+
+	VariableContext unescaped() {
+		return new VariableContext(appender, appender, unescapedWriter, formatter, variables, parent);
+	}
+
+	private @Nullable Integer lookupVariable(String baseName) {
+		Integer result = variables.get(baseName);
+		var p = parent;
+		if (result != null || p == null)
+			return result;
+		else
+			return p.lookupVariable(baseName);
+	}
+
+	public String introduceNewNameLike(String baseName) {
+		int subscriptIndex = baseName.length();
+		while (Character.isDigit(baseName.charAt(subscriptIndex - 1))) {
+			subscriptIndex--;
+		}
+		if (subscriptIndex == baseName.length()) {
+			Integer count = lookupVariable(baseName);
+			if (count == null) {
+				variables.put(baseName, 1);
+				return baseName;
+			}
+			else {
+				variables.put(baseName, count + 1);
+				return baseName + count;
+			}
+		}
+		else {
+			Integer requestedCount = Integer.parseInt(baseName.substring(subscriptIndex));
+			baseName = baseName.substring(0, subscriptIndex);
+			Integer currentCount = lookupVariable(baseName);
+			int count = currentCount == null || currentCount < requestedCount ? requestedCount : currentCount;
+			variables.put(baseName, count + 1);
+			return baseName + count;
+		}
+	}
+
+	VariableContext createEnclosedContext() {
+		return new VariableContext(appender, escaper, unescapedWriter, formatter, new TreeMap<String, Integer>(), this);
+	}
 
 }

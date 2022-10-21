@@ -42,99 +42,112 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class JavaExpression {
-    private final JavaLanguageModel model;
-    private final String text;
-    private final TypeMirror type;
-    private final List<String> path;
-    JavaExpression(JavaLanguageModel model, String text, TypeMirror type, List<String> path) {
-        this.model = model;
-        this.text = text;
-        this.type = type;
-        this.path = path;
-    }
-    String text() {
-        return text;
-    }
-    TypeMirror type() {
-        return type;
-    }
-    JavaLanguageModel model() {
-        return model;
-    }
 
-    private static List<String> concat(List<String> list, String a) {
-    	list = new ArrayList<>(list);
-    	list.add(a);
-    	return List.copyOf(list);
-    }
-    
-    private List<String> concatPath(String a) {
-    	return concat(this.path, a);
-    }
-    
-    public String path() {
-        return path.stream().collect(Collectors.joining("."));
-    }
-    JavaExpression arrayLength() {
-        return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror(), concatPath("length"));
-    }
-    
-    JavaExpression stringLiteral(String alreadyEscapedString) {
-        return new JavaExpression(model, alreadyEscapedString, model.knownTypes()._String.typeElement().asType(), path);
-    }
-    
-    JavaExpression mapGet(ExecutableElement getMethod, String key) {
-        JavaExpression keyExpression = new JavaExpression(model, "\"" + key + "\"", model.knownTypes()._String.typeElement().asType(), concatPath(key));
-        return methodCall(getMethod, keyExpression);
-    }
-    
-    JavaExpression optionalOrElseNull(ExecutableElement getMethod) {
-        JavaExpression keyExpression = new JavaExpression(model, "null", model.knownTypes()._String.typeElement().asType(), path);
-        return methodCall(getMethod, keyExpression);
-    }
+	private final JavaLanguageModel model;
 
-    public JavaExpression subscript(JavaExpression indexExpression) {
-        return new JavaExpression(model, text + "[" + indexExpression.text() + "]", ((ArrayType)type).getComponentType(), concatPath(indexExpression.text));
-    }
+	private final String text;
 
-    public JavaExpression fieldAccess(Element element) {
-        VariableElement fieldElement = (VariableElement)element;
-        TypeMirror memberType = model.asMemberOf((DeclaredType)type, fieldElement);
-        return new JavaExpression(model, text + "." + fieldElement.getSimpleName(), memberType, concatPath(fieldElement.getSimpleName().toString()));
-    }
+	private final TypeMirror type;
 
-    public JavaExpression methodCall(Element element, JavaExpression... arguments) {
-        ExecutableElement executableElement = (ExecutableElement)element;
-        ExecutableType executableType = methodSignature(executableElement);
-        StringBuilder result = new StringBuilder();
-        result.append(text).append(".").append(executableElement.getSimpleName()).append("(");
-        if (arguments.length > 0) {
-            result.append(arguments[0].text());
-            for (int i = 1; i < arguments.length; i++) {
-                result.append(", ");
-                result.append(arguments[i].text());
-            }
-        }
-        result.append(")");
-        return new JavaExpression(model, result.toString(), executableType.getReturnType(), concatPath(executableElement.getSimpleName().toString()));
-    }
+	private final List<String> path;
 
-    public ExecutableType methodSignature(Element element) {
-        ExecutableElement executableElement = (ExecutableElement)element;
-        return (ExecutableType)model.asMemberOf((DeclaredType)type, executableElement);
-    }
-    @Override
-    public String toString() {
-        return "JavaExpression [text=" + text + ", type=" + type + ", path=" + path + "]";
-    }
+	JavaExpression(JavaLanguageModel model, String text, TypeMirror type, List<String> path) {
+		this.model = model;
+		this.text = text;
+		this.type = type;
+		this.path = path;
+	}
 
-    JavaExpression listSize() {
-        return new JavaExpression(model, text + ".size()", model.knownTypes()._int.typeMirror(), concatPath("size"));
-    }
-    
-    
+	String text() {
+		return text;
+	}
+
+	TypeMirror type() {
+		return type;
+	}
+
+	JavaLanguageModel model() {
+		return model;
+	}
+
+	private static List<String> concat(List<String> list, String a) {
+		list = new ArrayList<>(list);
+		list.add(a);
+		return List.copyOf(list);
+	}
+
+	private List<String> concatPath(String a) {
+		return concat(this.path, a);
+	}
+
+	public String path() {
+		return path.stream().collect(Collectors.joining("."));
+	}
+
+	JavaExpression arrayLength() {
+		return new JavaExpression(model, text + ".length", model.knownTypes()._int.typeMirror(), concatPath("length"));
+	}
+
+	JavaExpression stringLiteral(String alreadyEscapedString) {
+		return new JavaExpression(model, alreadyEscapedString, model.knownTypes()._String.typeElement().asType(), path);
+	}
+
+	JavaExpression mapGet(ExecutableElement getMethod, String key) {
+		JavaExpression keyExpression = new JavaExpression(model, "\"" + key + "\"",
+				model.knownTypes()._String.typeElement().asType(), concatPath(key));
+		return methodCall(getMethod, keyExpression);
+	}
+
+	JavaExpression optionalOrElseNull(ExecutableElement getMethod) {
+		JavaExpression keyExpression = new JavaExpression(model, "null",
+				model.knownTypes()._String.typeElement().asType(), path);
+		return methodCall(getMethod, keyExpression);
+	}
+
+	public JavaExpression subscript(JavaExpression indexExpression) {
+		return new JavaExpression(model, text + "[" + indexExpression.text() + "]",
+				((ArrayType) type).getComponentType(), concatPath(indexExpression.text));
+	}
+
+	public JavaExpression fieldAccess(Element element) {
+		VariableElement fieldElement = (VariableElement) element;
+		TypeMirror memberType = model.asMemberOf((DeclaredType) type, fieldElement);
+		return new JavaExpression(model, text + "." + fieldElement.getSimpleName(), memberType,
+				concatPath(fieldElement.getSimpleName().toString()));
+	}
+
+	public JavaExpression methodCall(Element element, JavaExpression... arguments) {
+		ExecutableElement executableElement = (ExecutableElement) element;
+		ExecutableType executableType = methodSignature(executableElement);
+		StringBuilder result = new StringBuilder();
+		result.append(text).append(".").append(executableElement.getSimpleName()).append("(");
+		if (arguments.length > 0) {
+			result.append(arguments[0].text());
+			for (int i = 1; i < arguments.length; i++) {
+				result.append(", ");
+				result.append(arguments[i].text());
+			}
+		}
+		result.append(")");
+		return new JavaExpression(model, result.toString(), executableType.getReturnType(),
+				concatPath(executableElement.getSimpleName().toString()));
+	}
+
+	public ExecutableType methodSignature(Element element) {
+		ExecutableElement executableElement = (ExecutableElement) element;
+		return (ExecutableType) model.asMemberOf((DeclaredType) type, executableElement);
+	}
+
+	@Override
+	public String toString() {
+		return "JavaExpression [text=" + text + ", type=" + type + ", path=" + path + "]";
+	}
+
+	JavaExpression listSize() {
+		return new JavaExpression(model, text + ".size()", model.knownTypes()._int.typeMirror(), concatPath("size"));
+	}
+
 }

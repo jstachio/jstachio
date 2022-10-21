@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/TripleMustacheStandalone.mustache")
 public class TripleMustacheStandalone extends SpecModel {
+
 }

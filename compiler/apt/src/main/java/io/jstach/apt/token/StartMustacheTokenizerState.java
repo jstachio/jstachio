@@ -34,81 +34,81 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.ProcessingException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class StartMustacheTokenizerState implements MustacheTokenizerState {
-    private final MustacheTokenizer tokenizer;
 
-    StartMustacheTokenizerState(final MustacheTokenizer tokenizer) {
-        this.tokenizer = tokenizer;
-    }
+	private final MustacheTokenizer tokenizer;
 
-    @Override
-    public @Nullable Void twoOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	StartMustacheTokenizerState(final MustacheTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
 
-    @Override
-    public @Nullable Void threeOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	@Override
+	public @Nullable Void twoOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void twoClosingBraces() throws ProcessingException {
-        tokenizer.error("Unexpected closing braces");
-        return null;
-    }
+	@Override
+	public @Nullable Void threeOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void threeClosingBraces() throws ProcessingException {
-        tokenizer.error("Unexpected closing braces");
-        return null;
-    }
+	@Override
+	public @Nullable Void twoClosingBraces() throws ProcessingException {
+		tokenizer.error("Unexpected closing braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void character(char c) throws ProcessingException {
-        switch (c) {
-        case '#' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
-        case '^' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
-        case '>' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.PARTIAL, tokenizer));
-        case '<' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_PARENT_SECTION, tokenizer));
-        case '$' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_BLOCK_SECTION, tokenizer));
-        case '/' -> tokenizer.setState(
-                new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
-        case '&' -> tokenizer
-                .setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
-        case '!' -> tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
-        default -> {
-            if (Character.isWhitespace(c))
-                tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
-            else {
-                StringBuilder fieldName = new StringBuilder();
-                fieldName.append(c);
-                tokenizer
-                        .setState(new IdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, fieldName, tokenizer));
-            }
-        }
-        }
-        ;
-        return null;
-    }
+	@Override
+	public @Nullable Void threeClosingBraces() throws ProcessingException {
+		tokenizer.error("Unexpected closing braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void endOfFile() throws ProcessingException {
-        tokenizer.error("Unclosed field");
-        return null;
-    }
+	@Override
+	public @Nullable Void character(char c) throws ProcessingException {
+		switch (c) {
+			case '#' -> tokenizer
+					.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_SECTION, tokenizer));
+			case '^' -> tokenizer.setState(
+					new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_INVERTED_SECTION, tokenizer));
+			case '>' ->
+				tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.PARTIAL, tokenizer));
+			case '<' -> tokenizer.setState(
+					new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_PARENT_SECTION, tokenizer));
+			case '$' -> tokenizer.setState(
+					new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.BEGIN_BLOCK_SECTION, tokenizer));
+			case '/' ->
+				tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.END_SECTION, tokenizer));
+			case '&' -> tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(
+					MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
+			case '!' -> tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
+			default -> {
+				if (Character.isWhitespace(c))
+					tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
+				else {
+					StringBuilder fieldName = new StringBuilder();
+					fieldName.append(c);
+					tokenizer.setState(
+							new IdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, fieldName, tokenizer));
+				}
+			}
+		}
+		;
+		return null;
+	}
 
-    @Override
-    public void beforeStateChange() throws ProcessingException {
-    }
+	@Override
+	public @Nullable Void endOfFile() throws ProcessingException {
+		tokenizer.error("Unclosed field");
+		return null;
+	}
+
+	@Override
+	public void beforeStateChange() throws ProcessingException {
+	}
 
 }

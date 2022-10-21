@@ -33,19 +33,19 @@ import java.io.IOException;
 
 import io.jstach.spi.JStacheServices;
 
+public abstract class Renderable<F, T> implements RenderFunction, TemplateInfo {
 
-public abstract class Renderable<F,T> implements RenderFunction, TemplateInfo {
-    
-    public abstract T getContext();
-    
-    protected RenderFunction renderFunction = this::doRender;
-    
-    protected abstract void doRender(Appendable appendable) throws IOException;
-    
-    @Override
-    public final void render(Appendable a) throws IOException {
-        JStacheServices rs = JStacheServices.findService();
-        var rf = rs.renderer(this, getContext(), renderFunction);
-        rf.render(a);
-    }
+	public abstract T getContext();
+
+	protected RenderFunction renderFunction = this::doRender;
+
+	protected abstract void doRender(Appendable appendable) throws IOException;
+
+	@Override
+	public final void render(Appendable a) throws IOException {
+		JStacheServices rs = JStacheServices.findService();
+		var rf = rs.renderer(this, getContext(), renderFunction);
+		rf.render(a);
+	}
+
 }

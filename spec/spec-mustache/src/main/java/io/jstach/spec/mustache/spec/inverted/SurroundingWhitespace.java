@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inverted/SurroundingWhitespace.mustache")
 public class SurroundingWhitespace extends SpecModel {
+
 }

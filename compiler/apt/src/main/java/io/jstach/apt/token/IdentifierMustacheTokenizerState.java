@@ -35,73 +35,74 @@ import io.jstach.apt.MustacheToken;
 import io.jstach.apt.ProcessingException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
-    final MustacheTagKind kind;
-    final StringBuilder name;
-    private final MustacheTokenizer tokenizer;
 
-    IdentifierMustacheTokenizerState(MustacheTagKind kind,
-                                     StringBuilder name,
-                                     MustacheTokenizer tokenizer) {
-        this.tokenizer = tokenizer;
-        this.kind = kind;
-        this.name = name;
-    }
+	final MustacheTagKind kind;
 
-    @Override
-    public @Nullable Void twoOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	final StringBuilder name;
 
-    @Override
-    public @Nullable Void threeOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	private final MustacheTokenizer tokenizer;
 
-    @Override
-    public @Nullable Void twoClosingBraces() throws ProcessingException {
-        if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
-            tokenizer.error("Expecting three closing braces, not two");
-        else
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        return null;
-    }
+	IdentifierMustacheTokenizerState(MustacheTagKind kind, StringBuilder name, MustacheTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+		this.kind = kind;
+		this.name = name;
+	}
 
-    @Override
-    public @Nullable Void threeClosingBraces() throws ProcessingException {
-        if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        else
-            tokenizer.error("Expecting two closing braces, not three");
-        return null;
-    }
+	@Override
+	public @Nullable Void twoOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void character(char c) throws ProcessingException {
-        if (Character.isWhitespace(c)) {
-            boolean expectsThree = kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES;
-            tokenizer.setState(new EndMustacheTokenizerState(tokenizer, expectsThree));
-        } else {
-            name.append(c);
-        }
-        return null;
-    }
+	@Override
+	public @Nullable Void threeOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void endOfFile() throws ProcessingException {
-        tokenizer.error("Unclosed field at the end of file");
-        return null;
-    }
+	@Override
+	public @Nullable Void twoClosingBraces() throws ProcessingException {
+		if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
+			tokenizer.error("Expecting three closing braces, not two");
+		else
+			tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		return null;
+	}
 
-    @Override
-    public void beforeStateChange() throws ProcessingException {
-        String nameString = name.toString();
-        tokenizer.emitToken(new MustacheToken.TagToken(kind, nameString));
-    }
+	@Override
+	public @Nullable Void threeClosingBraces() throws ProcessingException {
+		if (kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES)
+			tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		else
+			tokenizer.error("Expecting two closing braces, not three");
+		return null;
+	}
+
+	@Override
+	public @Nullable Void character(char c) throws ProcessingException {
+		if (Character.isWhitespace(c)) {
+			boolean expectsThree = kind == MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES;
+			tokenizer.setState(new EndMustacheTokenizerState(tokenizer, expectsThree));
+		}
+		else {
+			name.append(c);
+		}
+		return null;
+	}
+
+	@Override
+	public @Nullable Void endOfFile() throws ProcessingException {
+		tokenizer.error("Unclosed field at the end of file");
+		return null;
+	}
+
+	@Override
+	public void beforeStateChange() throws ProcessingException {
+		String nameString = name.toString();
+		tokenizer.emitToken(new MustacheToken.TagToken(kind, nameString));
+	}
 
 }

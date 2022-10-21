@@ -10,10 +10,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 @Documented
 public @interface JStachePartial {
-    
-    String name();
-    String path() default "";
-    String template() default NOT_SET;
-    
-    public static String NOT_SET = "__NOT_SET__";
+
+	String name();
+
+	String path() default "";
+
+	String template() default NOT_SET;
+
+	public static String NOT_SET = "__NOT_SET__";
+
 }

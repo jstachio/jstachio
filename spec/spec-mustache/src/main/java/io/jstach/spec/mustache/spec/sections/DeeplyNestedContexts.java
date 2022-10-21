@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/DeeplyNestedContexts.mustache")
 public class DeeplyNestedContexts extends SpecModel {
+
 }

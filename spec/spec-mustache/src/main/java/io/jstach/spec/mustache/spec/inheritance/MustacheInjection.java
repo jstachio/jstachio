@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/MustacheInjection.mustache")
 public class MustacheInjection extends SpecModel {
+
 }

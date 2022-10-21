@@ -37,32 +37,40 @@ import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-class PositionAnnotator implements TokenProcessor<@Nullable Character>{
-    private final String fileName;
-    private final TokenProcessor<PositionedToken<@Nullable Character>> processor;
-    private int row = 1;
-    private StringBuilder currentLine = new StringBuilder();
-    public PositionAnnotator(String fileName, TokenProcessor<PositionedToken<@Nullable Character>> processor) {
-        this.fileName = fileName;
-        this.processor = processor;
-    }
+class PositionAnnotator implements TokenProcessor<@Nullable Character> {
 
-    @Override
-    public void processToken(@Nullable Character token) throws ProcessingException {
-        if (token != null && token != '\n') {
-            currentLine.append(token.charValue());
-        } else {
-            String line = currentLine.toString();
-            char[] chars = line.toCharArray();
-            for (int i = 0; i < chars.length; i++) {
-                processor.processToken(new PositionedToken<@Nullable Character>(new Position(fileName, row, line, i + 1), chars[i]));
-            }
-            processor.processToken(new PositionedToken<@Nullable Character>(new Position(fileName, row, line, chars.length + 1), token));
-            currentLine = new StringBuilder();
-            row++;
-        }
-    }
+	private final String fileName;
+
+	private final TokenProcessor<PositionedToken<@Nullable Character>> processor;
+
+	private int row = 1;
+
+	private StringBuilder currentLine = new StringBuilder();
+
+	public PositionAnnotator(String fileName, TokenProcessor<PositionedToken<@Nullable Character>> processor) {
+		this.fileName = fileName;
+		this.processor = processor;
+	}
+
+	@Override
+	public void processToken(@Nullable Character token) throws ProcessingException {
+		if (token != null && token != '\n') {
+			currentLine.append(token.charValue());
+		}
+		else {
+			String line = currentLine.toString();
+			char[] chars = line.toCharArray();
+			for (int i = 0; i < chars.length; i++) {
+				processor.processToken(
+						new PositionedToken<@Nullable Character>(new Position(fileName, row, line, i + 1), chars[i]));
+			}
+			processor.processToken(new PositionedToken<@Nullable Character>(
+					new Position(fileName, row, line, chars.length + 1), token));
+			currentLine = new StringBuilder();
+			row++;
+		}
+	}
+
 }

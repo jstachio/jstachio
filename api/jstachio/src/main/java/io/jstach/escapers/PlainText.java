@@ -33,12 +33,13 @@ import io.jstach.Appender;
 import io.jstach.annotation.JStacheContentType;
 
 /**
- *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 @JStacheContentType
 public class PlainText {
-    public static Appender.DefaultAppender provides() {
-        return Appender.DefaultAppender.INSTANCE;
-    }
+
+	public static Appender.DefaultAppender provides() {
+		return Appender.DefaultAppender.INSTANCE;
+	}
+
 }

@@ -37,90 +37,114 @@ import io.jstach.apt.TokenProcessor;
 import io.jstach.apt.token.BracesToken;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class BracesTokenizer implements TokenProcessor<@Nullable Character> {
-    static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator() {
-        return new TokenProcessorDecorator<@Nullable Character, BracesToken>() {
-            @Override
-            public TokenProcessor<@Nullable Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
-                return new BracesTokenizer(downstream);
-            }
-        };
-    }
-    public static TokenProcessor<@Nullable Character> createInstance(String fileName, TokenProcessor<PositionedToken<BracesToken>> downstream) {
-        TokenProcessor<PositionedToken<@Nullable Character>> paransisTokenizer = PositionedTransformer.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
-        return new PositionAnnotator(fileName, paransisTokenizer);
-    }
 
-    private final TokenProcessor<BracesToken> downstream;
-    private State state = State.NONE;
+	static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator() {
+		return new TokenProcessorDecorator<@Nullable Character, BracesToken>() {
+			@Override
+			public TokenProcessor<@Nullable Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
+				return new BracesTokenizer(downstream);
+			}
+		};
+	}
 
-    public BracesTokenizer(TokenProcessor<BracesToken> downstream) {
-        this.downstream = downstream;
-    }
+	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
+			TokenProcessor<PositionedToken<BracesToken>> downstream) {
+		TokenProcessor<PositionedToken<@Nullable Character>> paransisTokenizer = PositionedTransformer
+				.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
+		return new PositionAnnotator(fileName, paransisTokenizer);
+	}
 
-    @Override
-    public void processToken(@Nullable Character token) throws ProcessingException {
-        if (token == null) {
-            if (state == State.WAS_OPEN) {
-                downstream.processToken(BracesToken.character('{'));
-            } else if (state == State.WAS_OPEN_TWICE) {
-                downstream.processToken(BracesToken.twoOpenBraces());
-            } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(BracesToken.character('}'));
-            } else if (state == State.WAS_CLOSE_TWICE) {
-                downstream.processToken(BracesToken.twoClosingBraces());
-            }
-            downstream.processToken(BracesToken.endOfFile());
-            state = State.NONE;
-        } else if (token == '{') {
-            if (state == State.WAS_OPEN) {
-                state = State.WAS_OPEN_TWICE;
-            } else if (state == State.WAS_OPEN_TWICE) {
-                downstream.processToken(BracesToken.threeOpenBraces());
-                state = State.NONE;
-            } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(BracesToken.character('}'));
-                state = State.WAS_OPEN;
-            } else if (state == State.WAS_CLOSE_TWICE) {
-                downstream.processToken(BracesToken.twoClosingBraces());
-                state = State.WAS_OPEN;
-            } else {
-                state = State.WAS_OPEN;
-            }
-        } else if (token == '}') {
-            if (state == State.WAS_CLOSE) {
-                state = State.WAS_CLOSE_TWICE;
-            } else if (state == State.WAS_CLOSE_TWICE) {
-                downstream.processToken(BracesToken.threeClosingBraces());
-                state = State.NONE;
-            } else if (state == State.WAS_OPEN) {
-                downstream.processToken(BracesToken.character('{'));
-                state = State.WAS_CLOSE;
-            } else if (state == State.WAS_OPEN_TWICE) {
-                downstream.processToken(BracesToken.twoOpenBraces());
-                state = State.WAS_CLOSE;
-            } else {
-                state = State.WAS_CLOSE;
-            }
-        } else {
-            if (state == State.WAS_OPEN) {
-                downstream.processToken(BracesToken.character('{'));
-            } else if (state == State.WAS_OPEN_TWICE) {
-                downstream.processToken(BracesToken.twoOpenBraces());
-            } else if (state == State.WAS_CLOSE) {
-                downstream.processToken(BracesToken.character('}'));
-            } else if (state == State.WAS_CLOSE_TWICE) {
-                downstream.processToken(BracesToken.twoClosingBraces());
-            }
-            downstream.processToken(BracesToken.character(token));
-            state = State.NONE;
-        }
-    }
+	private final TokenProcessor<BracesToken> downstream;
 
-    private enum State {
-        WAS_OPEN, WAS_OPEN_TWICE, WAS_CLOSE, WAS_CLOSE_TWICE, NONE
-    }
+	private State state = State.NONE;
+
+	public BracesTokenizer(TokenProcessor<BracesToken> downstream) {
+		this.downstream = downstream;
+	}
+
+	@Override
+	public void processToken(@Nullable Character token) throws ProcessingException {
+		if (token == null) {
+			if (state == State.WAS_OPEN) {
+				downstream.processToken(BracesToken.character('{'));
+			}
+			else if (state == State.WAS_OPEN_TWICE) {
+				downstream.processToken(BracesToken.twoOpenBraces());
+			}
+			else if (state == State.WAS_CLOSE) {
+				downstream.processToken(BracesToken.character('}'));
+			}
+			else if (state == State.WAS_CLOSE_TWICE) {
+				downstream.processToken(BracesToken.twoClosingBraces());
+			}
+			downstream.processToken(BracesToken.endOfFile());
+			state = State.NONE;
+		}
+		else if (token == '{') {
+			if (state == State.WAS_OPEN) {
+				state = State.WAS_OPEN_TWICE;
+			}
+			else if (state == State.WAS_OPEN_TWICE) {
+				downstream.processToken(BracesToken.threeOpenBraces());
+				state = State.NONE;
+			}
+			else if (state == State.WAS_CLOSE) {
+				downstream.processToken(BracesToken.character('}'));
+				state = State.WAS_OPEN;
+			}
+			else if (state == State.WAS_CLOSE_TWICE) {
+				downstream.processToken(BracesToken.twoClosingBraces());
+				state = State.WAS_OPEN;
+			}
+			else {
+				state = State.WAS_OPEN;
+			}
+		}
+		else if (token == '}') {
+			if (state == State.WAS_CLOSE) {
+				state = State.WAS_CLOSE_TWICE;
+			}
+			else if (state == State.WAS_CLOSE_TWICE) {
+				downstream.processToken(BracesToken.threeClosingBraces());
+				state = State.NONE;
+			}
+			else if (state == State.WAS_OPEN) {
+				downstream.processToken(BracesToken.character('{'));
+				state = State.WAS_CLOSE;
+			}
+			else if (state == State.WAS_OPEN_TWICE) {
+				downstream.processToken(BracesToken.twoOpenBraces());
+				state = State.WAS_CLOSE;
+			}
+			else {
+				state = State.WAS_CLOSE;
+			}
+		}
+		else {
+			if (state == State.WAS_OPEN) {
+				downstream.processToken(BracesToken.character('{'));
+			}
+			else if (state == State.WAS_OPEN_TWICE) {
+				downstream.processToken(BracesToken.twoOpenBraces());
+			}
+			else if (state == State.WAS_CLOSE) {
+				downstream.processToken(BracesToken.character('}'));
+			}
+			else if (state == State.WAS_CLOSE_TWICE) {
+				downstream.processToken(BracesToken.twoClosingBraces());
+			}
+			downstream.processToken(BracesToken.character(token));
+			state = State.NONE;
+		}
+	}
+
+	private enum State {
+
+		WAS_OPEN, WAS_OPEN_TWICE, WAS_CLOSE, WAS_CLOSE_TWICE, NONE
+
+	}
+
 }

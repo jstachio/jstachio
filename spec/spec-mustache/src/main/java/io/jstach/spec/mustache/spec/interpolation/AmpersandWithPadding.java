@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/AmpersandWithPadding.mustache")
 public class AmpersandWithPadding extends SpecModel {
+
 }

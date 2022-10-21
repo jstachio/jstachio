@@ -32,12 +32,13 @@ package io.jstach.apt;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  * @param <T>
  */
 public interface TokenProcessor<T> {
-    static @Nullable Character EOF = null;
 
-    void processToken(T token) throws ProcessingException;
+	static @Nullable Character EOF = null;
+
+	void processToken(T token) throws ProcessingException;
+
 }

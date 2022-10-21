@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inverted/Truthy.mustache")
 public class Truthy extends SpecModel {
+
 }

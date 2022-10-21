@@ -7,7 +7,7 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Blockscope.mustache")
 @JStachePartialMapping({
-@JStachePartial(name="parent", template="{{#nested}}{{$block}}You say {{fruit}}.{{/block}}{{/nested}}"),
-})
+		@JStachePartial(name = "parent", template = "{{#nested}}{{$block}}You say {{fruit}}.{{/block}}{{/nested}}"), })
 public class Blockscope extends SpecModel {
+
 }

@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/Variabletest.mustache")
 public class Variabletest extends SpecModel {
+
 }

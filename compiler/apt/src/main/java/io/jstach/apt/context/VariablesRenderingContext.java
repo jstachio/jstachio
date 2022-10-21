@@ -32,39 +32,42 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class VariablesRenderingContext implements RenderingContext {
-    private final VariableContext variables;
-    private final RenderingContext parent;
-    public VariablesRenderingContext(VariableContext variables, RenderingContext parent) {
-        this.variables = variables;
-        this.parent = parent;
-    }
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode();
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        return null;
-    }
+	private final VariableContext variables;
 
-    @Override
-    public JavaExpression currentExpression() {
-        return parent.currentExpression();
-    }
+	private final RenderingContext parent;
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return variables.createEnclosedContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return this.parent;
-    }
+	public VariablesRenderingContext(VariableContext variables, RenderingContext parent) {
+		this.variables = variables;
+		this.parent = parent;
+	}
+
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode();
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		return null;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return parent.currentExpression();
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return variables.createEnclosedContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return this.parent;
+	}
+
 }

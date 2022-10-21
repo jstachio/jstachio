@@ -34,15 +34,18 @@ import io.jstach.annotation.JStache;
 import io.jstach.escapers.Html;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @JStache(path = "settings.mustache", contentType = Html.class)
 public class Settings {
-    final RenderFunction info;
-    final boolean isEnabled;
-    public Settings(RenderFunction info, boolean isEnabled) {
-        this.info = info;
-        this.isEnabled = isEnabled;
-    }
+
+	final RenderFunction info;
+
+	final boolean isEnabled;
+
+	public Settings(RenderFunction info, boolean isEnabled) {
+		this.info = info;
+		this.isEnabled = isEnabled;
+	}
+
 }

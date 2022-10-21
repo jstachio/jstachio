@@ -32,27 +32,30 @@ package io.jstach.apt.meta;
 import javax.lang.model.element.TypeElement;
 
 /**
- *
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 
 public class ElementMessage {
-    public static ElementMessage of(TypeElement element, String message) {
-        return new ElementMessage(element.getQualifiedName().toString(), message);
-    }
 
-    private final String qualifiedElementName;
-    private final String message;
-    private ElementMessage(String qualifiedElementName, String message) {
-        this.qualifiedElementName = qualifiedElementName;
-        this.message = message;
-    }
+	public static ElementMessage of(TypeElement element, String message) {
+		return new ElementMessage(element.getQualifiedName().toString(), message);
+	}
 
-    public String qualifiedElementName() {
-        return qualifiedElementName;
-    }
+	private final String qualifiedElementName;
 
-    public String message() {
-        return message;
-    }
+	private final String message;
+
+	private ElementMessage(String qualifiedElementName, String message) {
+		this.qualifiedElementName = qualifiedElementName;
+		this.message = message;
+	}
+
+	public String qualifiedElementName() {
+		return qualifiedElementName;
+	}
+
+	public String message() {
+		return message;
+	}
+
 }

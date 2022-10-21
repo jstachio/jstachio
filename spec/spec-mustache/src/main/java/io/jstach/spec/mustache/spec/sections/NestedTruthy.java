@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/NestedTruthy.mustache")
 public class NestedTruthy extends SpecModel {
+
 }

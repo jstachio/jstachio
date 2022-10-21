@@ -40,44 +40,44 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class TextFileObject {
-  //  private final FileObject resource;
-    private final ProcessingEnvironment env;
-    private final Charset charset;
-    
-    TextFileObject(ProcessingEnvironment env, Charset charset) {
-        //this.resource = resource;
-        this.env = env;
-        this.charset = charset;
-    }
-    
 
-    InputStream openInputStream(String name) throws IOException {
-        FileObject resource = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", name);
-        if (resource.getLastModified() > 0) {
-            return resource.openInputStream();
-        }
-        
-        if (resource.getClass().getName().contains("eclipse")) {
-            FileObject dummy = 
-                    env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
-            // target/classes/dummy
-            Path projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
-            
-            Path filePath = Path.of("src/main/resources", name);
-            
-            Path fullPath = projectPath.resolve(filePath);
-            
-            return Files.newInputStream(fullPath);
-        }
-        
-        return resource.openInputStream();
-    }
+	// private final FileObject resource;
+	private final ProcessingEnvironment env;
 
-    Charset charset() {
-        return charset;
-    }
+	private final Charset charset;
+
+	TextFileObject(ProcessingEnvironment env, Charset charset) {
+		// this.resource = resource;
+		this.env = env;
+		this.charset = charset;
+	}
+
+	InputStream openInputStream(String name) throws IOException {
+		FileObject resource = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", name);
+		if (resource.getLastModified() > 0) {
+			return resource.openInputStream();
+		}
+
+		if (resource.getClass().getName().contains("eclipse")) {
+			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
+			// target/classes/dummy
+			Path projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
+
+			Path filePath = Path.of("src/main/resources", name);
+
+			Path fullPath = projectPath.resolve(filePath);
+
+			return Files.newInputStream(fullPath);
+		}
+
+		return resource.openInputStream();
+	}
+
+	Charset charset() {
+		return charset;
+	}
+
 }

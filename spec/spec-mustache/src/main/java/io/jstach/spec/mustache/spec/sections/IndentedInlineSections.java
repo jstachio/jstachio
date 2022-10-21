@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/IndentedInlineSections.mustache")
 public class IndentedInlineSections extends SpecModel {
+
 }

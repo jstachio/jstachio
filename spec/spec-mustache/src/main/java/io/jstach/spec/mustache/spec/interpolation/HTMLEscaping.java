@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/HTMLEscaping.mustache")
 public class HTMLEscaping extends SpecModel {
+
 }

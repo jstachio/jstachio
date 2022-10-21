@@ -9,10 +9,11 @@ import io.jstach.context.ContextNode;
 @JStache(path = "example-map-node.mustache")
 public class ExampleMapNode implements ContextNode {
 
-    private final Map<String, Object> object = new LinkedHashMap<>();
-    
-    @Override
-    public Object object() {
-        return object;
-    }
+	private final Map<String, Object> object = new LinkedHashMap<>();
+
+	@Override
+	public Object object() {
+		return object;
+	}
+
 }

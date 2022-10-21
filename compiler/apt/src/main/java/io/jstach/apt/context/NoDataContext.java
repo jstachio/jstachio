@@ -32,46 +32,48 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class NoDataContext implements RenderingContext {
-    private final JavaExpression expression;
-    private final RenderingContext parent;
 
-    NoDataContext(JavaExpression expression, RenderingContext parent) {
-        this.expression = expression;
-        this.parent = parent;
-    }
+	private final JavaExpression expression;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return parent.endSectionRenderingCode();
-    }
+	private final RenderingContext parent;
 
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        //TODO maybe this should use parent?
-        return null;
-    }
+	NoDataContext(JavaExpression expression, RenderingContext parent) {
+		this.expression = expression;
+		this.parent = parent;
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        return expression;
-    }
+	@Override
+	public String endSectionRenderingCode() {
+		return parent.endSectionRenderingCode();
+	}
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode();
-    }
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		// TODO maybe this should use parent?
+		return null;
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
+	@Override
+	public JavaExpression currentExpression() {
+		return expression;
+	}
 
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return parent;
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode();
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
+	}
+
 }

@@ -32,61 +32,60 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class ArrayRenderingContext implements RenderingContext {
-    private final JavaExpression arrayExpression;
-    private final String indexVariableName;
-    private final RenderingContext parent;
 
-    public ArrayRenderingContext(JavaExpression arrayExpression, String indexVariableName, RenderingContext parent) {
-        this.arrayExpression = arrayExpression;
-        this.indexVariableName = indexVariableName;
-        this.parent = parent;
-    }
+	private final JavaExpression arrayExpression;
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode()
-               + String.format("for (int %s = 0; %s < %s; %s++) { ",
-                               indexVariableName,
-                               indexExpression().text(),
-                               arrayExpression.arrayLength().text(),
-                               indexExpression().text());
-    }
+	private final String indexVariableName;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return "}" + parent.endSectionRenderingCode();
-    }
+	private final RenderingContext parent;
 
-    JavaExpression componentExpession() {
-        return arrayExpression.subscript(indexExpression());
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        return null;
-    }
+	public ArrayRenderingContext(JavaExpression arrayExpression, String indexVariableName, RenderingContext parent) {
+		this.arrayExpression = arrayExpression;
+		this.indexVariableName = indexVariableName;
+		this.parent = parent;
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        return arrayExpression;
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode()
+				+ String.format("for (int %s = 0; %s < %s; %s++) { ", indexVariableName, indexExpression().text(),
+						arrayExpression.arrayLength().text(), indexExpression().text());
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
+	@Override
+	public String endSectionRenderingCode() {
+		return "}" + parent.endSectionRenderingCode();
+	}
 
-    private JavaExpression indexExpression() {
-        return arrayExpression.model().expression(indexVariableName, arrayExpression.model().knownTypes()._int);
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return parent;
-    }
+	JavaExpression componentExpession() {
+		return arrayExpression.subscript(indexExpression());
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		return null;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return arrayExpression;
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	private JavaExpression indexExpression() {
+		return arrayExpression.model().expression(indexVariableName, arrayExpression.model().knownTypes()._int);
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
+	}
 
 }

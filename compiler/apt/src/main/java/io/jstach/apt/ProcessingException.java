@@ -34,56 +34,61 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.context.ContextException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 public class ProcessingException extends Exception {
-    private static final long serialVersionUID = 7396512855619812062L;
-    private final Position position;
 
-    protected ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
-        super(message, cause);
-        this.position = position;
-    }
+	private static final long serialVersionUID = 7396512855619812062L;
 
-    public ProcessingException(Position position, @Nullable String message) {
-        this(position, message, null);
-    }
+	private final Position position;
 
-    public ProcessingException(Position position, ContextException contextException) {
-        this(position, contextException.getMessage(), contextException);
-    }
-    
+	protected ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
+		super(message, cause);
+		this.position = position;
+	}
 
-    public ProcessingException(Position position, Exception contextException) {
-        this(position, contextException.getClass().getName() + ": " + contextException.getMessage(), contextException);
-    }
+	public ProcessingException(Position position, @Nullable String message) {
+		this(position, message, null);
+	}
 
-    public Position position() {
-        return position;
-    }
-    
-    public static class AnnotationProcessingException extends ProcessingException {
-        
-        private static final long serialVersionUID = 7475603035389163831L;
-        private final AnnotatedException annotatedException;
-       
-        public AnnotationProcessingException(Position position, AnnotatedException annotedException) {
-            super(position, annotedException);
-            this.annotatedException = annotedException;
-        }
-        
-        public AnnotatedException getAnnotatedException() {
-            return annotatedException;
-        }
-        
-    }
-    
-    public static class VariableNotFoundProcessingException extends ProcessingException {
-        private static final long serialVersionUID = -6932648568571932099L;
+	public ProcessingException(Position position, ContextException contextException) {
+		this(position, contextException.getMessage(), contextException);
+	}
 
-        public VariableNotFoundProcessingException(Position position, ContextException contextException, String message) {
-            super(position, message, contextException);
-        }
-    }
+	public ProcessingException(Position position, Exception contextException) {
+		this(position, contextException.getClass().getName() + ": " + contextException.getMessage(), contextException);
+	}
+
+	public Position position() {
+		return position;
+	}
+
+	public static class AnnotationProcessingException extends ProcessingException {
+
+		private static final long serialVersionUID = 7475603035389163831L;
+
+		private final AnnotatedException annotatedException;
+
+		public AnnotationProcessingException(Position position, AnnotatedException annotedException) {
+			super(position, annotedException);
+			this.annotatedException = annotedException;
+		}
+
+		public AnnotatedException getAnnotatedException() {
+			return annotatedException;
+		}
+
+	}
+
+	public static class VariableNotFoundProcessingException extends ProcessingException {
+
+		private static final long serialVersionUID = -6932648568571932099L;
+
+		public VariableNotFoundProcessingException(Position position, ContextException contextException,
+				String message) {
+			super(position, message, contextException);
+		}
+
+	}
+
 }

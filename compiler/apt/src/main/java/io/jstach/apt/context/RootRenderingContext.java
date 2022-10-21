@@ -34,47 +34,49 @@ import java.util.function.Predicate;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class RootRenderingContext implements RenderingContext {
-    private final VariableContext variables;
-    public RootRenderingContext(VariableContext variables) {
-        this.variables = variables;
-    }
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return "";
-    }
+	private final VariableContext variables;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return "";
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        return null;
-    }
+	public RootRenderingContext(VariableContext variables) {
+		this.variables = variables;
+	}
 
-    @Override
-    public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) {
-        return null;
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return "";
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        throw new IllegalStateException("No current data in root context");
-    }
+	@Override
+	public String endSectionRenderingCode() {
+		return "";
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return variables.createEnclosedContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return null;
-    }
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		return null;
+	}
+
+	@Override
+	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) {
+		return null;
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		throw new IllegalStateException("No current data in root context");
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return variables.createEnclosedContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return null;
+	}
+
 }

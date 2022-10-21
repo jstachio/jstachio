@@ -34,27 +34,31 @@ import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> {
-    public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(final TokenProcessorDecorator<T, U> decorator, final TokenProcessor<PositionedToken<U>> positionedDownstream) {
-        PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
-        TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
-        return new PositionedTransformer<T, U>(downstream, processor);
-    }
 
-    private final PositionHodingTokenProcessor<U> downstream;
-    private final TokenProcessor<T> processor;
+	public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(
+			final TokenProcessorDecorator<T, U> decorator,
+			final TokenProcessor<PositionedToken<U>> positionedDownstream) {
+		PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
+		TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
+		return new PositionedTransformer<T, U>(downstream, processor);
+	}
 
-    private PositionedTransformer(PositionHodingTokenProcessor<U> downstream, TokenProcessor<T> processor) {
-        this.downstream = downstream;
-        this.processor = processor;
-    }
+	private final PositionHodingTokenProcessor<U> downstream;
 
-    @Override
-    public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
-        downstream.setPosition(sourceToken.position());
-        processor.processToken(sourceToken.innerToken());
-    }
+	private final TokenProcessor<T> processor;
+
+	private PositionedTransformer(PositionHodingTokenProcessor<U> downstream, TokenProcessor<T> processor) {
+		this.downstream = downstream;
+		this.processor = processor;
+	}
+
+	@Override
+	public void processToken(final PositionedToken<T> sourceToken) throws ProcessingException {
+		downstream.setPosition(sourceToken.position());
+		processor.processToken(sourceToken.innerToken());
+	}
+
 }

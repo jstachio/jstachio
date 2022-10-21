@@ -32,42 +32,44 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class OwnedRenderingContext implements RenderingContext {
-    private final RenderingContext parent;
-    public OwnedRenderingContext(RenderingContext parent) {
-        this.parent = parent;
-    }
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return "";
-    }
+	private final RenderingContext parent;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return "";
-    }
-    
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        return parent.get(name);
-    }
+	public OwnedRenderingContext(RenderingContext parent) {
+		this.parent = parent;
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        return parent.currentExpression();
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return "";
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return parent;
-    }
+	@Override
+	public String endSectionRenderingCode() {
+		return "";
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		return parent.get(name);
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return parent.currentExpression();
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
+	}
+
 }

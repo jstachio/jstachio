@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/ListContexts.mustache")
 public class ListContexts extends SpecModel {
+
 }

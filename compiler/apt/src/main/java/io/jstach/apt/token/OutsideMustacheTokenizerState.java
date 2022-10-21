@@ -37,85 +37,87 @@ import io.jstach.apt.MustacheToken.SpecialChar;
 import io.jstach.apt.ProcessingException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class OutsideMustacheTokenizerState implements MustacheTokenizerState {
-    private final StringBuilder text = new StringBuilder();
-    private final MustacheTokenizer tokenizer;
-    private char lastChar = 0;
 
-    OutsideMustacheTokenizerState(final MustacheTokenizer tokenizer) {
-        this.tokenizer = tokenizer;
-    }
+	private final StringBuilder text = new StringBuilder();
 
-    @Override
-    public @Nullable Void twoOpenBraces() throws ProcessingException {
-        tokenizer.setState(new StartMustacheTokenizerState(tokenizer));
-        return null;
-    }
+	private final MustacheTokenizer tokenizer;
 
-    @Override
-    public @Nullable Void threeOpenBraces() throws ProcessingException {
-        tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES, tokenizer));
-        return null;
-    }
+	private char lastChar = 0;
 
-    @Override
-    public @Nullable Void threeClosingBraces() throws ProcessingException {
-        text.append("}}}");
-        return null;
-    }
+	OutsideMustacheTokenizerState(final MustacheTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
 
-    @Override
-    public @Nullable Void twoClosingBraces() throws ProcessingException {
-        text.append("}}");
-        return null;
-    }
+	@Override
+	public @Nullable Void twoOpenBraces() throws ProcessingException {
+		tokenizer.setState(new StartMustacheTokenizerState(tokenizer));
+		return null;
+	}
 
-    @Override
-    public @Nullable Void character(char c) throws ProcessingException {
-        switch (c) {
-        case '\n' -> {
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            NewlineChar nc = lastChar == '\r' ? NewlineChar.CRLF : NewlineChar.LF;
-            tokenizer.emitToken(new MustacheToken.NewlineToken(nc));
-        }
-        case '\r' -> {
-            
-        }
-        case '"' -> {
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.QUOTATION_MARK));
-        }
-        case '\\' -> {
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-            tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.BACKSLASH));
-        }
-        default -> { 
-            if (lastChar == '\r') {
-                text.append("\r");
-            }
-            text.append(c);
-        }
-        }
-        lastChar = c;
-        return null;
-    }
+	@Override
+	public @Nullable Void threeOpenBraces() throws ProcessingException {
+		tokenizer.setState(
+				new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.UNESCAPED_VARIABLE_THREE_BRACES, tokenizer));
+		return null;
+	}
 
-    @Override
-    public @Nullable Void endOfFile() throws ProcessingException {
-        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        tokenizer.emitToken(new MustacheToken.EndOfFileToken());
-        return null;
-    }
+	@Override
+	public @Nullable Void threeClosingBraces() throws ProcessingException {
+		text.append("}}}");
+		return null;
+	}
 
-    @Override
-    public  void beforeStateChange() throws ProcessingException {
-        if (text.length() > 0) {
-            tokenizer.emitToken(new MustacheToken.TextToken(text.toString()));
-        }
-    }
+	@Override
+	public @Nullable Void twoClosingBraces() throws ProcessingException {
+		text.append("}}");
+		return null;
+	}
 
+	@Override
+	public @Nullable Void character(char c) throws ProcessingException {
+		switch (c) {
+			case '\n' -> {
+				tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+				NewlineChar nc = lastChar == '\r' ? NewlineChar.CRLF : NewlineChar.LF;
+				tokenizer.emitToken(new MustacheToken.NewlineToken(nc));
+			}
+			case '\r' -> {
+
+			}
+			case '"' -> {
+				tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+				tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.QUOTATION_MARK));
+			}
+			case '\\' -> {
+				tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+				tokenizer.emitToken(new MustacheToken.SpecialCharacterToken(SpecialChar.BACKSLASH));
+			}
+			default -> {
+				if (lastChar == '\r') {
+					text.append("\r");
+				}
+				text.append(c);
+			}
+		}
+		lastChar = c;
+		return null;
+	}
+
+	@Override
+	public @Nullable Void endOfFile() throws ProcessingException {
+		tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		tokenizer.emitToken(new MustacheToken.EndOfFileToken());
+		return null;
+	}
+
+	@Override
+	public void beforeStateChange() throws ProcessingException {
+		if (text.length() > 0) {
+			tokenizer.emitToken(new MustacheToken.TextToken(text.toString()));
+		}
+	}
 
 }

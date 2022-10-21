@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/BasicContextMissInterpolation.mustache")
 public class BasicContextMissInterpolation extends SpecModel {
+
 }

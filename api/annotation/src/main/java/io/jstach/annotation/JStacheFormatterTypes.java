@@ -11,7 +11,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JStacheFormatterTypes {
 
-    public Class<?>[] types() default {};
+	public Class<?>[] types() default {};
 
-    public String[] patterns() default {};
+	public String[] patterns() default {};
+
 }

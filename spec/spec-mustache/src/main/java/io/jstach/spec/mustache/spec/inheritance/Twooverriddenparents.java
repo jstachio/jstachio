@@ -7,7 +7,7 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Twooverriddenparents.mustache")
 @JStachePartialMapping({
-@JStachePartial(name="parent", template="|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"),
-})
+		@JStachePartial(name = "parent", template = "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"), })
 public class Twooverriddenparents extends SpecModel {
+
 }

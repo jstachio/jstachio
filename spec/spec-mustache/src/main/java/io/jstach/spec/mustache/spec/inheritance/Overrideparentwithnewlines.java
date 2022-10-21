@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Overrideparentwithnewlines.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="parent", template="{{$ballmer}}peaking{{/ballmer}}"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "parent", template = "{{$ballmer}}peaking{{/ballmer}}"), })
 public class Overrideparentwithnewlines extends SpecModel {
+
 }

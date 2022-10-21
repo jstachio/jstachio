@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inverted/List.mustache")
 public class List extends SpecModel {
+
 }

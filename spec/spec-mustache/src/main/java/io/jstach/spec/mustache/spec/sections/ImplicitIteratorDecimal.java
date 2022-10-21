@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/ImplicitIteratorDecimal.mustache")
 public class ImplicitIteratorDecimal extends SpecModel {
+
 }

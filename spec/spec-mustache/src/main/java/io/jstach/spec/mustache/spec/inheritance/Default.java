@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "inheritance/Default.mustache")
 public class Default extends SpecModel {
+
 }

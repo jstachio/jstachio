@@ -32,68 +32,69 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- *
  * @author vir
  */
 class BooleanRenderingContext implements BooleanExpressionContext {
-    private final String expression;
-    private final RenderingContext parent;
 
-    BooleanRenderingContext(String expression, RenderingContext parent) {
-        this.expression = expression;
-        this.parent = parent;
-    }
+	private final String expression;
 
-    @Override
-    public String beginSectionRenderingCode() {
-        return parent.beginSectionRenderingCode() + "if (" + expression + ") { ";
-    }
+	private final RenderingContext parent;
 
-    @Override
-    public String endSectionRenderingCode() {
-        return " }" + parent.endSectionRenderingCode();
-    }
-    
-    
-    public String getExpression() {
-        return expression;
-    }
-    
-    @Override
-    public @Nullable BooleanExpressionContext getParentExpression() {
-        if (parent instanceof BooleanExpressionContext be) {
-            return be;
-        }
-        return null;
-    }
+	BooleanRenderingContext(String expression, RenderingContext parent) {
+		this.expression = expression;
+		this.parent = parent;
+	}
 
-    @Override
-    public @Nullable JavaExpression get(String name) throws ContextException {
-        return parent.get(name);
-    }
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode() + "if (" + expression + ") { ";
+	}
 
-    @Override
-    public JavaExpression currentExpression() {
-        return parent.currentExpression();
-    }
+	@Override
+	public String endSectionRenderingCode() {
+		return " }" + parent.endSectionRenderingCode();
+	}
 
-    @Override
-    public VariableContext createEnclosedVariableContext() {
-        return parent.createEnclosedVariableContext();
-    }
-    
-    @Override
-    public @Nullable RenderingContext getParent() {
-        return parent;
-    }
-    
-    @Override
-    public String description() {
-        return toString();
-    }
+	public String getExpression() {
+		return expression;
+	}
 
-    @Override
-    public String toString() {
-        return "BooleanRenderingContext [expression=" + expression + "]";
-    }
+	@Override
+	public @Nullable BooleanExpressionContext getParentExpression() {
+		if (parent instanceof BooleanExpressionContext be) {
+			return be;
+		}
+		return null;
+	}
+
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		return parent.get(name);
+	}
+
+	@Override
+	public JavaExpression currentExpression() {
+		return parent.currentExpression();
+	}
+
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
+
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
+	}
+
+	@Override
+	public String description() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return "BooleanRenderingContext [expression=" + expression + "]";
+	}
+
 }

@@ -32,9 +32,10 @@ package io.jstach.apt.token.util;
 import io.jstach.apt.TokenProcessor;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 interface TokenProcessorDecorator<T, U> {
-    TokenProcessor<T> decorateTokenProcessor(TokenProcessor<U> t);
+
+	TokenProcessor<T> decorateTokenProcessor(TokenProcessor<U> t);
+
 }

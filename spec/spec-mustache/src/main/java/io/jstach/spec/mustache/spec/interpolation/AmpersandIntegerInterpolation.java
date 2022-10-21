@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "interpolation/AmpersandIntegerInterpolation.mustache")
 public class AmpersandIntegerInterpolation extends SpecModel {
+
 }

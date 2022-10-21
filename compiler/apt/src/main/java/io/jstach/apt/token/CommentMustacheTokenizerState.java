@@ -34,46 +34,48 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.ProcessingException;
 
 class CommentMustacheTokenizerState implements MustacheTokenizerState {
-    private final MustacheTokenizer tokenizer;
 
-    CommentMustacheTokenizerState(MustacheTokenizer tokenizer) {
-        this.tokenizer = tokenizer;
-    }
+	private final MustacheTokenizer tokenizer;
 
-    @Override
-    public void beforeStateChange() throws ProcessingException {
-    }
+	CommentMustacheTokenizerState(MustacheTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
 
-    @Override
-    public @Nullable Void twoOpenBraces() throws ProcessingException {
-        return null;
-    }
+	@Override
+	public void beforeStateChange() throws ProcessingException {
+	}
 
-    @Override
-    public @Nullable Void threeOpenBraces() throws ProcessingException {
-        return null;
-    }
+	@Override
+	public @Nullable Void twoOpenBraces() throws ProcessingException {
+		return null;
+	}
 
-    @Override
-    public @Nullable Void twoClosingBraces() throws ProcessingException {
-        tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        return null;
-    }
+	@Override
+	public @Nullable Void threeOpenBraces() throws ProcessingException {
+		return null;
+	}
 
-    @Override
-    public @Nullable Void threeClosingBraces() throws ProcessingException {
-        tokenizer.error("Two closing braces should close comment, not three");
-        return null;
-    }
-    @Override
-    public @Nullable Void character(char c) throws ProcessingException {
-        return null;
-    }
+	@Override
+	public @Nullable Void twoClosingBraces() throws ProcessingException {
+		tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		return null;
+	}
 
-    @Override
-    public @Nullable Void endOfFile() throws ProcessingException {
-        tokenizer.error("Unexpected end of file: comment not closed");
-        return null;
-    }
+	@Override
+	public @Nullable Void threeClosingBraces() throws ProcessingException {
+		tokenizer.error("Two closing braces should close comment, not three");
+		return null;
+	}
+
+	@Override
+	public @Nullable Void character(char c) throws ProcessingException {
+		return null;
+	}
+
+	@Override
+	public @Nullable Void endOfFile() throws ProcessingException {
+		tokenizer.error("Unexpected end of file: comment not closed");
+		return null;
+	}
 
 }

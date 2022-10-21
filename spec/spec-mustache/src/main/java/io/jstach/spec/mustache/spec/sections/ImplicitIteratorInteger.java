@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/ImplicitIteratorInteger.mustache")
 public class ImplicitIteratorInteger extends SpecModel {
+
 }

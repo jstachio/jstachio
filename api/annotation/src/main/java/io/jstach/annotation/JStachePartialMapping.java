@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStachePartialMapping {
-    
-    public JStachePartial[] value() default {};
-    
+
+	public JStachePartial[] value() default {};
+
 }

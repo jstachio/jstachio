@@ -6,8 +6,7 @@ import io.jstach.annotation.JStachePartialMapping;
 import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "partials/SurroundingWhitespace.mustache")
-@JStachePartialMapping({
-@JStachePartial(name="partial", template="\t|\t"),
-})
+@JStachePartialMapping({ @JStachePartial(name = "partial", template = "\t|\t"), })
 public class SurroundingWhitespace extends SpecModel {
+
 }

@@ -34,40 +34,48 @@ import java.util.List;
 import io.jstach.annotation.JStache;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 @JStache(
-    // points to src/main/resources/user.mustache file
-    path = "user.mustache"
+		// points to src/main/resources/user.mustache file
+		path = "user.mustache"
 
-    // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
-    )
+// adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
+)
 public class User {
-    public final String name;
-    public final int age;
-    public final String[] array;
-    public final List<Item<String>> list1;
 
-    public User(String name, int age, String[] array, List<Item<String>> list1) {
-        this.name = name;
-        this.age = age;
-        this.array = array;
-        this.list1 = list1;
-    }
+	public final String name;
 
-    public static class Item<T> {
-        private final T value;
-        public Item(T value) {
-            this.value = value;
-        }
-        T value() {
-            return value;
-        }
-        
-        @Override
-        public String toString() {
-            return value().toString();
-        }
-    }
+	public final int age;
+
+	public final String[] array;
+
+	public final List<Item<String>> list1;
+
+	public User(String name, int age, String[] array, List<Item<String>> list1) {
+		this.name = name;
+		this.age = age;
+		this.array = array;
+		this.list1 = list1;
+	}
+
+	public static class Item<T> {
+
+		private final T value;
+
+		public Item(T value) {
+			this.value = value;
+		}
+
+		T value() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return value().toString();
+		}
+
+	}
+
 }

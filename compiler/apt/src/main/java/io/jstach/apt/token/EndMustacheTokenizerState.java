@@ -34,64 +34,65 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.ProcessingException;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class EndMustacheTokenizerState implements MustacheTokenizerState {
-    private final MustacheTokenizer tokenizer;
-    private final boolean expectsThree;
 
-    EndMustacheTokenizerState(final MustacheTokenizer tokenizer, boolean expectsThree) {
-        this.tokenizer = tokenizer;
-        this.expectsThree = expectsThree;
-    }
+	private final MustacheTokenizer tokenizer;
 
-    @Override
-    public @Nullable Void twoOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	private final boolean expectsThree;
 
-    @Override
-    public @Nullable Void threeOpenBraces() throws ProcessingException {
-        tokenizer.error("Unexpected open braces");
-        return null;
-    }
+	EndMustacheTokenizerState(final MustacheTokenizer tokenizer, boolean expectsThree) {
+		this.tokenizer = tokenizer;
+		this.expectsThree = expectsThree;
+	}
 
-    @Override
-    public @Nullable Void twoClosingBraces() throws ProcessingException {
-        if (expectsThree)
-            tokenizer.error("Expects three closing braces, not two");
-        else
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        return null;
-    }
+	@Override
+	public @Nullable Void twoOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void threeClosingBraces() throws ProcessingException {
-        if (expectsThree)
-            tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
-        else
-            tokenizer.error("Expects two closing braces, not three");
-        return null;
-    }
+	@Override
+	public @Nullable Void threeOpenBraces() throws ProcessingException {
+		tokenizer.error("Unexpected open braces");
+		return null;
+	}
 
-    @Override
-    public @Nullable Void character(char c) throws ProcessingException {
-        if (!Character.isWhitespace(c)) {
-            tokenizer.error("Unrecognized character " + c);
-        }
-        return null;
-    }
+	@Override
+	public @Nullable Void twoClosingBraces() throws ProcessingException {
+		if (expectsThree)
+			tokenizer.error("Expects three closing braces, not two");
+		else
+			tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		return null;
+	}
 
-    @Override
-    public @Nullable Void endOfFile() throws ProcessingException {
-        tokenizer.error("Unclosed field at the end of file");
-        return null;
-    }
+	@Override
+	public @Nullable Void threeClosingBraces() throws ProcessingException {
+		if (expectsThree)
+			tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
+		else
+			tokenizer.error("Expects two closing braces, not three");
+		return null;
+	}
 
-    @Override
-    public void beforeStateChange() throws ProcessingException {
-    }
+	@Override
+	public @Nullable Void character(char c) throws ProcessingException {
+		if (!Character.isWhitespace(c)) {
+			tokenizer.error("Unrecognized character " + c);
+		}
+		return null;
+	}
+
+	@Override
+	public @Nullable Void endOfFile() throws ProcessingException {
+		tokenizer.error("Unclosed field at the end of file");
+		return null;
+	}
+
+	@Override
+	public void beforeStateChange() throws ProcessingException {
+	}
 
 }

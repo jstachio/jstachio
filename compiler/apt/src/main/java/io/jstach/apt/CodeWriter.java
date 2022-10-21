@@ -50,85 +50,82 @@ import io.jstach.apt.context.TemplateStack.RootTemplateStack;
 import io.jstach.apt.context.VariableContext;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class CodeWriter {
-    private final SwitchablePrintWriter writer;
-    private final RenderingCodeGenerator codeGenerator;
-    private final Map<String, NamedTemplate> partials;
-    private final Set<JStacheFlags.Flag> flags;
 
-    CodeWriter( 
-            SwitchablePrintWriter writer, 
-            RenderingCodeGenerator codeGenerator, 
-            Map<String, NamedTemplate> partials,
-            Set<JStacheFlags.Flag> flags) {
-        this.writer = writer;
-        this.codeGenerator = codeGenerator;
-        this.partials = partials;
-        this.flags = flags;
-    }
+	private final SwitchablePrintWriter writer;
 
-    TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression, VariableContext variableContext, Set<JStacheFlags.Flag> flags) throws AnnotatedException {
-        return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template, flags), element, rootExpression, variableContext);
-    }
+	private final RenderingCodeGenerator codeGenerator;
 
-    void println(String s) {
-        writer.println(s);
-    }
+	private final Map<String, NamedTemplate> partials;
 
-    void compileTemplate(TextFileObject resource, 
-            TemplateCompilerContext context, 
-            TemplateCompilerType templateCompilerType) 
-            throws IOException, ProcessingException {
-        
-        
-        TemplateStack stack = context.getTemplateStack();
-        String templateName = stack.getTemplateName();
-        
-        NamedTemplate rootTemplate;
-        
-        if (stack instanceof RootTemplateStack rt) {
-            rootTemplate = rt.template();
-        }
-        else {
-            throw new IllegalStateException("Expected root template");
-        }
-        
-        TemplateLoader templateLoader = (name) -> { 
-            NamedTemplate nt;
-            if (name.equals(templateName)) {
-                 nt = rootTemplate;
-            }
-            else {
-                nt = partials.get(name);
-            }
-            if (nt == null) {
-                nt = new FileTemplate(name, name);
-            }
-            if (nt instanceof FileTemplate ft) {
-                String path = ft.path();
-                return new NamedReader(
-                        new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()), name, path);
-            }
-            else if (nt instanceof InlineTemplate it) {
-                String template = it.template();
-                StringReader sr = new StringReader(template);
-                return new NamedReader(
-                       sr, name, "INLINE");
-            }
-            else {
-                throw new IllegalStateException();
-            }
+	private final Set<JStacheFlags.Flag> flags;
 
+	CodeWriter(SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator, Map<String, NamedTemplate> partials,
+			Set<JStacheFlags.Flag> flags) {
+		this.writer = writer;
+		this.codeGenerator = codeGenerator;
+		this.partials = partials;
+		this.flags = flags;
+	}
 
-        };
-        
-        try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer, context, templateCompilerType, flags)) {
-            templateCompiler.run();
-        }
-    }
+	TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression,
+			VariableContext variableContext, Set<JStacheFlags.Flag> flags) throws AnnotatedException {
+		return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template, flags), element,
+				rootExpression, variableContext);
+	}
 
+	void println(String s) {
+		writer.println(s);
+	}
+
+	void compileTemplate(TextFileObject resource, TemplateCompilerContext context,
+			TemplateCompilerType templateCompilerType) throws IOException, ProcessingException {
+
+		TemplateStack stack = context.getTemplateStack();
+		String templateName = stack.getTemplateName();
+
+		NamedTemplate rootTemplate;
+
+		if (stack instanceof RootTemplateStack rt) {
+			rootTemplate = rt.template();
+		}
+		else {
+			throw new IllegalStateException("Expected root template");
+		}
+
+		TemplateLoader templateLoader = (name) -> {
+			NamedTemplate nt;
+			if (name.equals(templateName)) {
+				nt = rootTemplate;
+			}
+			else {
+				nt = partials.get(name);
+			}
+			if (nt == null) {
+				nt = new FileTemplate(name, name);
+			}
+			if (nt instanceof FileTemplate ft) {
+				String path = ft.path();
+				return new NamedReader(new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)),
+						resource.charset()), name, path);
+			}
+			else if (nt instanceof InlineTemplate it) {
+				String template = it.template();
+				StringReader sr = new StringReader(template);
+				return new NamedReader(sr, name, "INLINE");
+			}
+			else {
+				throw new IllegalStateException();
+			}
+
+		};
+
+		try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer,
+				context, templateCompilerType, flags)) {
+			templateCompiler.run();
+		}
+	}
 
 }

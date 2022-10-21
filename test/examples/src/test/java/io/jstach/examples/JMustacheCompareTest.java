@@ -14,58 +14,62 @@ import io.jstach.RenderFunction;
 
 public class JMustacheCompareTest {
 
-    int[][] array = new int[][] { new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 },
-            new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 } };
-    List<User1.Item<String>> list1 = new ArrayList<User1.Item<String>>();
-    {
-        list1.add(new User1.Item<String>("abc"));
-        list1.add(new User1.Item<String>("def"));
-    }
+	int[][] array = new int[][] { new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 },
+			new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 } };
 
-    @Test
-    public void testUserJMustache() throws Exception {
+	List<User1.Item<String>> list1 = new ArrayList<User1.Item<String>>();
 
-        JMustacheRenderService.setEnabled(true);
-        try {
-            PrintStream out = requireNonNull(System.out);
-            if (out == null)
-                throw new IllegalStateException();
-            User1 user2 = new User1("Victor", 29, new String[] { "aaa", "bbb", "ccc" }, array, list1);
+	{
+		list1.add(new User1.Item<String>("abc"));
+		list1.add(new User1.Item<String>("def"));
+	}
 
-            RenderableHtmlUser1Adapter.of(user2).render(out);
-        } finally {
-            JMustacheRenderService.setEnabled(false);
-        }
-    }
-    
-    @Test
-    public void testPage() throws Exception {
-        UUID testId = UUID.nameUUIDFromBytes("test".getBytes());
-        var page = new PageContainer(new IdContainer(testId),
-                new Blog(List.of(new Post("Maverick", new IdContainer(testId)),
-                        new Post("Ice Man", new IdContainer(testId)), new Post("Goose", new IdContainer(testId))
+	@Test
+	public void testUserJMustache() throws Exception {
 
-                )));
-        RenderFunction render = PageContainerRenderer.of(page);
-        String sm = normalize(render.renderString());
-        String jm = normalize(jmustacheRender(page));
-        System.out.println(sm);
-        assertEquals(jm, sm);
-    }
-    
-    private String normalize(String out) {
-        return out;
-        //return out.replaceAll("\\n+", "\n");
-    }
-    private String jmustacheRender(PageContainer page) {
-        try {
-            JMustacheRenderService.setEnabled(true);
-            RenderFunction render = PageContainerRenderer.of(page);
-            return render.renderString();
-        } finally {
-            JMustacheRenderService.setEnabled(false);
-        }
-    }
+		JMustacheRenderService.setEnabled(true);
+		try {
+			PrintStream out = requireNonNull(System.out);
+			if (out == null)
+				throw new IllegalStateException();
+			User1 user2 = new User1("Victor", 29, new String[] { "aaa", "bbb", "ccc" }, array, list1);
 
+			RenderableHtmlUser1Adapter.of(user2).render(out);
+		}
+		finally {
+			JMustacheRenderService.setEnabled(false);
+		}
+	}
+
+	@Test
+	public void testPage() throws Exception {
+		UUID testId = UUID.nameUUIDFromBytes("test".getBytes());
+		var page = new PageContainer(new IdContainer(testId),
+				new Blog(List.of(new Post("Maverick", new IdContainer(testId)),
+						new Post("Ice Man", new IdContainer(testId)), new Post("Goose", new IdContainer(testId))
+
+				)));
+		RenderFunction render = PageContainerRenderer.of(page);
+		String sm = normalize(render.renderString());
+		String jm = normalize(jmustacheRender(page));
+		System.out.println(sm);
+		assertEquals(jm, sm);
+	}
+
+	private String normalize(String out) {
+		return out;
+		// return out.replaceAll("\\n+", "\n");
+	}
+
+	private String jmustacheRender(PageContainer page) {
+		try {
+			JMustacheRenderService.setEnabled(true);
+			RenderFunction render = PageContainerRenderer.of(page);
+			return render.renderString();
+		}
+		finally {
+			JMustacheRenderService.setEnabled(false);
+		}
+	}
 
 }

@@ -5,4 +5,5 @@ import io.jstach.spec.generator.SpecModel;
 
 @JStache(path = "sections/StandaloneWithoutPreviousLine.mustache")
 public class StandaloneWithoutPreviousLine extends SpecModel {
+
 }

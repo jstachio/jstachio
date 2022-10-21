@@ -30,22 +30,25 @@
 package io.jstach.apt.context;
 
 /**
- *
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
 class EnclosedRelation {
-    private final String name;
-    private final TemplateCompilerContext context;
-    public EnclosedRelation(String name, TemplateCompilerContext context) {
-        this.name = name;
-        this.context = context;
-    }
 
-    String name() {
-        return name;
-    }
+	private final String name;
 
-    TemplateCompilerContext parentContext() {
-        return context;
-    }
+	private final TemplateCompilerContext context;
+
+	public EnclosedRelation(String name, TemplateCompilerContext context) {
+		this.name = name;
+		this.context = context;
+	}
+
+	String name() {
+		return name;
+	}
+
+	TemplateCompilerContext parentContext() {
+		return context;
+	}
+
 }

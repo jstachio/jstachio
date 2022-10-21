@@ -30,7 +30,8 @@
 /**
  * @see MustacheTokenizer#createInstance
  * <p>
- * MustacheTokenizer parses text file and invokes given TokenProcessor on each MustacheToken
+ * MustacheTokenizer parses text file and invokes given TokenProcessor on each
+ * MustacheToken
  */
 @org.eclipse.jdt.annotation.NonNullByDefault
 package io.jstach.apt.token;
