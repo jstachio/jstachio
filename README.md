@@ -306,12 +306,18 @@ Interpretation of Java-types and values
 
 See [mustache manual (v 1.3)](https://jgonggrijp.gitlab.io/wontache/mustache.5.html) .
 
-~~When some value is null nothing is rendered for this mustache-variable or mustache-section anyway.~~ 
-Configurable via `@TemplateFormatterTypes` as well as the JStachioServices SPI.
+When some value is null nothing is rendered if it is used as a section.
+If some value is null and it is used as a variable a null pointer exception will be thrown by default.
+This is configurable via `@JStacheFormatterTypes` and custom `Formatters`.
 
-Boxed and unboxed booleans can be used for mustache-sections. Section is only rendered if value is true.
+Boxed and unboxed `boolean` can be used for mustache-sections. Section is only rendered if value is true.
+
+`Optional<?>` empty is treated like an empty list or a boolean false. Optional values are always assumed to be non null.
 
 Arrays and Iterables can be used in mustache-sections and are treated like Javascript-arrays in original mustache.
+
+`Map<String,?>` follow different nesting rules than other types. If you are in a `Map` nested section
+the rest of the context is checked before the `Map`. Once that is done the Map is then checked. 
 
 Any non-null object can be used for mustache-section.
 This object serves like a data-binding context for given section.
