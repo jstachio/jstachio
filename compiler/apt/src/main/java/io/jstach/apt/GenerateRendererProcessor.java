@@ -372,15 +372,15 @@ public class GenerateRendererProcessor extends AbstractProcessor {
         }
         @Nullable JStacheContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStacheContentType.class);
         if (templateFormatAnnotation == null) {
-            throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template format, but not marked with " + JStacheContentType.class.getName() + " annotation");
+            throw new DeclarationException(templateFormatElement.getQualifiedName() + " class is used as a template content type, but not marked with " + JStacheContentType.class.getName() + " annotation");
         }
         
         /*
          * TODO clean this up to resolve format
          */
-        var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(JStache.AutoContentType.class.getName());
+        var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(JStache.AutoContentType.class.getCanonicalName());
         if( JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
-            templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getName());
+            templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(Html.class.getCanonicalName());
             if (templateFormatElement == null) {
                 throw new DeclarationException("Missing default TextFormat class of Html");
             }

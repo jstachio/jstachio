@@ -238,11 +238,13 @@
   <profiles>
     <profile>
       <id>format-apply</id>
+      <!--
       <activation>
         <property>
           <name>!format.validate</name>
         </property>
       </activation>
+      -->
       <build>
         <plugins>
           <plugin>
