@@ -1,5 +1,5 @@
-JStachio
-========
+<img src="etc/jstachio.svg" alt="jstachio">
+
 
 A typesafe Java Mustache templating engine.
 
