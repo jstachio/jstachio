@@ -1,4 +1,4 @@
-<img src="etc/jstachio.svg" alt="jstachio">
+<img src="etc/social-media.svg" alt="jstachio">
 
 
 A typesafe Java Mustache templating engine.
