@@ -7,18 +7,17 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 (formerly called [static-mustache](https://github.com/sviperll/static-mustache))
 
-Features
---------
+## Features
 
- * Logicless templating language.
-
- * [Mustache (v 1.3)](https://github.com/mustache/spec) syntax.
+ * Logicless [Mustache (v 1.3)](https://github.com/mustache/spec) syntax.
 
    * Full support of non-optional Mustache spec v1.3.0 requirements (including whitespace)
    * Optional inheritance support with some caveats
    * Optional lambda support with some differences due to static nature
  
- * Templates are compiled into effective code
+ * Get [JEP 430](https://openjdk.org/jeps/430) like support today but wth even more power.
+ 
+ * Templates are compiled into Java code
 
  * Value bindings are statically checked.
 
@@ -29,19 +28,73 @@ Features
  * Zero configuration. No plugins or tweaks are required.
    Everything is done with standard javac with any IDE and/or build-system.
  
- * Non-HTML templates are supported. Set of supported formats is extensible.
- * Layouts are supported, i. e. generation of header and footer from one template.
- * RenderService extension point via ServiceLoader
+ * Non-HTML templates are supported. Set of supported escaping content types is extensible.
+ * Layouts are supported via the Mustache inheritance spec.
+ * Fallback render service extension point via ServiceLoader
+
+   * Seamlessly Fallback to reflection based runtime rendering via [JMustache](https://github.com/samskivert/jmustache) and [mustache.java](https://github.com/spullara/mustache.java) (useful for development and changing templates in real time)
+   * If you are not a fan of generated code you can still use JStachio to type check your mustache templates.
+ 
  * Customize allowed types that can be outputted otherwise compiler error (to avoid toString on classes that do not have a friendly toString).
  * Formatter for custom `toString` of variables at runtime
  * Add extra `implements` interfaces to generated code for trait like add ons (`@JStacheInterfaces`)
  * Powerful Lambda support
  * `Map<String, ?>` support
  * `Optional<?>` support
- * Compatible with [JMustache](https://github.com/samskivert/jmustache#-first-and--last) and [Handlebars](https://handlebarsjs.com/api-reference/data-variables.html#root) list index extensions
- * You can safely fallback to reflection based runtime rendering via [JMustache](https://github.com/samskivert/jmustache) and [mustache.java](https://github.com/spullara/mustache.java) (useful for development)
- * It is by far the fastest Java Mustache implementations and arguably most compliant 
+ * Compatible with [JMustache](https://github.com/samskivert/jmustache#-first-and--last) and [Handlebars](https://handlebarsjs.com/api-reference/data-variables.html#root) list index extensions (like `-first`, `-last`, `-index`)
+ * It is by far the [fastest Java Mustache-like template engine as we all one of the fastest in general](#performance).
  * Planned zero runtime dependency option (as in all the code needed is generated)
+
+
+## Quick Example
+
+```java
+	@JStache(template = """
+			{{#people}}
+			{{message}} {{name}}! You are {{#ageInfo}}{{age}}{{/ageInfo}} years old!
+			{{#-last}}
+			That is all for now!
+			{{/-last}}
+			{{/people}}
+			""")
+	public record HelloWorld(String message, List<Person> people) implements AgeLambdaSupport {
+	}
+
+	public record Person(String name, LocalDate birthday) {
+	}
+
+	public record AgeInfo(long age, String date) {
+	}
+
+	public interface AgeLambdaSupport {
+
+		@JStacheLambda
+		default AgeInfo ageInfo(Person person) {
+			long age = ChronoUnit.YEARS.between(person.birthday(), LocalDate.now());
+			String date = person.birthday().format(DateTimeFormatter.ISO_DATE);
+			return new AgeInfo(age, date);
+		}
+
+	}
+
+	@Test
+	public void testPerson() throws Exception {
+		Person rick = new Person("Rick", LocalDate.now().minusYears(70));
+		Person morty = new Person("Morty", LocalDate.now().minusYears(14));
+		Person beth = new Person("Beth", LocalDate.now().minusYears(35));
+		Person jerry = new Person("Jerry", LocalDate.now().minusYears(35));
+		String actual = JStachio.render(new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry)));
+		String expected = """
+				Hello alien Rick! You are 70 years old!
+				Hello alien Morty! You are 14 years old!
+				Hello alien Beth! You are 35 years old!
+				Hello alien Jerry! You are 35 years old!
+				That is all for now!
+								""";
+		assertEquals(expected, actual);
+
+	}
+```
 
 Installation
 ------------
@@ -101,8 +154,9 @@ dependencies {
 
 
 
-Example
--------
+Examples
+--------
+
 
 ### user.mustache ###
 
@@ -182,27 +236,19 @@ The result of running this code will be
 ```html
 <p>Name: John Doe, Name Length is 8</p>
 
-
 <p>Age: 21</p>
 
 <p>Achievements:</p>
 
 <ul>
-
   <li>Knowns nothing</li>
-
 </ul>
-
-
 
 <p>Items:</p>
 
 <ol>
-
   <li>helmet</li>
-
   <li>shower</li>
-
 </ol>
 ```
 

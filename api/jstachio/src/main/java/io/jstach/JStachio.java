@@ -7,6 +7,7 @@ import io.jstach.spi.JStacheServices;
 public enum JStachio {
 
 	;
+
 	public static <T> Renderer<T> renderer(Class<T> modelType) {
 		return JStacheServices.renderer(modelType);
 	}
@@ -16,6 +17,13 @@ public enum JStachio {
 		@SuppressWarnings("rawtypes")
 		Renderer r = JStacheServices.renderer(model.getClass());
 		r.render(model, a);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static StringBuilder render(Object model, StringBuilder a) {
+		@SuppressWarnings("rawtypes")
+		Renderer r = JStacheServices.renderer(model.getClass());
+		return r.render(model, a);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -7,9 +7,10 @@ public interface Renderer<T> {
 
 	public void render(T model, Appendable appendable) throws IOException;
 
-	default void render(T model, StringBuilder sb) {
+	default StringBuilder render(T model, StringBuilder sb) {
 		try {
 			render(model, (Appendable) sb);
+			return sb;
 		}
 		catch (IOException e) {
 			throw new UncheckedIOException(e);
