@@ -8,6 +8,6 @@ import io.jstach.annotation.JStacheFlags.Flag;
 
 @JStache(path = "optional.mustache")
 @JStacheFlags(flags = Flag.DEBUG)
-public record OptionalContainer(Optional<String> name, boolean myBoolean, OptionalContainer child) {
+public record OptionalContainer(Optional<String> name, boolean myBoolean, Optional<OptionalContainer> child) {
 
 }

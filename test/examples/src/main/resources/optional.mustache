@@ -22,6 +22,16 @@ no show name
 {{/child.name}}
 </child.name>
 
+<child.myBoolean>
+{{child.myBoolean}} -> true
+</child.myBoolean>
+
+<child.myBoolean>
+{{#child}}
+{{myBoolean}} -> true
+{{/child}}
+</child.myBoolean>
+
 <inverted-child.name>
 {{^child.name}}
 no show child name

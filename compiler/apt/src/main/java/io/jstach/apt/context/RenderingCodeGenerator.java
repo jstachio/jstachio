@@ -224,10 +224,7 @@ public class RenderingCodeGenerator {
 			return booleanContext;
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._Optional)) {
-			DeclaredType declaredType = (DeclaredType) expression.type();
-			// We do not give optional a nullable rendering context. If you make optional
-			// nullable your are dumb.
-			return new OptionalRenderingContext(expression, javaModel.asElement(declaredType), enclosing);
+			return createOptionalContext(childType, expression, enclosing);
 		}
 		else if (USE_LIST_CONTEXT && javaModel.isType(expression.type(), knownTypes._List)) {
 			RenderingContext nullable = nullableRenderingContext(expression, enclosing);
@@ -269,6 +266,16 @@ public class RenderingCodeGenerator {
 		}
 	}
 
+	private RenderingContext createOptionalContext(ContextType childType, JavaExpression expression,
+			RenderingContext enclosing) throws TypeException {
+		DeclaredType declaredType = (DeclaredType) expression.type();
+		// We do not give optional a nullable rendering context. If you make optional
+		// nullable your are dumb.
+		OptionalRenderingContext optional = new OptionalRenderingContext(expression, javaModel.asElement(declaredType),
+				enclosing);
+		return createRenderingContext(childType, optional.currentExpression(), optional);
+	}
+
 	private RenderingContext createMapContext(JavaExpression expression, RenderingContext enclosing) {
 		RenderingContext nullable = nullableRenderingContext(expression, enclosing);
 		DeclaredType mapType = (DeclaredType) expression.type();
@@ -308,13 +315,15 @@ public class RenderingCodeGenerator {
 					enclosing);
 		}
 		if (expression.type() instanceof WildcardType) {
-			WildcardType wildcardType = (WildcardType) expression.type();
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			// return createRenderingContext(ContextType.INVERTED,
+			// WildcardType wildcardType = (WildcardType) expression.type();
+			// System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			// // return createRenderingContext(ContextType.INVERTED,
+			// // javaModel.expression(expression.text(), wildcardType.getExtendsBound()),
+			// // enclosing);
+			// return createInvertedRenderingContext(
 			// javaModel.expression(expression.text(), wildcardType.getExtendsBound()),
 			// enclosing);
-			return createInvertedRenderingContext(
-					javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
+			throw new IllegalStateException("bug");
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._boolean)) {
 			return new BooleanRenderingContext("!(" + expression.text() + ")", enclosing);
@@ -324,11 +333,12 @@ public class RenderingCodeGenerator {
 					enclosing);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._Optional)) {
-			DeclaredType dt = (DeclaredType) expression.type();
-			OptionalRenderingContext declaredContext = new OptionalRenderingContext(expression, javaModel.asElement(dt),
-					enclosing);
-			return new BooleanRenderingContext("(" + declaredContext.currentExpression().text() + ") == null",
-					declaredContext);
+			// DeclaredType dt = (DeclaredType) expression.type();
+			// OptionalRenderingContext declaredContext = new
+			// OptionalRenderingContext(expression, javaModel.asElement(dt),
+			// enclosing);
+			var optionalContext = createOptionalContext(ContextType.INVERTED, expression, enclosing);
+			return new BooleanRenderingContext("(" + expression.text() + ".isEmpty())", optionalContext);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._MapNode)
 				&& expression.type() instanceof @NonNull DeclaredType dt) {

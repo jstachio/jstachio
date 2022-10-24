@@ -34,4 +34,14 @@ public class IterableTest {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void testEmpty() throws Exception {
+		String actual = JStachio.render(new IterableExample(List.of(), true));
+
+		String expected = "no show\n";
+
+		assertEquals(expected, actual);
+
+	}
+
 }
