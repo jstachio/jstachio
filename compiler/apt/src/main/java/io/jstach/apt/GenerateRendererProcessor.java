@@ -81,18 +81,19 @@ import io.jstach.annotation.JStacheFlags.Flag;
 import io.jstach.annotation.JStachePartial;
 import io.jstach.annotation.JStaches;
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
+import io.jstach.apt.ProcessingConfig.PathConfig;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.context.JavaLanguageModel;
 import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
-import io.jstach.apt.prism.JStacheBasePathPrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterTypesPrism;
 import io.jstach.apt.prism.JStacheInterfacesPrism;
 import io.jstach.apt.prism.JStachePartialMappingPrism;
 import io.jstach.apt.prism.JStachePartialPrism;
+import io.jstach.apt.prism.JStachePathPrism;
 import io.jstach.apt.prism.JStachePrism;
 import io.jstach.escapers.Html;
 import io.jstach.spi.JStacheServices;
@@ -134,7 +135,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		return Set.of(//
 				io.jstach.annotation.JStaches.class, //
 				io.jstach.annotation.JStache.class, //
-				io.jstach.annotation.JStacheBasePath.class, //
+				io.jstach.annotation.JStachePath.class, //
 				io.jstach.annotation.JStacheInterfaces.class, //
 				io.jstach.annotation.JStachePartialMapping.class, //
 				io.jstach.annotation.JStachePartial.class, //
@@ -226,17 +227,16 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		}
 	}
 
-	private String resolveBasePath(TypeElement element) {
-		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-		JStacheBasePathPrism prism = JStacheBasePathPrism.getInstanceOn(packageElement);
+	private PathConfig resolvePathConfig(TypeElement element) {
+		JStachePathPrism prism = JStachePathPrism.getInstanceOn(element);
 		if (prism == null) {
-			return "";
+			PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+			prism = JStachePathPrism.getInstanceOn(packageElement);
 		}
-		String basePath = prism.value();
-		if (basePath.equals("")) {
-			basePath = packageElement.getQualifiedName().toString().replace(".", "/") + "/";
+		if (prism == null) {
+			return new PathConfig("", "");
 		}
-		return basePath;
+		return new PathConfig(prism.prefix(), prism.suffix());
 	}
 
 	private List<String> resolveBaseInterfaces(TypeElement element) {
@@ -316,7 +316,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 	record RendererModel( //
 			TypeElement element, ClassRef rendererClassRef, //
 			String path, //
-			String template, //
+			PathConfig pathConfig, String template, //
 			Charset charset, //
 			TypeElement contentTypeElement, //
 			FormatterTypes formatterTypes, //
@@ -356,7 +356,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
 		TypeElement contentTypeElement = resolveContentType(gp);
 		Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
-		String path = resolveTemplatePath(element, gp);
+		String path = gp.path();
+		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
 		assert template != null;
 		List<String> ifaces = resolveBaseInterfaces(element);
@@ -365,8 +366,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		Map<String, NamedTemplate> partials = resolvePartials(element);
 		Set<JStacheFlags.Flag> flags = resolveFlags(element);
 
-		var model = new RendererModel(element, rendererClassRef, path, template, charset, contentTypeElement,
-				formatterTypes, partials, ifaces, flags);
+		var model = new RendererModel(element, rendererClassRef, path, pathConfig, template, charset,
+				contentTypeElement, formatterTypes, partials, ifaces, flags);
 		return model;
 	}
 
@@ -376,16 +377,6 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		assert packageElement != null;
 		ClassRef rendererClassRef = ClassRef.of(packageElement, rendererClassSimpleName);
 		return rendererClassRef;
-	}
-
-	private String resolveTemplatePath(TypeElement element, JStachePrism gp) {
-		String templatePath = null;
-		templatePath = gp.path();
-		String basePath = resolveBasePath(element);
-		if (!templatePath.isBlank() && !templatePath.startsWith("/")) {
-			templatePath = basePath + templatePath;
-		}
-		return templatePath;
 	}
 
 	private TypeElement resolveContentType(JStachePrism gp) throws DeclarationException {
@@ -447,8 +438,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 				JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
 				RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel,
 						model.formatterTypes());
-				CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, model.partials(),
-						model.flags());
+				CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, model.partials(), config);
 				ClassWriter writer = new ClassWriter(codeWriter, templateResource);
 
 				writer.writeRenderableAdapterClass(model);
@@ -540,7 +530,7 @@ class ClassWriter {
 		NamedTemplate namedTemplate = model.namedTemplate();
 
 		String templateName = namedTemplate.name();
-		String templatePath = namedTemplate.path();
+		String templatePath = model.pathConfig().resolveTemplatePath(model.path());
 		String templateString = namedTemplate.template();
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);

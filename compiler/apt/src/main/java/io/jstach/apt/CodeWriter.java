@@ -60,14 +60,14 @@ class CodeWriter {
 
 	private final Map<String, NamedTemplate> partials;
 
-	private final Set<JStacheFlags.Flag> flags;
+	private final ProcessingConfig config;
 
 	CodeWriter(SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator, Map<String, NamedTemplate> partials,
-			Set<JStacheFlags.Flag> flags) {
+			ProcessingConfig config) {
 		this.writer = writer;
 		this.codeGenerator = codeGenerator;
 		this.partials = partials;
-		this.flags = flags;
+		this.config = config;
 	}
 
 	TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression,
@@ -108,6 +108,7 @@ class CodeWriter {
 			}
 			if (nt instanceof FileTemplate ft) {
 				String path = ft.path();
+				path = config.pathConfig().resolveTemplatePath(path);
 				return new NamedReader(new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)),
 						resource.charset()), name, path);
 			}
@@ -123,7 +124,7 @@ class CodeWriter {
 		};
 
 		try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer,
-				context, templateCompilerType, flags)) {
+				context, templateCompilerType, config.flags())) {
 			templateCompiler.run();
 		}
 	}

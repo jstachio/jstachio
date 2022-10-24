@@ -30,12 +30,25 @@ public interface ProcessingConfig extends LoggingSupport {
 		return true;
 	}
 
+	PathConfig pathConfig();
+
 	default boolean isGradle() {
 		String cmd = System.getProperty("sun.java.command");
 		if (cmd != null) {
 			return cmd.toLowerCase().contains("gradle");
 		}
 		return false;
+	}
+
+	public record PathConfig(String prefix, String suffix) {
+
+		public String resolveTemplatePath(String path) {
+			String templatePath = path;
+			if (!templatePath.isBlank()) {
+				templatePath = prefix() + templatePath + suffix();
+			}
+			return templatePath;
+		}
 	}
 
 }

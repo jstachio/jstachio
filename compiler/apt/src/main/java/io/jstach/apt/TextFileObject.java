@@ -98,8 +98,8 @@ class TextFileObject {
 
 			Path fullPath = projectPath.resolve(filePath);
 			if (config.isDebug()) {
-				config.debug("File not found with Filer. Trying direct file access. name = " + name + " path = "
-						+ fullPath + " dummy = " + dummy.toUri());
+				config.debug("File not found with Filer. Trying direct file access. name:" + name + ", path: "
+						+ fullPath + ", dummy: " + dummy.toUri());
 			}
 			return Files.newInputStream(fullPath);
 		}

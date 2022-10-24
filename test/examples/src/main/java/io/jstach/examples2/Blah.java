@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import io.jstach.annotation.JStache;
 
-@JStache(path = "blah.mustache")
+@JStache(path = "blah")
 public class Blah {
 
 	private final String name;
