@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -47,12 +48,12 @@ class TextFileObject {
 	// private final FileObject resource;
 	private final ProcessingEnvironment env;
 
-	private final Charset charset;
+	private final ProcessingConfig config;
 
-	TextFileObject(ProcessingEnvironment env, Charset charset) {
+	TextFileObject(ProcessingConfig config, ProcessingEnvironment env) {
 		// this.resource = resource;
 		this.env = env;
-		this.charset = charset;
+		this.config = config;
 	}
 
 	InputStream openInputStream(String name) throws IOException {
@@ -60,16 +61,46 @@ class TextFileObject {
 		if (resource.getLastModified() > 0) {
 			return resource.openInputStream();
 		}
-
-		if (resource.getClass().getName().contains("eclipse")) {
+		if (config.isDebug()) {
+			config.debug("File not found with Filer. resource: " + resource.toUri());
+		}
+		/*
+		 * Often times during incremental compilation via Eclipse or Gradle the resource
+		 * is missing from the Filer. This is because it looks for the file in output
+		 * directory and it has not been copied for whatever reason. So we go directly
+		 * looking for the file.
+		 */
+		if (config.fallbackToFilesystem()) {
+			/*
+			 * We use a dummy FileObject to get a relative directory. This is because
+			 * current work directory can be misleading depending on build implementation.
+			 */
 			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
-			// target/classes/dummy
-			Path projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
 
-			Path filePath = Path.of("src/main/resources", name);
+			Path projectPath;
+
+			if (config.isGradle()) {
+				if (config.isDebug()) {
+					config.debug("Looks like we are using Gradle incremental. dummy: " + dummy.toUri());
+				}
+				// build/classes/java/main/dummy
+				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent().getParent().getParent();
+
+			}
+			else {
+				if (config.isDebug()) {
+					config.debug("Looks like we are using Eclipse incremental. dummy: " + dummy.toUri());
+				}
+				// target/classes/dummy
+				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
+			}
+			Path filePath = Path.of(config.resourcesPath(), name);
 
 			Path fullPath = projectPath.resolve(filePath);
-
+			if (config.isDebug()) {
+				config.debug("File not found with Filer. Trying direct file access. name = " + name + " path = "
+						+ fullPath + " dummy = " + dummy.toUri());
+			}
 			return Files.newInputStream(fullPath);
 		}
 
@@ -77,7 +108,7 @@ class TextFileObject {
 	}
 
 	Charset charset() {
-		return charset;
+		return config.charset();
 	}
 
 }

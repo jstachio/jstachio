@@ -313,9 +313,16 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
 	}
 
-	record RendererModel(TypeElement element, ClassRef rendererClassRef, String path, String template, Charset charset,
-			TypeElement contentTypeElement, FormatterTypes formatterTypes, Map<String, NamedTemplate> partials,
-			List<String> ifaces, Set<Flag> flags) {
+	record RendererModel( //
+			TypeElement element, ClassRef rendererClassRef, //
+			String path, //
+			String template, //
+			Charset charset, //
+			TypeElement contentTypeElement, //
+			FormatterTypes formatterTypes, //
+			Map<String, NamedTemplate> partials, //
+			List<String> ifaces, //
+			Set<Flag> flags) implements ProcessingConfig {
 
 		public NamedTemplate namedTemplate() {
 			String name = element.getQualifiedName().toString() + ".mustache";
@@ -433,10 +440,10 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
 		try {
 			var model = model(element, directiveMirror);
+			ProcessingConfig config = model;
 			StringWriter stringWriter = new StringWriter();
 			try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)) {
-				TextFileObject templateResource = new TextFileObject(Objects.requireNonNull(processingEnv),
-						model.charset());
+				TextFileObject templateResource = new TextFileObject(config, Objects.requireNonNull(processingEnv));
 				JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
 				RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel,
 						model.formatterTypes());

@@ -44,7 +44,7 @@ public sealed interface TemplateStack extends LoggingSupport {
 		if (isDebug()) {
 			var out = System.out;
 			if (out != null) {
-				out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
+				out.println("[JSTACHIO] " + getTemplateName() + ": " + message);
 			}
 		}
 	}
