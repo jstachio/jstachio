@@ -26,7 +26,7 @@ public interface JStacheServices {
 		return formatter(Formatter.DefaultFormatter.INSTANCE);
 	}
 
-	default Appender<? extends Appendable> appender() {
+	default Appender<Appendable> appender() {
 		return Appender.DefaultAppender.INSTANCE;
 	}
 

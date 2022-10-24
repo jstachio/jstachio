@@ -125,6 +125,25 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		return builder.toString();
 	}
 
+	@Override
+	public @NonNull Set<@NonNull String> getSupportedAnnotationTypes() {
+		return Set.copyOf(allAnnotations().stream().map(a -> a.getCanonicalName()).toList());
+	}
+
+	private static Set<Class<?>> allAnnotations() {
+		return Set.of(//
+				io.jstach.annotation.JStaches.class, //
+				io.jstach.annotation.JStache.class, //
+				io.jstach.annotation.JStacheBasePath.class, //
+				io.jstach.annotation.JStacheInterfaces.class, //
+				io.jstach.annotation.JStachePartialMapping.class, //
+				io.jstach.annotation.JStachePartial.class, //
+				io.jstach.annotation.JStacheLambda.class, //
+				io.jstach.annotation.JStacheFormatterTypes.class, //
+				io.jstach.annotation.JStacheFlags.class //
+		);
+	}
+
 	private final List<ElementMessage> errors = new ArrayList<ElementMessage>();
 
 	@Override
@@ -140,6 +159,12 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
 	private boolean _process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv)
 			throws AnnotatedException {
+		/*
+		 * Lets just bind the damn utils so that we do not have to pass them around
+		 * everywhere
+		 */
+		JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(),
+				processingEnv.getMessager());
 		if (roundEnv.processingOver()) {
 			for (ElementMessage error : errors) {
 				TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
@@ -148,14 +173,9 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 			ClassRef serviceClass = ClassRef.of(Renderer.class);
 			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
 					rendererClasses);
+			return false;
 		}
 		else {
-			/*
-			 * Lets just bind the damn utils so that we do not have to pass them around
-			 * everywhere
-			 */
-			JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(),
-					processingEnv.getMessager());
 			Element generateRenderableAdapterElement = processingEnv.getElementUtils()
 					.getTypeElement(JStache.class.getName());
 			for (Element element : roundEnv.getElementsAnnotatedWith(JStache.class)) {
@@ -202,8 +222,8 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 					}
 				}
 			}
+			return true;
 		}
-		return true;
 	}
 
 	private String resolveBasePath(TypeElement element) {
@@ -540,8 +560,8 @@ class ClassWriter {
 		println("    }");
 		println("}");
 
-		String _Appender = Appender.class.getName();
 		String _Appendable = Appendable.class.getName();
+		String _Appender = Appender.class.getName() + "<" + _Appendable + ">";
 		String _Formatter = Formatter.class.getName();
 		String _RenderService = JStacheServices.class.getName();
 
@@ -609,10 +629,12 @@ class ClassWriter {
 		String generic = "<A extends " + _Appendable + ">";
 
 		String idt = "\n        ";
-		println("    public static " + generic + " void render(" + className + " " + dataName + idt + ", " + "A" + " "
-				+ variables.unescapedWriter() + idt + ", " + _Appender + "<A> " + variables.appender() + idt + ", "
-				+ _Appender + "<? super A> " + variables.writer() + idt + ", " + _Formatter + " "
-				+ variables.formatter() + idt + ") throws java.io.IOException {");
+		println("    public static " + generic + " void render(" //
+				+ className + " " + dataName + idt + ", " //
+				+ "A" + " " + variables.unescapedWriter() + idt + ", " //
+				+ _Appender + "<A> " + variables.appender() + idt + ", " //
+				+ _Appender + "<? super A> " + variables.writer() + idt + ", " //
+				+ _Formatter + " " + variables.formatter() + idt + ") throws java.io.IOException {");
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
