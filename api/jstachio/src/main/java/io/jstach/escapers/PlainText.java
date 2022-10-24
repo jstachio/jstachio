@@ -29,7 +29,7 @@
  */
 package io.jstach.escapers;
 
-import io.jstach.Appender;
+import io.jstach.Escaper;
 import io.jstach.annotation.JStacheContentType;
 
 /**
@@ -38,8 +38,8 @@ import io.jstach.annotation.JStacheContentType;
 @JStacheContentType
 public class PlainText {
 
-	public static Appender.DefaultAppender provides() {
-		return Appender.DefaultAppender.INSTANCE;
+	public static Escaper provides() {
+		return Escaper.NoEscaper.INSTANCE;
 	}
 
 }

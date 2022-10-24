@@ -2,9 +2,9 @@ package io.jstach.escapers;
 
 import java.io.IOException;
 
-import io.jstach.Appender;
+import io.jstach.Escaper;
 
-public class HtmlEscaper implements Appender<Appendable> {
+public class HtmlEscaper implements Escaper {
 
 	private static final String QUOT = "&quot;";
 

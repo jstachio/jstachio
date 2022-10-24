@@ -2,6 +2,9 @@ package io.jstach;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 public interface Appender<A extends Appendable> {
 
 	public void append(A a, CharSequence s) throws IOException;
@@ -28,6 +31,10 @@ public interface Appender<A extends Appendable> {
 
 	default void append(A a, boolean b) throws IOException {
 		append(a, String.valueOf(b));
+	}
+
+	default Appendable toAppendable(A appendable) {
+		return new AppenderAppendable<>(this, appendable);
 	}
 
 	enum DefaultAppender implements Appender<Appendable> {
@@ -88,6 +95,38 @@ public interface Appender<A extends Appendable> {
 
 		public void append(StringBuilder a, boolean b) throws IOException {
 			a.append(b);
+		}
+
+	}
+
+	class AppenderAppendable<A extends Appendable> implements Appendable {
+
+		private final Appender<A> appender;
+
+		private final A appendable;
+
+		public AppenderAppendable(Appender<A> appender, A appendable) {
+			super();
+			this.appender = appender;
+			this.appendable = appendable;
+		}
+
+		@Override
+		public @NonNull Appendable append(@Nullable CharSequence csq) throws @Nullable IOException {
+			appender.append(appendable, csq);
+			return this;
+		}
+
+		@Override
+		public @NonNull Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
+			appender.append(appendable, csq, start, end);
+			return this;
+		}
+
+		@Override
+		public @NonNull Appendable append(char c) throws IOException {
+			appender.append(appendable, c);
+			return this;
 		}
 
 	}
