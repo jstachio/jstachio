@@ -35,7 +35,7 @@ public abstract class AbstractTemplateCompiler
 		if (isDebug()) {
 			var out = System.out;
 			if (out != null) {
-				out.println("[MUSTACHE] " + getTemplateName() + ": " + message);
+				out.println("[JSTACHIO] " + getTemplateName() + ": " + message);
 			}
 		}
 	}

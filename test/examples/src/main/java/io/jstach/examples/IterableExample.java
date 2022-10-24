@@ -14,6 +14,9 @@ import io.jstach.annotation.JStacheFlags.Flag;
 		    My one based index is {{-index}}
 		    My zero based index is {{@index}}
 		{{/items}}
+		{{^items}}
+		no show
+		{{/items}}
 		""")
 @JStacheFlags(flags = Flag.DEBUG)
 public record IterableExample(List<String> items, boolean flag) {

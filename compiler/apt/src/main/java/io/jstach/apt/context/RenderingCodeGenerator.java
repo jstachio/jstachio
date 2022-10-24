@@ -302,9 +302,18 @@ public class RenderingCodeGenerator {
 
 	RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing)
 			throws TypeException {
+		if (knownTypes._Iterable.isType(expression.type()) && !knownTypes._MapNode.isType(expression.type())) {
+			return new BooleanRenderingContext(
+					"(" + expression.text() + " == null )" + " || ! " + expression.text() + ".iterator().hasNext()",
+					enclosing);
+		}
 		if (expression.type() instanceof WildcardType) {
 			WildcardType wildcardType = (WildcardType) expression.type();
-			return createRenderingContext(ContextType.INVERTED,
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			// return createRenderingContext(ContextType.INVERTED,
+			// javaModel.expression(expression.text(), wildcardType.getExtendsBound()),
+			// enclosing);
+			return createInvertedRenderingContext(
 					javaModel.expression(expression.text(), wildcardType.getExtendsBound()), enclosing);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._boolean)) {

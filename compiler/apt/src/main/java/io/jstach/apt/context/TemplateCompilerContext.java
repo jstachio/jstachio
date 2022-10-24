@@ -354,8 +354,10 @@ public class TemplateCompilerContext {
 		enclosedField = switch (childType) {
 			case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH ->
 				generator.createRenderingContext(childType, entry, enclosing);
-			case INVERTED ->
-				new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing), direct);
+			case INVERTED -> {
+				templateStack.debug("Invert entry: " + entry);
+				yield new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing), direct);
+			}
 			case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
 			case PARTIAL -> throw new IllegalStateException("partial not allowed here");
 			case BLOCK -> throw new IllegalStateException("block not allowed here");

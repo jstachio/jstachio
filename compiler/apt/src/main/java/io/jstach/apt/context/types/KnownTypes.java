@@ -48,7 +48,7 @@ import io.jstach.context.ContextNode;
 /**
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class KnownTypes {
+public class KnownTypes implements TypesMixin {
 
 	public static KnownTypes createInstace(Elements declarations, Types types) {
 		return new KnownTypes(declarations, types);
@@ -116,9 +116,14 @@ public class KnownTypes {
 
 	public final ObjectType _Object;
 
-	private KnownTypes(Elements declarations, Types types) {
+	// private final Elements elements;
+	private final Types types;
 
-		var b = new Builder(declarations, types);
+	private KnownTypes(Elements declarations, Types types) {
+		// this.elements = declarations;
+		this.types = types;
+
+		var b = new Builder(this, declarations, types);
 
 		_int = b.nativeType(TypeKind.INT, Integer.class, int.class);
 		_short = b.nativeType(TypeKind.SHORT, Short.class, short.class);
@@ -156,7 +161,7 @@ public class KnownTypes {
 		this.objectTypes = List.copyOf(b.objectTypes);
 
 		var typeElement = Objects.requireNonNull(declarations.getTypeElement(Object.class.getName()));
-		var ot = new ObjectType(typeElement, Object.class);
+		var ot = new ObjectType(this, typeElement, Object.class);
 
 		_Object = ot;
 
@@ -180,26 +185,34 @@ public class KnownTypes {
 
 		private final Types types;
 
-		public Builder(Elements elements, Types types) {
+		private final TypesMixin mixin;
+
+		public Builder(TypesMixin mixin, Elements elements, Types types) {
 			super();
 			this.elements = elements;
 			this.types = types;
+			this.mixin = mixin;
 		}
 
 		private NativeType nativeType(TypeKind kind, Class<?> boxedType, Class<?> unboxedType) {
 			var typeMirror = types.getPrimitiveType(kind);
-			var nt = new NativeType(typeMirror, boxedType, unboxedType);
+			var nt = new NativeType(mixin, typeMirror, boxedType, unboxedType);
 			nativeTypes.add(nt);
 			return nt;
 		}
 
 		private ObjectType objectType(Class<?> type) {
 			var typeElement = Objects.requireNonNull(elements.getTypeElement(type.getName()));
-			var ot = new ObjectType(typeElement, type);
+			var ot = new ObjectType(mixin, typeElement, type);
 			objectTypes.add(ot);
 			return ot;
 		}
 
+	}
+
+	@Override
+	public Types getTypes() {
+		return types;
 	}
 
 }

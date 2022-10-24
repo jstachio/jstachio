@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.processing.Messager;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
@@ -50,11 +49,12 @@ import io.jstach.apt.context.types.KnownType;
 import io.jstach.apt.context.types.KnownTypes;
 import io.jstach.apt.context.types.NativeType;
 import io.jstach.apt.context.types.ObjectType;
+import io.jstach.apt.context.types.TypesMixin;
 
 /**
  * @author Victor Nazarov <asviraspossible@gmail.com>
  */
-public class JavaLanguageModel {
+public class JavaLanguageModel implements TypesMixin {
 
 	private static @Nullable JavaLanguageModel INSTANCE;
 
@@ -100,30 +100,10 @@ public class JavaLanguageModel {
 		return knownTypes;
 	}
 
-	DeclaredType getDeclaredType(TypeElement element, TypeMirror... typeArguments) {
-		return operations.getDeclaredType(element, typeArguments);
-	}
-
-	public boolean isSameType(TypeMirror first, TypeMirror second) {
-		return operations.isSameType(first, second);
-	}
-
-	boolean isSubtype(TypeMirror subtype, TypeMirror supertype) {
-		return operations.isSubtype(subtype, supertype);
-	}
-
 	boolean isUncheckedException(TypeMirror exceptionType) {
 		return operations.isAssignable(exceptionType, operations.getDeclaredType(knownTypes._Error.typeElement()))
 				|| operations.isAssignable(exceptionType,
 						operations.getDeclaredType(knownTypes._RuntimeException.typeElement()));
-	}
-
-	TypeMirror getArrayType(TypeMirror elementType) {
-		return operations.getArrayType(elementType);
-	}
-
-	TypeMirror asMemberOf(DeclaredType containing, Element element) {
-		return operations.asMemberOf(containing, element);
 	}
 
 	JavaExpression expression(String text, NativeType type) {
