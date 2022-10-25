@@ -41,6 +41,7 @@ import javax.lang.model.type.DeclaredType;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.annotation.JStacheFlags.Flag;
 import io.jstach.apt.AnnotatedException;
 import io.jstach.apt.ProcessingException;
 import io.jstach.apt.context.ContextException.FieldNotFoundContextException;
@@ -269,14 +270,16 @@ public class TemplateCompilerContext {
 		while (it.hasNext()) {
 			String n = it.next();
 			/*
-			 * Inverted dotted fields can actually not exist. TODO add compiler flag on
-			 * whether or not to support this
+			 * Inverted dotted fields can actually not exist.
 			 */
 			if (childType == ContextType.INVERTED) {
 				try {
 					enclosing = _getChildRender(n, childType, enclosing, true);
 				}
 				catch (FieldNotFoundContextException e) {
+					if (templateStack.flags().contains(Flag.NO_INVERTED_BROKEN_CHAIN)) {
+						throw e;
+					}
 					enclosing = start;
 					break;
 				}

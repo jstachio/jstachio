@@ -200,7 +200,7 @@ public class RenderingCodeGenerator {
 
 	RenderingContext createRenderingContext(ContextType childType, JavaExpression expression,
 			RenderingContext enclosing) throws TypeException {
-		if (javaModel.isType(expression.type(), knownTypes._MapNode)) {
+		if (knownTypes._MapNode.isType(expression.type())) {
 			return switch (childType) {
 				case SECTION: {
 					yield createIterableContext(childType, expression, enclosing);
@@ -250,20 +250,31 @@ public class RenderingCodeGenerator {
 		}
 		else if (expression.type().getKind() == TypeKind.DECLARED) {
 			DeclaredType declaredType = (DeclaredType) expression.type();
-			RenderingContext ctx = switch (childType) {
+			RenderingContext parent = switch (childType) {
 				case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
 				case PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
 				case ROOT -> throw new UnsupportedOperationException("Unimplemented case: " + childType);
 				default -> throw new IllegalArgumentException("Unexpected value: " + childType);
 
 			};
-			DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression,
-					javaModel.asElement(declaredType), ctx);
-			return declaredContext;
+			return createDeclaredContext(expression, declaredType, parent);
 		}
 		else {
 			return new NoDataContext(expression, enclosing);
 		}
+	}
+
+	private DeclaredTypeRenderingContext createDeclaredContext(JavaExpression expression, DeclaredType declaredType,
+			RenderingContext parent) {
+		DeclaredTypeRenderingContext declaredContext;
+		var typeElement = javaModel.asElement(declaredType);
+		if (knownTypes._Enum.isType(declaredType)) {
+			declaredContext = new EnumRenderingContext(expression, typeElement, parent);
+		}
+		else {
+			declaredContext = new DeclaredTypeRenderingContext(expression, typeElement, parent);
+		}
+		return declaredContext;
 	}
 
 	private RenderingContext createOptionalContext(ContextType childType, JavaExpression expression,
@@ -348,11 +359,15 @@ public class RenderingCodeGenerator {
 					+ ".isFalsey(" + expression.text() + ")", c);
 		}
 		else if (expression.type() instanceof DeclaredType dt) {
-			DeclaredTypeRenderingContext declaredContext = new DeclaredTypeRenderingContext(expression,
-					javaModel.asElement(dt), enclosing);
-			return new BooleanRenderingContext(
-					"(" + expression.text() + ") == null || Boolean.FALSE.equals(" + expression.text() + ")",
-					declaredContext);
+			// DeclaredTypeRenderingContext declaredContext = new
+			// DeclaredTypeRenderingContext(expression,
+			// javaModel.asElement(dt), enclosing);
+			DeclaredTypeRenderingContext declaredContext = createDeclaredContext(expression, dt, enclosing);
+			String nullable = "(" + expression.text() + ") == null";
+			if (knownTypes._Object.isSameType(dt)) {
+				nullable = " || Boolean.FALSE.equals(" + expression.text() + ")";
+			}
+			return new BooleanRenderingContext(nullable, declaredContext);
 		}
 		else if (expression.type() instanceof ArrayType) {
 			return new BooleanRenderingContext(

@@ -212,7 +212,7 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 
 	@Override
 	public String toString() {
-		return "DeclaredTypeRenderingContext [\n\t\texpression=" + expression + ",\n\t\tdefinitionElement="
+		return getClass().getSimpleName() + " [\n\t\texpression=" + expression + ",\n\t\tdefinitionElement="
 				+ definitionElement + ",\n\t\tparent=" + parent + "]";
 	}
 

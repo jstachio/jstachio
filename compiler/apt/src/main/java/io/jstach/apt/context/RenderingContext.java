@@ -79,11 +79,20 @@ interface RenderingContext {
 	// @Nullable JavaExpression find(String name) throws ContextException;
 
 	default @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
+
+		JavaExpression result = null;
+		// TODO figure out why the below breaks for lambda
+		// if (filter.test(this)) {
+		// result = get(name);
+		// }
+		// if (result != null) {
+		// return result;
+		// }
 		var p = getParent();
 		if (p != null) {
-			return p.find(name, filter);
+			result = p.find(name, filter);
 		}
-		return null;
+		return result;
 	}
 
 	JavaExpression currentExpression();

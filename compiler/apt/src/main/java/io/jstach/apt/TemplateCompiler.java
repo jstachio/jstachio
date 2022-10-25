@@ -105,7 +105,17 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		TokenProcessor<@Nullable Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
 		int readResult;
 		while ((readResult = reader.read()) >= 0) {
-			processor.processToken((char) readResult);
+			try {
+				processor.processToken((char) readResult);
+			}
+			catch (ProcessingException e) {
+				if (isDebug()) {
+					debug(e.getMessage());
+					debug(context.printStack());
+					e.printStackTrace();
+				}
+				throw e;
+			}
 		}
 		processor.processToken(TokenProcessor.EOF);
 		currentWriter().println();
