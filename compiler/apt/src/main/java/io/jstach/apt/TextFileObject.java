@@ -42,6 +42,7 @@ import javax.tools.StandardLocation;
 
 /**
  * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author agentgt
  */
 class TextFileObject {
 
@@ -57,6 +58,12 @@ class TextFileObject {
 	}
 
 	InputStream openInputStream(String name) throws IOException {
+		/*
+		 * Ideally we would use StandardLocation.SOURCE_PATH but that has issues with
+		 * resources for Eclipse.
+		 * https://stackoverflow.com/questions/22494596/eclipse-annotation-processor-get-
+		 * project-path
+		 */
 		FileObject resource = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", name);
 		if (resource.getLastModified() > 0) {
 			return resource.openInputStream();
