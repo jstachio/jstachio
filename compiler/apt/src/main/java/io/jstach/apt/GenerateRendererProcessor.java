@@ -92,8 +92,8 @@ import io.jstach.apt.meta.ElementMessage;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterTypesPrism;
 import io.jstach.apt.prism.JStacheInterfacesPrism;
-import io.jstach.apt.prism.JStachePartialMappingPrism;
 import io.jstach.apt.prism.JStachePartialPrism;
+import io.jstach.apt.prism.JStachePartialsPrism;
 import io.jstach.apt.prism.JStachePathPrism;
 import io.jstach.apt.prism.JStachePrism;
 import io.jstach.escapers.Html;
@@ -138,9 +138,11 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 				io.jstach.annotation.JStache.class, //
 				io.jstach.annotation.JStachePath.class, //
 				io.jstach.annotation.JStacheInterfaces.class, //
-				io.jstach.annotation.JStachePartialMapping.class, //
+				io.jstach.annotation.JStachePartials.class, //
 				io.jstach.annotation.JStachePartial.class, //
 				io.jstach.annotation.JStacheLambda.class, //
+				io.jstach.annotation.JStacheLambda.Raw.class, //
+				io.jstach.annotation.JStacheContentType.class, //
 				io.jstach.annotation.JStacheFormatterTypes.class, //
 				io.jstach.annotation.JStacheFlags.class //
 		);
@@ -264,7 +266,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 	private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
 
 		Map<String, NamedTemplate> paths = new LinkedHashMap<>();
-		var prism = JStachePartialMappingPrism.getInstanceOn(element);
+		var prism = JStachePartialsPrism.getInstanceOn(element);
 		if (prism != null) {
 			var tps = prism.value();
 			for (JStachePartialPrism tp : tps) {

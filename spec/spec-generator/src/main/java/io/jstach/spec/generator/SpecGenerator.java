@@ -101,7 +101,7 @@ public class SpecGenerator {
 		}
 
 		ClassRef templatePathsAnnotation() {
-			return new ClassRef(io.jstach.annotation.JStachePartialMapping.class);
+			return new ClassRef(io.jstach.annotation.JStachePartials.class);
 		}
 
 		ClassRef templatePathAnnotation() {

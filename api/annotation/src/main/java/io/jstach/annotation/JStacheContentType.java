@@ -34,49 +34,42 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ServiceLoader;
 
 /**
- * Marks classes defining text format.
+ * Register escapers or filters.
+ *
+ * A class that is annotated represents a content type such as Html and will be used as a
+ * factory for creating escapers.
  * <p>
- * Each text format should be represented as a stand-alone class. Each class should define
- * pecularities specific for each text format. Such classes should all be marked with
- * TextFormat annotation.
- * <p>
- * There two requirements for marked class
+ * There are two supported escaper types:
  * <ul>
- * <li>it should have no type variables
- * <li>it should provide method with the following signature: <blockquote><pre>{@code
- *     public static Appendable createEscapingAppendable(Appendable appendable)
- * }</pre></blockquote>
+ * <li>{@code io.jstach.Escaper}
+ * <li>{@code java.util.function.Function<String,String>}
  * </ul>
  *
- * An implementation of createEscapingAppendable method should decorate given appendable
- * argument to create new appendable that will escape any special characters, specific to
- * given format.
+ * The Function one is desirable if you would like no reference of jstachio api in your
+ * code base and or just an easier interface to implement.
  * <p>
- * Decorated appendable should never buffer any data. Escaped text should be written to
- * original appendable immediately.
- * <p>
- * For example, HTML implementation should escape '&amp;', '&lt;' and '&gt;' characters.
- * <p>
- * <pre>{@code
- *     Appendable htmlAppendable = Html.createEscapingAppendable(System.out);
- *     htmlAppendable.append(" if a < b & b < c then a < c ");
- * }</pre>
- * <p>
- * The result when running code above should be
- * <p>
- * <pre>{@code
- *  if a &lt; b &amp; b &lt; c then a &lt; c
- * }</pre>
+ * On the otherhand the Escaper interfaces allows potentially greater performance if you
+ * do not need to escape native types.
  *
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * <em>n.b. the class annotated does not need to implement the interfaces</em>
+ *
+ * @author agentgt
+ * @author Victor Nazarov
+ *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStacheContentType {
 
+	/**
+	 * A static method that will return an implementation of {@code io.jstach.Escaper} or
+	 * {@code Function<String,String> }
+	 * @return default method name is "provides" just like the {@link ServiceLoader}
+	 */
 	String providesMethod() default "provides";
 
 }
