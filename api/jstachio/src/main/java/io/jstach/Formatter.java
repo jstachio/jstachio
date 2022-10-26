@@ -75,13 +75,18 @@ public interface Formatter {
 
 	/**
 	 * Default formatters.
-	 * <p>
-	 * Unlike the mustache spec will throw a NPE if an object is null.
+	 * 
 	 * @author agentgt
-	 *
 	 */
 	enum DefaultFormatter implements Formatter {
 
+		/**
+		 * Default formatter.
+		 *
+		 * Unlike the mustache spec it will throw a NPE trying to form at null objects
+		 *
+		 *
+		 */
 		DEFAULT_FORMATTER {
 			@Override
 			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
@@ -97,6 +102,10 @@ public interface Formatter {
 				}
 			}
 		},
+		/**
+		 * Formatter that follows the spec rules that if a variable is a missing it will
+		 * be an empty string (ie NOOP).
+		 */
 		SPEC_FORMATTER {
 			@Override
 			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
