@@ -42,8 +42,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import io.jstach.RenderFunction;
-import io.jstach.context.ContextNode;
+import io.jstach.apt.prism.Prisms;
 
 /**
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -136,7 +135,7 @@ public class KnownTypes implements TypesMixin {
 		_double = b.nativeType(TypeKind.DOUBLE, Double.class, double.class);
 		_boolean = b.nativeType(TypeKind.BOOLEAN, Boolean.class, boolean.class);
 
-		_Renderable = b.objectType(RenderFunction.class);
+		_Renderable = b.objectType(Prisms.RENDERFUNCTION_CLASS);
 		_Enum = b.objectType(Enum.class);
 		_String = b.objectType(String.class);
 
@@ -151,7 +150,8 @@ public class KnownTypes implements TypesMixin {
 		_Error = b.objectType(Error.class);
 		_RuntimeException = b.objectType(RuntimeException.class);
 		_Optional = b.objectType(Optional.class);
-		_MapNode = b.objectType(ContextNode.class); // MapNode needs to be above _Iterable
+		_MapNode = b.objectType(Prisms.CONTEXTNODE_CLASS); // MapNode needs to be above
+															// _Iterable
 		_Iterable = b.objectType(Iterable.class);
 		_List = b.objectType(List.class);
 
@@ -164,7 +164,7 @@ public class KnownTypes implements TypesMixin {
 		this.objectTypes = List.copyOf(b.objectTypes);
 
 		var typeElement = Objects.requireNonNull(declarations.getTypeElement(Object.class.getName()));
-		var ot = new ObjectType(this, typeElement, Object.class);
+		var ot = new ObjectType(this, typeElement, Object.class.getCanonicalName());
 
 		_Object = ot;
 
@@ -204,9 +204,16 @@ public class KnownTypes implements TypesMixin {
 			return nt;
 		}
 
+		private ObjectType objectType(String canonicalName) {
+			var typeElement = Objects.requireNonNull(elements.getTypeElement(canonicalName));
+			var ot = new ObjectType(mixin, typeElement, canonicalName);
+			objectTypes.add(ot);
+			return ot;
+		}
+
 		private ObjectType objectType(Class<?> type) {
 			var typeElement = Objects.requireNonNull(elements.getTypeElement(type.getName()));
-			var ot = new ObjectType(mixin, typeElement, type);
+			var ot = new ObjectType(mixin, typeElement, type.getName());
 			objectTypes.add(ot);
 			return ot;
 		}

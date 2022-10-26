@@ -1,6 +1,8 @@
 package io.jstach.spi;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import io.jstach.Appender;
 import io.jstach.Formatter;
@@ -38,6 +40,14 @@ public interface JStacheServices {
 
 	public static JStacheServices findService() {
 		return JStacheServicesResolver.INSTANCE;
+	}
+
+	public static Stream<JStacheServices> findAll() {
+		return JStacheServicesResolver._services();
+	}
+
+	public static <T extends JStacheServices> Optional<T> find(Class<T> c) {
+		return findAll().filter(s -> c.isAssignableFrom(s.getClass())).map(c::cast).findFirst();
 	}
 
 }

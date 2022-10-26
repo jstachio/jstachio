@@ -69,12 +69,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.Appender;
-import io.jstach.Escaper;
-import io.jstach.Formatter;
-import io.jstach.RenderFunction;
-import io.jstach.Renderable;
-import io.jstach.Renderer;
 import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheContentType;
 import io.jstach.annotation.JStacheFlags;
@@ -97,12 +91,13 @@ import io.jstach.apt.prism.JStachePartialPrism;
 import io.jstach.apt.prism.JStachePartialsPrism;
 import io.jstach.apt.prism.JStachePathPrism;
 import io.jstach.apt.prism.JStachePrism;
-import io.jstach.escapers.Html;
-import io.jstach.spi.JStacheServices;
+import io.jstach.apt.prism.Prisms;
+
+import static io.jstach.apt.prism.Prisms.*;
 
 @MetaInfServices(value = Processor.class)
 @SupportedAnnotationTypes("*")
-public class GenerateRendererProcessor extends AbstractProcessor {
+public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
@@ -130,23 +125,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 
 	@Override
 	public @NonNull Set<@NonNull String> getSupportedAnnotationTypes() {
-		return Set.copyOf(allAnnotations().stream().map(a -> a.getCanonicalName()).toList());
-	}
-
-	private static Set<Class<?>> allAnnotations() {
-		return Set.of(//
-				io.jstach.annotation.JStaches.class, //
-				io.jstach.annotation.JStache.class, //
-				io.jstach.annotation.JStachePath.class, //
-				io.jstach.annotation.JStacheInterfaces.class, //
-				io.jstach.annotation.JStachePartials.class, //
-				io.jstach.annotation.JStachePartial.class, //
-				io.jstach.annotation.JStacheLambda.class, //
-				io.jstach.annotation.JStacheLambda.Raw.class, //
-				io.jstach.annotation.JStacheContentType.class, //
-				io.jstach.annotation.JStacheFormatterTypes.class, //
-				io.jstach.annotation.JStacheFlags.class //
-		);
+		return Set.copyOf(Prisms.ANNOTATIONS);
 	}
 
 	private final List<ElementMessage> errors = new ArrayList<ElementMessage>();
@@ -175,7 +154,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 				TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
 			}
-			ClassRef serviceClass = ClassRef.of(Renderer.class);
+			ClassRef serviceClass = ClassRef.ofBinaryName(RENDERER_CLASS);
 			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
 					rendererClasses);
 			return false;
@@ -420,8 +399,7 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		var autoFormatElement = JavaLanguageModel.getInstance().getElements()
 				.getTypeElement(JStache.AutoContentType.class.getCanonicalName());
 		if (JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
-			templateFormatElement = JavaLanguageModel.getInstance().getElements()
-					.getTypeElement(Html.class.getCanonicalName());
+			templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(HTML_CLASS);
 			if (templateFormatElement == null) {
 				throw new DeclarationException("Missing default TextFormat class of Html");
 			}
@@ -534,10 +512,10 @@ class ClassWriter {
 		String implementsString = ifaces.isEmpty() ? ""
 				: " implements " + ifaces.stream().collect(Collectors.joining(", "));
 
-		String extendsString = " extends " + Renderable.class.getName() + "<" + contentTypeElement.getQualifiedName()
-				+ "," + className + ">";
+		String extendsString = " extends " + RENDERABLE_CLASS + "<" + contentTypeElement.getQualifiedName() + ","
+				+ className + ">";
 
-		String rendererImplements = " implements " + Renderer.class.getName() + "<" + className + ">";
+		String rendererImplements = " implements " + RENDERER_CLASS + "<" + className + ">";
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
 
@@ -570,16 +548,16 @@ class ClassWriter {
 		println("        return " + className + ".class.isAssignableFrom(type);");
 		println("    }");
 		println("");
-		println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
+		println("    public static " + RENDERFUNCTION_CLASS + " of(" + className + " data) {");
 		println("        return new " + adapterClassSimpleName + "(data);");
 		println("    }");
 		println("}");
 
 		String _Appendable = Appendable.class.getName();
-		String _Appender = Appender.class.getName() + "<" + _Appendable + ">";
-		String _Escaper = Escaper.class.getName();
-		String _Formatter = Formatter.class.getName();
-		String _RenderService = JStacheServices.class.getName();
+		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
+		String _Escaper = ESCAPER_CLASS;
+		String _Formatter = FORMATTER_CLASS;
+		String _RenderService = JSTACHESERVICES_CLASS;
 
 		println("class " + adapterClassSimpleName + extendsString + implementsString + " {");
 		println("    public static final String TEMPLATE_PATH = \"" + templatePath + "\";");
@@ -587,7 +565,7 @@ class ClassWriter {
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
 		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-		println("    " + _Appender + " escaper = " + _Escaper + ".of(" + contentTypeElement.getQualifiedName() + "."
+		println("    " + _Escaper + " escaper = " + _Escaper + ".of(" + contentTypeElement.getQualifiedName() + "."
 				+ templateFormatAnnotation.providesMethod() + "());");
 		println("    " + _Formatter + " formatter = " + _RenderService + ".findService().formatter" + "();");
 
@@ -613,6 +591,16 @@ class ClassWriter {
 		println("    }");
 
 		println("    @Override");
+		println("    public java.util.function.Function<String,String> " + "templateEscaper() {");
+		println("        return " + _Escaper + ".of(escaper);");
+		println("    }");
+
+		println("    @Override");
+		println("    public java.util.function.Function<Object,String> " + "templateFormatter() {");
+		println("        return formatter;");
+		println("    }");
+
+		println("    @Override");
 		println("    public " + className + " getContext() {");
 		println("        return this.data;");
 		println("    }");
@@ -624,7 +612,7 @@ class ClassWriter {
 		println("        render(data, a, appender, escaper, formatter);");
 		println("    }");
 
-		println("    public static " + RenderFunction.class.getName() + " of(" + className + " data) {");
+		println("    public static " + RENDERFUNCTION_CLASS + " of(" + className + " data) {");
 		println("        return new " + adapterClassSimpleName + "(data);");
 		println("    }");
 
@@ -638,9 +626,9 @@ class ClassWriter {
 		VariableContext variables = VariableContext.createDefaultContext();
 		String dataName = variables.introduceNewNameLike("data");
 		String className = element.getQualifiedName().toString();
-		String _Appender = Appender.class.getName();
+		String _Appender = APPENDER_CLASS;
 		String _Appendable = Appendable.class.getName();
-		String _Formatter = Formatter.class.getName();
+		String _Formatter = FORMATTER_CLASS;
 
 		String generic = "<A extends " + _Appendable + ">";
 

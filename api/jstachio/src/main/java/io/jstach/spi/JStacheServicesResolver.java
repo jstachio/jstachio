@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
@@ -18,9 +19,9 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private static Holder INSTANCE = Holder.of();
 
-		private final Iterable<JStacheServices> services;
+		private final List<JStacheServices> services;
 
-		private Holder(Iterable<JStacheServices> services) {
+		private Holder(List<JStacheServices> services) {
 			super();
 			this.services = services;
 		}
@@ -53,6 +54,10 @@ enum JStacheServicesResolver implements JStacheServices {
 
 	static <T> Renderer<T> _renderer(Class<T> modelType) {
 		return Renderers.getRenderer(modelType);
+	}
+
+	static Stream<JStacheServices> _services() {
+		return Holder.INSTANCE.services.stream();
 	}
 
 	@Override

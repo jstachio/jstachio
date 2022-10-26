@@ -1,6 +1,8 @@
 package io.jstach;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -16,7 +18,19 @@ import io.jstach.context.ContextNode;
  * @author agentgt
  *
  */
-public interface Formatter {
+public interface Formatter extends Function<Object, String> {
+
+	@Override
+	default String apply(Object t) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			format(Appender.StringAppender.INSTANCE, sb, "", Object.class, t);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * Formats the object and then sends the results to the downstream appender.
@@ -75,7 +89,7 @@ public interface Formatter {
 
 	/**
 	 * Default formatters.
-	 * 
+	 *
 	 * @author agentgt
 	 */
 	enum DefaultFormatter implements Formatter {
