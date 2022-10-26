@@ -5,7 +5,7 @@ import java.util.UUID;
 import io.jstach.annotation.JStache;
 
 @JStache(path = "blah")
-public class Blah {
+public class Blah implements BlahInf {
 
 	private final String name;
 

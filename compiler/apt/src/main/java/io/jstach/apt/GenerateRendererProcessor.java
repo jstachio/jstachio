@@ -78,6 +78,7 @@ import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheContentType;
 import io.jstach.annotation.JStacheFlags;
 import io.jstach.annotation.JStacheFlags.Flag;
+import io.jstach.annotation.JStacheInterfaces;
 import io.jstach.annotation.JStachePartial;
 import io.jstach.annotation.JStaches;
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
@@ -239,13 +240,23 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		return new PathConfig(prism.prefix(), prism.suffix());
 	}
 
-	private List<String> resolveBaseInterfaces(TypeElement element) {
+	private List<String> resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
 		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
 		JStacheInterfacesPrism prism = JStacheInterfacesPrism.getInstanceOn(packageElement);
 		if (prism != null) {
-			var tm = prism.value();
-			assert tm != null;
-			return List.of(getTypeName(tm));
+
+			var modelImplements = prism.modelImplements();
+			assert modelImplements != null;
+			for (TypeMirror mi : modelImplements) {
+				if (!JavaLanguageModel.getInstance().isSubtype(element.asType(), mi)) {
+					throw new AnnotatedException(element,
+							"per package declaration of @" + JStacheInterfaces.class.getSimpleName()
+									+ " model required to implement " + mi.toString());
+				}
+			}
+			var ri = prism.rendererImplements();
+			assert ri != null;
+			return ri.stream().map(tm -> getTypeName(tm)).toList();
 		}
 		return List.of();
 	}
