@@ -6,8 +6,35 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.context.ContextNode;
 
+/**
+ * Formats and then sends the results to the downstream appender.
+ *
+ * Implementations should be singleton like and should not contain state.
+ *
+ * @apiNote Although the formatter has access to the raw {@link Appendable} the formatter
+ * should never use it directly and simply pass it on to the downstream appender.
+ * @author agentgt
+ *
+ */
 public interface Formatter {
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender.
+	 *
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param c the object class
+	 * @param o the object maybe null.
+	 * @throws IOException
+	 */
 	<A extends Appendable, APPENDER extends Appender<A>> //
 	void format(APPENDER downstream, A a, String path, Class<?> c, @Nullable Object o) throws IOException;
 
@@ -46,21 +73,41 @@ public interface Formatter {
 		downstream.append(a, s);
 	}
 
+	/**
+	 * Default formatters.
+	 * <p>
+	 * Unlike the mustache spec will throw a NPE if an object is null.
+	 * @author agentgt
+	 *
+	 */
 	enum DefaultFormatter implements Formatter {
 
-		INSTANCE;
+		DEFAULT_FORMATTER {
+			@Override
+			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
+					String path, Class<?> c, @Nullable Object o) throws IOException {
+				if (o == null) {
+					throw new NullPointerException("null at: " + path);
+				}
+				else if (o instanceof ContextNode m) {
+					downstream.append(a, m.renderString());
+				}
+				else {
+					downstream.append(a, String.valueOf(o));
+				}
+			}
+		},
+		SPEC_FORMATTER {
+			@Override
+			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
+					String path, Class<?> c, @Nullable Object o) throws IOException {
+				if (o instanceof ContextNode m) {
+					downstream.append(a, m.renderString());
+				}
+				else if (o != null) {
+					downstream.append(a, String.valueOf(o));
+				}
 
-		@Override
-		public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-				Class<?> c, @Nullable Object o) throws IOException {
-			if (o == null) {
-				throw new NullPointerException("null at: " + path);
-			}
-			else if (o instanceof ContextNode m) {
-				downstream.append(a, m.renderString());
-			}
-			else {
-				downstream.append(a, String.valueOf(o));
 			}
 		}
 

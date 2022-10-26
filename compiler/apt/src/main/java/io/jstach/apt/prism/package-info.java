@@ -2,6 +2,7 @@
 @net.java.dev.hickory.prism.GeneratePrisms({ //
 		@GeneratePrism(value = io.jstach.annotation.JStaches.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStache.class, publicAccess = true), //
+		@GeneratePrism(value = io.jstach.annotation.JStacheContentType.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStachePath.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStacheInterfaces.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStachePartials.class, publicAccess = true), //

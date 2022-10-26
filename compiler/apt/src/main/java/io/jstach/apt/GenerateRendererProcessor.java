@@ -70,6 +70,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.Appender;
+import io.jstach.Escaper;
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
@@ -401,6 +402,10 @@ public class GenerateRendererProcessor extends AbstractProcessor {
 		else {
 			throw new ClassCastException("Expecting DeclaredType for contentType " + gp.contentType());
 		}
+		/*
+		 * TODO use a prism for this because get annotations directly is dangerous and
+		 * leads to compile failures if the class has problem loading
+		 */
 		@Nullable
 		JStacheContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStacheContentType.class);
 		if (templateFormatAnnotation == null) {
@@ -514,7 +519,7 @@ class ClassWriter {
 
 	void writeRenderableAdapterClass(RendererModel model) throws IOException, ProcessingException, AnnotatedException {
 		var element = model.element();
-		var templateFormatElement = model.contentTypeElement();
+		var contentTypeElement = model.contentTypeElement();
 		var ifaces = model.ifaces();
 		var renderClassRef = model.rendererClassRef();
 		ClassRef modelClassRef = ClassRef.of(element);
@@ -523,13 +528,13 @@ class ClassWriter {
 			throw new AnnotatedException(element, "Anonymous classes can not be used as models");
 		}
 		String packageName = modelClassRef.getPackageName();
-		JStacheContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStacheContentType.class);
+		JStacheContentType templateFormatAnnotation = contentTypeElement.getAnnotation(JStacheContentType.class);
 		assert templateFormatAnnotation != null;
 
 		String implementsString = ifaces.isEmpty() ? ""
 				: " implements " + ifaces.stream().collect(Collectors.joining(", "));
 
-		String extendsString = " extends " + Renderable.class.getName() + "<" + templateFormatElement.getQualifiedName()
+		String extendsString = " extends " + Renderable.class.getName() + "<" + contentTypeElement.getQualifiedName()
 				+ "," + className + ">";
 
 		String rendererImplements = " implements " + Renderer.class.getName() + "<" + className + ">";
@@ -572,6 +577,7 @@ class ClassWriter {
 
 		String _Appendable = Appendable.class.getName();
 		String _Appender = Appender.class.getName() + "<" + _Appendable + ">";
+		String _Escaper = Escaper.class.getName();
 		String _Formatter = Formatter.class.getName();
 		String _RenderService = JStacheServices.class.getName();
 
@@ -581,8 +587,8 @@ class ClassWriter {
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
 		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-		println("    " + _Appender + " escaper = " + templateFormatElement.getQualifiedName() + "."
-				+ templateFormatAnnotation.providesMethod() + "();");
+		println("    " + _Appender + " escaper = " + _Escaper + ".of(" + contentTypeElement.getQualifiedName() + "."
+				+ templateFormatAnnotation.providesMethod() + "());");
 		println("    " + _Formatter + " formatter = " + _RenderService + ".findService().formatter" + "();");
 
 		println("    private final " + className + " data;");

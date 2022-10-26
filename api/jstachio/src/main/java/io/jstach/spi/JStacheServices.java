@@ -8,6 +8,12 @@ import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
 
+/**
+ * TODO this still in the works and subject to change greatly
+ *
+ * @author agent
+ *
+ */
 public interface JStacheServices {
 
 	default RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
@@ -23,7 +29,7 @@ public interface JStacheServices {
 	}
 
 	default Formatter formatter() {
-		return formatter(Formatter.DefaultFormatter.INSTANCE);
+		return formatter(Formatter.DefaultFormatter.DEFAULT_FORMATTER);
 	}
 
 	default Appender<Appendable> appender() {

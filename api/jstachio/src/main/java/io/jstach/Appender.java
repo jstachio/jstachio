@@ -5,6 +5,15 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * A singleton like decorator for appendables that has additional methods for dealing with
+ * native types.
+ *
+ * @apiNote Unlike an Appendable this class is expected to be reused so avoid state.
+ * @author agentgt
+ * @param <A> the appendable
+ * @see Escaper
+ */
 public interface Appender<A extends Appendable> {
 
 	public void append(A a, CharSequence s) throws IOException;
@@ -58,6 +67,14 @@ public interface Appender<A extends Appendable> {
 
 	}
 
+	/**
+	 * An appender that will directly call StringBuilder methods for native types.
+	 * <p>
+	 * This is a low level utility class for where performance matters.
+	 *
+	 * @author agentgt
+	 *
+	 */
 	enum StringAppender implements Appender<StringBuilder> {
 
 		INSTANCE;

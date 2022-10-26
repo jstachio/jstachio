@@ -20,7 +20,6 @@ public interface RenderFunction extends Consumer<Appendable> {
 
 	public void render(Appendable a) throws IOException;
 
-	@SuppressWarnings("null")
 	default String renderString() {
 		return append(new StringBuilder()).toString();
 	}
