@@ -42,8 +42,10 @@ Templates are compiled into readable Java source code and value bindings are sta
  * `Map<String, ?>` support
  * `Optional<?>` support
  * Compatible with [JMustache](https://github.com/samskivert/jmustache#-first-and--last) and [Handlebars](https://handlebarsjs.com/api-reference/data-variables.html#root) list index extensions (like `-first`, `-last`, `-index`)
- * It is by far the [fastest Java Mustache-like template engine as we all one of the fastest in general](#performance).
- * Planned zero runtime dependency option (as in all the code needed is generated)
+ * It is by far the [fastest Java Mustache-like template engine as well one of the fastest in general](#performance).
+ * Zero dependencies other than JStachio itself
+
+    * An absolutely zero runtime dependency option is in the works (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects.
 
 
 ## Quick Example
@@ -189,7 +191,7 @@ Examples
 </ol>
 ```
 
-### User.java ###
+### User.java
 
 Following class can be used to provide actual data to fill into above template.
 
@@ -217,7 +219,7 @@ public record User(String name, int age, String[] array, List<Item<String>> list
 ```
 
 
-### Rendering ###
+### Rendering
 
 New class `UserRenderer` will be mechanically generated with the above code. 
 This class can be used to render template filled with actual data. To render template following code can be used:
@@ -273,13 +275,74 @@ target/classes/user.mustache:5: error: Unable to render field: type error: Can't
 
 See `test/examples` project for more examples.
 
-Current differences from mustache spec
---------------------------------------
+
+## Current differences from mustache spec
 
  * Delimiter redefinition is not supported
  * Whitespace in block tags is explicit (currently the [spec is ill-defined on this](https://github.com/mustache/spec/pull/131)) 
  * Inheritance block scoping is eager: https://github.com/mustache/spec/pull/129
    * I hope to fix that soon
+
+## Java specific extensions
+
+### Enum matching support
+
+Basically enums have boolean keys that are the enums name (`Enum.name()`) that can be used as conditional sections.
+
+Assume `light` is an enum like:
+
+```java
+public enum Light {
+  RED,
+  GREEN,
+  YELLOW
+}
+```
+
+You can conditinally select on the enum like a pattern match:
+
+```hbs
+{{#light.RED}}
+STOP
+{{/light.RED}}
+{{#light.GREEN}}
+GO
+{{/light.GREEN}}
+{{#light.YELLOW}}
+Proceeed with caution
+{{/light.YELLOW}}
+```
+
+### Index support
+
+JStachio is compatible with both handlebars and JMustache index keys for iterable sections.
+
+* `-first` is boolean that is true when you are on the first item
+* `-last` is a boolean that is true when you are on the last item in the iterable
+* `-index` is a one based index. The first item would be `1` and not `0`
+
+### Lambda support
+
+JStachio supports lambda section calls in a similar manner to JMustache. Just tag your methods
+with `@JStacheLambda` and the returned models will be used to render the contents of the lambda section.
+The top of the context stack can be passed to the lambda.
+
+JStachio unlike the spec does not support returning dynamic templates that are then rendered against the context stack.
+However dynamic output can be achieved by the caller changing the contents of the lambda section as the contents of the
+section act as an inline template.
+
+## Performance
+
+*It is not a goal of this project to be the fastest templating engine*.
+
+Not that peformance matters much with templating languges 
+(it is rarely the bottleneck) but JStachio is very fast and is basically equivalent to jte.
+
+![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
+
+The one called Manual is as the name implies. Raw Java code.
+
+JStachio has to do a lot of null checking for falsey and from my testing that is what is just ever so slighly making it slower than the fastest. I hope to add `@Nullable` annotation checking in the future but not really for performance.
 
 Design
 ------
@@ -358,20 +421,6 @@ Any boxed or unboxed primitive type is rendered with toString method.
 Strings are rendered as is.
 
 Rendering of other Java-types as mustache-variable is currently compile-time error.
-
-
-## Performance
-
-*It is not a goal of this project to be the fastest templating engine*.
-
-Not that peformance matters much with templating languges 
-(it is rarely the bottleneck) but JStachio is very fast and is basically equivalent to jte.
-
-![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
-
-The one called Manual is as the name implies. Raw Java code.
-
-JStachio has to do a lot of null checking for falsey and from my testing that is what is just ever so slighly making it slower than the fastest. I hope to add `@Nullable` annotation checking in the future but not really for performance.
 
 
 License

@@ -5,6 +5,7 @@ import java.util.Map;
 import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheFlags;
 import io.jstach.annotation.JStacheLambda;
+import io.jstach.annotation.JStacheLambda.Raw;
 import io.jstach.annotation.JStacheFlags.Flag;
 
 @JStache(path = "lambda-example.mustache")
@@ -12,7 +13,7 @@ import io.jstach.annotation.JStacheFlags.Flag;
 public record LambdaExample(String name, Map<String, String> props) implements Lambdas {
 
 	@JStacheLambda
-	public String hello(String html, String name) {
+	public @Raw String hello(@Raw String html, String name) {
 		return "<hello>" + html + "</hello>: " + name;
 	}
 }

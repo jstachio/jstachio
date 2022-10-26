@@ -5,11 +5,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.jstach.annotation.JStacheLambda;
+import io.jstach.annotation.JStacheLambda.Raw;
 
 public interface Lambdas {
 
 	@JStacheLambda
-	default String listProps(String body, Map<String, String> props) {
+	default @Raw String listProps(@Raw String body, Map<String, String> props) {
 		return props.entrySet().stream().map(e -> e.getKey() + " : " + e.getValue()).collect(Collectors.joining("\n"));
 	}
 

@@ -118,7 +118,7 @@ public class TemplateCompilerContext {
 				throw new ContextException(e.getMessage(), e);
 			}
 			return switch (lm.method().returnType()) {
-				case STRING -> {
+				case RAW_STRING -> {
 					// TODO use formatter for non string types
 					// return generator.generateRenderingCode(entry, variables, path);
 					yield variables.unescapedWriter() + ".append(" + entry.text() + ");";

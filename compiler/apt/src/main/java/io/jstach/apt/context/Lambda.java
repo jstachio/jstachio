@@ -11,6 +11,10 @@ import javax.lang.model.type.TypeMirror;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.annotation.JStacheLambda;
+import io.jstach.apt.AnnotatedException;
+import io.jstach.apt.prism.RawPrism;
+
 public sealed interface Lambda {
 
 	default String name() {
@@ -50,7 +54,7 @@ public sealed interface Lambda {
 
 	public enum ReturnType {
 
-		STRING, MODEL
+		RAW_STRING, MODEL
 
 	}
 
@@ -66,7 +70,8 @@ public sealed interface Lambda {
 	public record Method(JavaExpression expression, String name, ExecutableElement methodElement, ReturnType returnType,
 			List<Param> params) {
 
-		public static Method of(JavaExpression expression, ExecutableElement method, @Nullable String name) {
+		public static Method of(JavaExpression expression, ExecutableElement method, @Nullable String name)
+				throws AnnotatedException {
 			if (name == null || name.isBlank()) {
 				name = method.getSimpleName().toString();
 			}
@@ -80,8 +85,13 @@ public sealed interface Lambda {
 			List<Param> params = new ArrayList<>();
 			var it = parameters.iterator();
 			VariableElement p = it.next();
-			if (model.isType(p.asType(), model.knownTypes()._String)) {
+			boolean raw = RawPrism.getInstanceOn(p) != null;
+
+			if (raw && model.isType(p.asType(), model.knownTypes()._String)) {
 				params.add(new Param(name, ParamType.STRING_BODY, p.asType()));
+			}
+			else if (raw) {
+				throw new AnnotatedException(p, "Only String types can be annotated with Raw");
 			}
 			else {
 				params.add(new Param(name, ParamType.CURRENT_CONTEXT, p.asType()));
@@ -95,8 +105,12 @@ public sealed interface Lambda {
 			}
 
 			ReturnType returnType;
-			if (model.isType(method.getReturnType(), model.knownTypes()._String)) {
-				returnType = ReturnType.STRING;
+			raw = RawPrism.getInstanceOn(method) != null;
+			if (raw && model.isType(method.getReturnType(), model.knownTypes()._String)) {
+				returnType = ReturnType.RAW_STRING;
+			}
+			else if (raw) {
+				throw new AnnotatedException(method, "Only String return types can be annotated with Raw");
 			}
 			else if (method.getReturnType() instanceof DeclaredType dt) {
 				returnType = ReturnType.MODEL;
@@ -129,7 +143,7 @@ public sealed interface Lambda {
 	}
 
 	public static Lambda of( //
-			JavaExpression expression, ExecutableElement method, @Nullable String name) {
+			JavaExpression expression, ExecutableElement method, @Nullable String name) throws AnnotatedException {
 		if (name == null || name.isBlank()) {
 			name = method.getSimpleName().toString();
 		}
