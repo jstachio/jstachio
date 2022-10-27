@@ -13,6 +13,7 @@ import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
 import io.jstach.Renderer;
+import io.jstach.annotation.JStache.AutoContentType;
 import io.jstach.context.ContextNode;
 import io.jstach.escapers.Html;
 import io.jstach.spi.JStacheServices;
@@ -94,6 +95,7 @@ public class AnnotationListingTest {
 				Renderable.class, //
 				JStacheServices.class, //
 				ContextNode.class, //
+				AutoContentType.class, //
 				Html.class //
 		);
 	}

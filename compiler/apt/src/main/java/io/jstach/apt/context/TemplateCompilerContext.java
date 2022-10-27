@@ -41,11 +41,11 @@ import javax.lang.model.type.DeclaredType;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStacheFlags.Flag;
 import io.jstach.apt.AnnotatedException;
 import io.jstach.apt.ProcessingException;
 import io.jstach.apt.context.ContextException.FieldNotFoundContextException;
 import io.jstach.apt.context.Lambda.Lambdas;
+import io.jstach.apt.prism.Prisms.Flag;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext

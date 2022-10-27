@@ -7,10 +7,10 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.MustacheToken.NewlineChar;
 import io.jstach.apt.MustacheToken.SpecialChar;
 import io.jstach.apt.MustacheToken.TextToken;
+import io.jstach.apt.prism.Prisms.Flag;
 
 public abstract class AbstractTemplateCompiler
 		implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
@@ -41,7 +41,7 @@ public abstract class AbstractTemplateCompiler
 	}
 
 	protected boolean isDebug() {
-		return flags().contains(JStacheFlags.Flag.DEBUG);
+		return flags().contains(Flag.DEBUG);
 	}
 
 	private void processTokens() throws ProcessingException {

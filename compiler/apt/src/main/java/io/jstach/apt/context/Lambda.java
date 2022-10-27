@@ -11,7 +11,6 @@ import javax.lang.model.type.TypeMirror;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStacheLambda;
 import io.jstach.apt.AnnotatedException;
 import io.jstach.apt.prism.RawPrism;
 

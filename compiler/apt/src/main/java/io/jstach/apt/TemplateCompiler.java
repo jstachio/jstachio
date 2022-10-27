@@ -36,7 +36,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.CodeAppendable.HiddenCodeAppendable;
 import io.jstach.apt.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.MustacheToken.NewlineChar;
@@ -46,6 +45,7 @@ import io.jstach.apt.context.ContextException;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.context.TemplateCompilerContext.LambdaCompiler;
+import io.jstach.apt.prism.Prisms.Flag;
 import io.jstach.apt.token.MustacheTagKind;
 import io.jstach.apt.token.MustacheTokenizer;
 
@@ -55,8 +55,8 @@ import io.jstach.apt.token.MustacheTokenizer;
 class TemplateCompiler extends AbstractTemplateCompiler {
 
 	public static TemplateCompiler createCompiler(String templateName, TemplateLoader templateLoader,
-			CodeAppendable writer, TemplateCompilerContext context, TemplateCompilerType compilerType,
-			Set<JStacheFlags.Flag> flags) throws IOException {
+			CodeAppendable writer, TemplateCompilerContext context, TemplateCompilerType compilerType, Set<Flag> flags)
+			throws IOException {
 
 		return switch (compilerType) {
 			case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context, flags);
@@ -699,10 +699,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 		private final CodeAppendable writer;
 
-		private final Set<JStacheFlags.Flag> flags;
+		private final Set<Flag> flags;
 
 		public RootTemplateCompiler(String templateName, TemplateLoader templateLoader, CodeAppendable writer,
-				TemplateCompilerContext context, Set<JStacheFlags.Flag> flags) throws IOException {
+				TemplateCompilerContext context, Set<Flag> flags) throws IOException {
 			super(templateLoader.open(templateName), null, context);
 			this.templateLoader = templateLoader;
 			this.writer = writer;
@@ -725,7 +725,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		}
 
 		@Override
-		public Set<JStacheFlags.Flag> flags() {
+		public Set<Flag> flags() {
 			return this.flags;
 		}
 
@@ -734,7 +734,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	static class SimpleTemplateCompiler extends RootTemplateCompiler {
 
 		private SimpleTemplateCompiler(String templateName, TemplateLoader templateLoader, CodeAppendable writer,
-				TemplateCompilerContext context, Set<JStacheFlags.Flag> flags) throws IOException {
+				TemplateCompilerContext context, Set<Flag> flags) throws IOException {
 			super(templateName, templateLoader, writer, context, flags);
 		}
 

@@ -38,7 +38,6 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.NamedTemplate.FileTemplate;
 import io.jstach.apt.NamedTemplate.InlineTemplate;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
@@ -48,6 +47,7 @@ import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.TemplateStack;
 import io.jstach.apt.context.TemplateStack.RootTemplateStack;
 import io.jstach.apt.context.VariableContext;
+import io.jstach.apt.prism.Prisms.Flag;
 
 /**
  * @author Victor Nazarov <asviraspossible@gmail.com>
@@ -71,7 +71,7 @@ class CodeWriter {
 	}
 
 	TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression,
-			VariableContext variableContext, Set<JStacheFlags.Flag> flags) throws AnnotatedException {
+			VariableContext variableContext, Set<Flag> flags) throws AnnotatedException {
 		return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template, flags), element,
 				rootExpression, variableContext);
 	}

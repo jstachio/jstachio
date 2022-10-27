@@ -69,13 +69,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.annotation.JStache;
-import io.jstach.annotation.JStacheContentType;
-import io.jstach.annotation.JStacheFlags;
-import io.jstach.annotation.JStacheFlags.Flag;
-import io.jstach.annotation.JStacheInterfaces;
-import io.jstach.annotation.JStachePartial;
-import io.jstach.annotation.JStaches;
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
 import io.jstach.apt.ProcessingConfig.PathConfig;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
@@ -84,6 +77,7 @@ import io.jstach.apt.context.RenderingCodeGenerator;
 import io.jstach.apt.context.TemplateCompilerContext;
 import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
+import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterTypesPrism;
 import io.jstach.apt.prism.JStacheInterfacesPrism;
@@ -160,15 +154,14 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			return false;
 		}
 		else {
-			Element generateRenderableAdapterElement = processingEnv.getElementUtils()
-					.getTypeElement(JStache.class.getName());
-			for (Element element : roundEnv.getElementsAnnotatedWith(JStache.class)) {
+			TypeElement jstacheElement = processingEnv.getElementUtils().getTypeElement(JSTACHE_CLASS);
+			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheElement)) {
 				TypeElement classElement = (TypeElement) element;
 				List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 				AnnotationMirror directive = null;
 				for (AnnotationMirror annotationMirror : annotationMirrors) {
 					if (processingEnv.getTypeUtils().isSubtype(annotationMirror.getAnnotationType(),
-							generateRenderableAdapterElement.asType()))
+							jstacheElement.asType()))
 						directive = annotationMirror;
 				}
 				assert directive != null;
@@ -177,14 +170,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					rendererClasses.add(ref);
 				}
 			}
-			Element generateRenderableAdaptersElement = processingEnv.getElementUtils()
-					.getTypeElement(JStaches.class.getName());
-			for (Element element : roundEnv.getElementsAnnotatedWith(JStaches.class)) {
+			TypeElement jstachesElement = processingEnv.getElementUtils().getTypeElement(JSTACHES_CLASS);
+			for (Element element : roundEnv.getElementsAnnotatedWith(jstachesElement)) {
 				TypeElement classElement = (TypeElement) element;
 				List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 				for (AnnotationMirror mirror : annotationMirrors) {
-					if (processingEnv.getTypeUtils().isSubtype(mirror.getAnnotationType(),
-							generateRenderableAdaptersElement.asType())) {
+					if (processingEnv.getTypeUtils().isSubtype(mirror.getAnnotationType(), jstachesElement.asType())) {
 						Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = mirror
 								.getElementValues();
 						for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elementValues
@@ -231,9 +222,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			assert modelImplements != null;
 			for (TypeMirror mi : modelImplements) {
 				if (!JavaLanguageModel.getInstance().isSubtype(element.asType(), mi)) {
-					throw new AnnotatedException(element,
-							"per package declaration of @" + JStacheInterfaces.class.getSimpleName()
-									+ " model required to implement " + mi.toString());
+					throw new AnnotatedException(element, "per package declaration of @" + JSTACHEINTERFACES_CLASS
+							+ " model required to implement " + mi.toString());
 				}
 			}
 			var ri = prism.rendererImplements();
@@ -270,7 +260,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		if (path != null && !path.isBlank()) {
 			nt = new NamedTemplate.FileTemplate(name, path);
 		}
-		else if (template != null && !template.equals(JStachePartial.NOT_SET)) {
+		else if (template != null && !template.equals("__NOT_SET__")) {
 			nt = new NamedTemplate.InlineTemplate(name, template);
 		}
 		else {
@@ -280,11 +270,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return nt;
 	}
 
-	private Set<JStacheFlags.Flag> resolveFlags(TypeElement element) {
+	private Set<Flag> resolveFlags(TypeElement element) {
 		var prism = JStacheFlagsPrism.getInstanceOn(element);
-		var flags = EnumSet.noneOf(JStacheFlags.Flag.class);
+		var flags = EnumSet.noneOf(Flag.class);
 		if (prism != null) {
-			prism.flags().stream().map(JStacheFlags.Flag::valueOf).forEach(flags::add);
+			prism.flags().stream().map(Flag::valueOf).forEach(flags::add);
 		}
 		return Collections.unmodifiableSet(flags);
 	}
@@ -357,7 +347,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
 		FormatterTypes formatterTypes = resolveFormatterTypes(element);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
-		Set<JStacheFlags.Flag> flags = resolveFlags(element);
+		Set<Flag> flags = resolveFlags(element);
 
 		var model = new RendererModel(element, rendererClassRef, path, pathConfig, template, charset,
 				contentTypeElement, formatterTypes, partials, ifaces, flags);
@@ -381,23 +371,18 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		else {
 			throw new ClassCastException("Expecting DeclaredType for contentType " + gp.contentType());
 		}
-		/*
-		 * TODO use a prism for this because get annotations directly is dangerous and
-		 * leads to compile failures if the class has problem loading
-		 */
-		@Nullable
-		JStacheContentType templateFormatAnnotation = templateFormatElement.getAnnotation(JStacheContentType.class);
-		if (templateFormatAnnotation == null) {
+
+		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(templateFormatElement);
+		if (contentTypePrism == null) {
 			throw new DeclarationException(templateFormatElement.getQualifiedName()
-					+ " class is used as a template content type, but not marked with "
-					+ JStacheContentType.class.getName() + " annotation");
+					+ " class is used as a template content type, but not marked with " + JSTACHECONTENTTYPE_CLASS
+					+ " annotation");
 		}
 
 		/*
 		 * TODO clean this up to resolve format
 		 */
-		var autoFormatElement = JavaLanguageModel.getInstance().getElements()
-				.getTypeElement(JStache.AutoContentType.class.getCanonicalName());
+		var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AUTOCONTENTTYPE_CLASS);
 		if (JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
 			templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(HTML_CLASS);
 			if (templateFormatElement == null) {
@@ -506,7 +491,7 @@ class ClassWriter {
 			throw new AnnotatedException(element, "Anonymous classes can not be used as models");
 		}
 		String packageName = modelClassRef.getPackageName();
-		JStacheContentType templateFormatAnnotation = contentTypeElement.getAnnotation(JStacheContentType.class);
+		JStacheContentTypePrism templateFormatAnnotation = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
 		assert templateFormatAnnotation != null;
 
 		String implementsString = ifaces.isEmpty() ? ""

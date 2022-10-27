@@ -3,7 +3,7 @@ package io.jstach.apt;
 import java.nio.charset.Charset;
 import java.util.Set;
 
-import io.jstach.annotation.JStacheFlags.Flag;
+import io.jstach.apt.prism.Prisms.Flag;
 
 public interface ProcessingConfig extends LoggingSupport {
 

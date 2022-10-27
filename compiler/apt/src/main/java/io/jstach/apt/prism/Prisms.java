@@ -4,6 +4,12 @@ import java.util.List;
 
 public interface Prisms {
 
+	public enum Flag {
+
+		DEBUG, NO_INVERTED_BROKEN_CHAIN
+
+	}
+
 	public static final String JSTACHES_CLASS = "io.jstach.annotation.JStaches";
 
 	public static final String JSTACHE_CLASS = "io.jstach.annotation.JStache";
@@ -55,6 +61,8 @@ public interface Prisms {
 	public static final String JSTACHESERVICES_CLASS = "io.jstach.spi.JStacheServices";
 
 	public static final String CONTEXTNODE_CLASS = "io.jstach.context.ContextNode";
+
+	public static final String AUTOCONTENTTYPE_CLASS = "io.jstach.annotation.JStache.AutoContentType";
 
 	public static final String HTML_CLASS = "io.jstach.escapers.Html";
 

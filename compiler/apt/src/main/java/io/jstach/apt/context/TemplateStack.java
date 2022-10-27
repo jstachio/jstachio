@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.annotation.JStacheFlags;
 import io.jstach.apt.LoggingSupport;
 import io.jstach.apt.NamedTemplate;
+import io.jstach.apt.prism.Prisms.Flag;
 
 public sealed interface TemplateStack extends LoggingSupport {
 
@@ -36,7 +36,7 @@ public sealed interface TemplateStack extends LoggingSupport {
 		return new SimpleTemplateStack(templateName, this);
 	}
 
-	public static TemplateStack ofRoot(NamedTemplate template, Set<JStacheFlags.Flag> flags) {
+	public static TemplateStack ofRoot(NamedTemplate template, Set<Flag> flags) {
 		return new RootTemplateStack(template, flags);
 	}
 
@@ -50,7 +50,7 @@ public sealed interface TemplateStack extends LoggingSupport {
 	}
 
 	default boolean isDebug() {
-		return flags().contains(JStacheFlags.Flag.DEBUG);
+		return flags().contains(Flag.DEBUG);
 	}
 
 	record SimpleTemplateStack(String templateName, @Nullable TemplateStack caller) implements TemplateStack {
@@ -64,7 +64,7 @@ public sealed interface TemplateStack extends LoggingSupport {
 		}
 	}
 
-	record RootTemplateStack(NamedTemplate template, Set<JStacheFlags.Flag> flags) implements TemplateStack {
+	record RootTemplateStack(NamedTemplate template, Set<Flag> flags) implements TemplateStack {
 
 		public String getTemplateName() {
 			return template.name();
@@ -75,7 +75,7 @@ public sealed interface TemplateStack extends LoggingSupport {
 		}
 	}
 
-	default Set<JStacheFlags.Flag> flags() {
+	default Set<Flag> flags() {
 		var caller = getCaller();
 		if (caller != null) {
 			return caller.flags();
