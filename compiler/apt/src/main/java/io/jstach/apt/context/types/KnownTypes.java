@@ -135,7 +135,7 @@ public class KnownTypes implements TypesMixin {
 		_double = b.nativeType(TypeKind.DOUBLE, Double.class, double.class);
 		_boolean = b.nativeType(TypeKind.BOOLEAN, Boolean.class, boolean.class);
 
-		_Renderable = b.objectType(Prisms.RENDERFUNCTION_CLASS);
+		_Renderable = b.objectType(Prisms.RENDER_FUNCTION_CLASS);
 		_Enum = b.objectType(Enum.class);
 		_String = b.objectType(String.class);
 
@@ -150,7 +150,7 @@ public class KnownTypes implements TypesMixin {
 		_Error = b.objectType(Error.class);
 		_RuntimeException = b.objectType(RuntimeException.class);
 		_Optional = b.objectType(Optional.class);
-		_MapNode = b.objectType(Prisms.CONTEXTNODE_CLASS); // MapNode needs to be above
+		_MapNode = b.objectType(Prisms.CONTEXT_NODE_CLASS); // MapNode needs to be above
 															// _Iterable
 		_Iterable = b.objectType(Iterable.class);
 		_List = b.objectType(List.class);

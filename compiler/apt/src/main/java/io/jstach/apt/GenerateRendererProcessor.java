@@ -222,7 +222,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			assert modelImplements != null;
 			for (TypeMirror mi : modelImplements) {
 				if (!JavaLanguageModel.getInstance().isSubtype(element.asType(), mi)) {
-					throw new AnnotatedException(element, "per package declaration of @" + JSTACHEINTERFACES_CLASS
+					throw new AnnotatedException(element, "per package declaration of @" + JSTACHE_INTERFACES_CLASS
 							+ " model required to implement " + mi.toString());
 				}
 			}
@@ -375,14 +375,14 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(templateFormatElement);
 		if (contentTypePrism == null) {
 			throw new DeclarationException(templateFormatElement.getQualifiedName()
-					+ " class is used as a template content type, but not marked with " + JSTACHECONTENTTYPE_CLASS
+					+ " class is used as a template content type, but not marked with " + JSTACHE_CONTENT_TYPE_CLASS
 					+ " annotation");
 		}
 
 		/*
 		 * TODO clean this up to resolve format
 		 */
-		var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AUTOCONTENTTYPE_CLASS);
+		var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AUTO_CONTENT_TYPE_CLASS);
 		if (JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
 			templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(HTML_CLASS);
 			if (templateFormatElement == null) {
@@ -533,7 +533,7 @@ class ClassWriter {
 		println("        return " + className + ".class.isAssignableFrom(type);");
 		println("    }");
 		println("");
-		println("    public static " + RENDERFUNCTION_CLASS + " of(" + className + " data) {");
+		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
 		println("        return new " + adapterClassSimpleName + "(data);");
 		println("    }");
 		println("}");
@@ -542,7 +542,7 @@ class ClassWriter {
 		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
 		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
-		String _RenderService = JSTACHESERVICES_CLASS;
+		String _RenderService = JSTACHE_SERVICES_CLASS;
 
 		println("class " + adapterClassSimpleName + extendsString + implementsString + " {");
 		println("    public static final String TEMPLATE_PATH = \"" + templatePath + "\";");
@@ -597,7 +597,7 @@ class ClassWriter {
 		println("        render(data, a, appender, escaper, formatter);");
 		println("    }");
 
-		println("    public static " + RENDERFUNCTION_CLASS + " of(" + className + " data) {");
+		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
 		println("        return new " + adapterClassSimpleName + "(data);");
 		println("    }");
 
