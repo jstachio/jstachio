@@ -31,7 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build and Test with Maven
-        run: mvn $MAVEN_CLI_OPTS clean test
+        run: mvn $MAVEN_CLI_OPTS clean verify
       - name: Publish Test Results
         uses: dorny/test-reporter@v1.5.0
         with:
