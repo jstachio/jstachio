@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -35,6 +36,9 @@ public class JStachioCollector extends BasicCollector {
 		Method m = getMethod(cclass, name);
 		if (m == null) {
 			m = getIfaceMethod(cclass, name);
+		}
+		if (m == null) {
+			m = getLambdaMethod(cclass, name);
 		}
 		if (m != null) {
 			return new MethodFetcher(m);
@@ -122,6 +126,27 @@ public class JStachioCollector extends BasicCollector {
 
 			}
 		};
+	}
+
+	@Nullable
+	Method getLambdaMethod(Class<?> clazz, String name) {
+		return Stream.of(clazz.getMethods()).filter(m -> name.equals(m.getName()))
+				.filter(m -> m.getAnnotation(JStacheLambda.class) != null).findFirst().orElse(null);
+	}
+
+	Set<Class<?>> findSupers(Class<?> clazz) {
+
+		Set<Class<?>> ifaces = new LinkedHashSet<Class<?>>();
+
+		for (Class<?> cc = clazz; cc != null && cc != Object.class; cc = cc.getSuperclass()) {
+			ifaces.add(cc);
+		}
+
+		for (Class<?> cc = clazz; cc != null && cc != Object.class; cc = cc.getSuperclass()) {
+			addIfaces(ifaces, cc, false);
+		}
+
+		return ifaces;
 	}
 
 	protected @Nullable Method getIfaceMethod(Class<?> clazz, String name) {

@@ -59,6 +59,9 @@ public class JMustacheRendererTest {
 				That is all for now!
 				                """;
 		assertEquals(expected, actual);
+		JStacheServices.find(JMustacheRenderer.class).orElseThrow().use(true);
+		actual = JStachio.render(new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry)));
+		assertEquals(expected, actual);
 
 	}
 
