@@ -234,6 +234,11 @@
           <version>3.4.1</version>
         </plugin>
         <plugin>
+          <groupId>org.moditect</groupId>
+          <artifactId>moditect-maven-plugin</artifactId>
+          <version>1.0.0.RC2</version>
+        </plugin>
+        <plugin>
           <groupId>io.spring.javaformat</groupId>
           <artifactId>spring-javaformat-maven-plugin</artifactId>
           <version>0.0.35</version>

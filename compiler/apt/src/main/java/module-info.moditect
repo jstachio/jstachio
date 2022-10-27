@@ -1,12 +1,6 @@
-import javax.annotation.processing.Processor;
-
 module io.jstach.apt {
 	
 	requires java.compiler;
-	//requires static metainf.services;
-	requires io.jstach;
-	requires static org.eclipse.jdt.annotation;
+	provides javax.annotation.processing.Processor with io.jstach.apt.GenerateRendererProcessor;
 	
-	
-	provides Processor with com.snaphop.staticmustache.apt.GenerateRenderableAdapterProcessor;
 }
