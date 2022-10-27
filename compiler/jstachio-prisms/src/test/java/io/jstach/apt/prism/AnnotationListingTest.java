@@ -1,4 +1,4 @@
-package io.jstach.apt.test;
+package io.jstach.apt.prism;
 
 import static org.junit.Assert.assertEquals;
 

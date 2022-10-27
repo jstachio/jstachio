@@ -19,14 +19,42 @@
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <artifactSet>
+            <includes>
+              <include>${project.groupId}:jstachio-prisms</include>
+            </includes>
+          </artifactSet>
+          <filters>
+            <filter>
+              <excludes>
+                <exclude>module-info.class</exclude>
+                <exclude>META-INF/**</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
   
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jstachio</artifactId>
+      <artifactId>jstachio-prisms</artifactId>
       <version>${project.version}</version>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
@@ -36,12 +64,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>com.jolira</groupId>
-      <artifactId>hickory</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>jstachio-eea</artifactId>

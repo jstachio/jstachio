@@ -9,5 +9,6 @@
   <packaging>pom</packaging>
   <modules>
       <module>apt</module>
+      <module>jstachio-prisms</module>
   </modules>
 </project>

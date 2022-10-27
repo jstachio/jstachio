@@ -229,6 +229,11 @@
           <version>3.0.0-M5</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.4.1</version>
+        </plugin>
+        <plugin>
           <groupId>io.spring.javaformat</groupId>
           <artifactId>spring-javaformat-maven-plugin</artifactId>
           <version>0.0.35</version>
