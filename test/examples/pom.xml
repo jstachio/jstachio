@@ -17,7 +17,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
-                      <annotationProcessorPath>
+            <annotationProcessorPath>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
               <version>${org.mapstruct.version}</version>
@@ -38,10 +38,10 @@
     </plugins>
   </build>
   <dependencies>
-      <dependency>
-        <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId>
-        <version>${org.mapstruct.version}</version>
+     <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${org.mapstruct.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kohsuke.metainf-services</groupId>
@@ -52,7 +52,17 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>jstachio</artifactId>
-      <version>${project.version}</version>
+    </dependency>
+    <!-- 
+    We need to add this to make the build order correct
+    As the annotationProcessorPath basically follows zero dep management rules
+    see MCOMPILER-391
+    -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jstachio-apt</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.samskivert</groupId>
