@@ -22,12 +22,28 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JStachePartial {
 
+	/**
+	 * The logical name of the template.
+	 * @return required name of template
+	 */
 	String name();
 
+	/**
+	 * The physical path of the template. If empty {@link #template()} will be used.
+	 * @return the physical resource path of the template.
+	 * @see JStachePath
+	 */
 	String path() default "";
 
+	/**
+	 * Inline template. If not set {@link #path()} will be used.
+	 * @return inlined template maybe not set.
+	 */
 	String template() default NOT_SET;
 
+	/**
+	 * Marks that the inline template is not set
+	 */
 	public static String NOT_SET = "__NOT_SET__";
 
 }

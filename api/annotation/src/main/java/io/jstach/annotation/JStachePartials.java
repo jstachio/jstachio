@@ -18,6 +18,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JStachePartials {
 
+	/**
+	 * Multiple partial mappings.
+	 * @return multiple partial mappings
+	 */
 	public JStachePartial[] value() default {};
 
 }

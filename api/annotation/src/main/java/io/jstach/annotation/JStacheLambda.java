@@ -30,9 +30,8 @@ import java.lang.annotation.Target;
  * the spec it is not for JStachio!</em>. <em>n.b. the contents may not be valid mustache
  * as the spec does not define that it has to be.</em>
  * </ul>
- *
- * Similarly JStachio works in two modes for <strong>return types</strong>:
  * <p>
+ * Similarly JStachio works in two modes for <strong>return types</strong>:
  * <ul>
  * <li><strong>Model: </strong> The default. The returned model forms its own isolated
  * context stack and the contents of the lambda section call are used as an inline
@@ -60,6 +59,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JStacheLambda {
 
+	/**
+	 * The logical name of the lambda. If blank the method name will be used.
+	 * @return lambda name
+	 */
 	String name() default "";
 
 	/**

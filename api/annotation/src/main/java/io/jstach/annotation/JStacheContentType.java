@@ -82,6 +82,9 @@ public @interface JStacheContentType {
 	@JStacheContentType
 	public final class AutoContentType {
 
+		private AutoContentType() {
+		}
+
 	}
 
 }

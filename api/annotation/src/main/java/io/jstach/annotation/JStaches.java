@@ -66,6 +66,7 @@ import java.lang.annotation.Target;
 public @interface JStaches {
 
 	/**
+	 * Add several templates to one model.
 	 * @return several templates to generate renderers
 	 */
 	JStache[] value();

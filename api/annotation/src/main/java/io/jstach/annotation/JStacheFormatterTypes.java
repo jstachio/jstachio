@@ -32,17 +32,22 @@ import io.jstach.annotation.JStacheFormatter.AutoFormatter;
 public @interface JStacheFormatterTypes {
 
 	/**
+	 * Whitelist classes that will be allowed to be passed to the formatter.
 	 * @return Allowed classes that will be passed to the formatter.
 	 */
 	public Class<?>[] types() default {};
 
 	/**
+	 * List of regex used to match whitelist class names that are allowed to be formatted.
 	 * @return regex used to match class names that are allowed to be formatted.
 	 */
 	public String[] patterns() default {};
 
 	/**
+	 * Optional base formatter for all models in the annotated package. The formatter
+	 * provider needs a {@link JStacheFormatter} annotation.
 	 * @return the base formatter for all models in the annotated package
+	 * @see JStacheFormatter
 	 */
 	public Class<?> formatter() default AutoFormatter.class;
 

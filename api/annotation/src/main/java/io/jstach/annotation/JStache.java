@@ -76,6 +76,8 @@ public @interface JStache {
 	String path() default "";
 
 	/**
+	 * Inline the template as a Java string instead of a file. Use the new triple quote
+	 * string literal for complex templates.
 	 * @return An inline template
 	 */
 	String template() default "";

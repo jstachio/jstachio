@@ -63,6 +63,9 @@ public @interface JStacheFormatter {
 	@JStacheFormatter
 	public final class AutoFormatter {
 
+		private AutoFormatter() {
+		}
+
 	}
 
 }

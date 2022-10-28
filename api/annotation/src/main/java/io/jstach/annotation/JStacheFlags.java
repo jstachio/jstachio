@@ -19,8 +19,19 @@ import java.lang.annotation.Target;
 @Documented
 public @interface JStacheFlags {
 
+	/**
+	 * Compiler flags that will be used on for this model.
+	 * @return flags
+	 */
 	Flag[] flags();
 
+	/**
+	 * Compiler flags.
+	 * 
+	 * @apiNote subject to change
+	 * @author agentgt
+	 *
+	 */
 	public enum Flag {
 
 		/**
