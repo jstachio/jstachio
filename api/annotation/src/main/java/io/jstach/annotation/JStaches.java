@@ -36,8 +36,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Create multiple Renderers for a single type.
+ * <p>
+ * <em>If this is used {@link JStache#adapterName()} should be set otherwise there will be
+ * name collisions!</em>
+ * <p>
+ * It is generally recommend you do not have multiple JStache on a single type as it makes
+ * automatic resolution of model to template unpredictable or not possible.
+ * <p>
+ * If you desire different templates for a single type an alternative solution to this
+ * annotation is conditionally select a partial like this example:
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * <pre>
+ * {{#isText}}
+ * {{> text.mustache}}
+ * {{/isText}}
+ * {{#isHtml}}
+ * {{> html.mustache}}
+ * {{/isHtml}}
+ * </pre>
+ *
+ * @author Victor Nazarov
+ * @author agentgt
+ * @see JStachePartial
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
@@ -45,7 +66,7 @@ import java.lang.annotation.Target;
 public @interface JStaches {
 
 	/**
-	 * @return several templates to generate adapters
+	 * @return several templates to generate renderers
 	 */
 	JStache[] value();
 

@@ -41,12 +41,13 @@ import java.lang.annotation.Target;
  * Template resolution is as follows
  * <ol>
  * <li><code>path</code> which is a classpath with slashes following the same format as
- * the ClassLoader resources
+ * the ClassLoader resources. The path maybe augmented with {@link JStachePath}.
  * <li><code>template</code> which if not empty is used as the template contents
  * <li>if the above is not set then the name of the class suffixed with ".mustache" is
  * used as the resource
  * </ol>
  * @author agentgt
+ * @see JStachePath
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -67,8 +68,7 @@ public @interface JStache {
 	/**
 	 * Name of generated class.
 	 * <p>
-	 * adapterName can be omitted. "Renderable{{className}}Adapter" name is used by
-	 * default.
+	 * adapterName can be omitted. "{{className}}Renderer" name is used by default.
 	 * @return Name of generated class
 	 */
 	String adapterName() default ":auto";

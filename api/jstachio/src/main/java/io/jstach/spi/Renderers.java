@@ -27,17 +27,17 @@ class Renderers {
 		}
 	}
 
-	private static <T> Renderer<T> getRenderer(Class<T> mapperType, Iterable<ClassLoader> classLoaders)
+	private static <T> Renderer<T> getRenderer(Class<T> rendererType, Iterable<ClassLoader> classLoaders)
 			throws ClassNotFoundException, NoSuchMethodException {
 
 		for (ClassLoader classLoader : classLoaders) {
-			Renderer<T> mapper = doGetRenderer(mapperType, classLoader);
-			if (mapper != null) {
-				return mapper;
+			Renderer<T> renderer = doGetRenderer(rendererType, classLoader);
+			if (renderer != null) {
+				return renderer;
 			}
 		}
 
-		throw new ClassNotFoundException("Cannot find implementation for " + mapperType.getName());
+		throw new ClassNotFoundException("Cannot find implementation for " + rendererType.getName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,7 +59,6 @@ class Renderers {
 	}
 
 	private static String resolveName(Class<?> c) {
-		// c.getName().replace("$", "_") + IMPLEMENTATION_SUFFIX;
 		var a = c.getAnnotation(JStache.class);
 		String cname;
 		if (a != null && !":auto".equals(a.adapterName())) {
@@ -73,57 +72,13 @@ class Renderers {
 		return fqn;
 	}
 
-	// public static <T> Class< ? extends Renderer<?>> getRendererClass(Class<T> clazz) {
-	// try {
-	// List<ClassLoader> classLoaders = collectClassLoaders( clazz.getClassLoader() );
-	//
-	// return getRendererClass( clazz, classLoaders );
-	// }
-	// catch ( ClassNotFoundException e ) {
-	// throw new RuntimeException( e );
-	// }
-	// }
-
-	// private static <T> Class<? extends Renderer<?>> getRendererClass(Class<T>
-	// mapperType, Iterable<ClassLoader> classLoaders)
-	// throws ClassNotFoundException {
-	//
-	// for ( ClassLoader classLoader : classLoaders ) {
-	// Class<? extends Renderer<?>> mapperClass = doGetRendererClass( mapperType,
-	// classLoader );
-	// if ( mapperClass != null ) {
-	// return mapperClass;
-	// }
-	// }
-	//
-	// throw new ClassNotFoundException( "Cannot find implementation for " +
-	// mapperType.getName() );
-	// }
-
-	// @SuppressWarnings("unchecked")
-	// private static <T> Class<? extends Renderer<?>> doGetRendererClass(Class<T> clazz,
-	// ClassLoader classLoader) {
-	// try {
-	// return (Class<? extends Renderer<?>>) classLoader.loadClass( clazz.getName() +
-	// IMPLEMENTATION_SUFFIX );
-	// }
-	// catch ( ClassNotFoundException e ) {
-	// T mapper = getRendererFromServiceLoader( clazz, classLoader );
-	// if ( mapper != null ) {
-	// return (Class<? extends Renderer<?>>) mapper.getClass();
-	// }
-	//
-	// return null;
-	// }
-	// }
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static <T> Renderer<?> getRendererFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
 		ServiceLoader<Renderer> loader = ServiceLoader.load(Renderer.class, classLoader);
 
-		for (Renderer mapper : loader) {
-			if (mapper != null && mapper.supportsType(clazz)) {
-				return mapper;
+		for (Renderer renderer : loader) {
+			if (renderer != null && renderer.supportsType(clazz)) {
+				return renderer;
 			}
 		}
 

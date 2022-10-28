@@ -11,17 +11,23 @@ import io.jstach.context.ContextNode;
 /**
  * Formats and then sends the results to the downstream appender.
  *
- * Implementations should be singleton like and should not contain state.
+ * Implementations should be singleton like and should not contain state. By default
+ * native types are passed straight through to the downstream appender. If this is not
+ * desired one can override those methods.
+ *
+ * An alternative to implementing this complicated interface is to simply make a
+ * {@code Function<@Nullable Object, String>} and call {@link #of(Function)} to create a
+ * formatter.
  *
  * @apiNote Although the formatter has access to the raw {@link Appendable} the formatter
  * should never use it directly and simply pass it on to the downstream appender.
  * @author agentgt
  *
  */
-public interface Formatter extends Function<Object, String> {
+public interface Formatter extends Function<@Nullable Object, String> {
 
 	@Override
-	default String apply(Object t) {
+	default String apply(@Nullable Object t) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			format(Appender.StringAppender.INSTANCE, sb, "", Object.class, t);
@@ -45,8 +51,9 @@ public interface Formatter extends Function<Object, String> {
 	 * directly
 	 * @param a the appendable to be passed to the appender
 	 * @param path the dotted mustache like path
-	 * @param c the object class
-	 * @param o the object maybe null.
+	 * @param c the object class but is not guaranteed to be accurate . If it is not known
+	 * Object.class will be used.
+	 * @param o the object which maybe null
 	 * @throws IOException
 	 */
 	<A extends Appendable, APPENDER extends Appender<A>> //
@@ -85,6 +92,22 @@ public interface Formatter extends Function<Object, String> {
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			String s) throws IOException {
 		downstream.append(a, s);
+	}
+
+	/**
+	 * Adapts a function to a formatter.
+	 *
+	 * If the function is already a formatter then it is simply returned (noop). Thus it
+	 * is safe to repeatedly call this on formatters. If the function is adapted the
+	 * returned adapted formatter does not pass native types to the inputted function.
+	 * @param formatterFunction if it is already an escaper
+	 * @return adapted formattter
+	 */
+	public static Formatter of(@SuppressWarnings("exports") Function<@Nullable Object, String> formatterFunction) {
+		if (formatterFunction instanceof Formatter f) {
+			return f;
+		}
+		return new ObjectFunctionFormatter(formatterFunction);
 	}
 
 	/**
@@ -134,6 +157,24 @@ public interface Formatter extends Function<Object, String> {
 			}
 		}
 
+	}
+
+}
+
+class ObjectFunctionFormatter implements Formatter {
+
+	private final Function<@Nullable Object, String> function;
+
+	public ObjectFunctionFormatter(Function<@Nullable Object, String> function) {
+		super();
+		this.function = function;
+	}
+
+	@Override
+	public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
+			Class<?> c, @Nullable Object o) throws IOException {
+		String result = function.apply(o);
+		downstream.append(a, result);
 	}
 
 }

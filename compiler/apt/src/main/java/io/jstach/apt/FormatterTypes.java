@@ -18,16 +18,6 @@ public interface FormatterTypes {
 		};
 	}
 
-	public static FormatterTypes acceptAllTypes() {
-		return new FormatterTypes() {
-
-			@Override
-			public boolean isMatch(String className) {
-				return true;
-			}
-		};
-	}
-
 	class ConfiguredFormatterTypes implements FormatterTypes {
 
 		private final List<String> classNames;
