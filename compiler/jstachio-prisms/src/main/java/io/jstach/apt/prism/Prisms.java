@@ -32,6 +32,8 @@ public interface Prisms {
 
 	public static final String FORMATTER_CLASS = "io.jstach.Formatter";
 
+	public static final String DEFAULT_FORMATTER_CLASS = "io.jstach.formatters.DefaultFormatter";
+
 	public static final String RENDER_FUNCTION_CLASS = "io.jstach.RenderFunction";
 
 	public static final String RENDERABLE_CLASS = "io.jstach.Renderable";
@@ -40,9 +42,13 @@ public interface Prisms {
 
 	public static final String CONTEXT_NODE_CLASS = "io.jstach.context.ContextNode";
 
-	public static final String AUTO_CONTENT_TYPE_CLASS = "io.jstach.annotation.JStache.AutoContentType";
+	public static final String AUTO_FORMATTER_CLASS = "io.jstach.annotation.JStacheFormatter.AutoFormatter";
+
+	public static final String AUTO_CONTENT_TYPE_CLASS = "io.jstach.annotation.JStacheContentType.AutoContentType";
 
 	public static final String HTML_CLASS = "io.jstach.escapers.Html";
+
+	public static final String PLAIN_TEXT_CLASS = "io.jstach.escapers.PlainText";
 
 	/* Annotation classes */
 	public static final String JSTACHES_CLASS = "io.jstach.annotation.JStaches";
@@ -63,6 +69,8 @@ public interface Prisms {
 
 	public static final String JSTACHE_CONTENT_TYPE_CLASS = "io.jstach.annotation.JStacheContentType";
 
+	public static final String JSTACHE_FORMATTER_CLASS = "io.jstach.annotation.JStacheFormatter";
+
 	public static final String JSTACHE_FORMATTER_TYPES_CLASS = "io.jstach.annotation.JStacheFormatterTypes";
 
 	public static final String JSTACHE_FLAGS_CLASS = "io.jstach.annotation.JStacheFlags";
@@ -77,6 +85,7 @@ public interface Prisms {
 			JSTACHE_LAMBDA_CLASS, //
 			RAW_CLASS, //
 			JSTACHE_CONTENT_TYPE_CLASS, //
+			JSTACHE_FORMATTER_CLASS, //
 			JSTACHE_FORMATTER_TYPES_CLASS, //
 			JSTACHE_FLAGS_CLASS //
 	);

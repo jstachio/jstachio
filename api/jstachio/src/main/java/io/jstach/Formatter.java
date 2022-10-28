@@ -6,8 +6,6 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.context.ContextNode;
-
 /**
  * Formats and then sends the results to the downstream appender.
  *
@@ -108,55 +106,6 @@ public interface Formatter extends Function<@Nullable Object, String> {
 			return f;
 		}
 		return new ObjectFunctionFormatter(formatterFunction);
-	}
-
-	/**
-	 * Default formatters.
-	 *
-	 * @author agentgt
-	 */
-	enum DefaultFormatter implements Formatter {
-
-		/**
-		 * Default formatter.
-		 *
-		 * Unlike the mustache spec it will throw a NPE trying to form at null objects
-		 *
-		 *
-		 */
-		DEFAULT_FORMATTER {
-			@Override
-			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
-					String path, Class<?> c, @Nullable Object o) throws IOException {
-				if (o == null) {
-					throw new NullPointerException("null at: " + path);
-				}
-				else if (o instanceof ContextNode m) {
-					downstream.append(a, m.renderString());
-				}
-				else {
-					downstream.append(a, String.valueOf(o));
-				}
-			}
-		},
-		/**
-		 * Formatter that follows the spec rules that if a variable is a missing it will
-		 * be an empty string (ie NOOP).
-		 */
-		SPEC_FORMATTER {
-			@Override
-			public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a,
-					String path, Class<?> c, @Nullable Object o) throws IOException {
-				if (o instanceof ContextNode m) {
-					downstream.append(a, m.renderString());
-				}
-				else if (o != null) {
-					downstream.append(a, String.valueOf(o));
-				}
-
-			}
-		}
-
 	}
 
 }

@@ -16,10 +16,13 @@ import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderable;
 import io.jstach.Renderer;
-import io.jstach.annotation.JStache.AutoContentType;
+import io.jstach.annotation.JStacheContentType.AutoContentType;
 import io.jstach.annotation.JStacheFlags;
+import io.jstach.annotation.JStacheFormatter.AutoFormatter;
 import io.jstach.context.ContextNode;
 import io.jstach.escapers.Html;
+import io.jstach.escapers.PlainText;
+import io.jstach.formatters.DefaultFormatter;
 import io.jstach.spi.JStacheServices;
 
 public class PrismsTest {
@@ -110,12 +113,16 @@ public class PrismsTest {
 				Appender.class, //
 				Escaper.class, //
 				Formatter.class, //
+				DefaultFormatter.class, //
 				RenderFunction.class, //
 				Renderable.class, //
 				JStacheServices.class, //
 				ContextNode.class, //
+				AutoFormatter.class, //
 				AutoContentType.class, //
-				Html.class //
+				Html.class, //
+				PlainText.class //
+
 		);
 	}
 
@@ -130,6 +137,7 @@ public class PrismsTest {
 				io.jstach.annotation.JStacheLambda.class, //
 				io.jstach.annotation.JStacheLambda.Raw.class, //
 				io.jstach.annotation.JStacheContentType.class, //
+				io.jstach.annotation.JStacheFormatter.class, //
 				io.jstach.annotation.JStacheFormatterTypes.class, //
 				io.jstach.annotation.JStacheFlags.class //
 		);

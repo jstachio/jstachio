@@ -79,6 +79,7 @@ import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.meta.ElementMessage;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
+import io.jstach.apt.prism.JStacheFormatterPrism;
 import io.jstach.apt.prism.JStacheFormatterTypesPrism;
 import io.jstach.apt.prism.JStacheInterfacesPrism;
 import io.jstach.apt.prism.JStachePartialPrism;
@@ -297,12 +298,15 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	record RendererModel( //
-			TypeElement element, ClassRef rendererClassRef, //
+			TypeElement element, //
+			ClassRef rendererClassRef, //
 			String path, //
-			PathConfig pathConfig, String template, //
+			PathConfig pathConfig, //
+			String template, //
 			Charset charset, //
 			TypeElement contentTypeElement, //
 			FormatterTypes formatterTypes, //
+			TypeElement formatterTypeElement, //
 			Map<String, NamedTemplate> partials, //
 			List<String> ifaces, //
 			Set<Flag> flags) implements ProcessingConfig {
@@ -338,6 +342,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 
 		TypeElement contentTypeElement = resolveContentType(gp);
+		TypeElement formatterElement = resolveFormatter(element, gp);
 		Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
 		String path = gp.path();
 		PathConfig pathConfig = resolvePathConfig(element);
@@ -349,8 +354,19 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		Map<String, NamedTemplate> partials = resolvePartials(element);
 		Set<Flag> flags = resolveFlags(element);
 
-		var model = new RendererModel(element, rendererClassRef, path, pathConfig, template, charset,
-				contentTypeElement, formatterTypes, partials, ifaces, flags);
+		var model = new RendererModel( //
+				element, //
+				rendererClassRef, //
+				path, //
+				pathConfig, //
+				template, //
+				charset, //
+				contentTypeElement, //
+				formatterTypes, //
+				formatterElement, //
+				partials, //
+				ifaces, //
+				flags);
 		return model;
 	}
 
@@ -390,6 +406,45 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		}
 		return templateFormatElement;
+	}
+
+	private TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
+
+		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+		JStacheFormatterTypesPrism formatterTypes = JStacheFormatterTypesPrism.getInstanceOn(packageElement);
+
+		var lm = JavaLanguageModel.getInstance();
+		TypeMirror templateFormatType = gp.formatter();
+
+		TypeElement formatElement = formatterElement(templateFormatType);
+
+		TypeElement autoFormatElement = lm.getElements().getTypeElement(AUTO_FORMATTER_CLASS);
+
+		if (formatterTypes != null && lm.isSameType(autoFormatElement.asType(), formatElement.asType())) {
+			formatElement = formatterElement(formatterTypes.formatter());
+		}
+
+		if (lm.isSameType(autoFormatElement.asType(), formatElement.asType())) {
+			formatElement = lm.getElements().getTypeElement(DEFAULT_FORMATTER_CLASS);
+		}
+		return formatElement;
+	}
+
+	private TypeElement formatterElement(TypeMirror templateFormatType) throws DeclarationException {
+		TypeElement formatElement = null;
+		if (templateFormatType instanceof DeclaredType dt) {
+			formatElement = (TypeElement) dt.asElement();
+		}
+		else {
+			throw new ClassCastException("Expecting DeclaredType for formatter " + templateFormatType);
+		}
+
+		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatElement);
+		if (formatterPrism == null) {
+			throw new DeclarationException(formatElement.getQualifiedName()
+					+ " class is used as a formatter, but not marked with " + JSTACHE_FORMATTER_CLASS + " annotation");
+		}
+		return formatElement;
 	}
 
 	private String resolveAdapterName(TypeElement element, JStachePrism gp) {
@@ -483,6 +538,7 @@ class ClassWriter {
 	void writeRenderableAdapterClass(RendererModel model) throws IOException, ProcessingException, AnnotatedException {
 		var element = model.element();
 		var contentTypeElement = model.contentTypeElement();
+		var formatterTypeElement = model.formatterTypeElement();
 		var ifaces = model.ifaces();
 		var renderClassRef = model.rendererClassRef();
 		ClassRef modelClassRef = ClassRef.of(element);
@@ -491,8 +547,13 @@ class ClassWriter {
 			throw new AnnotatedException(element, "Anonymous classes can not be used as models");
 		}
 		String packageName = modelClassRef.getPackageName();
-		JStacheContentTypePrism templateFormatAnnotation = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
-		assert templateFormatAnnotation != null;
+		/*
+		 * TODO we should make this whole "provides" pattern DRY
+		 */
+		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
+		assert contentTypePrism != null;
+		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
+		assert formatterPrism != null;
 
 		String implementsString = ifaces.isEmpty() ? ""
 				: " implements " + ifaces.stream().collect(Collectors.joining(", "));
@@ -550,9 +611,10 @@ class ClassWriter {
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
 		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-		println("    " + _Escaper + " escaper = " + _Escaper + ".of(" + contentTypeElement.getQualifiedName() + "."
-				+ templateFormatAnnotation.providesMethod() + "());");
-		println("    " + _Formatter + " formatter = " + _RenderService + ".findService().formatter" + "();");
+		println("    " + _Escaper + " escaper = " + _Escaper + ".of(" //
+				+ contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod() + "());");
+		println("    " + _Formatter + " formatter = " + _Formatter + ".of(" //
+				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 
 		println("    private final " + className + " data;");
 		String constructorModifier = "protected";

@@ -6,6 +6,8 @@ module io.jstach {
 	exports io.jstach.spi;
 	exports io.jstach.context;
 	exports io.jstach.escapers;
+	exports io.jstach.formatters;
+
 
 	requires transitive io.jstach.annotation;
 	

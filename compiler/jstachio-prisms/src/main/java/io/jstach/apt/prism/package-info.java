@@ -9,6 +9,7 @@
 		@GeneratePrism(value = io.jstach.annotation.JStachePartial.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStacheLambda.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStacheLambda.Raw.class, publicAccess = true), //
+		@GeneratePrism(value = io.jstach.annotation.JStacheFormatter.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStacheFormatterTypes.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.annotation.JStacheFlags.class, publicAccess = true), //
 

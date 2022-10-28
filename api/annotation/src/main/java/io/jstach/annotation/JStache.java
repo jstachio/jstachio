@@ -35,10 +35,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.jstach.annotation.JStacheContentType.AutoContentType;
+import io.jstach.annotation.JStacheFormatter.AutoFormatter;
+
 /**
- * Generates a JStachio Renderer.
- *
- * Template resolution is as follows
+ * Generates a JStachio Renderer from a template and a model (the annotated class).
+ * <p>
+ * Classes annotated are typically called "models" as they will be the root context for
+ * the template.
+ * <p>
+ * The format of the templates should by default be Mustache. The syntax is informally
+ * explained by the
+ * <a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">mustache manual</a> and
+ * formally explained by the <a href="https://github.com/mustache/spec">spec</a>. There
+ * are some subtle differences in JStachio version of Mustache due to the static nature
+ * that are discussed elsewhere.
+ * <p>
+ * Template resolution is as follows:
  * <ol>
  * <li><code>path</code> which is a classpath with slashes following the same format as
  * the ClassLoader resources. The path maybe augmented with {@link JStachePath}.
@@ -48,6 +61,7 @@ import java.lang.annotation.Target;
  * </ol>
  * @author agentgt
  * @see JStachePath
+ * @see JStacheFormatterTypes
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -57,6 +71,7 @@ public @interface JStache {
 	/**
 	 * Resource path to template
 	 * @return Path to mustache template
+	 * @see JStachePath
 	 */
 	String path() default "";
 
@@ -74,13 +89,24 @@ public @interface JStache {
 	String adapterName() default ":auto";
 
 	/**
-	 * Class representing template content type to be used by escapers
+	 * Class representing template content type to be used by escapers.
 	 * <p>
-	 * You can create custom escapers using
-	 * @JStachContentType annotation.
-	 * @return format of given template (HTML is default)
+	 * You can create custom escapers using {@link JStacheContentType} annotation.
+	 * @return contentType of given template. If not provided it will be resolved (HTML is
+	 * the default if the jstachio runtime is found).
 	 */
 	Class<?> contentType() default AutoContentType.class;
+
+	/**
+	 * Class providing the base formatter.
+	 * <p>
+	 * You can create custom formatters using {@link JStacheFormatter} annotation.
+	 * @return formatter of given template. The default will be resolved (a non null that
+	 * will throw NPE is the default if the jstachio runtime is found)
+	 *
+	 * @see JStacheFormatterTypes
+	 */
+	Class<?> formatter() default AutoFormatter.class;
 
 	/**
 	 * Encoding of given template file.
@@ -89,10 +115,5 @@ public @interface JStache {
 	 * @return encoding of given template file
 	 */
 	String charset() default ":default";
-
-	@JStacheContentType
-	public final class AutoContentType {
-
-	}
 
 }

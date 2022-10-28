@@ -40,7 +40,7 @@ import java.util.ServiceLoader;
  * Register escapers or filters.
  *
  * A class that is annotated represents a content type such as Html and will be used as a
- * factory for creating escapers.
+ * factory for creating escapers as well as a marker for the content type.
  * <p>
  * There are two supported escaper types:
  * <ul>
@@ -48,11 +48,11 @@ import java.util.ServiceLoader;
  * <li>{@code java.util.function.Function<String,String>}
  * </ul>
  *
- * The Function one is desirable if you would like no reference of jstachio api in your
- * code base and or just an easier interface to implement.
+ * The Function one is desirable if you would like no reference of jstachio runtime api in
+ * your code base and or just an easier interface to implement.
  * <p>
  * On the otherhand the Escaper interfaces allows potentially greater performance if you
- * do not need to escape native types.
+ * need to escape native types.
  *
  * <em>n.b. the class annotated does not need to implement the interfaces</em>
  *
@@ -71,5 +71,17 @@ public @interface JStacheContentType {
 	 * @return default method name is "provides" just like the {@link ServiceLoader}
 	 */
 	String providesMethod() default "provides";
+
+	/**
+	 * A content type marker to auto resolve the content type.
+	 *
+	 * @apiNote The provides method is purposely missing to avoid coupling with the
+	 * runtime.
+	 * @author agentgt
+	 */
+	@JStacheContentType
+	public final class AutoContentType {
+
+	}
 
 }

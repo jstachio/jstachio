@@ -9,6 +9,7 @@ import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
+import io.jstach.formatters.DefaultFormatter;
 
 /**
  * TODO this still in the works and subject to change greatly
@@ -31,7 +32,7 @@ public interface JStacheServices {
 	}
 
 	default Formatter formatter() {
-		return formatter(Formatter.DefaultFormatter.DEFAULT_FORMATTER);
+		return formatter(DefaultFormatter.INSTANCE);
 	}
 
 	default Appender<Appendable> appender() {
