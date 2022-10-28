@@ -24,7 +24,7 @@ import io.jstach.annotation.JStacheFormatter.AutoFormatter;
  * <li>{@link URI}
  * </ul>
  * @author agentgt
- *
+ * @see JStacheFormatter
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
@@ -41,6 +41,9 @@ public @interface JStacheFormatterTypes {
 	 */
 	public String[] patterns() default {};
 
+	/**
+	 * @return the base formatter for all models in the annotated package
+	 */
 	public Class<?> formatter() default AutoFormatter.class;
 
 }
