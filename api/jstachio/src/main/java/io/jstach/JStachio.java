@@ -4,6 +4,12 @@ import java.io.IOException;
 
 import io.jstach.spi.JStacheServices;
 
+/**
+ * User friendly utilities to help easily render models by using reflection to lookup
+ * renderers.
+ *
+ * @see JStacheServices
+ */
 public enum JStachio {
 
 	;

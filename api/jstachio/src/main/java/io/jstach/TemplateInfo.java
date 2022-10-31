@@ -2,30 +2,87 @@ package io.jstach;
 
 import java.util.function.Function;
 
+/**
+ * Template meta data like its location, formatters, escapers and or its contents.
+ * <p>
+ * This data is usually available on generated {@link Renderer}s.
+ *
+ * @author agentgt
+ */
 public interface TemplateInfo {
 
+	/**
+	 * The logical name of the template which maybe different than
+	 * {@link #templatePath()}.
+	 * @return logical name of template. Never null.
+	 */
 	public String templateName();
 
+	/**
+	 * If the template is a classpath resource file this will return the location.
+	 * @return the location of the template or empty if the template is inlined.
+	 */
 	public String templatePath();
 
+	/**
+	 * The raw contents of the template. Useful if the template is inline. To determine if
+	 * the template is actually inline use {@link #templateSource()}.
+	 * @apiNote An empty or blank template string maybe a valid inline template and does
+	 * not mean it is not inline.
+	 * @return the raw contents of the template never null.
+	 * @see TemplateSource
+	 */
 	default String templateString() {
 		return "";
 	}
 
+	/**
+	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.
+	 * @apiNote While the return signature is {@link Function} the function is often an
+	 * {@link Escaper} but does not have to be.
+	 * @return the escaper.
+	 * @see Escaper
+	 */
 	Function<String, String> templateEscaper();
 
+	/**
+	 * The base formatter to be used on the template. See {@link Formatter#of(Function)}.
+	 * @apiNote While the return signature is {@link Function} the function is often a
+	 * {@link Formatter} but does not have to be.
+	 * @return the formatter.
+	 * @see Formatter
+	 */
 	Function<Object, String> templateFormatter();
 
+	/**
+	 * Where the template contents were retrieved from.
+	 * @return an enum never null.
+	 */
 	default TemplateSource templateSource() {
 		return templatePath().isEmpty() ? TemplateSource.STRING : TemplateSource.RESOURCE;
 	}
 
+	/**
+	 * Symbols representing where the template was retrieved from.
+	 * @author agentgt
+	 */
 	public enum TemplateSource {
 
-		RESOURCE, STRING
+		/**
+		 * Template was retrieved from the classpath at compile time.
+		 */
+		RESOURCE,
+		/**
+		 * Template was inlined as a String literal
+		 */
+		STRING
 
 	}
 
+	/**
+	 * Utility method similar to toString that describes the template meta data.
+	 * @return description of the template.
+	 */
 	default String description() {
 		return String.format("TemplateInfo[%s, %s]", templateName(), templatePath());
 	}

@@ -16,32 +16,99 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public interface Appender<A extends Appendable> {
 
+	/**
+	 * Analogous to {@link Appendable#append(CharSequence)}.
+	 * @param a appendable to write to. Always non null.
+	 * @param s unlike appendable always non null.
+	 * @throws IOException
+	 */
 	public void append(A a, CharSequence s) throws IOException;
 
+	/**
+	 * Analogous to {@link Appendable#append(CharSequence, int, int)}.
+	 * @param a appendable to write to. Never null.
+	 * @param csq Unlike appendable never null.
+	 * @param start start inclusive
+	 * @param end end exclusive
+	 * @throws IOException
+	 */
 	public void append(A a, CharSequence csq, int start, int end) throws IOException;
 
+	/**
+	 * Appends a character to an appendable.
+	 * @param a appendable to write to. Never null.
+	 * @param c character
+	 * @throws IOException
+	 */
 	public void append(A a, char c) throws IOException;
 
+	/**
+	 * Write a short by using {@link String#valueOf(int)}
+	 * @param a appendable to write to. Never null.
+	 * @param s short
+	 * @throws IOException
+	 */
 	default void append(A a, short s) throws IOException {
 		append(a, String.valueOf(s));
 	}
 
+	/**
+	 * Write a int by using {@link String#valueOf(int)}.
+	 * <p>
+	 * Implementations should override if they want different behavior or able to support
+	 * appendables that can write the native type.
+	 * @param a appendable to write to. Never null.
+	 * @param i int
+	 * @throws IOException
+	 */
 	default void append(A a, int i) throws IOException {
 		append(a, String.valueOf(i));
 	}
 
+	/**
+	 * Write a long by using {@link String#valueOf(long)}.
+	 * <p>
+	 * Implementations should override if they want different behavior or able to support
+	 * appendables that can write the native type.
+	 * @param a appendable to write to. Never null.
+	 * @param l long
+	 * @throws IOException
+	 */
 	default void append(A a, long l) throws IOException {
 		append(a, String.valueOf(l));
 	}
 
+	/**
+	 * Write a long by using {@link String#valueOf(long)}.
+	 * <p>
+	 * Implementations should override if they want different behavior or able to support
+	 * appendables that can write the native type.
+	 * @param a appendable to write to. Never null.
+	 * @param d double
+	 * @throws IOException
+	 */
 	default void append(A a, double d) throws IOException {
 		append(a, String.valueOf(d));
 	}
 
+	/**
+	 * Write a long by using {@link String#valueOf(long)}.
+	 * <p>
+	 * Implementations should override if they want different behavior or able to support
+	 * appendables that can write the native type.
+	 * @param a appendable to write to. Never null.
+	 * @param b boolean
+	 * @throws IOException
+	 */
 	default void append(A a, boolean b) throws IOException {
 		append(a, String.valueOf(b));
 	}
 
+	/**
+	 * Decorates an appendable with this appender.
+	 * @param appendable never null.
+	 * @return Appendable never null.
+	 */
 	default Appendable toAppendable(A appendable) {
 		return new AppenderAppendable<>(this, appendable);
 	}
@@ -94,6 +161,7 @@ public interface Appender<A extends Appendable> {
 			a.append(c);
 		}
 
+		@Override
 		public void append(StringBuilder a, short s) throws IOException {
 			a.append(s);
 		}

@@ -33,6 +33,10 @@ import java.io.IOException;
 
 import io.jstach.spi.JStacheServices;
 
+/**
+ * While this class is public it is not intended for users and is only used by the code
+ * generator.
+ */
 public abstract class Renderable<F, T> implements RenderFunction, TemplateInfo {
 
 	public abstract T getContext();

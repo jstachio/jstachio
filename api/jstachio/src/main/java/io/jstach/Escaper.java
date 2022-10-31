@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.util.function.Function;
 
 import io.jstach.annotation.JStacheContentType;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * An Escaper is an {@link Appender} used to escape content such as HTML. A
@@ -74,7 +75,7 @@ class FunctionEscaper implements Escaper {
 	}
 
 	@Override
-	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
+	public void append(Appendable a, @Nullable CharSequence csq, int start, int end) throws IOException {
 		if (csq == null) {
 			a.append(function.apply("null"));
 			return;
