@@ -2,6 +2,10 @@ package io.jstach;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import io.jstach.annotation.JStacheContentType;
+
 /**
  * Template meta data like its location, formatters, escapers and or its contents.
  * <p>
@@ -37,6 +41,14 @@ public interface TemplateInfo {
 	}
 
 	/**
+	 * The template content type is the class annotated with {@link JStacheContentType}
+	 * which also describes the escaper to be used.
+	 * @apiNote The class returned must be annotated with {@link JStacheContentType}.
+	 * @return the template content type.
+	 */
+	Class<?> templateContentType();
+
+	/**
 	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.
 	 * @apiNote While the return signature is {@link Function} the function is often an
 	 * {@link Escaper} but does not have to be.
@@ -52,7 +64,8 @@ public interface TemplateInfo {
 	 * @return the formatter.
 	 * @see Formatter
 	 */
-	Function<Object, String> templateFormatter();
+	@SuppressWarnings("exports")
+	Function<@Nullable Object, String> templateFormatter();
 
 	/**
 	 * Where the template contents were retrieved from.

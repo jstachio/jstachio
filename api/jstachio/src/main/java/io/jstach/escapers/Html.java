@@ -21,7 +21,7 @@ import io.jstach.annotation.JStacheContentType;
  * @author Victor Nazarov
  * @author agentgt
  */
-@JStacheContentType
+@JStacheContentType(mediaType = "text/html")
 public enum Html {
 
 	;

@@ -10,8 +10,8 @@ import io.jstach.annotation.JStacheFormatter;
 import io.jstach.context.ContextNode;
 
 /**
- * Formatter that follows the spec rules that if a variable is a missing it will be an
- * empty string (ie NOOP).
+ * Formatter that follows the spec rules that if a variable is <code>null</code> it will
+ * be an empty string (ie NOOP).
  */
 @JStacheFormatter
 public enum SpecFormatter implements Formatter {

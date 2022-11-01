@@ -638,6 +638,11 @@ class ClassWriter {
 		println("    }");
 
 		println("    @Override");
+		println("    public Class<?> " + "templateContentType() {");
+		println("        return " + contentTypeElement.getQualifiedName() + ".class;");
+		println("    }");
+
+		println("    @Override");
 		println("    public java.util.function.Function<String,String> " + "templateEscaper() {");
 		println("        return " + _Escaper + ".of(escaper);");
 		println("    }");

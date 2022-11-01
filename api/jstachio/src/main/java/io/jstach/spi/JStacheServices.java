@@ -31,10 +31,6 @@ public interface JStacheServices {
 		return JStacheServicesResolver._renderer(modelType);
 	}
 
-	default Formatter formatter() {
-		return formatter(DefaultFormatter.INSTANCE);
-	}
-
 	default Appender<Appendable> appender() {
 		return Appender.DefaultAppender.INSTANCE;
 	}

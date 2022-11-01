@@ -6,13 +6,20 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.annotation.JStacheFormatter;
+import io.jstach.annotation.JStacheFormatterTypes;
+
 /**
  * Formats and then sends the results to the downstream appender.
  *
  * Implementations should be singleton like and should not contain state. By default
  * native types are passed straight through to the downstream appender. If this is not
  * desired one can override those methods.
- *
+ * <p>
+ * <em>Important: the formatter does not decide what types are allowed at compile time to
+ * be formatted.</em> To control what types are allowed to be formatted see
+ * {@link JStacheFormatterTypes}.
+ * <p>
  * An alternative to implementing this complicated interface is to simply make a
  * {@code Function<@Nullable Object, String>} and call {@link #of(Function)} to create a
  * formatter.
@@ -20,6 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @apiNote Although the formatter has access to the raw {@link Appendable} the formatter
  * should never use it directly and simply pass it on to the downstream appender.
  * @author agentgt
+ * @see JStacheFormatterTypes
+ * @see JStacheFormatter
  *
  */
 public interface Formatter extends Function<@Nullable Object, String> {

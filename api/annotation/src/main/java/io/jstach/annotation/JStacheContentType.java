@@ -73,6 +73,12 @@ public @interface JStacheContentType {
 	String providesMethod() default "provides";
 
 	/**
+	 * Media Type of the template to help in renderer lookup.
+	 * @return media type of the template or empty string no media type
+	 */
+	String mediaType() default "";
+
+	/**
 	 * A content type marker to auto resolve the content type.
 	 *
 	 * @apiNote The provides method is purposely missing to avoid coupling with the
