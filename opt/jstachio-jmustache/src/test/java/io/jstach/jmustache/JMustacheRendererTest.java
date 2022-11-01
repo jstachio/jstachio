@@ -59,15 +59,11 @@ public class JMustacheRendererTest {
 				That is all for now!
 				                """;
 		assertEquals(expected, actual);
-		JStacheServices.find(JMustacheRenderer.class).orElseThrow().use(true);
+		String prefix = "JMUSTACHE ";
+		JStacheServices.find(JMustacheRenderer.class).orElseThrow().prefix(prefix).use(true);
 		actual = JStachio.render(new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry)));
-		assertEquals(expected, actual);
+		assertEquals(prefix + expected, actual);
 
-	}
-
-	@Test
-	public void testRenderer() {
-		// JStacheServices.find(JMustacheRenderer.class).get();
 	}
 
 }

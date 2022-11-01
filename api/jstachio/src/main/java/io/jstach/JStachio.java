@@ -6,8 +6,8 @@ import io.jstach.annotation.JStache;
 import io.jstach.spi.JStacheServices;
 
 /**
- * User friendly utilities to help easily render models by using reflection to lookup
- * renderers.
+ * Render models by using reflection to lookup renderers as well as apply filtering and
+ * fallback mechanisms.
  *
  * @see JStacheServices
  */
@@ -33,11 +33,32 @@ public enum JStachio {
 	 * @param a appendable never <code>null</code>
 	 * @throws IOException if there is an error using the appendable
 	 */
-	@SuppressWarnings("unchecked")
 	public static void render(Object model, Appendable a) throws IOException {
+		filter(model).append(a);
+	}
+
+	/**
+	 * Applies filtering to a Renderer.
+	 * @param <T> declared type of the context
+	 * @param context an instance of the context
+	 * @param renderer to filter
+	 * @return the filtered rendering function
+	 */
+	public static <T> RenderFunction filter(T context, Renderer<T> renderer) {
+		var rf = JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+		return rf;
+	}
+
+	private static <T> RenderFunction filter(Object context) {
+		return filter(context, context.getClass());
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> RenderFunction filter(Object context, Class<?> modelType) {
 		@SuppressWarnings("rawtypes")
-		Renderer r = JStacheServices.renderer(model.getClass());
-		r.render(model, a);
+		Renderer r = renderer(modelType);
+		return filter(context, r);
+
 	}
 
 	/**
@@ -47,11 +68,8 @@ public enum JStachio {
 	 * @param a appendable never <code>null</code>
 	 * @return the passed in {@link StringBuilder}
 	 */
-	@SuppressWarnings("unchecked")
 	public static StringBuilder render(Object model, StringBuilder a) {
-		@SuppressWarnings("rawtypes")
-		Renderer r = JStacheServices.renderer(model.getClass());
-		return r.render(model, a);
+		return filter(model).append(a);
 	}
 
 	/**
@@ -59,11 +77,8 @@ public enum JStachio {
 	 * @param model the root context model. Never <code>null</code>.
 	 * @return the rendered string.
 	 */
-	@SuppressWarnings("unchecked")
 	public static String render(Object model) {
-		@SuppressWarnings("rawtypes")
-		Renderer r = JStacheServices.renderer(model.getClass());
-		return r.render(model);
+		return filter(model).renderString();
 	}
 
 }

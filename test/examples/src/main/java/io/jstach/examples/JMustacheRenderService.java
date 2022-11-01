@@ -3,7 +3,6 @@ package io.jstach.examples;
 import static java.lang.System.out;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +23,7 @@ public class JMustacheRenderService implements JStacheServices {
 	}
 
 	@Override
-	public RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
+	public RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
 		if (!enabled.get())
 			return previous;
 		return (a) -> {

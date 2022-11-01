@@ -1,7 +1,6 @@
 package io.jstach.jmustache;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.System.Logger;
@@ -10,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import com.samskivert.mustache.Mustache;
@@ -24,9 +24,24 @@ public class JMustacheRenderer implements JStacheServices {
 
 	private final AtomicBoolean use;
 
-	public void use(boolean flag) {
+	private volatile @Nullable String prefix = null;
+
+	private volatile @Nullable String suffix = null;
+
+	public JMustacheRenderer use(boolean flag) {
 		use.set(flag);
 		log(flag);
+		return this;
+	}
+
+	public JMustacheRenderer prefix(@Nullable String prefix) {
+		this.prefix = prefix;
+		return this;
+	}
+
+	public JMustacheRenderer suffix(@Nullable String suffix) {
+		this.suffix = suffix;
+		return this;
 	}
 
 	protected void log(boolean flag) {
@@ -57,7 +72,7 @@ public class JMustacheRenderer implements JStacheServices {
 	}
 
 	@Override
-	public RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
+	public RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
 		if (!use.get()) {
 			return previous;
 		}
@@ -67,6 +82,9 @@ public class JMustacheRenderer implements JStacheServices {
 				case STRING -> {
 					Template t = createCompiler(template).compile(template.templateString());
 					String results = t.execute(context);
+					if (prefix != null) {
+						a.append(prefix);
+					}
 					a.append(results);
 				}
 				case RESOURCE -> {

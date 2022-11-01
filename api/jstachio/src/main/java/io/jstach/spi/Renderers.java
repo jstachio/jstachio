@@ -11,6 +11,9 @@ import io.jstach.annotation.JStache;
 
 class Renderers {
 
+	/*
+	 * TODO move suffix to constant in annotation jar and prisms
+	 */
 	private static final String IMPLEMENTATION_SUFFIX = "Renderer";
 
 	private Renderers() {

@@ -1,15 +1,12 @@
 package io.jstach.spi;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import io.jstach.Appender;
-import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
-import io.jstach.formatters.DefaultFormatter;
 
 /**
  * TODO this still in the works and subject to change greatly
@@ -19,20 +16,16 @@ import io.jstach.formatters.DefaultFormatter;
  */
 public interface JStacheServices {
 
-	default RenderFunction renderer(TemplateInfo template, Object context, RenderFunction previous) throws IOException {
+	default RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
 		return previous;
-	}
-
-	default Formatter formatter(Formatter previous) {
-		return previous;
-	}
-
-	public static <T> Renderer<T> renderer(Class<T> modelType) {
-		return JStacheServicesResolver._renderer(modelType);
 	}
 
 	default Appender<Appendable> appender() {
 		return Appender.DefaultAppender.INSTANCE;
+	}
+
+	public static <T> Renderer<T> renderer(Class<T> modelType) {
+		return JStacheServicesResolver._renderer(modelType);
 	}
 
 	public static JStacheServices findService() {

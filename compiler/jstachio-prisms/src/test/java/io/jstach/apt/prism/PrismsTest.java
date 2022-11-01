@@ -14,8 +14,8 @@ import io.jstach.Appender;
 import io.jstach.Escaper;
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
-import io.jstach.Renderable;
 import io.jstach.Renderer;
+import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStacheContentType.AutoContentType;
 import io.jstach.annotation.JStacheFlags;
 import io.jstach.annotation.JStacheFormatter.AutoFormatter;
@@ -114,8 +114,8 @@ public class PrismsTest {
 				Escaper.class, //
 				Formatter.class, //
 				DefaultFormatter.class, //
+				TemplateInfo.class, //
 				RenderFunction.class, //
-				Renderable.class, //
 				JStacheServices.class, //
 				ContextNode.class, //
 				AutoFormatter.class, //

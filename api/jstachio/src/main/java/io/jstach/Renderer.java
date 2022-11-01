@@ -9,7 +9,7 @@ import java.io.UncheckedIOException;
  *
  * @param <T> the model type
  */
-public interface Renderer<T> {
+public interface Renderer<T> extends TemplateInfo {
 
 	/**
 	 * Renders the passed in model.
@@ -45,6 +45,10 @@ public interface Renderer<T> {
 		StringBuilder sb = new StringBuilder();
 		render(model, sb);
 		return sb.toString();
+	}
+
+	default RenderFunction apply(T model) {
+		return a -> this.render(model, a);
 	}
 
 	/**

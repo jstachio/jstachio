@@ -34,9 +34,9 @@ public interface Prisms {
 
 	public static final String DEFAULT_FORMATTER_CLASS = "io.jstach.formatters.DefaultFormatter";
 
-	public static final String RENDER_FUNCTION_CLASS = "io.jstach.RenderFunction";
+	public static final String TEMPLATE_INFO_CLASS = "io.jstach.TemplateInfo";
 
-	public static final String RENDERABLE_CLASS = "io.jstach.Renderable";
+	public static final String RENDER_FUNCTION_CLASS = "io.jstach.RenderFunction";
 
 	public static final String JSTACHE_SERVICES_CLASS = "io.jstach.spi.JStacheServices";
 

@@ -555,19 +555,14 @@ class ClassWriter {
 		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
 		assert formatterPrism != null;
 
-		String implementsString = ifaces.isEmpty() ? ""
-				: " implements " + ifaces.stream().collect(Collectors.joining(", "));
+		String implementsString = ifaces.isEmpty() ? "" : ", " + ifaces.stream().collect(Collectors.joining(", "));
 
-		String extendsString = " extends " + RENDERABLE_CLASS + "<" + contentTypeElement.getQualifiedName() + ","
-				+ className + ">";
-
-		String rendererImplements = " implements " + RENDERER_CLASS + "<" + className + ">";
+		String rendererImplements = " implements " + RENDERER_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
+				+ implementsString;
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
 
 		String rendererClassSimpleName = renderClassRef.getSimpleName();
-
-		String adapterClassSimpleName = rendererClassSimpleName + "Definition";
 
 		NamedTemplate namedTemplate = model.namedTemplate();
 
@@ -577,47 +572,33 @@ class ClassWriter {
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);
 
-		println("package " + packageName + ";");
-		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
-
-		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
-
-		println("    public " + rendererClassSimpleName + "() {");
-
-		println("    }");
-		println("");
-		println("    public void render(" + className + " model, Appendable appendable) throws java.io.IOException {");
-		println("        new " + adapterClassSimpleName + "(model).render(appendable);");
-		println("    }");
-		println("");
-		println("    public boolean supportsType(Class<?> type) {");
-		println("        return " + className + ".class.isAssignableFrom(type);");
-		println("    }");
-		println("");
-		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
-		println("        return new " + adapterClassSimpleName + "(data);");
-		println("    }");
-		println("}");
-
 		String _Appendable = Appendable.class.getName();
 		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
 		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
 		String _RenderService = JSTACHE_SERVICES_CLASS;
 
-		println("class " + adapterClassSimpleName + extendsString + implementsString + " {");
+		println("package " + packageName + ";");
+		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
+
+		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
+
 		println("    public static final String TEMPLATE_PATH = \"" + templatePath + "\";");
 		println("    public static final String TEMPLATE_STRING = " + templateStringJava + ";");
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
-		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-
-		println("    private final " + className + " data;");
-		String constructorModifier = "protected";
-		println("    " + constructorModifier + " " + adapterClassSimpleName + "(" + className + " data) {");
-		println("        this.data = data;");
+		println("    public " + rendererClassSimpleName + "() {");
 		println("    }");
-
+		println("");
+		println("    public void render(" + className + " model, Appendable a) throws java.io.IOException {");
+		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
+		println("        render(model, a, appender, templateEscaper(), templateFormatter());");
+		println("    }");
+		println("");
+		println("    public boolean supportsType(Class<?> type) {");
+		println("        return " + className + ".class.isAssignableFrom(type);");
+		println("    }");
+		println("");
 		println("    @Override");
 		println("    public String " + "templatePath() {");
 		println("        return TEMPLATE_PATH;");
@@ -649,23 +630,16 @@ class ClassWriter {
 		println("        return " + _Formatter + ".of(" //
 				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 		println("    }");
-
-		println("    @Override");
-		println("    public " + className + " getContext() {");
-		println("        return this.data;");
+		println("");
+		println("    public static " + rendererClassSimpleName + " of() {");
+		println("        return new " + rendererClassSimpleName + "();");
 		println("    }");
-
-		// private static <M> void _render(M model, Appendable appendable, Appender
-		// appender, Appender escaper, Formatter formatter);
-		println("    @Override");
-		println("    protected void " + "doRender(" + _Appendable + " a) throws java.io.IOException {");
-		println("        render(data, a, appender, templateEscaper(), templateFormatter());");
-		println("    }");
-
+		println("");
 		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
-		println("        return new " + adapterClassSimpleName + "(data);");
+		println("        return a -> of().render(data, a);");
 		println("    }");
 
+		println("");
 		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
 		println("}");
 	}
