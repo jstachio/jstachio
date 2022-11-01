@@ -24,6 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public interface Formatter extends Function<@Nullable Object, String> {
 
+	/**
+	 * Formats an object by using {@link StringBuilder} and calling
+	 * {@link #format(Appender, Appendable, String, Class, Object)}.
+	 * @param t the object to be formatted. Maybe <code>null</code>.
+	 * @return the formatted results as a String.
+	 */
 	@Override
 	default String apply(@Nullable Object t) {
 		StringBuilder sb = new StringBuilder();
@@ -49,44 +55,156 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * directly
 	 * @param a the appendable to be passed to the appender
 	 * @param path the dotted mustache like path
-	 * @param c the object class but is not guaranteed to be accurate . If it is not known
+	 * @param c the object class but is not guaranteed to be accurate. If it is not known
 	 * Object.class will be used.
 	 * @param o the object which maybe null
-	 * @throws IOException
+	 * @throws IOException if the appender or appendable throws an exception
 	 */
 	<A extends Appendable, APPENDER extends Appender<A>> //
 	void format(APPENDER downstream, A a, String path, Class<?> c, @Nullable Object o) throws IOException;
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param c character
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			char c) throws IOException {
 		downstream.append(a, c);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param s short
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			short s) throws IOException {
 		downstream.append(a, s);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param i integer
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			int i) throws IOException {
 		downstream.append(a, i);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param l long
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			long l) throws IOException {
 		downstream.append(a, l);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param d double
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			double d) throws IOException {
 		downstream.append(a, d);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param b boolean
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			boolean b) throws IOException {
 		downstream.append(a, b);
 	}
 
+	/**
+	 * Formats the object and then sends the results to the downstream appender. The
+	 * default implementation passes natives through to the downstream appender.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender.
+	 * @param <A> the appendable type
+	 * @param <APPENDER> the downstream appender type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param s String
+	 * @throws IOException if the appender or appendable throws an exception
+	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			String s) throws IOException {
 		downstream.append(a, s);

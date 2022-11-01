@@ -61,10 +61,7 @@ public @interface JStacheFormatter {
 	 * @author agentgt
 	 */
 	@JStacheFormatter
-	public final class AutoFormatter {
-
-		private AutoFormatter() {
-		}
+	public enum AutoFormatter {
 
 	}
 

@@ -1,6 +1,5 @@
 /**
  * JStachio Core Runtime API
- * <p>
  * @see io.jstach.spi
  * @see io.jstach.annotation
  */

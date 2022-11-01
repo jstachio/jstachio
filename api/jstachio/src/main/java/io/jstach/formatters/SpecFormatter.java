@@ -21,6 +21,9 @@ public enum SpecFormatter implements Formatter {
 	 * empty string (ie NOOP).
 	 */
 	INSTANCE {
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 				Class<?> c, @Nullable Object o) throws IOException {
@@ -34,6 +37,10 @@ public enum SpecFormatter implements Formatter {
 		}
 	};
 
+	/**
+	 * Provides the formatter for static lookup.
+	 * @return the single instance of the spec formatter
+	 */
 	public static Formatter provides() {
 		return INSTANCE;
 	}

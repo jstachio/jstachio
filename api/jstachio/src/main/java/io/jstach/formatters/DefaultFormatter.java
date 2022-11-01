@@ -20,11 +20,12 @@ public enum DefaultFormatter implements Formatter {
 	/**
 	 * Default formatter.
 	 *
-	 * Unlike the mustache spec it will throw a NPE trying to form at null objects
-	 *
-	 *
+	 * Unlike the mustache spec it will throw a NPE trying to format null objects.
 	 */
 	INSTANCE {
+		/**
+		 * {@inheritDoc} Will throw an NPE if parameter o is <code>null</code>.
+		 */
 		@Override
 		public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 				Class<?> c, @Nullable Object o) throws IOException {
@@ -40,6 +41,10 @@ public enum DefaultFormatter implements Formatter {
 		}
 	};
 
+	/**
+	 * Provides the default formatter for static lookup.
+	 * @return the default formatter singleton
+	 */
 	public static Formatter provides() {
 		return INSTANCE;
 	}

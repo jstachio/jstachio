@@ -17,8 +17,16 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public interface Escaper extends Appender<Appendable>, Function<String, String> {
 
+	/**
+	 * Escapes a String by using StringBuilder and calling
+	 * {@link #append(Appendable, CharSequence)}.
+	 * @param t String to ge escaped.
+	 * @return escaped content
+	 * @throws UncheckedIOException if the appender or appendable throw an
+	 * {@link IOException}
+	 */
 	@Override
-	default String apply(String t) {
+	default String apply(String t) throws UncheckedIOException {
 		StringBuilder sb = new StringBuilder();
 		try {
 			append(sb, t);
@@ -29,27 +37,15 @@ public interface Escaper extends Appender<Appendable>, Function<String, String> 
 		return sb.toString();
 	}
 
-	enum NoEscaper implements Escaper {
-
-		INSTANCE;
-
-		@Override
-		public void append(Appendable a, CharSequence s) throws IOException {
-			a.append(s);
-		}
-
-		@Override
-		public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
-			a.append(csq, start, end);
-		}
-
-		@Override
-		public void append(Appendable a, char c) throws IOException {
-			a.append(c);
-		}
-
-	}
-
+	/**
+	 * Adapts a function to an Escaper.
+	 *
+	 * If the function is already an Escaper then it is simply returned (noop). Thus it is
+	 * safe to repeatedly call this on Escaper. If the function is adapted the returned
+	 * adapted Escaper does not pass native types to the inputted function.
+	 * @param escapeFunction returned if it is already an escaper
+	 * @return adapted Escaper
+	 */
 	public static Escaper of(Function<String, String> escapeFunction) {
 		if (escapeFunction instanceof Escaper e) {
 			return e;

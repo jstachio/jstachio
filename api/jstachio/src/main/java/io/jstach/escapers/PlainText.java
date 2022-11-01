@@ -33,13 +33,20 @@ import io.jstach.Escaper;
 import io.jstach.annotation.JStacheContentType;
 
 /**
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
+ * Provides NOOP escaper for working with plain text.
+ * @author Victor Nazarov
+ * @author agentgt
  */
 @JStacheContentType
-public class PlainText {
+public enum PlainText {
 
+	;
+	/**
+	 * Provides the escaper for static lookup.
+	 * @return noop like escaper singleton
+	 */
 	public static Escaper provides() {
-		return Escaper.NoEscaper.INSTANCE;
+		return NoEscaper.INSTANCE;
 	}
 
 }
