@@ -15,7 +15,7 @@ public interface Renderer<T> extends TemplateInfo {
 	 * Renders the passed in model.
 	 * @param model a model assumed never to be null.
 	 * @param appendable the appendable to write to.
-	 * @throws IOException
+	 * @throws IOException if there is an error writing to the appendable
 	 */
 	public void render(T model, Appendable appendable) throws IOException;
 
@@ -47,6 +47,12 @@ public interface Renderer<T> extends TemplateInfo {
 		return sb.toString();
 	}
 
+	/**
+	 * Applies the model to create a render function. Basically partial application
+	 * functionally speaking.
+	 * @param model the model the renderer uses to render.
+	 * @return a function
+	 */
 	default RenderFunction apply(T model) {
 		return a -> this.render(model, a);
 	}
