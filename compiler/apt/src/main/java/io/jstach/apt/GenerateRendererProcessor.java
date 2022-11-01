@@ -611,10 +611,6 @@ class ClassWriter {
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
 		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-		println("    " + _Escaper + " escaper = " + _Escaper + ".of(" //
-				+ contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod() + "());");
-		println("    " + _Formatter + " formatter = " + _Formatter + ".of(" //
-				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 
 		println("    private final " + className + " data;");
 		String constructorModifier = "protected";
@@ -643,13 +639,15 @@ class ClassWriter {
 		println("    }");
 
 		println("    @Override");
-		println("    public java.util.function.Function<String,String> " + "templateEscaper() {");
-		println("        return " + _Escaper + ".of(escaper);");
+		println("    public  " + _Escaper + " templateEscaper() {");
+		println("        return " + _Escaper + ".of(" //
+				+ contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod() + "());");
 		println("    }");
 
 		println("    @Override");
-		println("    public java.util.function.Function<Object,String> " + "templateFormatter() {");
-		println("        return formatter;");
+		println("    public " + _Formatter + " templateFormatter() {");
+		println("        return " + _Formatter + ".of(" //
+				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 		println("    }");
 
 		println("    @Override");
@@ -661,7 +659,7 @@ class ClassWriter {
 		// appender, Appender escaper, Formatter formatter);
 		println("    @Override");
 		println("    protected void " + "doRender(" + _Appendable + " a) throws java.io.IOException {");
-		println("        render(data, a, appender, escaper, formatter);");
+		println("        render(data, a, appender, templateEscaper(), templateFormatter());");
 		println("    }");
 
 		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
