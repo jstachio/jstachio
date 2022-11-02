@@ -80,7 +80,7 @@ enum JStacheServicesResolver implements JStacheServices {
 		}
 		var config = _config();
 
-		if (config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_LOOKUP)) {
+		if (config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_LOOKUP, true)) {
 			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING, "Could not find renderer for: " + contextType, error);
@@ -92,6 +92,8 @@ enum JStacheServicesResolver implements JStacheServices {
 				}
 				return template;
 			}
+			return TemplateInfos.templateOf(contextType);
+
 		}
 		throw error;
 

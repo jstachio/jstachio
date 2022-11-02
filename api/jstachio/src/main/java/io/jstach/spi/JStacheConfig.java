@@ -13,7 +13,15 @@ public interface JStacheConfig {
 
 	default boolean getBoolean(String key) {
 		String prop = getProperty(key);
-		return Boolean.valueOf(prop);
+		return Boolean.parseBoolean(prop);
+	}
+
+	default boolean getBoolean(String key, boolean fallback) {
+		String prop = getProperty(key);
+		if (prop == null) {
+			return fallback;
+		}
+		return Boolean.parseBoolean(prop);
 	}
 
 	public static String REFLECTION_TEMPLATE_LOOKUP = "jstachio.reflection.template";
@@ -21,7 +29,7 @@ public interface JStacheConfig {
 	public static String USE_SYSTEM_LOGGER = "jstachio.logging";
 
 	default Logger getLogger(String name) {
-		if (getBoolean(USE_SYSTEM_LOGGER)) {
+		if (getBoolean(USE_SYSTEM_LOGGER, true)) {
 			return System.getLogger(name);
 		}
 		return NOOPLogger.INSTANCE;
