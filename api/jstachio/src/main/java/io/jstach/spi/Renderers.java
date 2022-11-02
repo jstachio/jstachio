@@ -77,14 +77,14 @@ class Renderers {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static <T> Renderer<?> getRendererFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
-		ServiceLoader<Renderer> loader = ServiceLoader.load(Renderer.class, classLoader);
-
-		for (Renderer renderer : loader) {
-			if (renderer != null && renderer.supportsType(clazz)) {
-				return renderer;
+		ServiceLoader<RendererProvider> loader = ServiceLoader.load(RendererProvider.class, classLoader);
+		for (RendererProvider rp : loader) {
+			for (var renderer : rp.provideRenderers()) {
+				if (renderer != null && renderer.supportsType(clazz)) {
+					return renderer;
+				}
 			}
 		}
-
 		return null;
 	}
 
