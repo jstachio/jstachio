@@ -46,7 +46,9 @@ class TemplateInfos {
 
 		if (formatterProvider == null) {
 			JStacheFormatterTypes formatterTypes = getAnnotation(JStacheFormatterTypes.class, model);
-			formatterProvider = FormatterProvider.INSTANCE.autoToNull(formatterTypes.formatter());
+			if (formatterTypes != null) {
+				formatterProvider = FormatterProvider.INSTANCE.autoToNull(formatterTypes.formatter());
+			}
 		}
 
 		Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE.provides(formatterProvider);
