@@ -3,6 +3,8 @@ package io.jstach.spi;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.Appender;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
@@ -10,10 +12,11 @@ import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStache;
 
 /**
- * The SPI extension point. All methods are optional (default). TODO this still in the
- * works and subject to change greatly
+ * The SPI extension point. All methods are optional (default).
  *
- * @author agent
+ * TODO this still in the works and subject to change greatly!
+ *
+ * @author agentgt
  *
  */
 public interface JStacheServices {
@@ -26,8 +29,23 @@ public interface JStacheServices {
 	 * @return an advised render function or often the previous render function if no
 	 * advise is needed.
 	 */
-	default RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
+	default RenderFunction filter( //
+			TemplateInfo template, //
+			Object context, //
+			RenderFunction previous) {
 		return previous;
+	}
+
+	default @Nullable TemplateInfo templateInfo(Class<?> contextType) throws Exception {
+		return null;
+	}
+
+	default @Nullable JStacheConfig provideConfig() {
+		return null;
+	}
+
+	default void init(JStacheConfig config) {
+
 	}
 
 	/**

@@ -27,8 +27,8 @@ public enum JStachio {
 	}
 
 	/**
-	 * Finds a render by using the models class and then render the model by writting to
-	 * the appendable.
+	 * Finds a render by using the models class if possible and then applies filtering and
+	 * then finally render the model by writting to the appendable.
 	 * @param model never <code>null</code>
 	 * @param a appendable never <code>null</code>
 	 * @throws IOException if there is an error using the appendable
@@ -45,7 +45,24 @@ public enum JStachio {
 	 * @return the filtered rendering function
 	 */
 	public static <T> RenderFunction filter(T context, Renderer<T> renderer) {
-		var rf = JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+		return JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+	}
+
+	/**
+	 * Applies filtering to a template.
+	 * @param context an instance of the context
+	 * @param template to filter
+	 * @return the filtered rendering function
+	 */
+	@SuppressWarnings("unchecked")
+	public static RenderFunction filter(Object context, TemplateInfo template) {
+		RenderFunction rf;
+		if (template instanceof @SuppressWarnings("rawtypes") Renderer renderer) {
+			rf = JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+		}
+		else {
+			rf = JStacheServices.findService().filter(template, context, RenderFunction.BrokenRenderFunction.INSTANCE);
+		}
 		return rf;
 	}
 
@@ -53,11 +70,22 @@ public enum JStachio {
 		return filter(context, context.getClass());
 	}
 
-	@SuppressWarnings("unchecked")
 	private static <T> RenderFunction filter(Object context, Class<?> modelType) {
-		@SuppressWarnings("rawtypes")
-		Renderer r = renderer(modelType);
-		return filter(context, r);
+		return filter(context, templateInfo(modelType));
+	}
+
+	private static TemplateInfo templateInfo(Class<?> modelType) {
+		TemplateInfo template;
+		try {
+			template = JStacheServices.findService().templateInfo(modelType);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		if (template == null) {
+			throw new RuntimeException("template not found for modelType: " + modelType);
+		}
+		return template;
 
 	}
 

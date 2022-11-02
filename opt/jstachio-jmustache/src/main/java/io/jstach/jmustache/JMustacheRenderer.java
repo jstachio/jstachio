@@ -17,6 +17,7 @@ import com.samskivert.mustache.Template;
 
 import io.jstach.RenderFunction;
 import io.jstach.TemplateInfo;
+import io.jstach.spi.JStacheConfig;
 import io.jstach.spi.JStacheServices;
 
 @MetaInfServices(JStacheServices.class)
@@ -58,8 +59,12 @@ public class JMustacheRenderer implements JStacheServices {
 	}
 
 	public JMustacheRenderer() {
-		use = new AtomicBoolean(Boolean.getBoolean("jstachio.jmustache"));
-		log(use.get());
+		use = new AtomicBoolean();
+	}
+
+	@Override
+	public void init(JStacheConfig config) {
+		use(config.getBoolean("jstachio.jmustache"));
 	}
 
 	protected Mustache.Compiler createCompiler(TemplateInfo template) {

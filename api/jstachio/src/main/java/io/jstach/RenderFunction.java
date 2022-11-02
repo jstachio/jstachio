@@ -70,4 +70,41 @@ public interface RenderFunction extends Consumer<Appendable> {
 		return a;
 	}
 
+	/**
+	 * A marker method that the render function is broken and should not be used. This
+	 * mainly for the filter pipeline.
+	 * @return by default false
+	 */
+	default boolean isBroken() {
+		return false;
+	}
+
+	/**
+	 * A singleton broken render function.
+	 * @author agentgt
+	 *
+	 */
+	enum BrokenRenderFunction implements RenderFunction {
+
+		INSTANCE;
+
+		/**
+		 * {@inheritDoc} Will always throw an {@link IOException}.
+		 */
+		@Override
+		public void render(Appendable a) throws IOException {
+			throw new IOException();
+		}
+
+		/**
+		 * {@inheritDoc} Is always true.
+		 * @return true
+		 */
+		@Override
+		public boolean isBroken() {
+			return true;
+		}
+
+	}
+
 }

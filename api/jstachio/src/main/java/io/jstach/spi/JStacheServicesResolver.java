@@ -1,9 +1,13 @@
 package io.jstach.spi;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
@@ -19,16 +23,35 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private final List<JStacheServices> services;
 
-		private Holder(List<JStacheServices> services) {
+		private final JStacheConfig config;
+
+		private Holder(List<JStacheServices> services, JStacheConfig config) {
 			super();
 			this.services = services;
+			this.config = config;
 		}
 
 		private static Holder of() {
 			Iterable<JStacheServices> it = ServiceLoader.load(JStacheServices.class);
 			List<JStacheServices> svs = new ArrayList<>();
 			it.forEach(svs::add);
-			return new Holder(List.copyOf(svs));
+			List<JStacheConfig> configs = new ArrayList<>();
+			for (var sv : svs) {
+				var c = sv.provideConfig();
+				if (c != null) {
+					configs.add(c);
+				}
+			}
+			configs.add(SystemPropertyConfig.INSTANCE);
+			CompositeConfig config = new CompositeConfig(configs);
+			for (var sv : svs) {
+				sv.init(config);
+			}
+			return new Holder(List.copyOf(svs), config);
+		}
+
+		JStacheConfig getConfig() {
+			return config;
 		}
 
 	}
@@ -39,6 +62,39 @@ enum JStacheServicesResolver implements JStacheServices {
 
 	static Stream<JStacheServices> _services() {
 		return Holder.INSTANCE.services.stream();
+	}
+
+	static JStacheConfig _config() {
+		return Holder.INSTANCE.getConfig();
+	}
+
+	@Override
+	public @Nullable TemplateInfo templateInfo(Class<?> contextType) throws Exception {
+		Exception error;
+		try {
+			Renderer<?> r = _renderer(contextType);
+			return r;
+		}
+		catch (Exception e) {
+			error = e;
+		}
+		var config = _config();
+
+		if (config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_LOOKUP)) {
+			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
+			if (logger.isLoggable(Level.WARNING)) {
+				logger.log(Level.WARNING, "Could not find renderer for: " + contextType, error);
+			}
+			for (var s : Holder.INSTANCE.services) {
+				TemplateInfo template = s.templateInfo(contextType);
+				if (template == null) {
+					continue;
+				}
+				return template;
+			}
+		}
+		throw error;
+
 	}
 
 	@Override

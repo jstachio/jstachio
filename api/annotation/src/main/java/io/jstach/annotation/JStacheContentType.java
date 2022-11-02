@@ -79,7 +79,7 @@ public @interface JStacheContentType {
 	String mediaType() default "";
 
 	/**
-	 * A content type marker to auto resolve the content type.
+	 * A sentinel null object content type marker to auto resolve the content type.
 	 *
 	 * @apiNote The provides method is purposely missing to avoid coupling with the
 	 * runtime.
