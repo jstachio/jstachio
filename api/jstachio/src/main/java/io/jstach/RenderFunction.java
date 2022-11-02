@@ -86,6 +86,9 @@ public interface RenderFunction extends Consumer<Appendable> {
 	 */
 	enum BrokenRenderFunction implements RenderFunction {
 
+		/**
+		 * singleton
+		 */
 		INSTANCE;
 
 		/**

@@ -36,14 +36,31 @@ public interface JStacheServices {
 		return previous;
 	}
 
+	/**
+	 * Resolve template information if possible.
+	 * <p>
+	 * Implementations are only called if the compiled renderers is missing.
+	 * @param contextType models class.
+	 * @return resolved template info or <code>null</code> if not possible
+	 * @throws Exception if any problem happens creating template information
+	 */
 	default @Nullable TemplateInfo templateInfo(Class<?> contextType) throws Exception {
 		return null;
 	}
 
+	/**
+	 * Provide a config or not. The final config is a composite of all the found configs.
+	 * @apiNote This method is called before {@link #init(JStacheConfig)}
+	 * @return config if this service provides one or <code>null</code>
+	 */
 	default @Nullable JStacheConfig provideConfig() {
 		return null;
 	}
 
+	/**
+	 * Called before the services are used but after {@link #provideConfig()}.
+	 * @param config the config never null
+	 */
 	default void init(JStacheConfig config) {
 
 	}

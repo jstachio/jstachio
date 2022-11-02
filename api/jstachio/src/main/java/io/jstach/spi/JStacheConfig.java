@@ -7,15 +7,39 @@ import java.util.ResourceBundle;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * Config Service.
+ * <p>
+ * The default config service uses System properties.
+ *
+ * @author agentgt
+ */
 public interface JStacheConfig {
 
+	/**
+	 * Gets a property from some config implementation.
+	 * @param key the key to use to lookup
+	 * @return if not found <code>null</code>.
+	 */
 	public @Nullable String getProperty(String key);
 
+	/**
+	 * See {@link Boolean#getBoolean(String)}.
+	 * @param key the property key
+	 * @return only true if string is "true"
+	 */
 	default boolean getBoolean(String key) {
 		String prop = getProperty(key);
 		return Boolean.parseBoolean(prop);
 	}
 
+	/**
+	 * Gets the property as a boolean and if no property value is found the fallback is
+	 * used.
+	 * @param key property key
+	 * @param fallback if property has no value this value is used.
+	 * @return the parsed boolean or the fallback
+	 */
 	default boolean getBoolean(String key, boolean fallback) {
 		String prop = getProperty(key);
 		if (prop == null) {
@@ -24,10 +48,21 @@ public interface JStacheConfig {
 		return Boolean.parseBoolean(prop);
 	}
 
+	/**
+	 * Config key
+	 */
 	public static String REFLECTION_TEMPLATE_LOOKUP = "jstachio.reflection.template";
 
+	/**
+	 * Config key
+	 */
 	public static String USE_SYSTEM_LOGGER = "jstachio.logging";
 
+	/**
+	 * Gets a system logger if the property {@link #USE_SYSTEM_LOGGER} is set.
+	 * @param name the name of the logger usually the class.
+	 * @return the System logger.
+	 */
 	default Logger getLogger(String name) {
 		if (getBoolean(USE_SYSTEM_LOGGER, true)) {
 			return System.getLogger(name);
