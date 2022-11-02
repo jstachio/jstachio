@@ -20,4 +20,5 @@ module io.jstach {
 	requires static org.eclipse.jdt.annotation;
 	
 	uses io.jstach.spi.JStacheServices;
+	uses io.jstach.spi.RendererProvider;
 }

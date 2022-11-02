@@ -24,6 +24,7 @@ import io.jstach.escapers.Html;
 import io.jstach.escapers.PlainText;
 import io.jstach.formatters.DefaultFormatter;
 import io.jstach.spi.JStacheServices;
+import io.jstach.spi.RendererProvider;
 
 public class PrismsTest {
 
@@ -110,6 +111,7 @@ public class PrismsTest {
 	private static List<Class<?>> apiClasses() {
 		return List.of( //
 				Renderer.class, //
+				RendererProvider.class, //
 				Appender.class, //
 				Escaper.class, //
 				Formatter.class, //

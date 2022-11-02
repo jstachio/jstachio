@@ -149,7 +149,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
 			}
-			ClassRef serviceClass = ClassRef.ofBinaryName(RENDERER_CLASS);
+			ClassRef serviceClass = ClassRef.ofBinaryName(RENDERER_PROVIDER_CLASS);
 			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
 					rendererClasses);
 			return false;
@@ -558,7 +558,7 @@ class ClassWriter {
 		String implementsString = ifaces.isEmpty() ? "" : ", " + ifaces.stream().collect(Collectors.joining(", "));
 
 		String rendererImplements = " implements " + RENDERER_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
-				+ implementsString;
+				+ ", " + RENDERER_PROVIDER_CLASS + implementsString;
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
 
@@ -597,6 +597,11 @@ class ClassWriter {
 		println("");
 		println("    public boolean supportsType(Class<?> type) {");
 		println("        return " + className + ".class.isAssignableFrom(type);");
+		println("    }");
+		println("");
+		println("    @Override");
+		println("    public java.util.List<" + RENDERER_CLASS + "<?>> " + "provideRenderers() {");
+		println("        return java.util.List.of(this);");
 		println("    }");
 		println("");
 		println("    @Override");
