@@ -4,6 +4,6 @@ import io.jstach.annotation.JStache;
 
 @JStache(template = """
 		Hello {{name}}!""")
-public record InlineExample(String name) {
+record InlineExample(String name) {
 
 }

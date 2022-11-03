@@ -350,7 +350,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <excludePackageNames>io.jstach.apt.*,io.jstach.spec.*,io.jstach.examples.*</excludePackageNames>
+              <excludePackageNames>*.apt.*,io.jstach.apt.*,io.jstach.spec.*,io.jstach.examples.*</excludePackageNames>
               <aggregate>true</aggregate>
               <show>public</show>
               <tags>
@@ -368,6 +368,11 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
+                <configuration>
+                  <excludePackageNames>
+                  io.jstach.apt:io.jstach.apt.*:io.jstach.spec.mustache.spec.*
+                  </excludePackageNames>
+                </configuration>
               </execution>
             </executions>
           </plugin>

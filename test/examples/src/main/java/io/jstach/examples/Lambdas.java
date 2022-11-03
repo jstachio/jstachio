@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import io.jstach.annotation.JStacheLambda;
 import io.jstach.annotation.JStacheLambda.Raw;
 
-public interface Lambdas {
+interface Lambdas {
 
 	@JStacheLambda
 	default @Raw String listProps(@Raw String body, Map<String, String> props) {
@@ -20,11 +20,11 @@ public interface Lambdas {
 		return new KeyValues(kvs);
 	}
 
-	public record KeyValues(List<KeyValue> values) {
+	record KeyValues(List<KeyValue> values) {
 
 	}
 
-	public record KeyValue(String key, String value) {
+	record KeyValue(String key, String value) {
 
 	}
 

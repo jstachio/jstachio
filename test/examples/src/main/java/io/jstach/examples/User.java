@@ -42,7 +42,7 @@ import io.jstach.annotation.JStache;
 
 // adapterName can be omitted. "Renderable{{className}}Adapter" name is used by default
 )
-public class User {
+class User {
 
 	public final String name;
 

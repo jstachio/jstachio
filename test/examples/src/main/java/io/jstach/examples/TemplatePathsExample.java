@@ -6,6 +6,6 @@ import io.jstach.annotation.JStachePartials;
 
 @JStache(path = "template-paths-example.mustache")
 @JStachePartials(@JStachePartial(name = "formerly-known-as-partial-include", path = "partial-include.mustache"))
-public record TemplatePathsExample(String name) {
+record TemplatePathsExample(String name) {
 
 }

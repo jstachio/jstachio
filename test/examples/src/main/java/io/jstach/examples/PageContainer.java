@@ -3,7 +3,7 @@ package io.jstach.examples;
 import io.jstach.annotation.JStache;
 
 @JStache(path = "page.mustache")
-public class PageContainer implements Mixin {
+class PageContainer implements Mixin {
 
 	private final IdContainer container;
 

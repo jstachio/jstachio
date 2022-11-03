@@ -6,6 +6,11 @@ import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheFlags;
 import io.jstach.annotation.JStacheFlags.Flag;
 
+/**
+ * Iterable example
+ * @author agent
+ *
+ */
 @JStache(template = """
 		{{#items}}
 		{{^flag}}hello{{/flag}}

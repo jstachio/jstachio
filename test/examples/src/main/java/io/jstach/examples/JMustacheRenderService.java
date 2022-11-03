@@ -14,6 +14,12 @@ import io.jstach.RenderFunction;
 import io.jstach.TemplateInfo;
 import io.jstach.spi.JStacheServices;
 
+/**
+ * An example filter that uses Jmustache as fallback
+ *
+ * @author agent
+ *
+ */
 public class JMustacheRenderService implements JStacheServices {
 
 	private static final ThreadLocal<Boolean> enabled = ThreadLocal.withInitial(() -> false);

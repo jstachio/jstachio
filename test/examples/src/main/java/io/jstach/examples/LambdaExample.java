@@ -10,7 +10,7 @@ import io.jstach.annotation.JStacheFlags.Flag;
 
 @JStache(path = "lambda-example.mustache")
 @JStacheFlags(flags = { Flag.DEBUG })
-public record LambdaExample(String name, Map<String, String> props) implements Lambdas {
+record LambdaExample(String name, Map<String, String> props) implements Lambdas {
 
 	@JStacheLambda
 	public @Raw String hello(@Raw String html, String name) {

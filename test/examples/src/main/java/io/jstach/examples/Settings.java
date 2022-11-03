@@ -37,7 +37,7 @@ import io.jstach.escapers.Html;
  * @author Victor Nazarov
  */
 @JStache(path = "settings.mustache", contentType = Html.class)
-public class Settings {
+class Settings {
 
 	final RenderFunction info;
 

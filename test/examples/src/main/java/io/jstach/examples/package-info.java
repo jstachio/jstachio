@@ -1,3 +1,6 @@
+/**
+ * Examples
+ */
 @io.jstach.annotation.JStacheFormatterTypes(types = { UUID.class, io.jstach.examples.IdContainer.class })
 package io.jstach.examples;
 

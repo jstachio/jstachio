@@ -3,7 +3,7 @@ package io.jstach.examples;
 import io.jstach.annotation.JStache;
 
 @JStache(path = "context-example.mustache")
-public record ContextExample(String a, String b, Sec sec, C c) {
+record ContextExample(String a, String b, Sec sec, C c) {
 
 	public record Sec(String b) {
 	}

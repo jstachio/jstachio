@@ -2,7 +2,7 @@ package io.jstach.examples;
 
 import java.util.UUID;
 
-public class IdContainer implements Mixin {
+class IdContainer implements Mixin {
 
 	private final UUID id;
 

@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public abstract class MapStructExample {
+abstract class MapStructExample {
 
 	public abstract Stuff convert(Stuff2 e);
 

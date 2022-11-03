@@ -6,7 +6,7 @@ import io.jstach.RenderFunction;
 import io.jstach.annotation.JStacheLambda;
 import io.jstach.context.ContextNode;
 
-public record Lambda(String name) {
+record Lambda(String name) {
 
 	@JStacheLambda
 	public String prefix(String n) {
