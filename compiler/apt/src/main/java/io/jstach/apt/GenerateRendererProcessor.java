@@ -574,9 +574,11 @@ class ClassWriter {
 
 		String _Appendable = Appendable.class.getName();
 		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
+
 		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
-		String _RenderService = JSTACHE_SERVICES_CLASS;
+
+		String idt = "\n        ";
 
 		println("package " + packageName + ";");
 		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
@@ -590,10 +592,20 @@ class ClassWriter {
 		println("    public " + rendererClassSimpleName + "() {");
 		println("    }");
 		println("");
+		println("    @Override");
 		println("    public void render(" + className + " model, Appendable a) throws java.io.IOException {");
-		println("    " + _Appender + " appender = " + _RenderService + ".findService().appender();");
-		println("        render(model, a, appender, templateEscaper(), templateFormatter());");
+		println("        render(model, a, templateFormatter(), templateEscaper());");
 		println("    }");
+		println("");
+		println("    @Override");
+		println("    public void render(" //
+				+ idt + className + " model, " //
+				+ idt + _Appendable + " a, " //
+				+ idt + _Formatter + " formatter" + "," //
+				+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
+		println("        execute(model, a, formatter, escaper, templateAppender());");
+		println("    }");
+
 		println("");
 		println("    public boolean supportsType(Class<?> type) {");
 		println("        return " + className + ".class.isAssignableFrom(type);");
@@ -636,6 +648,10 @@ class ClassWriter {
 				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 		println("    }");
 		println("");
+		println("    public " + _Appender + " templateAppender() {");
+		println("        return " + APPENDER_CLASS + ".defaultAppender();");
+		println("    }");
+		println("");
 		println("    public static " + rendererClassSimpleName + " of() {");
 		println("        return new " + rendererClassSimpleName + "();");
 		println("    }");
@@ -659,15 +675,15 @@ class ClassWriter {
 		String _Appendable = Appendable.class.getName();
 		String _Formatter = FORMATTER_CLASS;
 
-		String generic = "<A extends " + _Appendable + ">";
+		String _A = "<A extends " + _Appendable + ">";
 
 		String idt = "\n        ";
-		println("    public static " + generic + " void render(" //
-				+ className + " " + dataName + idt + ", " //
-				+ "A" + " " + variables.unescapedWriter() + idt + ", " //
-				+ _Appender + "<A> " + variables.appender() + idt + ", " //
-				+ _Appender + "<? super A> " + variables.writer() + idt + ", " //
-				+ _Formatter + " " + variables.formatter() + idt + ") throws java.io.IOException {");
+		println("    public static " + _A + " void execute(" //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + "A" + " " + variables.unescapedWriter() + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Appender + "<? super A> " + variables.escaper() + "," //
+				+ idt + _Appender + "<A> " + variables.appender() + ") throws java.io.IOException {");
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);

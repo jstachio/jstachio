@@ -78,7 +78,7 @@ public class VariableContext {
 		this.parent = parent;
 	}
 
-	public String writer() {
+	public String escaper() {
 		return escaper;
 	}
 

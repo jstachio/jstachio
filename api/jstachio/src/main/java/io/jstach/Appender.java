@@ -117,108 +117,126 @@ public interface Appender<A extends Appendable> {
 
 	/**
 	 * Default appender simply passes the contents unchanged to the Appendable.
-	 * @author agentgt
-	 *
+	 * @return a passthrough appender
 	 */
-	enum DefaultAppender implements Appender<Appendable> {
-
-		/**
-		 * Singleton instance
-		 */
-		INSTANCE;
-
-		@Override
-		public void append(Appendable a, CharSequence s) throws IOException {
-			a.append(s);
-		}
-
-		@Override
-		public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
-			a.append(csq, start, end);
-		}
-
-		@Override
-		public void append(Appendable a, char c) throws IOException {
-			a.append(c);
-		}
-
+	public static Appender<Appendable> defaultAppender() {
+		return DefaultAppender.INSTANCE;
 	}
 
 	/**
 	 * An appender that will directly call StringBuilder methods for native types.
 	 * <p>
-	 * This is a low level utility class for where performance matters.
-	 *
-	 * @author agentgt
-	 *
+	 * This is a low level utility appenrer for where performance matters.
+	 * @return an appender specifically for {@link StringBuilder}
 	 */
-	enum StringAppender implements Appender<StringBuilder> {
+	public static Appender<StringBuilder> stringAppender() {
+		return StringAppender.INSTANCE;
+	}
 
-		/**
-		 * Singleton instance
-		 */
-		INSTANCE;
+}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void append(StringBuilder a, CharSequence s) throws IOException {
-			a.append(s);
-		}
+/**
+ * Default appender simply passes the contents unchanged to the Appendable.
+ * @author agentgt
+ *
+ */
+enum DefaultAppender implements Appender<Appendable> {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void append(StringBuilder a, CharSequence csq, int start, int end) throws IOException {
-			a.append(csq, start, end);
-		}
+	/**
+	 * Singleton instance
+	 */
+	INSTANCE;
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void append(StringBuilder a, char c) throws IOException {
-			a.append(c);
-		}
+	@Override
+	public void append(Appendable a, CharSequence s) throws IOException {
+		a.append(s);
+	}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void append(StringBuilder a, short s) throws IOException {
-			a.append(s);
-		}
+	@Override
+	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
+		a.append(csq, start, end);
+	}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void append(StringBuilder a, int i) throws IOException {
-			a.append(i);
-		}
+	@Override
+	public void append(Appendable a, char c) throws IOException {
+		a.append(c);
+	}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void append(StringBuilder a, long l) throws IOException {
-			a.append(l);
-		}
+}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void append(StringBuilder a, double d) throws IOException {
-			a.append(d);
-		}
+/**
+ * An appender that will directly call StringBuilder methods for native types.
+ * <p>
+ * This is a low level utility class for where performance matters.
+ *
+ * @author agentgt
+ *
+ */
+enum StringAppender implements Appender<StringBuilder> {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void append(StringBuilder a, boolean b) throws IOException {
-			a.append(b);
-		}
+	/**
+	 * Singleton instance
+	 */
+	INSTANCE;
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void append(StringBuilder a, CharSequence s) throws IOException {
+		a.append(s);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void append(StringBuilder a, CharSequence csq, int start, int end) throws IOException {
+		a.append(csq, start, end);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void append(StringBuilder a, char c) throws IOException {
+		a.append(c);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void append(StringBuilder a, short s) throws IOException {
+		a.append(s);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void append(StringBuilder a, int i) throws IOException {
+		a.append(i);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void append(StringBuilder a, long l) throws IOException {
+		a.append(l);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void append(StringBuilder a, double d) throws IOException {
+		a.append(d);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void append(StringBuilder a, boolean b) throws IOException {
+		a.append(b);
 	}
 
 }

@@ -102,7 +102,7 @@ public class RenderingCodeGenerator {
 		KnownType knownType = javaModel.resolveType(type).orElse(null);
 
 		if (knownType != null && ((knownType instanceof NativeType) || knownType.equals(knownTypes._String))) {
-			return variables.formatter() + ".format(" + variables.writer() //
+			return variables.formatter() + ".format(" + variables.escaper() //
 					+ ", " + variables.unescapedWriter() //
 					+ ", " + "\"" + path + "\"" //
 					+ ", " + text + ");";
@@ -124,7 +124,7 @@ public class RenderingCodeGenerator {
 	}
 
 	private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
-		return variables.formatter() + ".format(" + variables.writer() //
+		return variables.formatter() + ".format(" + variables.escaper() //
 				+ ", " + variables.unescapedWriter() //
 				+ ", " + "\"" + path + "\"" //
 				+ ", " + cname //

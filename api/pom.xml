@@ -11,29 +11,39 @@
       <module>annotation</module>
       <module>jstachio</module>
   </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <show>public</show>
+          <tags>
+            <tag>
+              <name>apiNote</name>
+              <placement>a</placement>
+              <head>API Note</head>
+            </tag>
+          </tags>
+          <failOnWarnings>true</failOnWarnings>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <profiles>
     <profile>
       <id>javadoc</id>
       <build>
         <plugins>
-          <!--
-          <plugin>
-            <groupId>com.ruleoftech</groupId>
-            <artifactId>markdown-page-generator-plugin</artifactId>
-            <configuration>
-              <inputDirectory>${project.basedir}</inputDirectory>
-              <pegdownExtensions>TABLES,FENCED_CODE_BLOCKS,AUTOLINKS</pegdownExtensions>
-            </configuration>
-            <executions>
-              <execution>
-                  <phase>process-resources</phase>
-                  <goals>
-                      <goal>generate</goal>
-                  </goals>
-              </execution>
-            </executions>
-          </plugin>
-        -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
