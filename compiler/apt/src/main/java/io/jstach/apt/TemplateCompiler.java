@@ -36,18 +36,22 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.apt.CodeAppendable.HiddenCodeAppendable;
-import io.jstach.apt.CodeAppendable.StringCodeAppendable;
-import io.jstach.apt.MustacheToken.NewlineChar;
-import io.jstach.apt.MustacheToken.SpecialChar;
-import io.jstach.apt.MustacheToken.TagToken;
-import io.jstach.apt.context.ContextException;
-import io.jstach.apt.context.TemplateCompilerContext;
-import io.jstach.apt.context.TemplateCompilerContext.ContextType;
-import io.jstach.apt.context.TemplateCompilerContext.LambdaCompiler;
+import io.jstach.apt.internal.AnnotatedException;
+import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.TokenProcessor;
+import io.jstach.apt.internal.CodeAppendable.HiddenCodeAppendable;
+import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
+import io.jstach.apt.internal.MustacheToken.NewlineChar;
+import io.jstach.apt.internal.MustacheToken.SpecialChar;
+import io.jstach.apt.internal.MustacheToken.TagToken;
+import io.jstach.apt.internal.context.ContextException;
+import io.jstach.apt.internal.context.TemplateCompilerContext;
+import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
+import io.jstach.apt.internal.context.TemplateCompilerContext.LambdaCompiler;
+import io.jstach.apt.internal.token.MustacheTagKind;
+import io.jstach.apt.internal.token.MustacheTokenizer;
 import io.jstach.apt.prism.Prisms.Flag;
-import io.jstach.apt.token.MustacheTagKind;
-import io.jstach.apt.token.MustacheTokenizer;
 
 /**
  * @author Victor Nazarov

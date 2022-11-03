@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.jstach.apt.CodeAppendable;
+import io.jstach.apt.internal.CodeAppendable;
 
 public class SplitTest {
 

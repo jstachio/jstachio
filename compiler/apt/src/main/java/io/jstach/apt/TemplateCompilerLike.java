@@ -9,7 +9,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.apt.CodeAppendable.StringCodeAppendable;
+import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.prism.Prisms.Flag;
 
 interface TemplateCompilerLike extends AutoCloseable {

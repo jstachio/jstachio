@@ -20,6 +20,9 @@ import java.util.stream.StreamSupport;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic.Kind;
+
+import io.jstach.apt.internal.util.ClassRef;
+
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 

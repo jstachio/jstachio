@@ -2,8 +2,10 @@ package io.jstach.apt;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.apt.MustacheToken.NewlineChar;
-import io.jstach.apt.MustacheToken.SpecialChar;
+import io.jstach.apt.internal.MustacheToken;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.MustacheToken.NewlineChar;
+import io.jstach.apt.internal.MustacheToken.SpecialChar;
 
 class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, ProcessingException> {
 

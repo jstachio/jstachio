@@ -70,13 +70,22 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
-import io.jstach.apt.ProcessingConfig.PathConfig;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
-import io.jstach.apt.context.JavaLanguageModel;
-import io.jstach.apt.context.RenderingCodeGenerator;
-import io.jstach.apt.context.TemplateCompilerContext;
-import io.jstach.apt.context.VariableContext;
-import io.jstach.apt.meta.ElementMessage;
+import io.jstach.apt.internal.AnnotatedException;
+import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.FormatterTypes;
+import io.jstach.apt.internal.NamedTemplate;
+import io.jstach.apt.internal.Position;
+import io.jstach.apt.internal.ProcessingConfig;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.ProcessingConfig.PathConfig;
+import io.jstach.apt.internal.context.JavaLanguageModel;
+import io.jstach.apt.internal.context.RenderingCodeGenerator;
+import io.jstach.apt.internal.context.TemplateCompilerContext;
+import io.jstach.apt.internal.context.VariableContext;
+import io.jstach.apt.internal.meta.ElementMessage;
+import io.jstach.apt.internal.util.ClassRef;
+import io.jstach.apt.internal.util.Throwables;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
@@ -90,6 +99,12 @@ import io.jstach.apt.prism.Prisms;
 
 import static io.jstach.apt.prism.Prisms.*;
 
+/**
+ * Renderer processor
+ *
+ * @author agentgt
+ *
+ */
 @MetaInfServices(value = Processor.class)
 @SupportedAnnotationTypes("*")
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
@@ -580,14 +595,33 @@ class ClassWriter {
 		String idt = "\n        ";
 
 		println("package " + packageName + ";");
+		println("");
+		println("/**");
+		println(" * Generated Renderer.");
+		println(" */");
 		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
 
 		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
 
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
 		println("    public static final String TEMPLATE_PATH = \"" + templatePath + "\";");
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
+		println("");
 		println("    public static final String TEMPLATE_STRING = " + templateStringJava + ";");
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
 
+		println("    /**");
+		println("     * Generated Renderer.");
+		println("     */");
 		println("    public " + rendererClassSimpleName + "() {");
 		println("    }");
 		println("");
@@ -606,6 +640,7 @@ class ClassWriter {
 		println("    }");
 
 		println("");
+		println("    @Override");
 		println("    public boolean supportsType(Class<?> type) {");
 		println("        return " + className + ".class.isAssignableFrom(type);");
 		println("    }");
@@ -647,14 +682,27 @@ class ClassWriter {
 				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
 		println("    }");
 		println("");
+		println("    /**");
+		println("     * Appender.");
+		println("     * @return appender for writing unescaped variables.");
+		println("     */");
 		println("    public " + _Appender + " templateAppender() {");
 		println("        return " + APPENDER_CLASS + ".defaultAppender();");
 		println("    }");
 		println("");
+		println("    /**");
+		println("     * Convience static factory.");
+		println("     * @return renderer same as calling no-arg constructor");
+		println("     */");
 		println("    public static " + rendererClassSimpleName + " of() {");
 		println("        return new " + rendererClassSimpleName + "();");
 		println("    }");
 		println("");
+		println("    /**");
+		println("     * Convience static factory to bind a model.");
+		println("     * @param data model");
+		println("     * @return render function");
+		println("     */");
 		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
 		println("        return a -> of().render(data, a);");
 		println("    }");
@@ -677,6 +725,17 @@ class ClassWriter {
 		String _A = "<A extends " + _Appendable + ">";
 
 		String idt = "\n        ";
+
+		println("    /**");
+		println("     * Renders the passed in model.");
+		println("     * @param <A> appendable type.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
+		println("     */");
 		println("    public static " + _A + " void execute(" //
 				+ idt + className + " " + dataName + ", " //
 				+ idt + "A" + " " + variables.unescapedWriter() + "," //

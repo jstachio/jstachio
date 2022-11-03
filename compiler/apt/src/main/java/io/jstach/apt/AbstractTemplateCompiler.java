@@ -7,12 +7,17 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.apt.MustacheToken.NewlineChar;
-import io.jstach.apt.MustacheToken.SpecialChar;
-import io.jstach.apt.MustacheToken.TextToken;
+import io.jstach.apt.internal.MustacheToken;
+import io.jstach.apt.internal.Position;
+import io.jstach.apt.internal.PositionedToken;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.TokenProcessor;
+import io.jstach.apt.internal.MustacheToken.NewlineChar;
+import io.jstach.apt.internal.MustacheToken.SpecialChar;
+import io.jstach.apt.internal.MustacheToken.TextToken;
 import io.jstach.apt.prism.Prisms.Flag;
 
-public abstract class AbstractTemplateCompiler
+abstract class AbstractTemplateCompiler
 		implements TemplateCompilerLike, TokenProcessor<PositionedToken<MustacheToken>> {
 
 	private Deque<PositionedToken<MustacheToken>> previousTokens = new ArrayDeque<>(5);

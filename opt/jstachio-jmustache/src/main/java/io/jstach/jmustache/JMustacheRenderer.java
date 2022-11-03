@@ -20,6 +20,12 @@ import io.jstach.TemplateInfo;
 import io.jstach.spi.JStacheConfig;
 import io.jstach.spi.JStacheServices;
 
+/**
+ * Fallback to JMustache rendering
+ *
+ * @author agentgt
+ *
+ */
 @MetaInfServices(JStacheServices.class)
 public class JMustacheRenderer implements JStacheServices {
 
@@ -29,17 +35,32 @@ public class JMustacheRenderer implements JStacheServices {
 
 	private volatile @Nullable String suffix = null;
 
+	/**
+	 * Enables JMustache
+	 * @param flag true enables
+	 * @return return this for builder like config
+	 */
 	public JMustacheRenderer use(boolean flag) {
 		use.set(flag);
 		log(flag);
 		return this;
 	}
 
+	/**
+	 * A prefix to add to the output to know that JMustache is being used.
+	 * @param prefix string to prefix output
+	 * @return return this for builder like config
+	 */
 	public JMustacheRenderer prefix(@Nullable String prefix) {
 		this.prefix = prefix;
 		return this;
 	}
 
+	/**
+	 * A suffix to append to the output to know that JMustache is being used.
+	 * @param suffix string to suffix output
+	 * @return return this for builder like config
+	 */
 	public JMustacheRenderer suffix(@Nullable String suffix) {
 		this.suffix = suffix;
 		return this;
@@ -58,6 +79,9 @@ public class JMustacheRenderer implements JStacheServices {
 		}
 	}
 
+	/**
+	 * No-arg constructor for ServiceLoader
+	 */
 	public JMustacheRenderer() {
 		use = new AtomicBoolean();
 	}

@@ -1,6 +1,13 @@
 import io.jstach.jmustache.JMustacheRenderer;
 import io.jstach.spi.JStacheServices;
 
+/**
+ * JMustache extension to JStachio to enable seamless fallback and
+ * or dynamic development of templates.
+ * @author agentgt
+ *
+ * @provides JStacheServices
+ */
 module io.jstach.jmustache {
 	
 	exports io.jstach.jmustache;

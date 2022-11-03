@@ -21,9 +21,8 @@ import com.samskivert.mustache.Template.Fragment;
 
 import io.jstach.annotation.JStacheLambda;
 
-public class JStachioCollector extends BasicCollector {
+class JStachioCollector extends BasicCollector {
 
-	@SuppressWarnings("exports")
 	@Override
 	public Mustache.@Nullable VariableFetcher createFetcher(Object ctx, String name) {
 		Mustache.VariableFetcher fetcher = super.createFetcher(ctx, name);

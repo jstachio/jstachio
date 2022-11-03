@@ -38,15 +38,19 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import io.jstach.apt.NamedTemplate.FileTemplate;
-import io.jstach.apt.NamedTemplate.InlineTemplate;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
-import io.jstach.apt.context.RenderingCodeGenerator;
-import io.jstach.apt.context.TemplateCompilerContext;
-import io.jstach.apt.context.TemplateStack;
-import io.jstach.apt.context.TemplateStack.RootTemplateStack;
-import io.jstach.apt.context.VariableContext;
+import io.jstach.apt.internal.AnnotatedException;
+import io.jstach.apt.internal.NamedTemplate;
+import io.jstach.apt.internal.ProcessingConfig;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.NamedTemplate.FileTemplate;
+import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
+import io.jstach.apt.internal.context.RenderingCodeGenerator;
+import io.jstach.apt.internal.context.TemplateCompilerContext;
+import io.jstach.apt.internal.context.TemplateStack;
+import io.jstach.apt.internal.context.VariableContext;
+import io.jstach.apt.internal.context.TemplateStack.RootTemplateStack;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**

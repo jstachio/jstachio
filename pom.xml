@@ -350,8 +350,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <excludePackageNames>*.apt.*,io.jstach.apt.*,io.jstach.spec.*,io.jstach.examples.*</excludePackageNames>
-              <aggregate>true</aggregate>
               <show>public</show>
               <tags>
                 <tag>
@@ -370,7 +368,7 @@
                 </goals>
                 <configuration>
                   <excludePackageNames>
-                  io.jstach.apt:io.jstach.apt.*:io.jstach.spec.mustache.spec.*
+                  io.jstach.apt.internal:io.jstach.apt.internal.*
                   </excludePackageNames>
                 </configuration>
               </execution>

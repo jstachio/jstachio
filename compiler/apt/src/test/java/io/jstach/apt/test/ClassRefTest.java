@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import io.jstach.apt.ClassRef;
+import io.jstach.apt.internal.util.ClassRef;
 
 public class ClassRefTest {
 

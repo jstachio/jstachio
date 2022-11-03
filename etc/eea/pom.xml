@@ -7,7 +7,7 @@
   </parent>
   <artifactId>jstachio-eea</artifactId>
   <name>jstachio-eea</name>
-   <build>
+  <build>
     <resources>
       <resource>
         <filtering>false</filtering>
@@ -25,5 +25,21 @@
         </excludes>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

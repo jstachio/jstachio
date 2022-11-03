@@ -32,6 +32,8 @@ package io.jstach.apt;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import io.jstach.apt.internal.CodeAppendable;
+
 /**
  * @author Victor Nazarov
  */

@@ -40,6 +40,8 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import io.jstach.apt.internal.ProcessingConfig;
+
 /**
  * @author Victor Nazarov
  * @author agentgt
