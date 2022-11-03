@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 @SuppressWarnings("null")
 class SwitchablePrintWriter extends PrintWriter implements CodeAppendable {

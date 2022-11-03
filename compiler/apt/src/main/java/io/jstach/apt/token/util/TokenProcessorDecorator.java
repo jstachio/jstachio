@@ -32,7 +32,7 @@ package io.jstach.apt.token.util;
 import io.jstach.apt.TokenProcessor;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 interface TokenProcessorDecorator<T, U> {
 

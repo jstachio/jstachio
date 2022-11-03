@@ -41,7 +41,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  * @author agentgt
  */
 class TextFileObject {

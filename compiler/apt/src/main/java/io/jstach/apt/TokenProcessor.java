@@ -32,7 +32,7 @@ package io.jstach.apt;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  * @param <T>
  */
 public interface TokenProcessor<T> {

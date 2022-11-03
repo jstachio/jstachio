@@ -37,7 +37,7 @@ import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class PositionAnnotator implements TokenProcessor<@Nullable Character> {
 

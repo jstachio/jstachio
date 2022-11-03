@@ -37,7 +37,7 @@ import io.jstach.escapers.Html;
 import io.jstach.escapers.PlainText;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 @JStaches({
 		@JStache(path = "user1.mustache", contentType = PlainText.class, adapterName = "RenderableTextUser1Adapter"),

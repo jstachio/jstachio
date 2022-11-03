@@ -34,7 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.context.ContextException;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class ProcessingException extends Exception {
 

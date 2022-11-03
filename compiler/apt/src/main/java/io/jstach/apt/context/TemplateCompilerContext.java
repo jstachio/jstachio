@@ -49,7 +49,7 @@ import io.jstach.apt.prism.Prisms.Flag;
 
 /**
  * @see RenderingCodeGenerator#createTemplateCompilerContext
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class TemplateCompilerContext {
 

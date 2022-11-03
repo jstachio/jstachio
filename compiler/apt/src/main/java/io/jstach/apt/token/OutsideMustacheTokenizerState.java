@@ -37,7 +37,7 @@ import io.jstach.apt.MustacheToken.SpecialChar;
 import io.jstach.apt.ProcessingException;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class OutsideMustacheTokenizerState implements MustacheTokenizerState {
 

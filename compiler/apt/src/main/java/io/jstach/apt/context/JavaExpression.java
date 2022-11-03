@@ -42,7 +42,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class JavaExpression {
 

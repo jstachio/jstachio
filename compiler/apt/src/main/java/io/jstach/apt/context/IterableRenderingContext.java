@@ -42,7 +42,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.util.Interpolator;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class IterableRenderingContext implements RenderingContext {
 

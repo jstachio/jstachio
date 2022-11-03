@@ -40,7 +40,7 @@ import io.jstach.apt.token.util.BracesTokenizer;
 import io.jstach.apt.token.util.PositionHodingTokenProcessor;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesToken>> {
 

@@ -58,7 +58,7 @@ import io.jstach.apt.prism.JStacheLambdaPrism;
 /**
  * This class allows to create TemplateCompilerContext instance
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class RenderingCodeGenerator {
 

@@ -50,7 +50,7 @@ import io.jstach.apt.context.VariableContext;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class CodeWriter {
 

@@ -34,7 +34,7 @@ import java.util.List;
 import io.jstach.annotation.JStache;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 @JStache(
 		// points to src/main/resources/user.mustache file

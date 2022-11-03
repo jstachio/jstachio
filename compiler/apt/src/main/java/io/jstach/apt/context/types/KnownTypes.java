@@ -45,7 +45,7 @@ import javax.lang.model.util.Types;
 import io.jstach.apt.prism.Prisms;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class KnownTypes implements TypesMixin {
 

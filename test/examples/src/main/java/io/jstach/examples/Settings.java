@@ -34,7 +34,7 @@ import io.jstach.annotation.JStache;
 import io.jstach.escapers.Html;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 @JStache(path = "settings.mustache", contentType = Html.class)
 public class Settings {

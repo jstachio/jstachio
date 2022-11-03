@@ -34,7 +34,7 @@ import io.jstach.apt.ProcessingException;
 import io.jstach.apt.TokenProcessor;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> {
 

@@ -30,7 +30,7 @@
 package io.jstach.apt;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 @SuppressWarnings("serial")
 class DeclarationException extends Exception {

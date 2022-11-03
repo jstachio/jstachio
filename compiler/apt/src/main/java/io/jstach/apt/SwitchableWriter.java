@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class SwitchableWriter extends Writer {
 

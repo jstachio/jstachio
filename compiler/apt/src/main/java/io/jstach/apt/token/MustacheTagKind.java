@@ -31,7 +31,7 @@ package io.jstach.apt.token;
 
 /**
  *
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public enum MustacheTagKind {
 

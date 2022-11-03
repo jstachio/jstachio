@@ -50,7 +50,7 @@ import io.jstach.apt.token.MustacheTagKind;
 import io.jstach.apt.token.MustacheTokenizer;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class TemplateCompiler extends AbstractTemplateCompiler {
 

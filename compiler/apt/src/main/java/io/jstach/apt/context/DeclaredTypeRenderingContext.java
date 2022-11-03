@@ -47,7 +47,7 @@ import javax.lang.model.util.ElementFilter;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressionContext {
 

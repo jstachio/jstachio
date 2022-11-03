@@ -35,7 +35,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class VariableContext {
 

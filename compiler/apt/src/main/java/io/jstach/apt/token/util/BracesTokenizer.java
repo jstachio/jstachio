@@ -37,7 +37,7 @@ import io.jstach.apt.TokenProcessor;
 import io.jstach.apt.token.BracesToken;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class BracesTokenizer implements TokenProcessor<@Nullable Character> {
 

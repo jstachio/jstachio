@@ -52,7 +52,7 @@ import io.jstach.apt.context.types.ObjectType;
 import io.jstach.apt.context.types.TypesMixin;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class JavaLanguageModel implements TypesMixin {
 

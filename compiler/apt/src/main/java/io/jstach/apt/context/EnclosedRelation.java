@@ -30,7 +30,7 @@
 package io.jstach.apt.context;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class EnclosedRelation {
 

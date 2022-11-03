@@ -35,7 +35,7 @@ import java.io.Reader;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 class NamedReader extends Reader {
 

@@ -35,7 +35,7 @@ import java.io.UncheckedIOException;
 import io.jstach.apt.token.MustacheTagKind;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public sealed interface MustacheToken {
 

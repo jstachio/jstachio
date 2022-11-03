@@ -32,7 +32,7 @@ package io.jstach.apt.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov <asviraspossible@gmail.com>
+ * @author Victor Nazarov
  */
 public class ContextException extends Exception {
 
