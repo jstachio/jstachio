@@ -7,6 +7,9 @@
   </parent>
   <artifactId>jstachio-spec-parent</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+  </properties>
   <modules>
       <module>spec-generator</module>
       <module>spec-mustache</module>
