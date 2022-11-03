@@ -1,4 +1,4 @@
-package io.jstach.examples2;
+package io.jstach.examples.pack;
 
 public class SomeUnknownType {
 
