@@ -17,6 +17,7 @@ public enum JStachio {
 
 	/**
 	 * Finds a renderer for a model class.
+	 * @apiNote The returned raw renderer does not have any filtering applied.
 	 * @param <T> the type of model.
 	 * @param modelType the class of the model (annotated with {@link JStache})
 	 * @return renderer for the specifi type.
@@ -45,7 +46,7 @@ public enum JStachio {
 	 * @return the filtered rendering function
 	 */
 	public static <T> RenderFunction filter(T context, Renderer<T> renderer) {
-		return JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+		return JStacheServices.find().filter(renderer, context, renderer.apply(context));
 	}
 
 	/**
@@ -55,13 +56,13 @@ public enum JStachio {
 	 * @return the filtered rendering function
 	 */
 	@SuppressWarnings("unchecked")
-	public static RenderFunction filter(Object context, TemplateInfo template) {
+	private static RenderFunction filter(Object context, TemplateInfo template) {
 		RenderFunction rf;
 		if (template instanceof @SuppressWarnings("rawtypes") Renderer renderer) {
-			rf = JStacheServices.findService().filter(renderer, context, renderer.apply(context));
+			rf = JStacheServices.find().filter(renderer, context, renderer.apply(context));
 		}
 		else {
-			rf = JStacheServices.findService().filter(template, context, RenderFunction.BrokenRenderFunction.INSTANCE);
+			rf = JStacheServices.find().filter(template, context, RenderFunction.BrokenRenderFunction.INSTANCE);
 		}
 		return rf;
 	}
@@ -77,7 +78,7 @@ public enum JStachio {
 	private static TemplateInfo templateInfo(Class<?> modelType) {
 		TemplateInfo template;
 		try {
-			template = JStacheServices.findService().templateInfo(modelType);
+			template = JStacheServices.templateInfo(modelType);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

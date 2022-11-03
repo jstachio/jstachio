@@ -32,6 +32,10 @@ public class PrismsTest {
 		JStacheFlags.Flag[] flags() {
 			return JStacheFlags.Flag.values();
 		}
+
+		String rendererSuffix() {
+			return Renderer.IMPLEMENTATION_SUFFIX;
+		}
 	}
 
 	record ClassModel(Class<?> klass) {
@@ -63,6 +67,8 @@ public class PrismsTest {
 				 *
 				 */
 				public interface Prisms {
+
+					public static final String IMPLEMENTATION_SUFFIX = "{{rendererSuffix}}";
 
 					@NonNullByDefault
 					public enum Flag {

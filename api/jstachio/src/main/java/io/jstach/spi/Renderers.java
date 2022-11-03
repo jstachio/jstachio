@@ -11,11 +11,6 @@ import io.jstach.annotation.JStache;
 
 class Renderers {
 
-	/*
-	 * TODO move suffix to constant in annotation jar and prisms
-	 */
-	private static final String IMPLEMENTATION_SUFFIX = "Renderer";
-
 	private Renderers() {
 	}
 
@@ -68,14 +63,13 @@ class Renderers {
 			cname = a.adapterName();
 		}
 		else {
-			cname = c.getSimpleName() + IMPLEMENTATION_SUFFIX;
+			cname = c.getSimpleName() + Renderer.IMPLEMENTATION_SUFFIX;
 		}
 		String packageName = c.getPackageName();
 		String fqn = packageName + (packageName.isEmpty() ? "" : ".") + cname;
 		return fqn;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static <T> Renderer<?> getRendererFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
 		ServiceLoader<RendererProvider> loader = ServiceLoader.load(RendererProvider.class, classLoader);
 		for (RendererProvider rp : loader) {

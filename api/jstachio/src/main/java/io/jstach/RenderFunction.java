@@ -5,8 +5,8 @@ import java.io.UncheckedIOException;
 import java.util.function.Consumer;
 
 /**
- * A functional interface that essentially has the model and template applied and now just
- * needs an {@link Appendable}.
+ * A functional interface that has the model and template applied and now just needs an
+ * {@link Appendable}.
  *
  * @author agentgt
  *

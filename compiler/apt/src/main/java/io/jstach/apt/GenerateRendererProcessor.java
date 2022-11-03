@@ -451,13 +451,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		String directiveAdapterName = null;
 		directiveAdapterName = gp.adapterName();
 		String adapterClassSimpleName;
-		if (!directiveAdapterName.equals(":auto"))
+		if (!directiveAdapterName.equals(":auto")) {
 			adapterClassSimpleName = directiveAdapterName;
+		}
 		else {
 			ClassRef ref = ClassRef.of(element);
-			adapterClassSimpleName = ref.getSimpleName() + "Renderer"; // ref.getBinaryNameMinusPackage().replace("$",
-																		// "_") +
-																		// "Renderer";
+			adapterClassSimpleName = ref.getSimpleName() + IMPLEMENTATION_SUFFIX;
 		}
 		return adapterClassSimpleName;
 	}

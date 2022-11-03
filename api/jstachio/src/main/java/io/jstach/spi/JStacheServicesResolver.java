@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
@@ -68,8 +66,7 @@ enum JStacheServicesResolver implements JStacheServices {
 		return Holder.INSTANCE.getConfig();
 	}
 
-	@Override
-	public @Nullable TemplateInfo templateInfo(Class<?> contextType) throws Exception {
+	static TemplateInfo _templateInfo(Class<?> contextType) throws Exception {
 		Exception error;
 		try {
 			Renderer<?> r = _renderer(contextType);
@@ -84,13 +81,6 @@ enum JStacheServicesResolver implements JStacheServices {
 			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING, "Could not find renderer for: " + contextType, error);
-			}
-			for (var s : Holder.INSTANCE.services) {
-				TemplateInfo template = s.templateInfo(contextType);
-				if (template == null) {
-					continue;
-				}
-				return template;
 			}
 			return TemplateInfos.templateOf(contextType);
 

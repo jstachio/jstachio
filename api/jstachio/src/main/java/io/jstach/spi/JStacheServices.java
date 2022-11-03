@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.Appender;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
@@ -37,18 +36,6 @@ public interface JStacheServices {
 	}
 
 	/**
-	 * Resolve template information if possible.
-	 * <p>
-	 * Implementations are only called if the compiled renderers is missing.
-	 * @param contextType models class.
-	 * @return resolved template info or <code>null</code> if not possible
-	 * @throws Exception if any problem happens creating template information
-	 */
-	default @Nullable TemplateInfo templateInfo(Class<?> contextType) throws Exception {
-		return null;
-	}
-
-	/**
 	 * Provide a config or not. The final config is a composite of all the found configs.
 	 * @apiNote This method is called before {@link #init(JStacheConfig)}
 	 * @return config if this service provides one or <code>null</code>
@@ -66,29 +53,10 @@ public interface JStacheServices {
 	}
 
 	/**
-	 * The root appender where all escaped and formatted data are passed through.
-	 * @return the default do nothing appender
-	 */
-	default Appender<Appendable> appender() {
-		return Appender.DefaultAppender.INSTANCE;
-	}
-
-	/**
-	 * Finds a renderer for a model class.
-	 * @param <T> the type of model.
-	 * @param modelType the class of the model (annotated with {@link JStache})
-	 * @return renderer for the specifi type.
-	 * @throws RuntimeException if the renderer is not found for the type.
-	 */
-	public static <T> Renderer<T> renderer(Class<T> modelType) {
-		return JStacheServicesResolver._renderer(modelType);
-	}
-
-	/**
 	 * Find the root service which is an aggregate of all found implementations.
 	 * @return the root service never <code>null</code>.
 	 */
-	public static JStacheServices findService() {
+	public static JStacheServices find() {
 		return JStacheServicesResolver.INSTANCE;
 	}
 
@@ -108,6 +76,29 @@ public interface JStacheServices {
 	 */
 	public static <T extends JStacheServices> Optional<T> find(Class<T> c) {
 		return findAll().filter(s -> c.isAssignableFrom(s.getClass())).map(c::cast).findFirst();
+	}
+
+	/**
+	 * Resolve template information if possible.
+	 * <p>
+	 * Implementations are only called if the compiled renderers is missing.
+	 * @param contextType models class.
+	 * @return resolved template info
+	 * @throws Exception if any problem happens creating template information
+	 */
+	public static TemplateInfo templateInfo(Class<?> contextType) throws Exception {
+		return JStacheServicesResolver._templateInfo(contextType);
+	}
+
+	/**
+	 * Finds a renderer for a model class.
+	 * @param <T> the type of model.
+	 * @param modelType the class of the model (annotated with {@link JStache})
+	 * @return renderer for the specific type.
+	 * @throws RuntimeException if the renderer is not found for the type.
+	 */
+	public static <T> Renderer<T> renderer(Class<T> modelType) {
+		return JStacheServicesResolver._renderer(modelType);
 	}
 
 }

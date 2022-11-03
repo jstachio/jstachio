@@ -15,6 +15,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 public interface Prisms {
 
+	public static final String IMPLEMENTATION_SUFFIX = "Renderer";
+
 	@NonNullByDefault
 	public enum Flag {
 
