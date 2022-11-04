@@ -1,39 +1,66 @@
 package io.jstach.jmustache;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
+import io.jstach.JStachio;
 import io.jstach.RenderFunction;
 import io.jstach.TemplateInfo;
 import io.jstach.spi.JStacheConfig;
 import io.jstach.spi.JStacheServices;
 
 /**
- * Fallback to JMustache rendering
+ * Use JMustache instead of JStachio for rendering. The idea of this extension is to allow
+ * you to edit Mustache templates in real time without waiting for the compile reload
+ * cycle.
+ * <p>
+ * If this extension is enabled which it is by default if the ServiceLoader finds it
+ * JMustache will be used when a runtime filtered rendering call is made (see
+ * {@link JStachio}).
+ * <p>
+ * <strong>Strongly recommended you disable this in production via
+ * {@link #JSTACHIO_JMUSTACHE_ENABLE} or {@link #use}</strong>
  *
  * @author agentgt
- *
+ * @see JStachio
  */
 @MetaInfServices(JStacheServices.class)
 public class JMustacheRenderer implements JStacheServices {
+
+	/**
+	 * Property key of where jmustache will try to load template files. Default is
+	 * <code>src/main/resources</code>.
+	 */
+	public static final String JSTACHIO_JMUSTACHE_SOURCE_PATH = "jstachio.jmustache.source";
+
+	/**
+	 * Property key to enable/disable jmustache. Default is <code>true</code>.
+	 */
+	public static final String JSTACHIO_JMUSTACHE_ENABLE = "jstachio.jmustache";
 
 	private final AtomicBoolean use;
 
 	private volatile @Nullable String prefix = null;
 
 	private volatile @Nullable String suffix = null;
+
+	private String sourcePath = "src/main/resources";
+
+	private Logger logger = JStacheConfig.noopLogger();
 
 	/**
 	 * Enables JMustache
@@ -66,14 +93,23 @@ public class JMustacheRenderer implements JStacheServices {
 		return this;
 	}
 
+	/**
+	 * Sets the relative to the project sourcePath for runtime lookup of templates. By
+	 * default is <code>src/main/resources</code>.
+	 * @param sourcePath by default is <code>src/main/resources</code>
+	 * @return sourcePath should not be null
+	 */
+	public JMustacheRenderer sourcePath(String sourcePath) {
+		this.sourcePath = sourcePath;
+		return this;
+	}
+
 	protected void log(boolean flag) {
-		@NonNull
-		Logger logger = System.getLogger(getClass().getCanonicalName());
-		logger.log(Level.INFO, "JMustache is now: " + (flag ? "enabled" : "disabled"));
+		logger.log(Level.INFO,
+				"JMustache is now: " + (flag ? "enabled" : "disabled") + " using sourcePath: " + sourcePath);
 	}
 
 	protected void log(TemplateInfo template) {
-		Logger logger = System.getLogger(getClass().getCanonicalName());
 		if (logger.isLoggable(Level.DEBUG)) {
 			logger.log(Level.DEBUG, "Using JMustache. template: " + template.description());
 		}
@@ -88,7 +124,10 @@ public class JMustacheRenderer implements JStacheServices {
 
 	@Override
 	public void init(JStacheConfig config) {
-		use(config.getBoolean("jstachio.jmustache"));
+		logger = config.getLogger(getClass().getCanonicalName());
+		sourcePath(config.requireProperty(JSTACHIO_JMUSTACHE_SOURCE_PATH, sourcePath));
+		use(config.getBoolean(JSTACHIO_JMUSTACHE_ENABLE, true));
+
 	}
 
 	protected Mustache.Compiler createCompiler(TemplateInfo template) {
@@ -106,7 +145,6 @@ public class JMustacheRenderer implements JStacheServices {
 			return previous;
 		}
 		return (a) -> {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			switch (template.templateSource()) {
 				case STRING -> {
 					Template t = createCompiler(template).compile(template.templateString());
@@ -117,7 +155,7 @@ public class JMustacheRenderer implements JStacheServices {
 					a.append(results);
 				}
 				case RESOURCE -> {
-					try (InputStream is = loader.getResourceAsStream(template.templatePath());
+					try (InputStream is = open(template.templatePath());
 							BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 						Template t = createCompiler(template).compile(br);
 						String results = t.execute(context);
@@ -126,6 +164,28 @@ public class JMustacheRenderer implements JStacheServices {
 				}
 			}
 		};
+	}
+
+	private InputStream open(String templatePath) throws IOException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		String prefix;
+		var path = Path.of(sourcePath, templatePath);
+		InputStream is;
+		if (path.toFile().exists()) {
+			is = Files.newInputStream(path);
+			prefix = "file ";
+		}
+		else {
+			is = loader.getResourceAsStream(templatePath);
+			if (is == null) {
+				throw new IOException("template not found. template: " + templatePath);
+			}
+			prefix = "classpath ";
+		}
+		if (logger.isLoggable(Level.DEBUG)) {
+			logger.log(Level.DEBUG, "Using JMustache. template:" + prefix + templatePath);
+		}
+		return is;
 	}
 
 }

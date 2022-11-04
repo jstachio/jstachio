@@ -1,3 +1,4 @@
+
 import io.jstach.jmustache.JMustacheRenderer;
 import io.jstach.spi.JStacheServices;
 
@@ -14,6 +15,8 @@ module io.jstach.jmustache {
 	
 	opens io.jstach.jmustache to io.jstach, com.samskivert.jmustache;
 	
+	requires static java.compiler;
+	
 	requires transitive io.jstach;
 	requires transitive com.samskivert.jmustache;
 
@@ -21,4 +24,6 @@ module io.jstach.jmustache {
 	requires static org.eclipse.jdt.annotation;
 
 	provides JStacheServices with JMustacheRenderer;
+	
+	uses javax.annotation.processing.Processor;
 }

@@ -8,10 +8,16 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Config Service.
+ * Runtime Config Service.
  * <p>
- * The default config service uses System properties.
+ * The default config service uses System properties but can be extended through
+ * {@link JStacheServices#provideConfig()}.
+ * <p>
+ * While a majority of jstachio config is static and done at compile time some config like
+ * logging and disabling extensions is needed at runtime. Config and DI agnostic
+ * extensions should use this facility for simple key valuy based config.
  *
+ * @see JStacheServices
  * @author agentgt
  */
 public interface JStacheConfig {
@@ -49,24 +55,68 @@ public interface JStacheConfig {
 	}
 
 	/**
-	 * Config key
+	 * A NonNull friendly analog of {@link System#getProperty(String, String)} that will
+	 * never return null unlike System.getProperty which PolyNull.
+	 * @param key checked if null and will error
+	 * @param fallback used if the retrieved property is null
+	 * @return property or fallback if property is not found (<code>null</code>).
+	 * @throws NullPointerException if the fallback is null or if the key is null.
+	 */
+	default String requireProperty(String key, String fallback) {
+		if (key == null) {
+			throw new NullPointerException("key is null");
+		}
+		String v = getProperty(key);
+		if (v == null) {
+			v = fallback;
+		}
+		if (v == null) {
+			throw new NullPointerException("fallback is null. key: " + key);
+		}
+		return v;
+	}
+
+	/**
+	 * Config key to use reflection based lookup of templates for other fallback
+	 * mechanisms
 	 */
 	public static String REFLECTION_TEMPLATE_LOOKUP = "jstachio.reflection.template";
 
 	/**
-	 * Config key
+	 * Config key to see if logging should be enabled/disabled. By default it enabled.
 	 */
 	public static String USE_SYSTEM_LOGGER = "jstachio.logging";
 
 	/**
-	 * Gets a system logger if the property {@link #USE_SYSTEM_LOGGER} is set.
+	 * Gets a system logger if the property {@link #USE_SYSTEM_LOGGER} is set. If the
+	 * property is set to a false value a NOOP Logger <em>that will not trigger
+	 * initialization of the System {@link Logger} facilities</em> will be returned. The
+	 * NOOP logger is always disabled at every level and will not produce any output.
 	 * @param name the name of the logger usually the class.
 	 * @return the System logger.
+	 * @see #noopLogger()
 	 */
 	default Logger getLogger(String name) {
 		if (getBoolean(USE_SYSTEM_LOGGER, true)) {
 			return System.getLogger(name);
 		}
+		return noopLogger();
+	}
+
+	/**
+	 * NOOP Logger <em>that will not trigger initialization of the System {@link Logger}
+	 * facilities</em>. The NOOP logger is always disabled at every level and will not
+	 * produce any output.
+	 * <p>
+	 * Extensions might find this useful to set a nonnull Logger field like: <pre>
+	 * private Logger logger = JStacheConfig.noopLogger();
+	 * public void init(JStacheConfig config) {
+	 *     logger = config.getLogger(getClass().getName());
+	 * }
+	 * </pre>
+	 * @return singleton instance of noop logger
+	 */
+	public static Logger noopLogger() {
 		return NOOPLogger.INSTANCE;
 	}
 
