@@ -33,7 +33,7 @@ import io.jstach.spi.JStacheServices;
  * {@link JStachio}).
  * <p>
  * <strong>Strongly recommended you disable this in production via
- * {@link #JSTACHIO_JMUSTACHE_ENABLE} or {@link #use}</strong>
+ * {@link #JSTACHIO_JMUSTACHE_DISABLE} or {@link #use}</strong>
  *
  * @author agentgt
  * @see JStachio
@@ -48,9 +48,9 @@ public class JMustacheRenderer implements JStacheServices {
 	public static final String JSTACHIO_JMUSTACHE_SOURCE_PATH = "jstachio.jmustache.source";
 
 	/**
-	 * Property key to enable/disable jmustache. Default is <code>true</code>.
+	 * Property key to disable jmustache. Default is <code>false</code>.
 	 */
-	public static final String JSTACHIO_JMUSTACHE_ENABLE = "jstachio.jmustache";
+	public static final String JSTACHIO_JMUSTACHE_DISABLE = "jstachio.jmustache.disable";
 
 	private final AtomicBoolean use;
 
@@ -61,6 +61,8 @@ public class JMustacheRenderer implements JStacheServices {
 	private String sourcePath = "src/main/resources";
 
 	private Logger logger = JStacheConfig.noopLogger();
+
+	private long initTime = System.currentTimeMillis();
 
 	/**
 	 * Enables JMustache
@@ -126,7 +128,7 @@ public class JMustacheRenderer implements JStacheServices {
 	public void init(JStacheConfig config) {
 		logger = config.getLogger(getClass().getCanonicalName());
 		sourcePath(config.requireProperty(JSTACHIO_JMUSTACHE_SOURCE_PATH, sourcePath));
-		use(config.getBoolean(JSTACHIO_JMUSTACHE_ENABLE, true));
+		use(!config.getBoolean(JSTACHIO_JMUSTACHE_DISABLE));
 
 	}
 
@@ -155,7 +157,21 @@ public class JMustacheRenderer implements JStacheServices {
 					a.append(results);
 				}
 				case RESOURCE -> {
-					try (InputStream is = open(template.templatePath());
+					String templatePath = template.templatePath();
+					var path = Path.of(sourcePath, templatePath);
+					InputStream stream;
+					boolean broken = template.lastLoaded() > 0 || previous.isBroken();
+					if ((broken && path.toFile().isFile()) || path.toFile().lastModified() > initTime) {
+						stream = openFile(path);
+					}
+					else if (broken) {
+						stream = openResource(templatePath);
+					}
+					else {
+						previous.append(a);
+						return;
+					}
+					try (InputStream is = stream;
 							BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 						Template t = createCompiler(template).compile(br);
 						String results = t.execute(context);
@@ -166,24 +182,22 @@ public class JMustacheRenderer implements JStacheServices {
 		};
 	}
 
-	private InputStream open(String templatePath) throws IOException {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		String prefix;
-		var path = Path.of(sourcePath, templatePath);
-		InputStream is;
-		if (path.toFile().exists()) {
-			is = Files.newInputStream(path);
-			prefix = "file ";
+	protected InputStream openFile(Path path) throws IOException {
+		InputStream is = Files.newInputStream(path);
+		if (logger.isLoggable(Level.DEBUG)) {
+			logger.log(Level.DEBUG, "Using JMustache. template:" + "file " + path);
 		}
-		else {
-			is = loader.getResourceAsStream(templatePath);
-			if (is == null) {
-				throw new IOException("template not found. template: " + templatePath);
-			}
-			prefix = "classpath ";
+		return is;
+	}
+
+	protected InputStream openResource(String templatePath) throws IOException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		InputStream is = loader.getResourceAsStream(templatePath);
+		if (is == null) {
+			throw new IOException("template not found. template: " + templatePath);
 		}
 		if (logger.isLoggable(Level.DEBUG)) {
-			logger.log(Level.DEBUG, "Using JMustache. template:" + prefix + templatePath);
+			logger.log(Level.DEBUG, "Using JMustache. template:" + "classpath " + templatePath);
 		}
 		return is;
 	}

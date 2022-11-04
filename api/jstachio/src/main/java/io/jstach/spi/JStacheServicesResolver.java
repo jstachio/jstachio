@@ -77,7 +77,7 @@ enum JStacheServicesResolver implements JStacheServices {
 		}
 		var config = _config();
 
-		if (config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_LOOKUP, true)) {
+		if (!config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_DISABLE)) {
 			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING, "Could not find renderer for: " + contextType, error);

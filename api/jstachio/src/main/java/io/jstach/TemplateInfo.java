@@ -93,6 +93,18 @@ public interface TemplateInfo {
 	}
 
 	/**
+	 * The last loaded time if applicable.
+	 *
+	 * For statically compiled templates this will always be a negative number. For
+	 * dynamically loaded templates this more likely will return a non negative number
+	 * indicating some hint of when the template was last modified or loaded.
+	 * @return the last modified or negative if not applicable
+	 */
+	default long lastLoaded() {
+		return -1;
+	}
+
+	/**
 	 * Utility method similar to toString that describes the template meta data.
 	 * @return description of the template.
 	 */

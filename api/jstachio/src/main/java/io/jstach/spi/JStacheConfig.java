@@ -23,6 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface JStacheConfig {
 
 	/**
+	 * Config key to use reflection based lookup of templates for other fallback
+	 * mechanisms
+	 */
+	public static String REFLECTION_TEMPLATE_DISABLE = "jstachio.reflection.template.disable";
+
+	/**
+	 * Config key to see if logging should be enabled/disabled. By default it enabled.
+	 */
+	public static String LOGGING_DISABLE = "jstachio.logging.disable";
+
+	/**
 	 * Gets a property from some config implementation.
 	 * @param key the key to use to lookup
 	 * @return if not found <code>null</code>.
@@ -77,27 +88,17 @@ public interface JStacheConfig {
 	}
 
 	/**
-	 * Config key to use reflection based lookup of templates for other fallback
-	 * mechanisms
-	 */
-	public static String REFLECTION_TEMPLATE_LOOKUP = "jstachio.reflection.template";
-
-	/**
-	 * Config key to see if logging should be enabled/disabled. By default it enabled.
-	 */
-	public static String USE_SYSTEM_LOGGER = "jstachio.logging";
-
-	/**
-	 * Gets a system logger if the property {@link #USE_SYSTEM_LOGGER} is set. If the
-	 * property is set to a false value a NOOP Logger <em>that will not trigger
-	 * initialization of the System {@link Logger} facilities</em> will be returned. The
-	 * NOOP logger is always disabled at every level and will not produce any output.
+	 * Gets a system logger if the property {@link #LOGGING_DISABLE} is
+	 * <code>false</code>. If the property is set to a <code>true</code> value a NOOP
+	 * Logger <em>that will not trigger initialization of the System {@link Logger}
+	 * facilities</em> will be returned. The NOOP logger is always disabled at every level
+	 * and will not produce any output.
 	 * @param name the name of the logger usually the class.
 	 * @return the System logger.
 	 * @see #noopLogger()
 	 */
 	default Logger getLogger(String name) {
-		if (getBoolean(USE_SYSTEM_LOGGER, true)) {
+		if (!getBoolean(LOGGING_DISABLE)) {
 			return System.getLogger(name);
 		}
 		return noopLogger();

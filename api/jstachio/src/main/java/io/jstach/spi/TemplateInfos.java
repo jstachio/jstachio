@@ -53,8 +53,9 @@ class TemplateInfos {
 
 		Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE.provides(formatterProvider);
 
+		long lastLoaded = System.currentTimeMillis();
 		return new SimpleTemplateInfo(templateName, templatePath, templateString, templateContentType, templateEscaper,
-				templateFormatter);
+				templateFormatter, lastLoaded);
 
 	}
 
@@ -175,7 +176,8 @@ class TemplateInfos {
 			String templateString, //
 			Class<?> templateContentType, //
 			Function<String, String> templateEscaper, //
-			Function<@Nullable Object, String> templateFormatter //
+			Function<@Nullable Object, String> templateFormatter, //
+			long lastLoaded //
 	) implements TemplateInfo {
 
 	}
