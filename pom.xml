@@ -5,7 +5,8 @@
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
   <version>0.7.0-SNAPSHOT</version>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/jstachio/jstachio</url>
+  <description>Compile time typesafe Java Mustache templating engine.</description>
   <properties>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
