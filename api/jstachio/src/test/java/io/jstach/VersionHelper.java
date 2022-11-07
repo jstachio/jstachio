@@ -27,7 +27,7 @@ public final class VersionHelper {
 		}
 
 	}
-	
+
 	static void run(List<String> _args) throws Exception {
 		Command command = Command.parseCommand(Command.class, _args, 0);
 		List<String> params = _args.stream().skip(1).toList();
@@ -35,7 +35,25 @@ public final class VersionHelper {
 	}
 
 }
+
 enum Command {
+
+	RELEASE() {
+		@Override
+		public void run(List<String> args) throws IOException {
+			out.println("Validate Git");
+			validateGit();
+			var current = current();
+			var pom = pom();
+			out.println("Validating POM version");
+			validatePom(pom, current);
+			out.println("Tagging");
+			tag(current);
+			out.println("Setting POM to release version");
+			pom(current);
+			out.println("Ready to run 'mvn clean deploy -Pcentral'. Do not forget to push tags!");
+		}
+	},
 	CURRENT() {
 		@Override
 		public void run(List<String> args) throws IOException {
@@ -46,7 +64,7 @@ enum Command {
 	VALIDATE() {
 		@Override
 		public void run(List<String> args) throws IOException {
-			validate();
+			validate(current(), tag(), pom());
 		}
 	},
 	PARSE() {
@@ -58,9 +76,7 @@ enum Command {
 	},
 	GET() {
 		@Override
-		public void run(
-				List<String> args)
-				throws IOException {
+		public void run(List<String> args) throws IOException {
 			GetCommand getCmd = Command.parseCommand(GetCommand.class, args, 0);
 			switch (getCmd) {
 				case CURRENT -> {
@@ -76,7 +92,7 @@ enum Command {
 					out.println(v);
 				}
 			}
-			
+
 		}
 	},
 	SET() {
@@ -84,61 +100,63 @@ enum Command {
 		public void run(List<String> args) throws IOException {
 			SetCommand setCmd = Command.parseCommand(SetCommand.class, args, 0);
 			switch (setCmd) {
-				case POM ->  {
+				case POM -> {
 					var current = current();
-					run("mvn versions:set -DnewVersion=" + current.print());
-					}
+					pom(current);
+				}
 				case TAG -> {
 					var version = current();
-					String command = "git tag -a -m 'release " + version.print() + "'" + " v" + version.print();
-					out.println("Executing " + command);
-					String r = execute(command, -1);
-					out.println(version);
-					out.println(r);
+					tag(version);
 				}
 			}
 		}
+
 	};
+
 	public abstract void run(List<String> args) throws IOException;
-	
+
 	enum SetCommand {
-		POM,
-		TAG
+
+		POM, TAG
+
 	}
-	
+
 	enum GetCommand {
-		CURRENT,
-		POM,
-		TAG
+
+		CURRENT, POM, TAG
+
 	}
-	
-	
-	
-	static void validate()
-			throws IOException {
-		Version tag = tag();
-		Version current = current();
-		Version pom = pom();
-		if (! tag.equals(current)) {
-			throw new RuntimeException(
-					"version mismatch. current = " + current.print() + " tag = " + tag.print());
+
+	static void validate(Version current, Version tag, Version pom) throws IOException {
+
+		if (!tag.equals(current)) {
+			throw new RuntimeException("version mismatch. current = " + current.print() + " tag = " + tag.print());
 		}
+		validatePom(pom, current);
+	}
+
+	static void validatePom(Version pom, Version current) {
 		if (pom.compareTo(current) <= 0) {
 			throw new RuntimeException(
 					"pom version is not greater than current. current = " + current.print() + " pom = " + pom);
 		}
 	}
+
 	static Version current() throws IOException {
 		var props = new Properties();
 		props.load(Files.newBufferedReader(Path.of("version.properties")));
 		String v = props.getProperty("version");
 		return Version.of(v);
 	}
-	
+
 	static Version pom() throws IOException {
 		String command = "mvn help:evaluate -Dexpression=project.version -q -DforceStdout";
 		String r = execute(command, 1).trim();
 		return Version.of(r);
+	}
+
+	static void pom(Version current) throws IOException {
+		run("mvn versions:set -DnewVersion=" + current.print());
 	}
 
 	static Version tag() throws IOException {
@@ -147,10 +165,26 @@ enum Command {
 		return v;
 	}
 
+	static void tag(Version version) throws IOException {
+		String command = "git tag -a -m 'release " + version.print() + "'" + " v" + version.print();
+		out.println("Executing " + command);
+		String r = execute(command, -1);
+		out.println(version);
+		out.println(r);
+	}
+
+	static void validateGit() throws IOException {
+		String command = "git status --porcelain=v1 2>/dev/null";
+		String r = execute(command, -1);
+		if (!r.trim().isBlank()) {
+			throw new RuntimeException("Git has changed files: \n" + r);
+		}
+	}
+
 	static String execute(String command) throws IOException {
 		return execute(command, -1);
 	}
-	
+
 	static void run(String command) throws IOException {
 		int e = execute(command, System.out, System.err, -1);
 		if (e != 0) {
@@ -158,10 +192,7 @@ enum Command {
 		}
 	}
 
-	static String execute(
-			String command,
-			int lines)
-			throws IOException {
+	static String execute(String command, int lines) throws IOException {
 		StringBuilder out = new StringBuilder();
 		StringBuilder err = new StringBuilder();
 		int e = execute(command, out, err, lines);
@@ -169,18 +200,11 @@ enum Command {
 			return out.toString();
 		}
 		else {
-			throw new IOException(
-					"Failure executing command: "
-							+ command
-							+ ", exit: "
-							+ e
-							+ "\nstdout: "
-							+ out.toString()
-							+ "\nstderr: "
-							+ err.toString());
+			throw new IOException("Failure executing command: " + command + ", exit: " + e + "\nstdout: "
+					+ out.toString() + "\nstderr: " + err.toString());
 		}
 	}
-	
+
 	static int execute(String command, Appendable out, Appendable err, int lines) throws IOException {
 		ProcessBuilder b = new ProcessBuilder();
 		b.command("bash", "-c", command);
@@ -204,7 +228,7 @@ enum Command {
 		}
 		return e;
 	}
-	
+
 	private static void append(Appendable output, BufferedReader reader, int lines) throws IOException {
 		String line;
 		int i = 0;
@@ -216,14 +240,14 @@ enum Command {
 			i++;
 		}
 	}
-	
+
 	public static <E extends Enum<E>> E parseCommand(Class<E> commandType, List<String> args, int index) {
 		if (args.size() < (index + 1)) {
 			String message = "Missing command. pick: " + printCommands(commandType);
 			throw new RuntimeException(message);
 		}
 		String arg = args.get(index);
-		
+
 		try {
 			if (arg.equalsIgnoreCase("help")) {
 				out.println("Commands: " + printCommands(commandType));
@@ -238,19 +262,18 @@ enum Command {
 			throw new RuntimeException(message);
 		}
 	}
-	
+
 	public static <E extends Enum<E>> String printCommands(Class<E> commandType) {
 		return "" + EnumSet.allOf(commandType).stream().map(e -> e.name().toLowerCase()).toList();
 	}
 
 }
 
-record Version(int major, int minor, int patch) implements Comparable<Version>{
+record Version(int major, int minor, int patch) implements Comparable<Version> {
 
 	static final Pattern pattern = Pattern.compile("v?([0-9]+).([0-9]+).([0-9]+)(-SNAPSHOT)?");
 	static final Comparator<Version> COMPARATOR = Comparator.comparingInt(Version::major)
-		.thenComparingInt(Version::minor)
-		.thenComparing(Version::patch);
+			.thenComparingInt(Version::minor).thenComparing(Version::patch);
 
 	static Version of(String s) {
 		Matcher m = pattern.matcher(s);
@@ -281,8 +304,7 @@ record Version(int major, int minor, int patch) implements Comparable<Version>{
 	}
 
 	@Override
-	public int compareTo(
-			Version o) {
+	public int compareTo(Version o) {
 		return COMPARATOR.compare(this, o);
 	}
 
