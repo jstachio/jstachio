@@ -1,3 +1,7 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.jstach/jstachio/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.jstach/jstachio)
+[![Javadoc](https://javadoc.io/badge/io.jstach/jstachio.svg)](https://javadoc.io/doc/io.jstach/jstachio/latest)
+[![Github](https://github.com/jstachio/jstachio/actions/workflows/maven.yml/badge.svg)](https://github.com/jstachio/jstachio/actions)
+
 <img src="etc/social-media.svg" alt="jstachio">
 
 
