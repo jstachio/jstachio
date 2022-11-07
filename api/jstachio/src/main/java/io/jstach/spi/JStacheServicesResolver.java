@@ -40,8 +40,7 @@ enum JStacheServicesResolver implements JStacheServices {
 					configs.add(c);
 				}
 			}
-			configs.add(SystemPropertyConfig.INSTANCE);
-			CompositeConfig config = new CompositeConfig(configs);
+			JStacheConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
 			for (var sv : svs) {
 				sv.init(config);
 			}

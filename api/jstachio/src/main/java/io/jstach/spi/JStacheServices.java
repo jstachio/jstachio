@@ -1,6 +1,7 @@
 package io.jstach.spi;
 
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -11,7 +12,9 @@ import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStache;
 
 /**
- * The SPI extension point. All methods are optional (default).
+ * An SPI extension point via the {@link ServiceLoader} that is a factory that provides
+ * services. All methods are optional (default) so that implementations can decide what
+ * particularly plugins/services they want to provide.
  *
  * TODO this still in the works and subject to change greatly!
  *
@@ -37,6 +40,13 @@ public interface JStacheServices {
 
 	/**
 	 * Provide a config or not. The final config is a composite of all the found configs.
+	 * <p>
+	 * Specifically if multiple instances of {@link JStacheServices} are found that return
+	 * a nonnull they will be combined by looping through all of them to find a nonnull
+	 * value for {@link JStacheConfig#getProperty(String)}. If no configs are provided or
+	 * no services found the root {@link JStacheServices} instance will use
+	 * {@link System#getProperties()}.
+	 *
 	 * @apiNote This method is called before {@link #init(JStacheConfig)}
 	 * @return config if this service provides one or <code>null</code>
 	 */

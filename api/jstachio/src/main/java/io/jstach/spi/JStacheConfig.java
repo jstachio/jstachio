@@ -29,7 +29,7 @@ public interface JStacheConfig {
 	public static String REFLECTION_TEMPLATE_DISABLE = "jstachio.reflection.template.disable";
 
 	/**
-	 * Config key to see if logging should be enabled/disabled. By default it enabled.
+	 * Config key to see if logging should be enabled/disabled. By default it is enabled.
 	 */
 	public static String LOGGING_DISABLE = "jstachio.logging.disable";
 
@@ -67,8 +67,8 @@ public interface JStacheConfig {
 
 	/**
 	 * A NonNull friendly analog of {@link System#getProperty(String, String)} that will
-	 * never return null unlike System.getProperty which PolyNull.
-	 * @param key checked if null and will error
+	 * never return null unlike System.getProperty which is PolyNull.
+	 * @param key checked if null and will NPE immediatly if it is
 	 * @param fallback used if the retrieved property is null
 	 * @return property or fallback if property is not found (<code>null</code>).
 	 * @throws NullPointerException if the fallback is null or if the key is null.
