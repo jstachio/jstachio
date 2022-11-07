@@ -85,11 +85,11 @@ enum Command {
 				}
 				case POM -> {
 					var v = pom();
-					out.println(v);
+					out.println(v.label());
 				}
 				case TAG -> {
 					var v = tag();
-					out.println(v);
+					out.println(v.label());
 				}
 			}
 
@@ -99,14 +99,20 @@ enum Command {
 		@Override
 		public void run(List<String> args) throws IOException {
 			SetCommand setCmd = Command.parseCommand(SetCommand.class, args, 0);
+			List<String> params = args.stream().skip(1).toList();
+			Version v;
+			if (params.isEmpty()) {
+				v = current();
+			}
+			else {
+				v = Version.of(params.get(0));
+			}
 			switch (setCmd) {
 				case POM -> {
-					var current = current();
-					pom(current);
+					pom(v);
 				}
 				case TAG -> {
-					var version = current();
-					tag(version);
+					tag(v);
 				}
 			}
 		}
@@ -156,7 +162,7 @@ enum Command {
 	}
 
 	static void pom(Version current) throws IOException {
-		run("mvn versions:set -DnewVersion=" + current.print());
+		run("mvn versions:set -DnewVersion=" + current.label());
 	}
 
 	static Version tag() throws IOException {
@@ -269,11 +275,11 @@ enum Command {
 
 }
 
-record Version(int major, int minor, int patch) implements Comparable<Version> {
+record Version(String label, int major, int minor, int patch, boolean snapshot) implements Comparable<Version> {
 
 	static final Pattern pattern = Pattern.compile("v?([0-9]+).([0-9]+).([0-9]+)(-SNAPSHOT)?");
 	static final Comparator<Version> COMPARATOR = Comparator.comparingInt(Version::major)
-			.thenComparingInt(Version::minor).thenComparing(Version::patch);
+			.thenComparingInt(Version::minor).thenComparingInt(Version::patch).thenComparing(Version::snapshot);
 
 	static Version of(String s) {
 		Matcher m = pattern.matcher(s);
@@ -283,7 +289,11 @@ record Version(int major, int minor, int patch) implements Comparable<Version> {
 		int major = Integer.parseInt(m.group(1));
 		int minor = Integer.parseInt(m.group(2));
 		int patch = Integer.parseInt(m.group(3));
-		return new Version(major, minor, patch);
+		boolean snapshot = false;
+		if (m.groupCount() > 3 && m.group(4).equals("-SNAPSHOT")) {
+			snapshot = true;
+		}
+		return new Version(s, major, minor, patch, snapshot);
 	}
 
 	public String print() {
@@ -301,6 +311,10 @@ record Version(int major, int minor, int patch) implements Comparable<Version> {
 		else {
 			throw new IllegalArgumentException("version mismatch. a = " + this.print() + " b = " + b.print());
 		}
+	}
+
+	public Version clean() {
+		return new Version(this.print(), major(), minor(), patch(), false);
 	}
 
 	@Override
