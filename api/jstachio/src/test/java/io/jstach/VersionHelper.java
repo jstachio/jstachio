@@ -48,7 +48,8 @@ public enum VersionHelper {
 		@Override
 		public void run(List<String> args) throws IOException {
 			String r = execute("git tag -l --sort=v:refname", 1);
-			out.println(r);
+			var v = Version.of(r.trim());
+			out.println(v);
 		}
 	},
 	MVN() {
