@@ -23,10 +23,25 @@ public enum VersionHelper {
 			out.println(version.print());
 		}
 	},
+	TAG() {
+		@Override
+		public void run(List<String> args) throws IOException {
+			var version = current();
+			String r = execute("git tag v" + version.print(), -1);
+			out.println(version);
+			out.println(r);
+		}
+	},
 	VALIDATE() {
 		@Override
 		public void run(List<String> args) throws IOException {
-			var a = Version.of(args.get(0));
+			Version a;
+			if (args.isEmpty()) {
+				a = tag();
+			}
+			else {
+				a = Version.of(args.get(0));
+			}
 			var b = current();
 			if (a.equals(b)) {
 				out.println(b.print());
@@ -47,8 +62,7 @@ public enum VersionHelper {
 	GIT() {
 		@Override
 		public void run(List<String> args) throws IOException {
-			String r = execute("git tag -l --sort=v:refname", 1);
-			var v = Version.of(r.trim());
+			var v = tag();
 			out.println(v);
 		}
 	},
@@ -68,7 +82,7 @@ public enum VersionHelper {
 		static Version of(String s) {
 			Matcher m = pattern.matcher(s);
 			if (!m.matches()) {
-				throw new IllegalArgumentException(s);
+				throw new IllegalArgumentException("bad version: " + s);
 			}
 			int major = Integer.parseInt(m.group(1));
 			int minor = Integer.parseInt(m.group(2));
@@ -83,6 +97,15 @@ public enum VersionHelper {
 		public String toString() {
 			return print();
 		}
+
+		void validate(Version b) {
+			if (this.equals(b)) {
+				out.println(b.print());
+			}
+			else {
+				throw new IllegalArgumentException("version mismatch. a = " + this.print() + " b = " + b.print());
+			}
+		}
 	}
 
 	static Version current() throws IOException {
@@ -90,6 +113,12 @@ public enum VersionHelper {
 		props.load(Files.newBufferedReader(Path.of("version.properties")));
 		String v = props.getProperty("version");
 		return Version.of(v);
+	}
+
+	static Version tag() throws IOException {
+		String r = execute("git tag -l --sort=v:refname", 1);
+		var v = Version.of(r.trim());
+		return v;
 	}
 
 	static String execute(String command) throws IOException {
