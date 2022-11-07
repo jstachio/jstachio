@@ -290,7 +290,7 @@ record Version(String label, int major, int minor, int patch, boolean snapshot) 
 		int minor = Integer.parseInt(m.group(2));
 		int patch = Integer.parseInt(m.group(3));
 		boolean snapshot = false;
-		if (m.groupCount() > 3 && m.group(4).equals("-SNAPSHOT")) {
+		if (m.groupCount() > 3 && "-SNAPSHOT".equals(m.group(4))) {
 			snapshot = true;
 		}
 		return new Version(s, major, minor, patch, snapshot);
