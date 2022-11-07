@@ -300,7 +300,9 @@
             <artifactId>spring-javaformat-maven-plugin</artifactId>
             <executions>
               <execution>
+              <!--
                 <?m2e ignore?>
+              -->
                 <phase>validate</phase>
                 <inherited>true</inherited>
                 <goals>
