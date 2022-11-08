@@ -51,6 +51,12 @@ Templates are compiled into readable Java source code and value bindings are sta
 
     * An absolutely zero runtime dependency option is in the works (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects.
 
+## Documentation
+
+[Latest JStachio API javadoc](https://jstach.io/jstachio/)
+
+The doc is also on javadoc.io but is not aggregated like the above.
+
 
 ## Quick Example
 
@@ -103,8 +109,7 @@ public void testPerson() throws Exception {
 }
 ```
 
-Installation
-------------
+## Installation
 
 
 ### Maven
