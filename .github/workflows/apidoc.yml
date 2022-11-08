@@ -38,7 +38,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Create Javadoc
-        run: mvn clean package -Pjavadoc -DskipTests=true
+        run: mvn --batch-mode --no-transfer-progress clean package -Pjavadoc -DskipTests=true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
