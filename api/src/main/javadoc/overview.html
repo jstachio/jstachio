@@ -7,7 +7,14 @@ A typesafe Java Mustache templating engine.
 Templates are compiled into readable Java source code and value bindings are statically checked using the
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/annotation/processing/package-summary.html">Java Annotation processing framework</a>.
 
-<h2>Mustache Syntax</h2>
+<h2>Contents</h2>
+<a href="#1">1. Mustache Syntax</a><br/>
+<a href="#2">2. Java Code</a><br/>
+<a href="#3">3. Installation</a><br/>
+<a href="#3.1">3.2 Maven</a><br/>
+<a href="#3.2">3.2 Gradle</a><br/>
+
+<h2 id="1">Mustache Syntax</h2>
 
 The format of the templates should by default be Mustache. The syntax is informally
 explained by the
@@ -19,9 +26,11 @@ how <code>Map&lt;String, ?&gt;</code> is handled}.
 The contents of a <code>Map</code> are checked last even if it is a directly on the top of
 the context stack.
 
-<h2>Java Code Example</h2>
+<h2 id="2">Java Code</h2>
 
-<pre class="prettyprint"><code class="language-java">
+Simply annotate a class with {@link io.jstach.annotation.JStache}
+
+<pre><code class="language-java">
 /*
  * Annotate the root model with an inline mustache template
  */
@@ -50,19 +59,25 @@ public interface AgeLambdaSupport {
 </code></pre>
 
 The above will generate a <code>HelloWorldRenderer</code> class.
-
-While you may use that class directly to render HelloWorld instances JStachio has a helpful utility classes to render directly from the model.
+<p>
+While you may use the generated classes directly to render HelloWorld instances in some cases it is
+easier and better to use {@link io.jstach.JStachio} to render directly from the model without referencing 
+generated code.
 
 Below is an example of that:
 
-<pre class="prettyprint"><code class="language-java">
+<pre><code class="language-java">
 &#64;Test
 public void testPerson() throws Exception {
     Person rick = new Person(&quot;Rick&quot;, LocalDate.now().minusYears(70));
     Person morty = new Person(&quot;Morty&quot;, LocalDate.now().minusYears(14));
     Person beth = new Person(&quot;Beth&quot;, LocalDate.now().minusYears(35));
     Person jerry = new Person(&quot;Jerry&quot;, LocalDate.now().minusYears(35));
-    String actual = JStachio.render(new HelloWorld(&quot;Hello alien&quot;, List.of(rick, morty, beth, jerry)));
+    var hello = new HelloWorld(&quot;Hello alien&quot;, List.of(rick, morty, beth, jerry));
+    // render without reflective lookup
+    String actual = new HelloWorldRenderer().render(hello);
+    // or use JStachio reflective lookup which will also apply filters and other advise
+    actual = JStachio.render(hello);
     String expected = &quot;&quot;&quot;
             Hello alien Rick! You are 70 years old!
             Hello alien Morty! You are 14 years old!
@@ -74,6 +89,62 @@ public void testPerson() throws Exception {
 
 }
 </code></pre>
-<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+<h2 id="3">Installation</h2>
+
+JStachio uses the Java annotation processor facility to generate code.
+You will need to set that up otherwise code will not be generated.
+
+<h3 id="3.1">Maven</h3>
+
+<pre class="language-xml">
+{@code
+<properties>
+    <io.jstach.version>VERSION</io.jstach.version>
+</properties>
+...
+<dependencies>
+    <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio</artifactId>
+        <version>${io.jstach.version}</version>
+    </dependency>
+</dependencies>
+...
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>17</source> <!-- 17 is the minimum -->
+                <target>17</target> <!-- 17 is the minimum -->
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>io.jstach</groupId>
+                        <artifactId>jstachio-apt</artifactId>
+                        <version>${io.jstach.version}</version>
+                    </path>
+                    <!-- other annotation processors -->
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+}
+</pre>
+
+<h3 id="3.2">Gradle</h3>
+
+<pre><code class="language-kotlin">
+dependencies {
+ 
+    implementation 'io.jstach:jstachio:VERSION'
+ 
+    annotationProcessor 'io.jstach:jstachio-apt:VERSION'
+}
+</code>
+</pre>
 </body>
 </html>

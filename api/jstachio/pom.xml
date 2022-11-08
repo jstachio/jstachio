@@ -8,6 +8,9 @@
   <artifactId>jstachio</artifactId>
   <name>jstachio</name>
   <packaging>jar</packaging>
+  <properties>
+    <javadoc.stylesheet></javadoc.stylesheet>
+  </properties>
   <build>
     <plugins>
       <plugin>

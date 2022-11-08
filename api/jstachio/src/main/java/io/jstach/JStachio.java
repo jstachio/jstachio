@@ -10,6 +10,7 @@ import io.jstach.spi.JStacheServices;
  * fallback mechanisms.
  *
  * @see JStacheServices
+ * @see JStache
  */
 public enum JStachio {
 

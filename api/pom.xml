@@ -11,6 +11,9 @@
       <module>annotation</module>
       <module>jstachio</module>
   </modules>
+  <properties>
+    <javadoc.stylesheet>highlightjs.min.css</javadoc.stylesheet>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -52,6 +55,12 @@
               <show>public</show>
               <overview>src/main/javadoc/overview.html</overview>
               <doctitle>jstachio API ${project.version}</doctitle>
+              <windowtitle>jstachio API ${project.version}</windowtitle>
+              <header>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
+</header>
+              <addStylesheets>
+                <addStylesheet>${javadoc.stylesheet}</addStylesheet>
+              </addStylesheets>
               <tags>
                 <tag>
                   <name>apiNote</name>

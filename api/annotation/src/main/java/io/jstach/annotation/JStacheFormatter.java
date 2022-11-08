@@ -11,8 +11,8 @@ import java.util.ServiceLoader;
  * Statically registers a formatter.
  * <p>
  * Formatters are called before escapers to resolve the output of a variable (e.g.
- * {{variable}}). Colloquially you can think of them as glorified {@link #toString()} on
- * objects.
+ * {{variable}}). Colloquially you can think of them as glorified
+ * {@link Object#toString()} on objects.
  * <p>
  * A class that is annotated statically provides a formatter instead of using the
  * {@link ServiceLoader} and can be used as marker for a particular formatter in

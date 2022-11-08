@@ -8,6 +8,10 @@
   <artifactId>jstachio-annotation</artifactId>
   <name>jstachio-annotation</name>
   <packaging>jar</packaging>
+  <properties>
+    <javadoc.stylesheet></javadoc.stylesheet>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

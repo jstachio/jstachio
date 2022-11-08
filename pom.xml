@@ -7,11 +7,17 @@
   <version>0.7.0-SNAPSHOT</version>
   <url>https://github.com/jstachio/jstachio</url>
   <description>Compile time typesafe Java Mustache templating engine.</description>
+  <organization>
+    <name>jstachio</name>
+    <url>https://jstach.io/jstachio</url>
+  </organization>
   <properties>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.9</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
+    <!-- The original timestamp for first release -->
+    <project.build.outputTimestamp>1667844704</project.build.outputTimestamp>
   </properties>
   <modules>
     <module>etc</module>

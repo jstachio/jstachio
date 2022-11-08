@@ -23,13 +23,13 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface JStacheConfig {
 
 	/**
-	 * Config key to use reflection based lookup of templates for other fallback
+	 * Config key to disable reflection based lookup of templates for other fallback
 	 * mechanisms
 	 */
 	public static String REFLECTION_TEMPLATE_DISABLE = "jstachio.reflection.template.disable";
 
 	/**
-	 * Config key to see if logging should be enabled/disabled. By default it is enabled.
+	 * Config key to disable if logging. By default logging is enabled.
 	 */
 	public static String LOGGING_DISABLE = "jstachio.logging.disable";
 
