@@ -618,6 +618,12 @@ class ClassWriter {
 		println("     * @hidden");
 		println("     */");
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
+		println("    private static final " + rendererClassSimpleName + " INSTANCE = new " + rendererClassSimpleName
+				+ "();");
 
 		println("    /**");
 		println("     * Generated Renderer.");
@@ -647,7 +653,7 @@ class ClassWriter {
 		println("");
 		println("    @Override");
 		println("    public java.util.List<" + RENDERER_CLASS + "<?>> " + "provideRenderers() {");
-		println("        return java.util.List.of(this);");
+		println("        return java.util.List.of(of());");
 		println("    }");
 		println("");
 		println("    @Override");
@@ -691,11 +697,11 @@ class ClassWriter {
 		println("    }");
 		println("");
 		println("    /**");
-		println("     * Convience static factory.");
-		println("     * @return renderer same as calling no-arg constructor");
+		println("     * Convience static factory that will reuse the same singleton instance.");
+		println("     * @return renderer same as calling no-arg constructor but is cached with singleton instance");
 		println("     */");
 		println("    public static " + rendererClassSimpleName + " of() {");
-		println("        return new " + rendererClassSimpleName + "();");
+		println("        return INSTANCE;");
 		println("    }");
 		println("");
 		println("    /**");
