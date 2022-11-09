@@ -18,6 +18,7 @@
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <!-- The original timestamp for first release -->
     <project.build.outputTimestamp>1667844704</project.build.outputTimestamp>
+    <javadoc.stylesheet></javadoc.stylesheet>
     <deploy>snapshot</deploy>
   </properties>
   <modules>
@@ -323,6 +324,64 @@
     </pluginManagement>
   </build>
   <profiles>
+    <profile>
+      <!-- mvn -f doc clean package -Pjavadoc -->
+      <id>javadoc</id>
+      <!-- unfortunately the only way to make this work is to change to the doc directory or use -f -->
+      <modules>
+        <module>doc</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <aggregate>true</aggregate>
+              <show>public</show>
+              <overview>src/main/javadoc/overview.html</overview>
+              <doctitle>jstachio API ${project.version}</doctitle>
+              <windowtitle>jstachio API ${project.version}</windowtitle>
+              <header>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
+</header>
+              <addStylesheets>
+                <addStylesheet>${javadoc.stylesheet}</addStylesheet>
+              </addStylesheets>
+              <tags>
+                <tag>
+                  <name>apiNote</name>
+                  <placement>a</placement>
+                  <head>API Note</head>
+                </tag>
+              </tags>
+              <groups>
+                <group>
+                  <title>API</title>
+                  <packages>io.jstach:io.jstach.*</packages>
+                </group>
+                <group>
+                  <title>Optional</title>
+                  <!-- todo maybe make all optional packages be io.jstach.opt.* -->
+                  <packages>io.jstach.jmustache</packages>
+                </group>
+              </groups>
+              <additionalJOptions>--allow-script-in-comments</additionalJOptions>
+            </configuration>
+            <executions>
+              <execution>
+                <id>aggregate</id>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>format-apply</id>
       <activation>

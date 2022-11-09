@@ -28,7 +28,7 @@ TODO
 .interp
 tmp
 checkstyle
-javadoc
+#javadoc
 *.mv.db
 versions
 out

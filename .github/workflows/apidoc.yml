@@ -38,12 +38,12 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Create Javadoc
-        run: mvn --batch-mode --no-transfer-progress clean package -Pjavadoc -DskipTests=true
+        run: mvn --batch-mode --no-transfer-progress -f doc clean package -Pjavadoc -DskipTests=true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: 'api/target/site/apidocs'
+          path: 'doc/target/site/apidocs'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1

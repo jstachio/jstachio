@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.jstach</groupId>
+    <artifactId>jstachio-maven-parent</artifactId>
+    <version>0.7.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>jstachio-doc</artifactId>
+  <packaging>pom</packaging>
+  <properties>
+    <javadoc.stylesheet>highlightjs.min.css</javadoc.stylesheet>
+  </properties>
+  <profiles>
+    <profile>
+      <id>javadoc</id>
+      <modules>
+        <module>../api</module>
+        <module>../opt</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <aggregate>true</aggregate>
+              <show>public</show>
+              <overview>src/main/javadoc/overview.html</overview>
+              <doctitle>jstachio API ${project.version}</doctitle>
+              <windowtitle>jstachio API ${project.version}</windowtitle>
+              <header>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
+</header>
+              <addStylesheets>
+                <addStylesheet>${javadoc.stylesheet}</addStylesheet>
+              </addStylesheets>
+              <tags>
+                <tag>
+                  <name>apiNote</name>
+                  <placement>a</placement>
+                  <head>API Note</head>
+                </tag>
+              </tags>
+              <additionalJOptions>--allow-script-in-comments</additionalJOptions>
+            </configuration>
+            <executions>
+              <execution>
+                <id>aggregate</id>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
