@@ -50,7 +50,7 @@ public class JMustacheCompareTest {
 
 				)));
 		RenderFunction render = PageContainerRenderer.of(page);
-		String sm = normalize(render.renderString());
+		String sm = normalize(render.render());
 		String jm = normalize(jmustacheRender(page));
 		System.out.println(sm);
 		assertEquals(jm, sm);
@@ -65,7 +65,7 @@ public class JMustacheCompareTest {
 		try {
 			JMustacheRenderService.setEnabled(true);
 			RenderFunction render = PageContainerRenderer.of(page);
-			return render.renderString();
+			return render.render();
 		}
 		finally {
 			JMustacheRenderService.setEnabled(false);

@@ -36,10 +36,18 @@ public interface RenderFunction extends Consumer<Appendable> {
 	public void render(Appendable a) throws IOException;
 
 	/**
+	 * Renders to a StringBuilder.
+	 * @param b StringBuilder never <code>null</code>.
+	 */
+	default void render(StringBuilder b) {
+		accept(b);
+	}
+
+	/**
 	 * Renders as a String.
 	 * @return the rendered string
 	 */
-	default String renderString() {
+	default String render() {
 		return append(new StringBuilder()).toString();
 	}
 
@@ -49,12 +57,7 @@ public interface RenderFunction extends Consumer<Appendable> {
 	 * @return the passed in buffer never <code>null</code>
 	 */
 	default StringBuilder append(StringBuilder sb) {
-		try {
-			render(sb);
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		render(sb);
 		return sb;
 	}
 

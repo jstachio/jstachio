@@ -9,7 +9,7 @@ public class PartialTest {
 	@Test
 	public void testPartial() throws Exception {
 		PartialExample pe = new PartialExample("Joe");
-		var actual = PartialExampleRenderer.of(pe).renderString();
+		var actual = PartialExampleRenderer.of(pe).render();
 
 		assertEquals("""
 				start partial parent
@@ -29,7 +29,7 @@ public class PartialTest {
 	@Test
 	public void testTemplatePaths() throws Exception {
 		TemplatePathsExample te = new TemplatePathsExample("Joe");
-		var actual = TemplatePathsExampleRenderer.of(te).renderString();
+		var actual = TemplatePathsExampleRenderer.of(te).render();
 
 		assertEquals("""
 				template-path-example start

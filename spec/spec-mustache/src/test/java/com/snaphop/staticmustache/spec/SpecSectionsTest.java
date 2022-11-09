@@ -35,7 +35,7 @@ public class SpecSectionsTest extends AbstractSpecTest<SectionsSpecTemplate> {
 		return switch (specTemplate) {
 			// case PARENT_CONTEXTS -> ParentContextsRender.of(new
 			// ParentContexts(Person.Joe)).renderString();
-			case CONTEXT -> ContextRenderer.of(new Custom.Context(Person.Joe)).renderString();
+			case CONTEXT -> ContextRenderer.of(new Custom.Context(Person.Joe)).render();
 			default -> specTemplate.render();
 		};
 	}

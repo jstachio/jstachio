@@ -15,7 +15,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new BasicBehavior();
 			m.putAll(o);
 			var r = BasicBehaviorRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	FAILED_LOOKUP(null, "partials", "Failed Lookup",
@@ -34,7 +34,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new Context();
 			m.putAll(o);
 			var r = ContextRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	RECURSION(null, "partials", "Recursion", "The greater-than operator should properly recurse.",
@@ -54,7 +54,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new SurroundingWhitespace();
 			m.putAll(o);
 			var r = SurroundingWhitespaceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	INLINE_INDENTATION(InlineIndentation.class, "partials", "Inline Indentation",
@@ -66,7 +66,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new InlineIndentation();
 			m.putAll(o);
 			var r = InlineIndentationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	STANDALONE_LINE_ENDINGS(StandaloneLineEndings.class, "partials", "Standalone Line Endings",
@@ -78,7 +78,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new StandaloneLineEndings();
 			m.putAll(o);
 			var r = StandaloneLineEndingsRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	STANDALONE_WITHOUT_PREVIOUS_LINE(StandaloneWithoutPreviousLine.class, "partials",
@@ -90,7 +90,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new StandaloneWithoutPreviousLine();
 			m.putAll(o);
 			var r = StandaloneWithoutPreviousLineRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	STANDALONE_WITHOUT_NEWLINE(StandaloneWithoutNewline.class, "partials", "Standalone Without Newline",
@@ -102,7 +102,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new StandaloneWithoutNewline();
 			m.putAll(o);
 			var r = StandaloneWithoutNewlineRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	STANDALONE_INDENTATION(StandaloneIndentation.class, "partials", "Standalone Indentation",
@@ -114,7 +114,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new StandaloneIndentation();
 			m.putAll(o);
 			var r = StandaloneIndentationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	PADDING_WHITESPACE(PaddingWhitespace.class, "partials", "Padding Whitespace",
@@ -126,7 +126,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 			var m = new PaddingWhitespace();
 			m.putAll(o);
 			var r = PaddingWhitespaceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},;
 

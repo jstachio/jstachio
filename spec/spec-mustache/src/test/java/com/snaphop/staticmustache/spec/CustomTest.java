@@ -13,7 +13,7 @@ public class CustomTest {
 	@Test
 	public void testDottedNamesTruthy() {
 		DottedNamesTruthy t = DottedNamesTruthy.test();
-		String actual = DottedNamesTruthyRenderer.of(t).renderString();
+		String actual = DottedNamesTruthyRenderer.of(t).render();
 		testSpec(InvertedSpecTemplate.DOTTED_NAMES___TRUTHY, actual);
 	}
 

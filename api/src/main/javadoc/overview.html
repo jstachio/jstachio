@@ -75,7 +75,7 @@ public void testPerson() throws Exception {
     Person jerry = new Person(&quot;Jerry&quot;, LocalDate.now().minusYears(35));
     var hello = new HelloWorld(&quot;Hello alien&quot;, List.of(rick, morty, beth, jerry));
     // render without reflective lookup
-    String actual = new HelloWorldRenderer().render(hello);
+    String actual = HelloWorldRenderer.of().render(hello);
     // or use JStachio reflective lookup which will also apply filters and other advise
     actual = JStachio.render(hello);
     String expected = &quot;&quot;&quot;

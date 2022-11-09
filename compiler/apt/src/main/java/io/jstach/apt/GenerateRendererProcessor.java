@@ -626,7 +626,8 @@ class ClassWriter {
 				+ "();");
 
 		println("    /**");
-		println("     * Generated Renderer.");
+		println("     * Renderer constructor for reflection (use of() instead).");
+		println("     * For programmatic consider using {@link #of()} for a shared singleton.");
 		println("     */");
 		println("    public " + rendererClassSimpleName + "() {");
 		println("    }");

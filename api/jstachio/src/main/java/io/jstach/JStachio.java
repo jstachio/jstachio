@@ -109,7 +109,7 @@ public final class JStachio {
 	 * @return the rendered string.
 	 */
 	public static String render(Object model) {
-		return filter(model).renderString();
+		return filter(model).render();
 	}
 
 }

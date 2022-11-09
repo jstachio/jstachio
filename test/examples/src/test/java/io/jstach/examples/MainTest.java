@@ -53,8 +53,7 @@ public class MainTest {
 	@Test
 	public void testInline() throws Exception {
 		InlineExample inline = new InlineExample("Adam");
-		RenderFunction rf = InlineExampleRenderer.of(inline);
-		String actual = rf.renderString();
+		String actual = InlineExampleRenderer.of().render(inline);
 		assertEquals("Hello Adam!", actual);
 
 	}

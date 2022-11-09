@@ -13,7 +13,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new NoInterpolation();
 			m.putAll(o);
 			var r = NoInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	BASIC_INTERPOLATION(BasicInterpolation.class, "interpolation", "Basic Interpolation",
@@ -23,7 +23,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new BasicInterpolation();
 			m.putAll(o);
 			var r = BasicInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	HTML_ESCAPING(HTMLEscaping.class, "interpolation", "HTML Escaping", "Basic interpolation should be HTML escaped.",
@@ -33,7 +33,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new HTMLEscaping();
 			m.putAll(o);
 			var r = HTMLEscapingRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE(TripleMustache.class, "interpolation", "Triple Mustache",
@@ -44,7 +44,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustache();
 			m.putAll(o);
 			var r = TripleMustacheRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND(Ampersand.class, "interpolation", "Ampersand", "Ampersand should interpolate without HTML escaping.",
@@ -54,7 +54,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new Ampersand();
 			m.putAll(o);
 			var r = AmpersandRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	BASIC_INTEGER_INTERPOLATION(BasicIntegerInterpolation.class, "interpolation", "Basic Integer Interpolation",
@@ -64,7 +64,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new BasicIntegerInterpolation();
 			m.putAll(o);
 			var r = BasicIntegerInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE_INTEGER_INTERPOLATION(TripleMustacheIntegerInterpolation.class, "interpolation",
@@ -74,7 +74,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheIntegerInterpolation();
 			m.putAll(o);
 			var r = TripleMustacheIntegerInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND_INTEGER_INTERPOLATION(AmpersandIntegerInterpolation.class, "interpolation",
@@ -84,7 +84,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandIntegerInterpolation();
 			m.putAll(o);
 			var r = AmpersandIntegerInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	BASIC_DECIMAL_INTERPOLATION(BasicDecimalInterpolation.class, "interpolation", "Basic Decimal Interpolation",
@@ -94,7 +94,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new BasicDecimalInterpolation();
 			m.putAll(o);
 			var r = BasicDecimalInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE_DECIMAL_INTERPOLATION(TripleMustacheDecimalInterpolation.class, "interpolation",
@@ -104,7 +104,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheDecimalInterpolation();
 			m.putAll(o);
 			var r = TripleMustacheDecimalInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND_DECIMAL_INTERPOLATION(AmpersandDecimalInterpolation.class, "interpolation",
@@ -114,7 +114,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandDecimalInterpolation();
 			m.putAll(o);
 			var r = AmpersandDecimalInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	BASIC_NULL_INTERPOLATION(BasicNullInterpolation.class, "interpolation", "Basic Null Interpolation",
@@ -124,7 +124,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new BasicNullInterpolation();
 			m.putAll(o);
 			var r = BasicNullInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE_NULL_INTERPOLATION(TripleMustacheNullInterpolation.class, "interpolation",
@@ -134,7 +134,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheNullInterpolation();
 			m.putAll(o);
 			var r = TripleMustacheNullInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND_NULL_INTERPOLATION(AmpersandNullInterpolation.class, "interpolation", "Ampersand Null Interpolation",
@@ -144,7 +144,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandNullInterpolation();
 			m.putAll(o);
 			var r = AmpersandNullInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	BASIC_CONTEXT_MISS_INTERPOLATION(BasicContextMissInterpolation.class, "interpolation",
@@ -154,7 +154,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new BasicContextMissInterpolation();
 			m.putAll(o);
 			var r = BasicContextMissInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE_CONTEXT_MISS_INTERPOLATION(TripleMustacheContextMissInterpolation.class, "interpolation",
@@ -164,7 +164,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheContextMissInterpolation();
 			m.putAll(o);
 			var r = TripleMustacheContextMissInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND_CONTEXT_MISS_INTERPOLATION(AmpersandContextMissInterpolation.class, "interpolation",
@@ -174,7 +174,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandContextMissInterpolation();
 			m.putAll(o);
 			var r = AmpersandContextMissInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___BASIC_INTERPOLATION(DottedNamesBasicInterpolation.class, "interpolation",
@@ -185,7 +185,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesBasicInterpolation();
 			m.putAll(o);
 			var r = DottedNamesBasicInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION(DottedNamesTripleMustacheInterpolation.class, "interpolation",
@@ -196,7 +196,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesTripleMustacheInterpolation();
 			m.putAll(o);
 			var r = DottedNamesTripleMustacheInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___AMPERSAND_INTERPOLATION(DottedNamesAmpersandInterpolation.class, "interpolation",
@@ -207,7 +207,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesAmpersandInterpolation();
 			m.putAll(o);
 			var r = DottedNamesAmpersandInterpolationRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___ARBITRARY_DEPTH(DottedNamesArbitraryDepth.class, "interpolation", "Dotted Names - Arbitrary Depth",
@@ -218,7 +218,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesArbitraryDepth();
 			m.putAll(o);
 			var r = DottedNamesArbitraryDepthRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAINS(DottedNamesBrokenChains.class, "interpolation", "Dotted Names - Broken Chains",
@@ -228,7 +228,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesBrokenChains();
 			m.putAll(o);
 			var r = DottedNamesBrokenChainsRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAIN_RESOLUTION(DottedNamesBrokenChainResolution.class, "interpolation",
@@ -239,7 +239,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesBrokenChainResolution();
 			m.putAll(o);
 			var r = DottedNamesBrokenChainResolutionRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___INITIAL_RESOLUTION(DottedNamesInitialResolution.class, "interpolation",
@@ -250,7 +250,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesInitialResolution();
 			m.putAll(o);
 			var r = DottedNamesInitialResolutionRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	DOTTED_NAMES___CONTEXT_PRECEDENCE(DottedNamesContextPrecedence.class, "interpolation",
@@ -260,7 +260,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new DottedNamesContextPrecedence();
 			m.putAll(o);
 			var r = DottedNamesContextPrecedenceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	INTERPOLATION___SURROUNDING_WHITESPACE(InterpolationSurroundingWhitespace.class, "interpolation",
@@ -270,7 +270,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new InterpolationSurroundingWhitespace();
 			m.putAll(o);
 			var r = InterpolationSurroundingWhitespaceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE___SURROUNDING_WHITESPACE(TripleMustacheSurroundingWhitespace.class, "interpolation",
@@ -280,7 +280,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheSurroundingWhitespace();
 			m.putAll(o);
 			var r = TripleMustacheSurroundingWhitespaceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND___SURROUNDING_WHITESPACE(AmpersandSurroundingWhitespace.class, "interpolation",
@@ -290,7 +290,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandSurroundingWhitespace();
 			m.putAll(o);
 			var r = AmpersandSurroundingWhitespaceRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	INTERPOLATION___STANDALONE(InterpolationStandalone.class, "interpolation", "Interpolation - Standalone",
@@ -300,7 +300,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new InterpolationStandalone();
 			m.putAll(o);
 			var r = InterpolationStandaloneRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE___STANDALONE(TripleMustacheStandalone.class, "interpolation", "Triple Mustache - Standalone",
@@ -310,7 +310,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheStandalone();
 			m.putAll(o);
 			var r = TripleMustacheStandaloneRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND___STANDALONE(AmpersandStandalone.class, "interpolation", "Ampersand - Standalone",
@@ -320,7 +320,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandStandalone();
 			m.putAll(o);
 			var r = AmpersandStandaloneRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	INTERPOLATION_WITH_PADDING(InterpolationWithPadding.class, "interpolation", "Interpolation With Padding",
@@ -330,7 +330,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new InterpolationWithPadding();
 			m.putAll(o);
 			var r = InterpolationWithPaddingRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	TRIPLE_MUSTACHE_WITH_PADDING(TripleMustacheWithPadding.class, "interpolation", "Triple Mustache With Padding",
@@ -340,7 +340,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new TripleMustacheWithPadding();
 			m.putAll(o);
 			var r = TripleMustacheWithPaddingRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},
 	AMPERSAND_WITH_PADDING(AmpersandWithPadding.class, "interpolation", "Ampersand With Padding",
@@ -350,7 +350,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 			var m = new AmpersandWithPadding();
 			m.putAll(o);
 			var r = AmpersandWithPaddingRenderer.of(m);
-			return r.renderString();
+			return r.render();
 		}
 	},;
 
