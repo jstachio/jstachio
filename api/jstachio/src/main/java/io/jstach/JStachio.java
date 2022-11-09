@@ -12,9 +12,10 @@ import io.jstach.spi.JStacheServices;
  * @see JStacheServices
  * @see JStache
  */
-public enum JStachio {
+public final class JStachio {
 
-	;
+	private JStachio() {
+	}
 
 	/**
 	 * Finds a renderer for a model class.

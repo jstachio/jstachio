@@ -51,7 +51,12 @@ enum Command {
 			tag(current);
 			out.println("Setting POM to release version");
 			pom(current);
-			out.println("Ready to run 'mvn clean deploy -Pcentral'. Do not forget to push tags!");
+			out.println("Ready to release. Do not forget to push tags and log into sonatype to commit release!");
+			out.println("Now manually run:");
+			out.println("mvn clean deploy -Pcentral -Ddeploy=release \\");
+			out.println("&& git checkout . \\");
+			out.println("&& git push \\");
+			out.println("&& git push origin " + current.tag());
 		}
 	},
 	CURRENT() {
@@ -143,8 +148,11 @@ enum Command {
 
 	static void validatePom(Version pom, Version current) {
 		if (pom.compareTo(current) <= 0) {
-			throw new RuntimeException(
-					"pom version is not greater than current. current = " + current.print() + " pom = " + pom);
+			throw new RuntimeException("pom version is not greater than current version.properties. current = "
+					+ current.print() + " pom = " + pom);
+		}
+		if (!pom.snapshot()) {
+			throw new RuntimeException("pom should be a -SNAPSHOT version");
 		}
 	}
 
@@ -298,6 +306,10 @@ record Version(String label, int major, int minor, int patch, boolean snapshot) 
 
 	public String print() {
 		return major() + "." + minor() + "." + patch();
+	}
+
+	public String tag() {
+		return "v" + print();
 	}
 
 	public String toString() {
