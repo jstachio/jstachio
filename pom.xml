@@ -18,6 +18,7 @@
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <!-- The original timestamp for first release -->
     <project.build.outputTimestamp>1667844704</project.build.outputTimestamp>
+    <deploy>snapshot</deploy>
   </properties>
   <modules>
     <module>etc</module>
@@ -285,6 +286,11 @@
             <version>2.4.0</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
           <groupId>io.spring.javaformat</groupId>
           <artifactId>spring-javaformat-maven-plugin</artifactId>
           <version>0.0.35</version>
@@ -332,6 +338,7 @@
             <executions>
               <execution>
               <!--
+              The m2e ignore breaks sonatype central validation
                 <?m2e ignore?>
               -->
                 <phase>validate</phase>
@@ -371,10 +378,82 @@
       </build>
     </profile>
     <profile>
-      <id>central</id>
+      <id>deploy-snapshot</id>
+      <activation>
+        <property>
+          <name>deploy</name>
+          <value>snapshot</value>
+        </property>
+      </activation>
       <build>
         <plugins>
-          <!-- Source -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-no-releases</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireSnapshotVersion>
+                      <message>No Releases Allowed!</message>
+                    </requireSnapshotVersion>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>deploy-release</id>
+      <activation>
+        <property>
+          <name>deploy</name>
+          <value>release</value>
+        </property>
+      </activation> 
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-release</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                     <requireJavaVersion>
+                      <version>17</version>
+                    </requireJavaVersion>
+                    <requireReleaseDeps>
+                      <message>No Snapshots Allowed!</message>
+                    </requireReleaseDeps>
+                    <requireReleaseVersion>
+                      <message>No Snapshots Allowed!</message>
+                    </requireReleaseVersion>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>central</id>
+      <!-- Plugins to meet sonatype central requirements -->
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
@@ -407,7 +486,6 @@
               </execution>
             </executions>
           </plugin>
-          <!-- GPG -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
@@ -425,8 +503,6 @@
               </execution>
             </executions>
           </plugin>
-
-          <!-- Release plugin -->
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -448,25 +524,6 @@
           <id>ossrh</id>
           <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>snaphop</id>
-      <distributionManagement>
-        <repository>
-          <uniqueVersion>false</uniqueVersion>
-          <id>snaphop-deploy-public-release</id>
-          <name>SnapHop Public Release</name>
-          <url>${snaphop.deploy.url.public.release}</url>
-          <layout>default</layout>
-        </repository>
-        <snapshotRepository>
-          <uniqueVersion>true</uniqueVersion>
-          <id>snaphop-deploy-public-snapshot</id>
-          <name>SnapHop Public Snapshot</name>
-          <url>${snaphop.deploy.url.public.snapshot}</url>
-          <layout>default</layout>
-        </snapshotRepository>
       </distributionManagement>
     </profile>
   </profiles>
