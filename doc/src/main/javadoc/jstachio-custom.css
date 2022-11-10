@@ -1,0 +1,8 @@
+:root {
+  --link-color: #4A6782;
+}
+
+a.toc-link {
+  color: var(--link-color);
+}
+

@@ -8,7 +8,7 @@
   <artifactId>jstachio-doc</artifactId>
   <packaging>pom</packaging>
   <properties>
-    <javadoc.stylesheet>highlightjs.min.css</javadoc.stylesheet>
+    <javadoc.stylesheet>jstachio.css</javadoc.stylesheet>
   </properties>
   <profiles>
     <profile>
@@ -26,10 +26,19 @@
               <aggregate>true</aggregate>
               <show>public</show>
               <overview>src/main/javadoc/overview.html</overview>
+              <docfilessubdirs>true</docfilessubdirs>
               <doctitle>jstachio API ${project.version}</doctitle>
               <windowtitle>jstachio API ${project.version}</windowtitle>
-              <header>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
-</header>
+              <header>
+                &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
+              </header>
+              <bottom>
+                <![CDATA[
+                Copyright &#169; {currentYear} {organizationName}. All rights reserved.
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js"></script>
+                <script src="resources/jstachio.js"></script>
+                ]]>
+              </bottom>
               <addStylesheets>
                 <addStylesheet>${javadoc.stylesheet}</addStylesheet>
               </addStylesheets>
