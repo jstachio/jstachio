@@ -5,12 +5,21 @@ import static java.lang.System.out;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +53,7 @@ enum Command {
 			out.println("Validate Git");
 			validateGit();
 			var current = current();
+			long timestamp = timestamp();
 			var pom = pom();
 			out.println("Validating POM version");
 			validatePom(pom, current);
@@ -113,6 +123,9 @@ enum Command {
 				v = Version.of(params.get(0));
 			}
 			switch (setCmd) {
+				case CURRENT -> {
+					current(v);
+				}
 				case POM -> {
 					pom(v);
 				}
@@ -128,7 +141,7 @@ enum Command {
 
 	enum SetCommand {
 
-		POM, TAG
+		CURRENT, POM, TAG
 
 	}
 
@@ -163,6 +176,24 @@ enum Command {
 		return Version.of(v);
 	}
 
+	static void current(Version v) throws IOException {
+		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1,
+				StandardOpenOption.WRITE)) {
+			long timestamp = System.currentTimeMillis();
+			writeProperties(out, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
+		}
+	}
+
+	static long timestamp() throws IOException {
+		var props = new Properties();
+		props.load(Files.newBufferedReader(Path.of("version.properties")));
+		String t = props.getProperty("timestamp");
+		if (t == null) {
+			return -1;
+		}
+		return Long.parseLong(t);
+	}
+
 	static Version pom() throws IOException {
 		String command = "mvn help:evaluate -Dexpression=project.version -q -DforceStdout";
 		String r = execute(command, 1).trim();
@@ -171,6 +202,7 @@ enum Command {
 
 	static void pom(Version current) throws IOException {
 		run("mvn versions:set -DnewVersion=" + current.label());
+
 	}
 
 	static Version tag() throws IOException {
@@ -279,6 +311,42 @@ enum Command {
 
 	public static <E extends Enum<E>> String printCommands(Class<E> commandType) {
 		return "" + EnumSet.allOf(commandType).stream().map(e -> e.name().toLowerCase()).toList();
+	}
+
+	@SafeVarargs
+	static void writeProperties(Appendable sb, Entry<String, String>... kvs) throws IOException {
+		Map<String, String> m = new LinkedHashMap<>();
+		for (var kv : kvs) {
+			m.put(kv.getKey(), kv.getValue());
+		}
+		writeProperties(m, sb);
+	}
+
+	static void writeProperties(Map<String, String> map, Appendable sb) throws IOException {
+		StringWriter sw = new StringWriter();
+		new Properties() {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			public java.util.Enumeration keys() {
+				return Collections.enumeration(map.keySet());
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			public java.util.Set entrySet() {
+				return map.entrySet();
+			};
+
+			public Object get(Object key) {
+				return map.get(key);
+			};
+		}.store(sw, null);
+		LineNumberReader lr = new LineNumberReader(new StringReader(sw.toString()));
+
+		String line;
+		while ((line = lr.readLine()) != null) {
+			if (!line.startsWith("#")) {
+				sb.append(line).append(System.lineSeparator());
+			}
+		}
 	}
 
 }
