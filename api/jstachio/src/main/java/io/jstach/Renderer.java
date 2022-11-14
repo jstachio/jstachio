@@ -23,8 +23,8 @@ public interface Renderer<T> extends TemplateInfo {
 	 * @param appendable the appendable to write to.
 	 * @throws IOException if there is an error writing to the appendable
 	 */
-	default void render(T model, Appendable appendable) throws IOException {
-		render(model, appendable, Formatter.of(templateFormatter()), Escaper.of(templateEscaper()));
+	default void execute(T model, Appendable appendable) throws IOException {
+		execute(model, appendable, Formatter.of(templateFormatter()), Escaper.of(templateEscaper()));
 	}
 
 	/**
@@ -35,7 +35,7 @@ public interface Renderer<T> extends TemplateInfo {
 	 * @param escaper used to write escaped variables
 	 * @throws IOException if an error occurs while writing to the appendable
 	 */
-	public void render(T model, //
+	public void execute(T model, //
 			Appendable a, //
 			Formatter formatter, //
 			Escaper escaper) throws IOException;
@@ -47,9 +47,9 @@ public interface Renderer<T> extends TemplateInfo {
 	 * @param sb should never be null.
 	 * @return the passed in {@link StringBuilder}.
 	 */
-	default StringBuilder render(T model, StringBuilder sb) {
+	default StringBuilder execute(T model, StringBuilder sb) {
 		try {
-			render(model, (Appendable) sb);
+			execute(model, (Appendable) sb);
 			return sb;
 		}
 		catch (IOException e) {
@@ -62,9 +62,9 @@ public interface Renderer<T> extends TemplateInfo {
 	 * @param model never null.
 	 * @return the rendered model.
 	 */
-	default String render(T model) {
+	default String execute(T model) {
 		StringBuilder sb = new StringBuilder();
-		render(model, sb);
+		execute(model, sb);
 		return sb.toString();
 	}
 
@@ -75,7 +75,7 @@ public interface Renderer<T> extends TemplateInfo {
 	 * @return a function
 	 */
 	default RenderFunction apply(T model) {
-		return a -> this.render(model, a);
+		return a -> this.execute(model, a);
 	}
 
 	/**

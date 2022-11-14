@@ -633,17 +633,17 @@ class ClassWriter {
 		println("    }");
 		println("");
 		println("    @Override");
-		println("    public void render(" + className + " model, Appendable a) throws java.io.IOException {");
-		println("        render(model, a, templateFormatter(), templateEscaper());");
+		println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
+		println("        execute(model, a, templateFormatter(), templateEscaper());");
 		println("    }");
 		println("");
 		println("    @Override");
-		println("    public void render(" //
+		println("    public void execute(" //
 				+ idt + className + " model, " //
 				+ idt + _Appendable + " a, " //
 				+ idt + _Formatter + " formatter" + "," //
 				+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
-		println("        execute(model, a, formatter, escaper, templateAppender());");
+		println("        render(model, a, formatter, escaper, templateAppender());");
 		println("    }");
 
 		println("");
@@ -711,7 +711,7 @@ class ClassWriter {
 		println("     * @return render function");
 		println("     */");
 		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
-		println("        return a -> of().render(data, a);");
+		println("        return a -> of().execute(data, a);");
 		println("    }");
 
 		println("");
@@ -743,7 +743,7 @@ class ClassWriter {
 		println("     * @param " + variables.appender() + " used to write unescaped variables.");
 		println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
 		println("     */");
-		println("    public static " + _A + " void execute(" //
+		println("    public static " + _A + " void render(" //
 				+ idt + className + " " + dataName + ", " //
 				+ idt + "A" + " " + variables.unescapedWriter() + "," //
 				+ idt + _Formatter + " " + variables.formatter() + "," //
