@@ -1,11 +1,13 @@
-package io.jstach;
+package io.jstach.script;
 
 import static java.lang.System.out;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +24,19 @@ import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public final class VersionHelper {
 
@@ -60,7 +75,7 @@ enum Command {
 			out.println("Tagging");
 			tag(current);
 			out.println("Setting POM to release version");
-			pom(current);
+			pom(current, timestamp);
 			out.println("Ready to release. Do not forget to push tags and log into sonatype to commit release!");
 			out.println("Now manually run:");
 			out.println("mvn clean deploy -Pcentral -Ddeploy=release \\");
@@ -127,7 +142,7 @@ enum Command {
 					current(v);
 				}
 				case POM -> {
-					pom(v);
+					pom(v, System.currentTimeMillis());
 				}
 				case TAG -> {
 					tag(v);
@@ -200,8 +215,9 @@ enum Command {
 		return Version.of(r);
 	}
 
-	static void pom(Version current) throws IOException {
+	static void pom(Version current, long timestamp) throws IOException {
 		run("mvn versions:set -DnewVersion=" + current.label());
+		updateTimestamp(timestamp);
 
 	}
 
@@ -322,6 +338,7 @@ enum Command {
 		writeProperties(m, sb);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static void writeProperties(Map<String, String> map, Appendable sb) throws IOException {
 		StringWriter sw = new StringWriter();
 		new Properties() {
@@ -346,6 +363,32 @@ enum Command {
 			if (!line.startsWith("#")) {
 				sb.append(line).append(System.lineSeparator());
 			}
+		}
+	}
+
+	static void updateTimestamp(long timestamp) throws IOException {
+		try {
+			Document doc;
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			try (InputStream is = Files.newInputStream(Path.of("pom.xml"), StandardOpenOption.READ)) {
+
+				doc = builder.parse(is);
+				XPath xpath = XPathFactory.newInstance().newXPath();
+				String path = "/project/properties/project.build.outputTimestamp";
+				Node v = (Node) xpath.evaluate(path, doc, XPathConstants.NODE);
+				v.setTextContent("" + timestamp);
+			}
+			try (OutputStream os = Files.newOutputStream(Path.of("pom.xml"), StandardOpenOption.WRITE)) {
+				DOMSource domSource = new DOMSource(doc);
+				StreamResult result = new StreamResult(os);
+				TransformerFactory tf = TransformerFactory.newInstance();
+				Transformer transformer = tf.newTransformer();
+				transformer.transform(domSource, result);
+			}
+		}
+		catch (Exception e) {
+			throw new IOException(e);
 		}
 	}
 
