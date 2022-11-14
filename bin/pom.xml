@@ -11,4 +11,11 @@
   <properties>
     <javadoc.stylesheet></javadoc.stylesheet>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.commonmark</groupId>
+      <artifactId>commonmark</artifactId>
+      <version>0.20.0</version>
+    </dependency>
+  </dependencies>
 </project>
