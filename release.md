@@ -1,3 +1,5 @@
+## Explanation
+
 This project does not use the maven release plugin for a variety of reasons:
 
   * Creates an environment that can be very different from the normal snapshot deploy process by forking
@@ -15,18 +17,41 @@ However if we are actually wanting to finally release `0.7.0` then the pom must 
 
 The `vh` script will mostly make sure you do not violate this.
 
-Here is the process for **release**:
+## Directions
 
-1. Edit `version.properties` to the desired release version. 
-1. If this is not a patch release you will need to update the pom to a later snapshot
-   
-   1. `bin/vh set pom VERSION-SNAPSHOT` # where VERSION is the new minor/major version
-
-1. Checkin the file `version.properties` (and pom file if minor or major version change). It will serve as the commit for tagging reproducible builds.
-1. run `bin/vh release` which will tag and temporarily update the pom for release
-1. Run the commands it tells you to run
-
+### Deploying SNAPSHOTs
 
 If you just want to deploy a snapshot to centrals snapshot repositories run:
 
-`mvn clean deploy -Pcentral`
+```
+mvn clean deploy -Pcentral
+```
+
+### Deploying Releases
+
+Here is the process for **release**:
+
+1. Edit `version.properties` to the desired release version by calling:
+
+  1. `bin/vh set current NEW_VERSION` 
+
+1. If this is not a patch release you will need to update the pom to a later snapshot
+   
+  1. `bin/vh set pom VERSION-SNAPSHOT` # where VERSION is the new minor/major version
+
+1. Checkin the file `version.properties` (and pom file if minor or major version change). It will serve as the commit for tagging reproducible builds.
+1. run `bin/vh release` which will tag and temporarily update the pom for release. **DO NOT CHECKIN THE ALTERED POM**
+1. Run the commands it tells you to run
+
+### Reproducing a release
+
+Because we do not alter the pom file reproducing a release build is less trivial but this not a normal use case anyway
+
+```
+git checkout SOME_TAG
+bin/vh set pom  # no argument means use the version properties
+mvn clean install
+```
+
+
+

@@ -74,7 +74,7 @@ enum Command {
 			validatePom(pom, current);
 			out.println("Tagging");
 			tag(current);
-			out.println("Setting POM to release version");
+			out.println("Setting POM to release version and updating timestamp");
 			pom(current, timestamp);
 			out.println("Ready to release. Do not forget to push tags and log into sonatype to commit release!");
 			out.println("Now manually run:");
@@ -131,18 +131,21 @@ enum Command {
 			SetCommand setCmd = Command.parseCommand(SetCommand.class, args, 0);
 			List<String> params = args.stream().skip(1).toList();
 			Version v;
+			long timestamp;
 			if (params.isEmpty()) {
 				v = current();
+				timestamp = timestamp();
 			}
 			else {
 				v = Version.of(params.get(0));
+				timestamp = System.currentTimeMillis();
 			}
 			switch (setCmd) {
 				case CURRENT -> {
 					current(v);
 				}
 				case POM -> {
-					pom(v, System.currentTimeMillis());
+					pom(v, timestamp);
 				}
 				case TAG -> {
 					tag(v);
@@ -195,7 +198,7 @@ enum Command {
 		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1,
 				StandardOpenOption.WRITE)) {
 			long timestamp = System.currentTimeMillis();
-			writeProperties(out, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
+			writeProperties(br, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
 		}
 	}
 
@@ -338,16 +341,14 @@ enum Command {
 		writeProperties(m, sb);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	static void writeProperties(Map<String, String> map, Appendable sb) throws IOException {
 		StringWriter sw = new StringWriter();
 		new Properties() {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
 			public java.util.Enumeration keys() {
 				return Collections.enumeration(map.keySet());
 			}
 
-			@SuppressWarnings({ "unchecked", "rawtypes" })
 			public java.util.Set entrySet() {
 				return map.entrySet();
 			};
@@ -362,6 +363,7 @@ enum Command {
 		while ((line = lr.readLine()) != null) {
 			if (!line.startsWith("#")) {
 				sb.append(line).append(System.lineSeparator());
+				out.append(line).append(System.lineSeparator());
 			}
 		}
 	}

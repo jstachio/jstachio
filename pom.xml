@@ -325,6 +325,13 @@
   </build>
   <profiles>
     <profile>
+      <!-- this is to make maven version plugin update bin pom -->
+      <id>bin</id>
+      <modules>
+        <module>bin</module>
+      </modules>
+    </profile>
+    <profile>
       <!-- mvn -f doc clean package -Pjavadoc -->
       <id>javadoc</id>
       <!-- unfortunately the only way to make this work is to change to the doc directory or use -f -->
