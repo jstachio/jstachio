@@ -68,6 +68,13 @@ public interface TemplateInfo {
 	Function<@Nullable Object, String> templateFormatter();
 
 	/**
+	 * Checks to see if a template supports the model class.
+	 * @param type the class of the model.
+	 * @return if this renderer supports the class.
+	 */
+	public boolean supportsType(Class<?> type);
+
+	/**
 	 * Where the template contents were retrieved from.
 	 * @return an enum never null.
 	 */

@@ -78,11 +78,4 @@ public interface Renderer<T> extends TemplateInfo {
 		return a -> this.execute(model, a);
 	}
 
-	/**
-	 * Checks to see if a renderer supports the model class.
-	 * @param type the class of the model.
-	 * @return if this renderer supports the class.
-	 */
-	public boolean supportsType(Class<?> type);
-
 }
