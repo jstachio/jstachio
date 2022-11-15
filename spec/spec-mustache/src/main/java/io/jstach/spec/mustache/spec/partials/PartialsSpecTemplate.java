@@ -1,8 +1,7 @@
 package io.jstach.spec.mustache.spec.partials;
 
-import java.util.Map;
-
 import io.jstach.spec.generator.SpecListing;
+import java.util.Map;
 
 public enum PartialsSpecTemplate implements SpecListing {
 
@@ -14,8 +13,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicBehavior();
 			m.putAll(o);
-			var r = BasicBehaviorRenderer.of(m);
-			return r.render();
+			return BasicBehaviorRenderer.of().execute(m);
 		}
 	},
 	FAILED_LOOKUP(null, "partials", "Failed Lookup",
@@ -33,8 +31,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Context();
 			m.putAll(o);
-			var r = ContextRenderer.of(m);
-			return r.render();
+			return ContextRenderer.of().execute(m);
 		}
 	},
 	RECURSION(null, "partials", "Recursion", "The greater-than operator should properly recurse.",
@@ -53,8 +50,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new SurroundingWhitespace();
 			m.putAll(o);
-			var r = SurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return SurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INLINE_INDENTATION(InlineIndentation.class, "partials", "Inline Indentation",
@@ -65,8 +61,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InlineIndentation();
 			m.putAll(o);
-			var r = InlineIndentationRenderer.of(m);
-			return r.render();
+			return InlineIndentationRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_LINE_ENDINGS(StandaloneLineEndings.class, "partials", "Standalone Line Endings",
@@ -77,8 +72,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneLineEndings();
 			m.putAll(o);
-			var r = StandaloneLineEndingsRenderer.of(m);
-			return r.render();
+			return StandaloneLineEndingsRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_PREVIOUS_LINE(StandaloneWithoutPreviousLine.class, "partials",
@@ -89,8 +83,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutPreviousLine();
 			m.putAll(o);
-			var r = StandaloneWithoutPreviousLineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutPreviousLineRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_NEWLINE(StandaloneWithoutNewline.class, "partials", "Standalone Without Newline",
@@ -101,8 +94,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutNewline();
 			m.putAll(o);
-			var r = StandaloneWithoutNewlineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutNewlineRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_INDENTATION(StandaloneIndentation.class, "partials", "Standalone Indentation",
@@ -113,8 +105,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneIndentation();
 			m.putAll(o);
-			var r = StandaloneIndentationRenderer.of(m);
-			return r.render();
+			return StandaloneIndentationRenderer.of().execute(m);
 		}
 	},
 	PADDING_WHITESPACE(PaddingWhitespace.class, "partials", "Padding Whitespace",
@@ -125,8 +116,7 @@ public enum PartialsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new PaddingWhitespace();
 			m.putAll(o);
-			var r = PaddingWhitespaceRenderer.of(m);
-			return r.render();
+			return PaddingWhitespaceRenderer.of().execute(m);
 		}
 	},;
 

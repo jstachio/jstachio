@@ -6,6 +6,8 @@
 module io.jstach.spec.generator {
 
 	exports io.jstach.spec.generator;
+	
+	opens io.jstach.spec.generator to com.samskivert.jmustache;
 
 	requires transitive io.jstach;
 

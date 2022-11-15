@@ -172,9 +172,6 @@ public class JavaLanguageModel implements TypesMixin {
 				return Optional.empty();
 			return resolveType(eb);
 		}
-		else if (isSubtype(type, getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
-			return Optional.of(knownTypes._Renderable);
-		}
 		for (var nt : knownTypes.getNativeTypes()) {
 			if (isType(type, nt)) {
 				return Optional.of(nt);

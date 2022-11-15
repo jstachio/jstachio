@@ -54,14 +54,4 @@ public interface Renderer<T> {
 		return sb.toString();
 	}
 
-	/**
-	 * Applies the model to create a render function. Basically partial application
-	 * functionally speaking.
-	 * @param model the model the renderer uses to render.
-	 * @return a function
-	 */
-	default RenderFunction apply(T model) {
-		return a -> this.execute(model, a);
-	}
-
 }

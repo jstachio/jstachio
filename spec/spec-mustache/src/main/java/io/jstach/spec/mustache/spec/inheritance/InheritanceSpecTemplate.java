@@ -1,8 +1,7 @@
 package io.jstach.spec.mustache.spec.inheritance;
 
-import java.util.Map;
-
 import io.jstach.spec.generator.SpecListing;
+import java.util.Map;
 
 public enum InheritanceSpecTemplate implements SpecListing {
 
@@ -11,8 +10,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Default();
 			m.putAll(o);
-			var r = DefaultRenderer.of(m);
-			return r.render();
+			return DefaultRenderer.of().execute(m);
 		}
 	},
 	VARIABLE(Variable.class, "inheritance", "Variable", "Default content renders variables", "{\"bar\":\"baz\"}",
@@ -20,8 +18,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Variable();
 			m.putAll(o);
-			var r = VariableRenderer.of(m);
-			return r.render();
+			return VariableRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE(TripleMustache.class, "inheritance", "Triple Mustache",
@@ -30,8 +27,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustache();
 			m.putAll(o);
-			var r = TripleMustacheRenderer.of(m);
-			return r.render();
+			return TripleMustacheRenderer.of().execute(m);
 		}
 	},
 	SECTIONS(Sections.class, "inheritance", "Sections", "Default content renders sections",
@@ -40,8 +36,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Sections();
 			m.putAll(o);
-			var r = SectionsRenderer.of(m);
-			return r.render();
+			return SectionsRenderer.of().execute(m);
 		}
 	},
 	NEGATIVE_SECTIONS(null, "inheritance", "Negative Sections", "Default content renders negative sections",
@@ -57,8 +52,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new MustacheInjection();
 			m.putAll(o);
-			var r = MustacheInjectionRenderer.of(m);
-			return r.render();
+			return MustacheInjectionRenderer.of().execute(m);
 		}
 	},
 	INHERIT(Inherit.class, "inheritance", "Inherit", "Default content rendered inside inherited templates", "{}",
@@ -68,8 +62,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Inherit();
 			m.putAll(o);
-			var r = InheritRenderer.of(m);
-			return r.render();
+			return InheritRenderer.of().execute(m);
 		}
 	},
 	OVERRIDDEN_CONTENT(Overriddencontent.class, "inheritance", "Overridden content", "Overridden content", "{}",
@@ -79,8 +72,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Overriddencontent();
 			m.putAll(o);
-			var r = OverriddencontentRenderer.of(m);
-			return r.render();
+			return OverriddencontentRenderer.of().execute(m);
 		}
 	},
 	DATA_DOES_NOT_OVERRIDE_BLOCK(Datadoesnotoverrideblock.class, "inheritance", "Data does not override block",
@@ -91,8 +83,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Datadoesnotoverrideblock();
 			m.putAll(o);
-			var r = DatadoesnotoverrideblockRenderer.of(m);
-			return r.render();
+			return DatadoesnotoverrideblockRenderer.of().execute(m);
 		}
 	},
 	DATA_DOES_NOT_OVERRIDE_BLOCK_DEFAULT(Datadoesnotoverrideblockdefault.class, "inheritance",
@@ -103,8 +94,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Datadoesnotoverrideblockdefault();
 			m.putAll(o);
-			var r = DatadoesnotoverrideblockdefaultRenderer.of(m);
-			return r.render();
+			return DatadoesnotoverrideblockdefaultRenderer.of().execute(m);
 		}
 	},
 	OVERRIDDEN_PARENT(Overriddenparent.class, "inheritance", "Overridden parent", "Overridden parent", "{}",
@@ -114,8 +104,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Overriddenparent();
 			m.putAll(o);
-			var r = OverriddenparentRenderer.of(m);
-			return r.render();
+			return OverriddenparentRenderer.of().execute(m);
 		}
 	},
 	TWO_OVERRIDDEN_PARENTS(Twooverriddenparents.class, "inheritance", "Two overridden parents",
@@ -127,8 +116,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Twooverriddenparents();
 			m.putAll(o);
-			var r = TwooverriddenparentsRenderer.of(m);
-			return r.render();
+			return TwooverriddenparentsRenderer.of().execute(m);
 		}
 	},
 	OVERRIDE_PARENT_WITH_NEWLINES(Overrideparentwithnewlines.class, "inheritance", "Override parent with newlines",
@@ -139,8 +127,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Overrideparentwithnewlines();
 			m.putAll(o);
-			var r = OverrideparentwithnewlinesRenderer.of(m);
-			return r.render();
+			return OverrideparentwithnewlinesRenderer.of().execute(m);
 		}
 	},
 	INHERIT_INDENTATION(Inheritindentation.class, "inheritance", "Inherit indentation",
@@ -151,8 +138,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Inheritindentation();
 			m.putAll(o);
-			var r = InheritindentationRenderer.of(m);
-			return r.render();
+			return InheritindentationRenderer.of().execute(m);
 		}
 	},
 	ONLY_ONE_OVERRIDE(Onlyoneoverride.class, "inheritance", "Only one override",
@@ -163,8 +149,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Onlyoneoverride();
 			m.putAll(o);
-			var r = OnlyoneoverrideRenderer.of(m);
-			return r.render();
+			return OnlyoneoverrideRenderer.of().execute(m);
 		}
 	},
 	PARENT_TEMPLATE(Parenttemplate.class, "inheritance", "Parent template",
@@ -175,8 +160,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Parenttemplate();
 			m.putAll(o);
-			var r = ParenttemplateRenderer.of(m);
-			return r.render();
+			return ParenttemplateRenderer.of().execute(m);
 		}
 	},
 	RECURSION(null, "inheritance", "Recursion", "Recursion in inherited templates", "{}",
@@ -197,8 +181,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Multilevelinheritance();
 			m.putAll(o);
-			var r = MultilevelinheritanceRenderer.of(m);
-			return r.render();
+			return MultilevelinheritanceRenderer.of().execute(m);
 		}
 	},
 	MULTI_LEVEL_INHERITANCE__NO_SUB_CHILD(Multilevelinheritancenosubchild.class, "inheritance",
@@ -211,8 +194,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Multilevelinheritancenosubchild();
 			m.putAll(o);
-			var r = MultilevelinheritancenosubchildRenderer.of(m);
-			return r.render();
+			return MultilevelinheritancenosubchildRenderer.of().execute(m);
 		}
 	},
 	TEXT_INSIDE_PARENT(Textinsideparent.class, "inheritance", "Text inside parent",
@@ -223,8 +205,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Textinsideparent();
 			m.putAll(o);
-			var r = TextinsideparentRenderer.of(m);
-			return r.render();
+			return TextinsideparentRenderer.of().execute(m);
 		}
 	},
 	TEXT_INSIDE_PARENT1(Textinsideparent1.class, "inheritance", "Text inside parent1",
@@ -235,8 +216,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Textinsideparent1();
 			m.putAll(o);
-			var r = Textinsideparent1Renderer.of(m);
-			return r.render();
+			return Textinsideparent1Renderer.of().execute(m);
 		}
 	},
 	BLOCK_SCOPE(Blockscope.class, "inheritance", "Block scope",
@@ -248,8 +228,7 @@ public enum InheritanceSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Blockscope();
 			m.putAll(o);
-			var r = BlockscopeRenderer.of(m);
-			return r.render();
+			return BlockscopeRenderer.of().execute(m);
 		}
 	},;
 

@@ -1,8 +1,7 @@
 package io.jstach.spec.mustache.spec.inverted;
 
-import java.util.Map;
-
 import io.jstach.spec.generator.SpecListing;
+import java.util.Map;
 
 public enum InvertedSpecTemplate implements SpecListing {
 
@@ -12,8 +11,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Falsey();
 			m.putAll(o);
-			var r = FalseyRenderer.of(m);
-			return r.render();
+			return FalseyRenderer.of().execute(m);
 		}
 	},
 	TRUTHY(Truthy.class, "inverted", "Truthy", "Truthy sections should have their contents omitted.",
@@ -21,8 +19,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Truthy();
 			m.putAll(o);
-			var r = TruthyRenderer.of(m);
-			return r.render();
+			return TruthyRenderer.of().execute(m);
 		}
 	},
 	NULL_IS_FALSEY(Nullisfalsey.class, "inverted", "Null is falsey", "Null is falsey.", "{\"null\":null}",
@@ -30,8 +27,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Nullisfalsey();
 			m.putAll(o);
-			var r = NullisfalseyRenderer.of(m);
-			return r.render();
+			return NullisfalseyRenderer.of().execute(m);
 		}
 	},
 	CONTEXT(Context.class, "inverted", "Context", "Objects and hashes should behave like truthy values.",
@@ -39,8 +35,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Context();
 			m.putAll(o);
-			var r = ContextRenderer.of(m);
-			return r.render();
+			return ContextRenderer.of().execute(m);
 		}
 	},
 	LIST(List.class, "inverted", "List", "Lists should behave like truthy values.",
@@ -48,8 +43,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new List();
 			m.putAll(o);
-			var r = ListRenderer.of(m);
-			return r.render();
+			return ListRenderer.of().execute(m);
 		}
 	},
 	EMPTY_LIST(EmptyList.class, "inverted", "Empty List", "Empty lists should behave like falsey values.",
@@ -57,8 +51,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new EmptyList();
 			m.putAll(o);
-			var r = EmptyListRenderer.of(m);
-			return r.render();
+			return EmptyListRenderer.of().execute(m);
 		}
 	},
 	DOUBLED(Doubled.class, "inverted", "Doubled", "Multiple inverted sections per template should be permitted.",
@@ -68,8 +61,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Doubled();
 			m.putAll(o);
-			var r = DoubledRenderer.of(m);
-			return r.render();
+			return DoubledRenderer.of().execute(m);
 		}
 	},
 	NESTED__FALSEY_(NestedFalsey.class, "inverted", "Nested (Falsey)",
@@ -78,8 +70,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new NestedFalsey();
 			m.putAll(o);
-			var r = NestedFalseyRenderer.of(m);
-			return r.render();
+			return NestedFalseyRenderer.of().execute(m);
 		}
 	},
 	NESTED__TRUTHY_(NestedTruthy.class, "inverted", "Nested (Truthy)", "Nested truthy sections should be omitted.",
@@ -87,8 +78,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new NestedTruthy();
 			m.putAll(o);
-			var r = NestedTruthyRenderer.of(m);
-			return r.render();
+			return NestedTruthyRenderer.of().execute(m);
 		}
 	},
 	CONTEXT_MISSES(ContextMisses.class, "inverted", "Context Misses",
@@ -97,8 +87,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ContextMisses();
 			m.putAll(o);
-			var r = ContextMissesRenderer.of(m);
-			return r.render();
+			return ContextMissesRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___TRUTHY(DottedNamesTruthy.class, "inverted", "Dotted Names - Truthy",
@@ -107,8 +96,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesTruthy();
 			m.putAll(o);
-			var r = DottedNamesTruthyRenderer.of(m);
-			return r.render();
+			return DottedNamesTruthyRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___FALSEY(DottedNamesFalsey.class, "inverted", "Dotted Names - Falsey",
@@ -117,8 +105,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesFalsey();
 			m.putAll(o);
-			var r = DottedNamesFalseyRenderer.of(m);
-			return r.render();
+			return DottedNamesFalseyRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAINS(DottedNamesBrokenChains.class, "inverted", "Dotted Names - Broken Chains",
@@ -127,8 +114,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesBrokenChains();
 			m.putAll(o);
-			var r = DottedNamesBrokenChainsRenderer.of(m);
-			return r.render();
+			return DottedNamesBrokenChainsRenderer.of().execute(m);
 		}
 	},
 	SURROUNDING_WHITESPACE(SurroundingWhitespace.class, "inverted", "Surrounding Whitespace",
@@ -137,8 +123,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new SurroundingWhitespace();
 			m.putAll(o);
-			var r = SurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return SurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INTERNAL_WHITESPACE(InternalWhitespace.class, "inverted", "Internal Whitespace",
@@ -147,8 +132,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InternalWhitespace();
 			m.putAll(o);
-			var r = InternalWhitespaceRenderer.of(m);
-			return r.render();
+			return InternalWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INDENTED_INLINE_SECTIONS(IndentedInlineSections.class, "inverted", "Indented Inline Sections",
@@ -157,8 +141,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new IndentedInlineSections();
 			m.putAll(o);
-			var r = IndentedInlineSectionsRenderer.of(m);
-			return r.render();
+			return IndentedInlineSectionsRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_LINES(StandaloneLines.class, "inverted", "Standalone Lines",
@@ -167,8 +150,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneLines();
 			m.putAll(o);
-			var r = StandaloneLinesRenderer.of(m);
-			return r.render();
+			return StandaloneLinesRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_INDENTED_LINES(StandaloneIndentedLines.class, "inverted", "Standalone Indented Lines",
@@ -177,8 +159,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneIndentedLines();
 			m.putAll(o);
-			var r = StandaloneIndentedLinesRenderer.of(m);
-			return r.render();
+			return StandaloneIndentedLinesRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_LINE_ENDINGS(StandaloneLineEndings.class, "inverted", "Standalone Line Endings",
@@ -187,8 +168,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneLineEndings();
 			m.putAll(o);
-			var r = StandaloneLineEndingsRenderer.of(m);
-			return r.render();
+			return StandaloneLineEndingsRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_PREVIOUS_LINE(StandaloneWithoutPreviousLine.class, "inverted",
@@ -197,8 +177,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutPreviousLine();
 			m.putAll(o);
-			var r = StandaloneWithoutPreviousLineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutPreviousLineRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_NEWLINE(StandaloneWithoutNewline.class, "inverted", "Standalone Without Newline",
@@ -207,8 +186,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutNewline();
 			m.putAll(o);
-			var r = StandaloneWithoutNewlineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutNewlineRenderer.of().execute(m);
 		}
 	},
 	PADDING(Padding.class, "inverted", "Padding", "Superfluous in-tag whitespace should be ignored.",
@@ -216,8 +194,7 @@ public enum InvertedSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Padding();
 			m.putAll(o);
-			var r = PaddingRenderer.of(m);
-			return r.render();
+			return PaddingRenderer.of().execute(m);
 		}
 	},;
 

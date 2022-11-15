@@ -95,10 +95,6 @@ public class RenderingCodeGenerator {
 					path);
 		}
 
-		if (javaModel.isSubtype(type, javaModel.getGenericDeclaredType(knownTypes._Renderable.typeElement()))) {
-			return text + ".render(" + variables.unescapedWriter() + "); ";
-		}
-
 		KnownType knownType = javaModel.resolveType(type).orElse(null);
 
 		if (knownType != null && ((knownType instanceof NativeType) || knownType.equals(knownTypes._String))) {

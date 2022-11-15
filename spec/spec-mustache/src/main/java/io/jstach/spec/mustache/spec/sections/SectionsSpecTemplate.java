@@ -1,8 +1,7 @@
 package io.jstach.spec.mustache.spec.sections;
 
-import java.util.Map;
-
 import io.jstach.spec.generator.SpecListing;
+import java.util.Map;
 
 public enum SectionsSpecTemplate implements SpecListing {
 
@@ -12,8 +11,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Truthy();
 			m.putAll(o);
-			var r = TruthyRenderer.of(m);
-			return r.render();
+			return TruthyRenderer.of().execute(m);
 		}
 	},
 	FALSEY(Falsey.class, "sections", "Falsey", "Falsey sections should have their contents omitted.",
@@ -21,8 +19,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Falsey();
 			m.putAll(o);
-			var r = FalseyRenderer.of(m);
-			return r.render();
+			return FalseyRenderer.of().execute(m);
 		}
 	},
 	NULL_IS_FALSEY(Nullisfalsey.class, "sections", "Null is falsey", "Null is falsey.", "{\"null\":null}",
@@ -30,8 +27,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Nullisfalsey();
 			m.putAll(o);
-			var r = NullisfalseyRenderer.of(m);
-			return r.render();
+			return NullisfalseyRenderer.of().execute(m);
 		}
 	},
 	CONTEXT(Context.class, "sections", "Context", "Objects and hashes should be pushed onto the context stack.",
@@ -39,8 +35,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Context();
 			m.putAll(o);
-			var r = ContextRenderer.of(m);
-			return r.render();
+			return ContextRenderer.of().execute(m);
 		}
 	},
 	PARENT_CONTEXTS(Parentcontexts.class, "sections", "Parent contexts",
@@ -50,8 +45,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Parentcontexts();
 			m.putAll(o);
-			var r = ParentcontextsRenderer.of(m);
-			return r.render();
+			return ParentcontextsRenderer.of().execute(m);
 		}
 	},
 	VARIABLE_TEST(Variabletest.class, "sections", "Variable test",
@@ -60,8 +54,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Variabletest();
 			m.putAll(o);
-			var r = VariabletestRenderer.of(m);
-			return r.render();
+			return VariabletestRenderer.of().execute(m);
 		}
 	},
 	LIST_CONTEXTS(ListContexts.class, "sections", "List Contexts",
@@ -72,8 +65,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ListContexts();
 			m.putAll(o);
-			var r = ListContextsRenderer.of(m);
-			return r.render();
+			return ListContextsRenderer.of().execute(m);
 		}
 	},
 	DEEPLY_NESTED_CONTEXTS(DeeplyNestedContexts.class, "sections", "Deeply Nested Contexts",
@@ -84,8 +76,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DeeplyNestedContexts();
 			m.putAll(o);
-			var r = DeeplyNestedContextsRenderer.of(m);
-			return r.render();
+			return DeeplyNestedContextsRenderer.of().execute(m);
 		}
 	},
 	LIST(List.class, "sections", "List", "Lists should be iterated; list items should visit the context stack.",
@@ -94,8 +85,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new List();
 			m.putAll(o);
-			var r = ListRenderer.of(m);
-			return r.render();
+			return ListRenderer.of().execute(m);
 		}
 	},
 	EMPTY_LIST(EmptyList.class, "sections", "Empty List", "Empty lists should behave like falsey values.",
@@ -103,8 +93,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new EmptyList();
 			m.putAll(o);
-			var r = EmptyListRenderer.of(m);
-			return r.render();
+			return EmptyListRenderer.of().execute(m);
 		}
 	},
 	DOUBLED(Doubled.class, "sections", "Doubled", "Multiple sections per template should be permitted.",
@@ -114,8 +103,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Doubled();
 			m.putAll(o);
-			var r = DoubledRenderer.of(m);
-			return r.render();
+			return DoubledRenderer.of().execute(m);
 		}
 	},
 	NESTED__TRUTHY_(NestedTruthy.class, "sections", "Nested (Truthy)",
@@ -124,8 +112,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new NestedTruthy();
 			m.putAll(o);
-			var r = NestedTruthyRenderer.of(m);
-			return r.render();
+			return NestedTruthyRenderer.of().execute(m);
 		}
 	},
 	NESTED__FALSEY_(NestedFalsey.class, "sections", "Nested (Falsey)", "Nested falsey sections should be omitted.",
@@ -133,8 +120,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new NestedFalsey();
 			m.putAll(o);
-			var r = NestedFalseyRenderer.of(m);
-			return r.render();
+			return NestedFalseyRenderer.of().execute(m);
 		}
 	},
 	CONTEXT_MISSES(ContextMisses.class, "sections", "Context Misses",
@@ -143,8 +129,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ContextMisses();
 			m.putAll(o);
-			var r = ContextMissesRenderer.of(m);
-			return r.render();
+			return ContextMissesRenderer.of().execute(m);
 		}
 	},
 	IMPLICIT_ITERATOR___STRING(ImplicitIteratorString.class, "sections", "Implicit Iterator - String",
@@ -153,8 +138,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ImplicitIteratorString();
 			m.putAll(o);
-			var r = ImplicitIteratorStringRenderer.of(m);
-			return r.render();
+			return ImplicitIteratorStringRenderer.of().execute(m);
 		}
 	},
 	IMPLICIT_ITERATOR___INTEGER(ImplicitIteratorInteger.class, "sections", "Implicit Iterator - Integer",
@@ -163,8 +147,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ImplicitIteratorInteger();
 			m.putAll(o);
-			var r = ImplicitIteratorIntegerRenderer.of(m);
-			return r.render();
+			return ImplicitIteratorIntegerRenderer.of().execute(m);
 		}
 	},
 	IMPLICIT_ITERATOR___DECIMAL(ImplicitIteratorDecimal.class, "sections", "Implicit Iterator - Decimal",
@@ -173,8 +156,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ImplicitIteratorDecimal();
 			m.putAll(o);
-			var r = ImplicitIteratorDecimalRenderer.of(m);
-			return r.render();
+			return ImplicitIteratorDecimalRenderer.of().execute(m);
 		}
 	},
 	IMPLICIT_ITERATOR___ARRAY(ImplicitIteratorArray.class, "sections", "Implicit Iterator - Array",
@@ -183,8 +165,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new ImplicitIteratorArray();
 			m.putAll(o);
-			var r = ImplicitIteratorArrayRenderer.of(m);
-			return r.render();
+			return ImplicitIteratorArrayRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___TRUTHY(DottedNamesTruthy.class, "sections", "Dotted Names - Truthy",
@@ -193,8 +174,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesTruthy();
 			m.putAll(o);
-			var r = DottedNamesTruthyRenderer.of(m);
-			return r.render();
+			return DottedNamesTruthyRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___FALSEY(DottedNamesFalsey.class, "sections", "Dotted Names - Falsey",
@@ -203,8 +183,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesFalsey();
 			m.putAll(o);
-			var r = DottedNamesFalseyRenderer.of(m);
-			return r.render();
+			return DottedNamesFalseyRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAINS(DottedNamesBrokenChains.class, "sections", "Dotted Names - Broken Chains",
@@ -213,8 +192,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesBrokenChains();
 			m.putAll(o);
-			var r = DottedNamesBrokenChainsRenderer.of(m);
-			return r.render();
+			return DottedNamesBrokenChainsRenderer.of().execute(m);
 		}
 	},
 	SURROUNDING_WHITESPACE(SurroundingWhitespace.class, "sections", "Surrounding Whitespace",
@@ -223,8 +201,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new SurroundingWhitespace();
 			m.putAll(o);
-			var r = SurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return SurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INTERNAL_WHITESPACE(InternalWhitespace.class, "sections", "Internal Whitespace",
@@ -233,8 +210,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InternalWhitespace();
 			m.putAll(o);
-			var r = InternalWhitespaceRenderer.of(m);
-			return r.render();
+			return InternalWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INDENTED_INLINE_SECTIONS(IndentedInlineSections.class, "sections", "Indented Inline Sections",
@@ -243,8 +219,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new IndentedInlineSections();
 			m.putAll(o);
-			var r = IndentedInlineSectionsRenderer.of(m);
-			return r.render();
+			return IndentedInlineSectionsRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_LINES(StandaloneLines.class, "sections", "Standalone Lines",
@@ -253,8 +228,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneLines();
 			m.putAll(o);
-			var r = StandaloneLinesRenderer.of(m);
-			return r.render();
+			return StandaloneLinesRenderer.of().execute(m);
 		}
 	},
 	INDENTED_STANDALONE_LINES(IndentedStandaloneLines.class, "sections", "Indented Standalone Lines",
@@ -263,8 +237,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new IndentedStandaloneLines();
 			m.putAll(o);
-			var r = IndentedStandaloneLinesRenderer.of(m);
-			return r.render();
+			return IndentedStandaloneLinesRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_LINE_ENDINGS(StandaloneLineEndings.class, "sections", "Standalone Line Endings",
@@ -273,8 +246,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneLineEndings();
 			m.putAll(o);
-			var r = StandaloneLineEndingsRenderer.of(m);
-			return r.render();
+			return StandaloneLineEndingsRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_PREVIOUS_LINE(StandaloneWithoutPreviousLine.class, "sections",
@@ -283,8 +255,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutPreviousLine();
 			m.putAll(o);
-			var r = StandaloneWithoutPreviousLineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutPreviousLineRenderer.of().execute(m);
 		}
 	},
 	STANDALONE_WITHOUT_NEWLINE(StandaloneWithoutNewline.class, "sections", "Standalone Without Newline",
@@ -293,8 +264,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new StandaloneWithoutNewline();
 			m.putAll(o);
-			var r = StandaloneWithoutNewlineRenderer.of(m);
-			return r.render();
+			return StandaloneWithoutNewlineRenderer.of().execute(m);
 		}
 	},
 	PADDING(Padding.class, "sections", "Padding", "Superfluous in-tag whitespace should be ignored.",
@@ -302,8 +272,7 @@ public enum SectionsSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Padding();
 			m.putAll(o);
-			var r = PaddingRenderer.of(m);
-			return r.render();
+			return PaddingRenderer.of().execute(m);
 		}
 	},;
 

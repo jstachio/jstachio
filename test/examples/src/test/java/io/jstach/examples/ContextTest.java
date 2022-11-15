@@ -9,7 +9,7 @@ public class ContextTest {
 	@Test
 	public void testParent() throws Exception {
 		ContextExample ce = ContextExample.forTest();
-		String r = ContextExampleRenderer.of(ce).render();
+		String r = ContextExampleRenderer.of().execute(ce);
 		System.out.println(r);
 
 		String expected = "\"foo, bar, baz\"";

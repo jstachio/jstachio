@@ -705,16 +705,6 @@ class ClassWriter {
 		println("        return INSTANCE;");
 		println("    }");
 		println("");
-		println("    /**");
-		println("     * Convience static factory to bind a model.");
-		println("     * @param data model");
-		println("     * @return render function");
-		println("     */");
-		println("    public static " + RENDER_FUNCTION_CLASS + " of(" + className + " data) {");
-		println("        return a -> of().execute(data, a);");
-		println("    }");
-
-		println("");
 		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
 		println("}");
 	}

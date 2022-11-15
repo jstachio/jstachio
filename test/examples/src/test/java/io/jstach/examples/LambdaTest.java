@@ -24,7 +24,7 @@ public class LambdaTest {
 		m.put("Speed", "Fast");
 		LambdaExample example = new LambdaExample("stuff", m);
 
-		var actual = LambdaExampleRenderer.of(example).render();
+		var actual = LambdaExampleRenderer.of().execute(example);
 		// We do not interpolate the results so the below is expected
 		String expected = """
 				<hello>Adam {{name}} </hello>: stuff

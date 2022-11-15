@@ -36,6 +36,8 @@ public class SpecGenerator {
 
 	static PrintStream out = System.out;
 
+	final String projectPath = "../spec-mustache";
+
 	public static void main(String[] args) {
 		try {
 			out.println("Start");
@@ -58,7 +60,7 @@ public class SpecGenerator {
 		}
 
 		default String packageName() {
-			return SpecModel.class.getPackageName() + "." + group();
+			return "io.jstach.spec.mustache.spec" + "." + group();
 		}
 
 		default String fileDir() {
@@ -217,11 +219,11 @@ public class SpecGenerator {
 				import {{templatePathAnnotation.namespace}};
 				{{/hasPartials}}
 
-				@{{annotation.name}}(template = "{{templateFileName}}")
+				@{{annotation.name}}(path = "{{templateFileName}}")
 				{{#hasPartials}}
 				@{{templatePathsAnnotation.name}}({
 				{{#partials}}
-				@{{templatePathAnnotation.name}}(name="{{name}}", template="{{path}}"),
+				@{{templatePathAnnotation.name}}(name="{{name}}", template="{{template}}"),
 				{{/partials}}
 				})
 				{{/hasPartials}}
@@ -238,16 +240,18 @@ public class SpecGenerator {
 
 		int j = 0;
 		for (var i : items) {
+			Path javaFilePath = Path.of(projectPath, i.javaFilePath());
+			Path templatePath = Path.of(projectPath, i.templateFilePath());
 			if (j == 0) {
-				File javaDir = Path.of(i.javaFilePath()).toFile().getParentFile();
-				File templateDir = Path.of(i.templateFilePath()).toFile().getParentFile();
+				File javaDir = javaFilePath.toFile().getParentFile();
+				File templateDir = templatePath.toFile().getParentFile();
 				cleanDirectory(javaDir);
 				cleanDirectory(templateDir);
 			}
 			if (i.enabled()) {
 				String javaCode = template.execute(i);
-				Files.writeString(Path.of(i.javaFilePath()), javaCode, StandardOpenOption.CREATE);
-				Files.writeString(Path.of(i.templateFilePath()), i.template());
+				Files.writeString(javaFilePath, javaCode, StandardOpenOption.CREATE);
+				Files.writeString(templatePath, i.template());
 				j++;
 			}
 			else {
@@ -276,7 +280,7 @@ public class SpecGenerator {
 				            {{#partials}}
 				            {{^-first}},{{/-first}}
 				            "{{name}}",
-				            "{{path}}"
+				            "{{template}}"
 				            {{/partials}}
 				        )
 				        {{/hasPartials}}
@@ -288,8 +292,7 @@ public class SpecGenerator {
 				            {{#enabled}}
 				            var m = new {{className}}();
 				            m.putAll(o);
-				            var r = {{className}}Renderer.of(m);
-				            return r.renderString();
+				            return {{className}}Renderer.of().execute(m);
 				            {{/enabled}}
 				            {{^enabled}}
 				            return "DISABLED TEST";
@@ -368,7 +371,7 @@ public class SpecGenerator {
 		}).compile(enumTemplate);
 		var templateList = new TemplateList(group, items);
 		String enumCode = template.execute(templateList);
-		Files.writeString(Path.of(templateList.javaFilePath()), enumCode);
+		Files.writeString(Path.of(projectPath, templateList.javaFilePath()), enumCode);
 
 		Map<String, String> model = Map.of("formatterAnnotation", JStacheFormatterTypes.class.getName(), "packageName",
 				templateList.packageName());
@@ -379,7 +382,7 @@ public class SpecGenerator {
 				""";
 
 		String packageInfoCode = Mustache.compiler().escapeHTML(false).compile(packageInfoTemplate).execute(model);
-		Files.writeString(Path.of(templateList.packageInfoFilePath()), packageInfoCode);
+		Files.writeString(Path.of(projectPath, templateList.packageInfoFilePath()), packageInfoCode);
 	}
 
 	void cleanDirectory(File directory) throws IOException {

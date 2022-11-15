@@ -36,12 +36,12 @@ public class SpecInterpolationTest extends AbstractSpecTest<InterpolationSpecTem
 
 	String render(InterpolationSpecTemplate specTemplate) {
 		return switch (specTemplate) {
-			case DOTTED_NAMES___BASIC_INTERPOLATION ->
-				DottedNamesBasicInterpolationRenderer.of(new Custom.DottedNamesBasicInterpolation(Person.Joe)).render();
-			case DOTTED_NAMES___AMPERSAND_INTERPOLATION -> DottedNamesAmpersandInterpolationRenderer
-					.of(new Custom.DottedNamesAmpersandInterpolation(Person.Joe)).render();
-			case DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION -> DottedNamesTripleMustacheInterpolationRenderer
-					.of(new Custom.DottedNamesTripleMustacheInterpolation(Person.Joe)).render();
+			case DOTTED_NAMES___BASIC_INTERPOLATION -> DottedNamesBasicInterpolationRenderer.of()
+					.execute(new Custom.DottedNamesBasicInterpolation(Person.Joe));
+			case DOTTED_NAMES___AMPERSAND_INTERPOLATION -> DottedNamesAmpersandInterpolationRenderer.of()
+					.execute(new Custom.DottedNamesAmpersandInterpolation(Person.Joe));
+			case DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION -> DottedNamesTripleMustacheInterpolationRenderer.of()
+					.execute(new Custom.DottedNamesTripleMustacheInterpolation(Person.Joe));
 			case DOTTED_NAMES___ARBITRARY_DEPTH -> throw new AssumptionViolatedException("Test not written yet");
 			case DOTTED_NAMES___INITIAL_RESOLUTION -> throw new AssumptionViolatedException("Test not written yet");
 			default -> specTemplate.render();

@@ -10,8 +10,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import io.jstach.RenderFunction;
-
 public class MainTest {
 
 	PrintStream out = System.out;
@@ -34,20 +32,18 @@ public class MainTest {
 			throw new IllegalStateException();
 		User1 user2 = new User1("Victor", 29, new String[] { "aaa", "bbb", "ccc" }, array, list1);
 
-		RenderableHtmlUser1Adapter.of(user2).render(out);
+		RenderableHtmlUser1Adapter.of().execute(user2, out);
 	}
 
 	@Test
 	public void testPage() throws Exception {
 		UUID testId = UUID.nameUUIDFromBytes("test".getBytes());
-		RenderFunction render = PageContainerRenderer.of(new PageContainer(new IdContainer(testId),
-				new Blog(List.of(new Post("Maverick", new IdContainer(testId)),
-						new Post("Ice Man", new IdContainer(testId)), new Post("Goose", new IdContainer(testId))
+		PageContainerRenderer.of()
+				.execute(new PageContainer(new IdContainer(testId),
+						new Blog(List.of(new Post("Maverick", new IdContainer(testId)),
+								new Post("Ice Man", new IdContainer(testId)), new Post("Goose", new IdContainer(testId))
 
-				))));
-
-		render.render(out);
-
+						))), out);
 	}
 
 	@Test

@@ -69,8 +69,6 @@ public class KnownTypes implements TypesMixin {
 
 	public final NativeType _boolean;
 
-	public final ObjectType _Renderable;
-
 	public final ObjectType _Error;
 
 	public final ObjectType _RuntimeException;
@@ -135,7 +133,6 @@ public class KnownTypes implements TypesMixin {
 		_double = b.nativeType(TypeKind.DOUBLE, Double.class, double.class);
 		_boolean = b.nativeType(TypeKind.BOOLEAN, Boolean.class, boolean.class);
 
-		_Renderable = b.objectType(Prisms.RENDER_FUNCTION_CLASS);
 		_Enum = b.objectType(Enum.class);
 		_String = b.objectType(String.class);
 

@@ -13,7 +13,6 @@ import com.samskivert.mustache.Mustache;
 import io.jstach.Appender;
 import io.jstach.Escaper;
 import io.jstach.Formatter;
-import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.Template;
 import io.jstach.TemplateInfo;
@@ -125,7 +124,6 @@ public class PrismsTest {
 				Formatter.class, //
 				DefaultFormatter.class, //
 				TemplateInfo.class, //
-				RenderFunction.class, //
 				JStacheServices.class, //
 				ContextNode.class, //
 				AutoFormatter.class, //

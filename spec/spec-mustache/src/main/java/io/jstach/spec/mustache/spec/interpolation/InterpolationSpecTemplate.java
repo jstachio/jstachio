@@ -1,8 +1,7 @@
 package io.jstach.spec.mustache.spec.interpolation;
 
-import java.util.Map;
-
 import io.jstach.spec.generator.SpecListing;
+import java.util.Map;
 
 public enum InterpolationSpecTemplate implements SpecListing {
 
@@ -12,8 +11,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new NoInterpolation();
 			m.putAll(o);
-			var r = NoInterpolationRenderer.of(m);
-			return r.render();
+			return NoInterpolationRenderer.of().execute(m);
 		}
 	},
 	BASIC_INTERPOLATION(BasicInterpolation.class, "interpolation", "Basic Interpolation",
@@ -22,8 +20,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicInterpolation();
 			m.putAll(o);
-			var r = BasicInterpolationRenderer.of(m);
-			return r.render();
+			return BasicInterpolationRenderer.of().execute(m);
 		}
 	},
 	HTML_ESCAPING(HTMLEscaping.class, "interpolation", "HTML Escaping", "Basic interpolation should be HTML escaped.",
@@ -32,8 +29,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new HTMLEscaping();
 			m.putAll(o);
-			var r = HTMLEscapingRenderer.of(m);
-			return r.render();
+			return HTMLEscapingRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE(TripleMustache.class, "interpolation", "Triple Mustache",
@@ -43,8 +39,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustache();
 			m.putAll(o);
-			var r = TripleMustacheRenderer.of(m);
-			return r.render();
+			return TripleMustacheRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND(Ampersand.class, "interpolation", "Ampersand", "Ampersand should interpolate without HTML escaping.",
@@ -53,8 +48,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new Ampersand();
 			m.putAll(o);
-			var r = AmpersandRenderer.of(m);
-			return r.render();
+			return AmpersandRenderer.of().execute(m);
 		}
 	},
 	BASIC_INTEGER_INTERPOLATION(BasicIntegerInterpolation.class, "interpolation", "Basic Integer Interpolation",
@@ -63,8 +57,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicIntegerInterpolation();
 			m.putAll(o);
-			var r = BasicIntegerInterpolationRenderer.of(m);
-			return r.render();
+			return BasicIntegerInterpolationRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE_INTEGER_INTERPOLATION(TripleMustacheIntegerInterpolation.class, "interpolation",
@@ -73,8 +66,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheIntegerInterpolation();
 			m.putAll(o);
-			var r = TripleMustacheIntegerInterpolationRenderer.of(m);
-			return r.render();
+			return TripleMustacheIntegerInterpolationRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND_INTEGER_INTERPOLATION(AmpersandIntegerInterpolation.class, "interpolation",
@@ -83,8 +75,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandIntegerInterpolation();
 			m.putAll(o);
-			var r = AmpersandIntegerInterpolationRenderer.of(m);
-			return r.render();
+			return AmpersandIntegerInterpolationRenderer.of().execute(m);
 		}
 	},
 	BASIC_DECIMAL_INTERPOLATION(BasicDecimalInterpolation.class, "interpolation", "Basic Decimal Interpolation",
@@ -93,8 +84,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicDecimalInterpolation();
 			m.putAll(o);
-			var r = BasicDecimalInterpolationRenderer.of(m);
-			return r.render();
+			return BasicDecimalInterpolationRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE_DECIMAL_INTERPOLATION(TripleMustacheDecimalInterpolation.class, "interpolation",
@@ -103,8 +93,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheDecimalInterpolation();
 			m.putAll(o);
-			var r = TripleMustacheDecimalInterpolationRenderer.of(m);
-			return r.render();
+			return TripleMustacheDecimalInterpolationRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND_DECIMAL_INTERPOLATION(AmpersandDecimalInterpolation.class, "interpolation",
@@ -113,8 +102,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandDecimalInterpolation();
 			m.putAll(o);
-			var r = AmpersandDecimalInterpolationRenderer.of(m);
-			return r.render();
+			return AmpersandDecimalInterpolationRenderer.of().execute(m);
 		}
 	},
 	BASIC_NULL_INTERPOLATION(BasicNullInterpolation.class, "interpolation", "Basic Null Interpolation",
@@ -123,8 +111,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicNullInterpolation();
 			m.putAll(o);
-			var r = BasicNullInterpolationRenderer.of(m);
-			return r.render();
+			return BasicNullInterpolationRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE_NULL_INTERPOLATION(TripleMustacheNullInterpolation.class, "interpolation",
@@ -133,8 +120,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheNullInterpolation();
 			m.putAll(o);
-			var r = TripleMustacheNullInterpolationRenderer.of(m);
-			return r.render();
+			return TripleMustacheNullInterpolationRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND_NULL_INTERPOLATION(AmpersandNullInterpolation.class, "interpolation", "Ampersand Null Interpolation",
@@ -143,8 +129,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandNullInterpolation();
 			m.putAll(o);
-			var r = AmpersandNullInterpolationRenderer.of(m);
-			return r.render();
+			return AmpersandNullInterpolationRenderer.of().execute(m);
 		}
 	},
 	BASIC_CONTEXT_MISS_INTERPOLATION(BasicContextMissInterpolation.class, "interpolation",
@@ -153,8 +138,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new BasicContextMissInterpolation();
 			m.putAll(o);
-			var r = BasicContextMissInterpolationRenderer.of(m);
-			return r.render();
+			return BasicContextMissInterpolationRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE_CONTEXT_MISS_INTERPOLATION(TripleMustacheContextMissInterpolation.class, "interpolation",
@@ -163,8 +147,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheContextMissInterpolation();
 			m.putAll(o);
-			var r = TripleMustacheContextMissInterpolationRenderer.of(m);
-			return r.render();
+			return TripleMustacheContextMissInterpolationRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND_CONTEXT_MISS_INTERPOLATION(AmpersandContextMissInterpolation.class, "interpolation",
@@ -173,8 +156,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandContextMissInterpolation();
 			m.putAll(o);
-			var r = AmpersandContextMissInterpolationRenderer.of(m);
-			return r.render();
+			return AmpersandContextMissInterpolationRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___BASIC_INTERPOLATION(DottedNamesBasicInterpolation.class, "interpolation",
@@ -184,8 +166,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesBasicInterpolation();
 			m.putAll(o);
-			var r = DottedNamesBasicInterpolationRenderer.of(m);
-			return r.render();
+			return DottedNamesBasicInterpolationRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___TRIPLE_MUSTACHE_INTERPOLATION(DottedNamesTripleMustacheInterpolation.class, "interpolation",
@@ -195,8 +176,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesTripleMustacheInterpolation();
 			m.putAll(o);
-			var r = DottedNamesTripleMustacheInterpolationRenderer.of(m);
-			return r.render();
+			return DottedNamesTripleMustacheInterpolationRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___AMPERSAND_INTERPOLATION(DottedNamesAmpersandInterpolation.class, "interpolation",
@@ -206,8 +186,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesAmpersandInterpolation();
 			m.putAll(o);
-			var r = DottedNamesAmpersandInterpolationRenderer.of(m);
-			return r.render();
+			return DottedNamesAmpersandInterpolationRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___ARBITRARY_DEPTH(DottedNamesArbitraryDepth.class, "interpolation", "Dotted Names - Arbitrary Depth",
@@ -217,8 +196,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesArbitraryDepth();
 			m.putAll(o);
-			var r = DottedNamesArbitraryDepthRenderer.of(m);
-			return r.render();
+			return DottedNamesArbitraryDepthRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAINS(DottedNamesBrokenChains.class, "interpolation", "Dotted Names - Broken Chains",
@@ -227,8 +205,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesBrokenChains();
 			m.putAll(o);
-			var r = DottedNamesBrokenChainsRenderer.of(m);
-			return r.render();
+			return DottedNamesBrokenChainsRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___BROKEN_CHAIN_RESOLUTION(DottedNamesBrokenChainResolution.class, "interpolation",
@@ -238,8 +215,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesBrokenChainResolution();
 			m.putAll(o);
-			var r = DottedNamesBrokenChainResolutionRenderer.of(m);
-			return r.render();
+			return DottedNamesBrokenChainResolutionRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___INITIAL_RESOLUTION(DottedNamesInitialResolution.class, "interpolation",
@@ -249,8 +225,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesInitialResolution();
 			m.putAll(o);
-			var r = DottedNamesInitialResolutionRenderer.of(m);
-			return r.render();
+			return DottedNamesInitialResolutionRenderer.of().execute(m);
 		}
 	},
 	DOTTED_NAMES___CONTEXT_PRECEDENCE(DottedNamesContextPrecedence.class, "interpolation",
@@ -259,8 +234,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new DottedNamesContextPrecedence();
 			m.putAll(o);
-			var r = DottedNamesContextPrecedenceRenderer.of(m);
-			return r.render();
+			return DottedNamesContextPrecedenceRenderer.of().execute(m);
 		}
 	},
 	INTERPOLATION___SURROUNDING_WHITESPACE(InterpolationSurroundingWhitespace.class, "interpolation",
@@ -269,8 +243,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InterpolationSurroundingWhitespace();
 			m.putAll(o);
-			var r = InterpolationSurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return InterpolationSurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE___SURROUNDING_WHITESPACE(TripleMustacheSurroundingWhitespace.class, "interpolation",
@@ -279,8 +252,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheSurroundingWhitespace();
 			m.putAll(o);
-			var r = TripleMustacheSurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return TripleMustacheSurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND___SURROUNDING_WHITESPACE(AmpersandSurroundingWhitespace.class, "interpolation",
@@ -289,8 +261,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandSurroundingWhitespace();
 			m.putAll(o);
-			var r = AmpersandSurroundingWhitespaceRenderer.of(m);
-			return r.render();
+			return AmpersandSurroundingWhitespaceRenderer.of().execute(m);
 		}
 	},
 	INTERPOLATION___STANDALONE(InterpolationStandalone.class, "interpolation", "Interpolation - Standalone",
@@ -299,8 +270,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InterpolationStandalone();
 			m.putAll(o);
-			var r = InterpolationStandaloneRenderer.of(m);
-			return r.render();
+			return InterpolationStandaloneRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE___STANDALONE(TripleMustacheStandalone.class, "interpolation", "Triple Mustache - Standalone",
@@ -309,8 +279,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheStandalone();
 			m.putAll(o);
-			var r = TripleMustacheStandaloneRenderer.of(m);
-			return r.render();
+			return TripleMustacheStandaloneRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND___STANDALONE(AmpersandStandalone.class, "interpolation", "Ampersand - Standalone",
@@ -319,8 +288,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandStandalone();
 			m.putAll(o);
-			var r = AmpersandStandaloneRenderer.of(m);
-			return r.render();
+			return AmpersandStandaloneRenderer.of().execute(m);
 		}
 	},
 	INTERPOLATION_WITH_PADDING(InterpolationWithPadding.class, "interpolation", "Interpolation With Padding",
@@ -329,8 +297,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new InterpolationWithPadding();
 			m.putAll(o);
-			var r = InterpolationWithPaddingRenderer.of(m);
-			return r.render();
+			return InterpolationWithPaddingRenderer.of().execute(m);
 		}
 	},
 	TRIPLE_MUSTACHE_WITH_PADDING(TripleMustacheWithPadding.class, "interpolation", "Triple Mustache With Padding",
@@ -339,8 +306,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new TripleMustacheWithPadding();
 			m.putAll(o);
-			var r = TripleMustacheWithPaddingRenderer.of(m);
-			return r.render();
+			return TripleMustacheWithPaddingRenderer.of().execute(m);
 		}
 	},
 	AMPERSAND_WITH_PADDING(AmpersandWithPadding.class, "interpolation", "Ampersand With Padding",
@@ -349,8 +315,7 @@ public enum InterpolationSpecTemplate implements SpecListing {
 		public String render(Map<String, Object> o) {
 			var m = new AmpersandWithPadding();
 			m.putAll(o);
-			var r = AmpersandWithPaddingRenderer.of(m);
-			return r.render();
+			return AmpersandWithPaddingRenderer.of().execute(m);
 		}
 	},;
 
