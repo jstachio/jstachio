@@ -28,6 +28,8 @@ public interface Prisms {
 	/* API classes */
 	public static final String RENDERER_CLASS = "io.jstach.Renderer";
 
+	public static final String TEMPLATE_CLASS = "io.jstach.Template";
+
 	public static final String RENDERER_PROVIDER_CLASS = "io.jstach.spi.RendererProvider";
 
 	public static final String APPENDER_CLASS = "io.jstach.Appender";

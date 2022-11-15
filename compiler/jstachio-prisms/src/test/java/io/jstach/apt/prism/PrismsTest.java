@@ -15,6 +15,7 @@ import io.jstach.Escaper;
 import io.jstach.Formatter;
 import io.jstach.RenderFunction;
 import io.jstach.Renderer;
+import io.jstach.Template;
 import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStacheContentType.AutoContentType;
 import io.jstach.annotation.JStacheFlags;
@@ -117,6 +118,7 @@ public class PrismsTest {
 	private static List<Class<?>> apiClasses() {
 		return List.of( //
 				Renderer.class, //
+				Template.class, //
 				RendererProvider.class, //
 				Appender.class, //
 				Escaper.class, //

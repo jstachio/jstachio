@@ -8,7 +8,7 @@ import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import io.jstach.RenderFunction;
-import io.jstach.Renderer;
+import io.jstach.Template;
 import io.jstach.TemplateInfo;
 
 enum JStacheServicesResolver implements JStacheServices {
@@ -53,7 +53,7 @@ enum JStacheServicesResolver implements JStacheServices {
 
 	}
 
-	static <T> Renderer<T> _renderer(Class<T> modelType) {
+	static <T> Template<T> _renderer(Class<T> modelType) {
 		return Renderers.getRenderer(modelType);
 	}
 
@@ -68,7 +68,7 @@ enum JStacheServicesResolver implements JStacheServices {
 	static TemplateInfo _templateInfo(Class<?> contextType) throws Exception {
 		Exception error;
 		try {
-			Renderer<?> r = _renderer(contextType);
+			Template<?> r = _renderer(contextType);
 			return r;
 		}
 		catch (Exception e) {

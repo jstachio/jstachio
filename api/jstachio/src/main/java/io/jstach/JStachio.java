@@ -47,7 +47,7 @@ public final class JStachio {
 	 * @param renderer to filter
 	 * @return the filtered rendering function
 	 */
-	public static <T> RenderFunction filter(T context, Renderer<T> renderer) {
+	public static <T> RenderFunction filter(T context, Template<T> renderer) {
 		return JStacheServices.find().filter(renderer, context, renderer.apply(context));
 	}
 
@@ -60,7 +60,7 @@ public final class JStachio {
 	@SuppressWarnings("unchecked")
 	private static RenderFunction filter(Object context, TemplateInfo template) {
 		RenderFunction rf;
-		if (template instanceof @SuppressWarnings("rawtypes") Renderer renderer) {
+		if (template instanceof @SuppressWarnings("rawtypes") Template renderer) {
 			rf = JStacheServices.find().filter(renderer, context, renderer.apply(context));
 		}
 		else {

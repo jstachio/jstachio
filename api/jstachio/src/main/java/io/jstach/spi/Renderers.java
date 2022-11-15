@@ -7,18 +7,21 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import io.jstach.Renderer;
+import io.jstach.Template;
+import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStache;
 
+//TODO renamed to Templates
 class Renderers {
 
 	private Renderers() {
 	}
 
-	public static <T> Renderer<T> getRenderer(Class<T> clazz) {
+	public static <T> Template<T> getRenderer(Class<T> clazz) {
 		try {
 			List<ClassLoader> classLoaders = collectClassLoaders(clazz.getClassLoader());
 
-			return getRenderer(clazz, classLoaders);
+			return (Template<T>) getRenderer(clazz, classLoaders);
 		}
 		catch (ClassNotFoundException | NoSuchMethodException e) {
 			throw new RuntimeException(e);
@@ -74,7 +77,7 @@ class Renderers {
 		ServiceLoader<RendererProvider> loader = ServiceLoader.load(RendererProvider.class, classLoader);
 		for (RendererProvider rp : loader) {
 			for (var renderer : rp.provideRenderers()) {
-				if (renderer != null && renderer.supportsType(clazz)) {
+				if (renderer instanceof TemplateInfo t && t.supportsType(clazz)) {
 					return renderer;
 				}
 			}

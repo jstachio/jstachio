@@ -571,7 +571,7 @@ class ClassWriter {
 
 		String implementsString = ifaces.isEmpty() ? "" : ", " + ifaces.stream().collect(Collectors.joining(", "));
 
-		String rendererImplements = " implements " + RENDERER_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
+		String rendererImplements = " implements " + TEMPLATE_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
 				+ ", " + RENDERER_PROVIDER_CLASS + implementsString;
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
