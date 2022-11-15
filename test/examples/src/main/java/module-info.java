@@ -1,6 +1,5 @@
 import javax.annotation.processing.Processor;
 
-import io.jstach.examples.JMustacheRenderService;
 import io.jstach.spi.JStacheServices;
 /**
  * Examples
@@ -26,6 +25,4 @@ module io.jstach.examples {
 
 	uses Processor;
 	uses JStacheServices;
-
-	provides JStacheServices with JMustacheRenderService;
 }

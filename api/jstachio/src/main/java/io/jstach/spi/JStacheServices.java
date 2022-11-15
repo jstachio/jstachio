@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.RenderFunction;
 import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
 import io.jstach.annotation.JStache;
@@ -24,18 +23,12 @@ import io.jstach.annotation.JStache;
 public interface JStacheServices {
 
 	/**
-	 * Advises or filters a previously applied template and model like a filter chain.
-	 * @param template info about the template
-	 * @param context the root model
-	 * @param previous the function returned early in the chain.
-	 * @return an advised render function or often the previous render function if no
-	 * advise is needed.
+	 * Provide a filter or not. The final filter is a composite and becomes a filter
+	 * chain.
+	 * @return filter if this service provider provies one or <code>null</code>
 	 */
-	default RenderFunction filter( //
-			TemplateInfo template, //
-			Object context, //
-			RenderFunction previous) {
-		return previous;
+	default @Nullable JStacheFilter provideFilter() {
+		return null;
 	}
 
 	/**

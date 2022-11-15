@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import io.jstach.RenderFunction;
+import org.eclipse.jdt.annotation.NonNull;
+
 import io.jstach.Template;
 import io.jstach.TemplateInfo;
 
@@ -23,10 +24,13 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private final JStacheConfig config;
 
-		private Holder(List<JStacheServices> services, JStacheConfig config) {
+		private final JStacheFilter filter;
+
+		private Holder(List<JStacheServices> services, JStacheConfig config, JStacheFilter filter) {
 			super();
 			this.services = services;
 			this.config = config;
+			this.filter = filter;
 		}
 
 		private static Holder of() {
@@ -34,6 +38,8 @@ enum JStacheServicesResolver implements JStacheServices {
 			List<JStacheServices> svs = new ArrayList<>();
 			it.forEach(svs::add);
 			List<JStacheConfig> configs = new ArrayList<>();
+			List<JStacheFilter> filters = new ArrayList<>();
+
 			for (var sv : svs) {
 				var c = sv.provideConfig();
 				if (c != null) {
@@ -43,12 +49,18 @@ enum JStacheServicesResolver implements JStacheServices {
 			JStacheConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
 			for (var sv : svs) {
 				sv.init(config);
+				filters.add(sv.provideFilter());
 			}
-			return new Holder(List.copyOf(svs), config);
+			JStacheFilter filter = new FilterChain(filters);
+			return new Holder(List.copyOf(svs), config, filter);
 		}
 
-		JStacheConfig getConfig() {
+		JStacheConfig provideConfig() {
 			return config;
+		}
+
+		JStacheFilter provideFilter() {
+			return filter;
 		}
 
 	}
@@ -62,7 +74,21 @@ enum JStacheServicesResolver implements JStacheServices {
 	}
 
 	static JStacheConfig _config() {
-		return Holder.INSTANCE.getConfig();
+		return Holder.INSTANCE.provideConfig();
+	}
+
+	static JStacheFilter _filter() {
+		return Holder.INSTANCE.provideFilter();
+	}
+
+	@Override
+	public @NonNull JStacheConfig provideConfig() {
+		return _config();
+	}
+
+	@Override
+	public @NonNull JStacheFilter provideFilter() {
+		return _filter();
 	}
 
 	static TemplateInfo _templateInfo(Class<?> contextType) throws Exception {
@@ -86,15 +112,6 @@ enum JStacheServicesResolver implements JStacheServices {
 		}
 		throw error;
 
-	}
-
-	@Override
-	public RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
-		RenderFunction current = previous;
-		for (var rs : Holder.INSTANCE.services) {
-			current = rs.filter(template, context, current);
-		}
-		return current;
 	}
 
 }

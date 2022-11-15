@@ -18,8 +18,8 @@ import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
 import io.jstach.JStachio;
-import io.jstach.RenderFunction;
 import io.jstach.TemplateInfo;
+import io.jstach.spi.AbstractJStacheEngine;
 import io.jstach.spi.JStacheConfig;
 import io.jstach.spi.JStacheServices;
 
@@ -39,7 +39,7 @@ import io.jstach.spi.JStacheServices;
  * @see JStachio
  */
 @MetaInfServices(JStacheServices.class)
-public class JMustacheRenderer implements JStacheServices {
+public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	/**
 	 * Property key of where jmustache will try to load template files. Default is
@@ -142,44 +142,45 @@ public class JMustacheRenderer implements JStacheServices {
 	}
 
 	@Override
-	public RenderFunction filter(TemplateInfo template, Object context, RenderFunction previous) {
+	protected boolean execute(Object context, Appendable a, TemplateInfo template, boolean broken) throws IOException {
 		if (!use.get()) {
-			return previous;
+			return false;
 		}
-		return (a) -> {
-			switch (template.templateSource()) {
-				case STRING -> {
-					Template t = createCompiler(template).compile(template.templateString());
-					String results = t.execute(context);
-					if (prefix != null) {
-						a.append(prefix);
-					}
-					a.append(results);
+
+		switch (template.templateSource()) {
+			case STRING -> {
+				Template t = createCompiler(template).compile(template.templateString());
+				String results = t.execute(context);
+				if (prefix != null) {
+					a.append(prefix);
 				}
-				case RESOURCE -> {
-					String templatePath = template.templatePath();
-					var path = Path.of(sourcePath, templatePath);
-					InputStream stream;
-					boolean broken = template.lastLoaded() > 0 || previous.isBroken();
-					if ((broken && path.toFile().isFile()) || path.toFile().lastModified() > initTime) {
-						stream = openFile(path);
-					}
-					else if (broken) {
-						stream = openResource(templatePath);
-					}
-					else {
-						previous.append(a);
-						return;
-					}
-					try (InputStream is = stream;
-							BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-						Template t = createCompiler(template).compile(br);
-						String results = t.execute(context);
-						a.append(results);
-					}
+				a.append(results);
+				return true;
+			}
+			case RESOURCE -> {
+				String templatePath = template.templatePath();
+				var path = Path.of(sourcePath, templatePath);
+				InputStream stream;
+				boolean _broken = template.lastLoaded() > 0 || broken;
+				if ((_broken && path.toFile().isFile()) || path.toFile().lastModified() > initTime) {
+					stream = openFile(path);
+				}
+				else if (broken) {
+					stream = openResource(templatePath);
+				}
+				else {
+					return false;
+				}
+				try (InputStream is = stream;
+						BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+					Template t = createCompiler(template).compile(br);
+					String results = t.execute(context);
+					a.append(results);
+					return true;
 				}
 			}
-		};
+		}
+		return false;
 	}
 
 	protected InputStream openFile(Path path) throws IOException {

@@ -2,7 +2,10 @@ package io.jstach;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.annotation.JStache;
+import io.jstach.spi.JStacheFilter;
 import io.jstach.spi.JStacheServices;
 
 /**
@@ -37,44 +40,28 @@ public final class JStachio {
 	 * @throws IOException if there is an error using the appendable
 	 */
 	public static void render(Object model, Appendable a) throws IOException {
-		filter(model).append(a);
+		filter(model).execute(model, a);
 	}
 
-	/**
-	 * Applies filtering to a Renderer.
-	 * @param <T> declared type of the context
-	 * @param context an instance of the context
-	 * @param renderer to filter
-	 * @return the filtered rendering function
-	 */
-	public static <T> RenderFunction filter(T context, Template<T> renderer) {
-		return JStacheServices.find().filter(renderer, context, renderer.apply(context));
-	}
-
-	/**
-	 * Applies filtering to a template.
-	 * @param context an instance of the context
-	 * @param template to filter
-	 * @return the filtered rendering function
-	 */
-	@SuppressWarnings("unchecked")
-	private static RenderFunction filter(Object context, TemplateInfo template) {
-		RenderFunction rf;
-		if (template instanceof @SuppressWarnings("rawtypes") Template renderer) {
-			rf = JStacheServices.find().filter(renderer, context, renderer.apply(context));
+	private static <T> Renderer<? super T> filter( //
+			TemplateInfo template, //
+			T context //
+	) {
+		@Nullable
+		JStacheFilter filter = JStacheServices.find().provideFilter();
+		if (filter == null) {
+			throw new NullPointerException("Root service missing filter chain");
 		}
-		else {
-			rf = JStacheServices.find().filter(template, context, RenderFunction.BrokenRenderFunction.INSTANCE);
-		}
-		return rf;
+		return filter.filter(template, context);
+
 	}
 
-	private static <T> RenderFunction filter(Object context) {
+	private static <T> Renderer<? super T> filter(T context) {
 		return filter(context, context.getClass());
 	}
 
-	private static <T> RenderFunction filter(Object context, Class<?> modelType) {
-		return filter(context, templateInfo(modelType));
+	private static <T> Renderer<? super T> filter(Object context, Class<? extends T> modelType) {
+		return filter(templateInfo(modelType), context);
 	}
 
 	private static TemplateInfo templateInfo(Class<?> modelType) {
@@ -100,7 +87,7 @@ public final class JStachio {
 	 * @return the passed in {@link StringBuilder}
 	 */
 	public static StringBuilder render(Object model, StringBuilder a) {
-		return filter(model).append(a);
+		return filter(model).execute(model, a);
 	}
 
 	/**
@@ -109,7 +96,7 @@ public final class JStachio {
 	 * @return the rendered string.
 	 */
 	public static String render(Object model) {
-		return filter(model).render();
+		return filter(model).execute(model);
 	}
 
 }
