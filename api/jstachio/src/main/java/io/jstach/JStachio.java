@@ -52,7 +52,9 @@ public final class JStachio {
 		if (filter == null) {
 			throw new NullPointerException("Root service missing filter chain");
 		}
-		return filter.filter(template, context);
+		return (model, a) -> {
+			filter.filter(template).process(model, a);
+		};
 
 	}
 

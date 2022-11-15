@@ -51,7 +51,7 @@ enum JStacheServicesResolver implements JStacheServices {
 				sv.init(config);
 				filters.add(sv.provideFilter());
 			}
-			JStacheFilter filter = new FilterChain(filters);
+			JStacheFilter filter = new CompositeFilterChain(filters);
 			return new Holder(List.copyOf(svs), config, filter);
 		}
 

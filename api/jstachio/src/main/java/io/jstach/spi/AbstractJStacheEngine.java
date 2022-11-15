@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import io.jstach.Renderer;
 import io.jstach.TemplateInfo;
 
 /**
@@ -21,15 +20,14 @@ public abstract class AbstractJStacheEngine implements JStacheFilter, JStacheSer
 	}
 
 	@Override
-	public final <T> Renderer<? super T> filter(TemplateInfo template, T context, Renderer<? super T> previous) {
+	public FilterChain filter(TemplateInfo template, FilterChain previous) {
 		return (model, a) -> {
-			boolean answer = execute(context, a, template, previous.isBroken());
+			boolean answer = execute(model, a, template, previous.isBroken(model));
 			if (answer) {
 				return;
 			}
-			previous.execute(model, a);
+			previous.process(model, a);
 		};
-
 	}
 
 	/**

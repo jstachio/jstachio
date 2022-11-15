@@ -64,13 +64,4 @@ public interface Renderer<T> {
 		return a -> this.execute(model, a);
 	}
 
-	/**
-	 * A marker method that the render function is broken and should not be used. This
-	 * mainly for the filter pipeline.
-	 * @return by default false
-	 */
-	default boolean isBroken() {
-		return false;
-	}
-
 }
