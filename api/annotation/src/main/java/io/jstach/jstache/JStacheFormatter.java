@@ -29,11 +29,20 @@ import java.util.ServiceLoader;
  * <p>
  * On the otherhand the Formatter interfaces allows potentially greater performance and or
  * if you need to format native types.
+ * <p>
+ * It is important to understand that formatters do not have controll what types are
+ * allowed to be formatted. *That is formatter might be able to output a certain class but
+ * the annotation processor will fail before that* as only certain types are allowed to be
+ * formatted. To control that see {@link JStacheFormatterTypes}.
+ * <p>
+ * Because formatters have to be rather omiscient of all types consider using a lambda
+ * {@link JStacheLambda} for formatting complex objects.
  *
  * @apiNote <em> n.b. the class annotated does not need to implement the formatter
  * interface. It just needs to provide it.</em>
  *
  * @author agentgt
+ * @see JStacheFormatterTypes
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

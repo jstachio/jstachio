@@ -5,6 +5,7 @@
     <artifactId>jstachio-api-parent</artifactId>
     <version>0.7.0-SNAPSHOT</version>
   </parent>
+  <!-- TODO rename to jstachio-jstache -->
   <artifactId>jstachio-annotation</artifactId>
   <name>jstachio-annotation</name>
   <packaging>jar</packaging>
