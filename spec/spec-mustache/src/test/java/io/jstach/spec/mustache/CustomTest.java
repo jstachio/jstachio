@@ -1,6 +1,6 @@
-package com.snaphop.staticmustache.spec;
+package io.jstach.spec.mustache;
 
-import static com.snaphop.staticmustache.spec.AbstractSpecTest.testSpec;
+import static io.jstach.spec.mustache.AbstractSpecTest.testSpec;
 
 import org.junit.Test;
 

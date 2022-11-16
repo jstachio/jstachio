@@ -1,4 +1,4 @@
-package com.snaphop.staticmustache.spec;
+package io.jstach.spec.mustache;
 
 import java.util.Collection;
 import java.util.EnumSet;
