@@ -1,2 +1,2 @@
-@io.jstach.annotation.JStacheFormatterTypes(patterns = ".*")
+@io.jstach.jstache.JStacheFormatterTypes(patterns = ".*")
 package io.jstach.spec.mustache.spec.partials;

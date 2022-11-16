@@ -2,7 +2,7 @@ package io.jstach.spec.generator;
 
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.spi.JStacheServices;
+import io.jstach.jstachio.spi.JStacheServices;
 
 @MetaInfServices(JStacheServices.class)
 public class SpecRenderService implements JStacheServices {

@@ -13,4 +13,4 @@
 @org.eclipse.jdt.annotation.NonNullByDefault
 package io.jstach.opt.jmustache;
 
-import io.jstach.JStachio;
+import io.jstach.jstachio.JStachio;

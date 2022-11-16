@@ -3,7 +3,7 @@ package io.jstach.spec.generator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.jstach.context.ContextNode;
+import io.jstach.jstachio.context.ContextNode;
 
 public class SpecModel implements ContextNode {
 

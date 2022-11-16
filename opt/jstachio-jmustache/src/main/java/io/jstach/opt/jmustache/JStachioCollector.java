@@ -19,7 +19,7 @@ import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.VariableFetcher;
 import com.samskivert.mustache.Template.Fragment;
 
-import io.jstach.annotation.JStacheLambda;
+import io.jstach.jstache.JStacheLambda;
 
 class JStachioCollector extends BasicCollector {
 

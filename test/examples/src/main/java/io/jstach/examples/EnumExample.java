@@ -1,8 +1,8 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStache;
-import io.jstach.annotation.JStacheFlags;
-import io.jstach.annotation.JStacheFlags.Flag;
+import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheFlags.Flag;
 
 @JStache(template = """
 		{{message}}{{#sign.RED_LIGHT}}

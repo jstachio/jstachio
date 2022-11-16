@@ -17,11 +17,11 @@ import org.kohsuke.MetaInfServices;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
-import io.jstach.JStachio;
-import io.jstach.TemplateInfo;
-import io.jstach.spi.AbstractJStacheEngine;
-import io.jstach.spi.JStacheConfig;
-import io.jstach.spi.JStacheServices;
+import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.spi.AbstractJStacheEngine;
+import io.jstach.jstachio.spi.JStacheConfig;
+import io.jstach.jstachio.spi.JStacheServices;
 
 /**
  * Use JMustache instead of JStachio for rendering. The idea of this extension is to allow

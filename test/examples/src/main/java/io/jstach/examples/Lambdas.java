@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.jstach.annotation.JStacheLambda;
-import io.jstach.annotation.JStacheLambda.Raw;
+import io.jstach.jstache.JStacheLambda;
+import io.jstach.jstache.JStacheLambda.Raw;
 
 interface Lambdas {
 

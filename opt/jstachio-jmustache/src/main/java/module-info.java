@@ -1,6 +1,6 @@
 
+import io.jstach.jstachio.spi.JStacheServices;
 import io.jstach.opt.jmustache.JMustacheRenderer;
-import io.jstach.spi.JStacheServices;
 
 /**
  * JMustache extension to JStachio to enable seamless fallback and
@@ -13,11 +13,11 @@ module io.jstach.opt.jmustache {
 	
 	exports io.jstach.opt.jmustache;
 	
-	opens io.jstach.opt.jmustache to io.jstach, com.samskivert.jmustache;
+	opens io.jstach.opt.jmustache to io.jstach.jstachio, com.samskivert.jmustache;
 	
 	requires static java.compiler;
 	
-	requires transitive io.jstach;
+	requires transitive io.jstach.jstachio;
 	requires transitive com.samskivert.jmustache;
 
 	requires static org.kohsuke.metainf_services;

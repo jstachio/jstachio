@@ -36,6 +36,6 @@
  * @author agentgt
  *
  */
-module io.jstach.annotation {
-	exports io.jstach.annotation;
+module io.jstach.jstache {
+	exports io.jstach.jstache;
 }

@@ -31,10 +31,10 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.JStache;
-import io.jstach.annotation.JStaches;
-import io.jstach.escapers.Html;
-import io.jstach.escapers.PlainText;
+import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStaches;
+import io.jstach.jstachio.escapers.Html;
+import io.jstach.jstachio.escapers.PlainText;
 
 /**
  * @author Victor Nazarov

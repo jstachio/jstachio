@@ -1,17 +1,8 @@
 import javax.annotation.processing.Processor;
 
-import io.jstach.spi.JStacheServices;
-/**
- * Examples
- * 
- * @author agent
- *
- * @provides JStacheServices
- * @uses Processor
- * @uses JStacheServices
- */
+import io.jstach.jstachio.spi.JStacheServices;
 module io.jstach.examples {
-	requires transitive io.jstach;
+	requires transitive io.jstach.jstachio;
 	requires java.compiler;
 	requires org.kohsuke.metainf_services;
 	requires com.samskivert.jmustache;
@@ -19,7 +10,7 @@ module io.jstach.examples {
 
 	requires static org.eclipse.jdt.annotation;
 
-	opens io.jstach.examples to com.samskivert.jmustache, io.jstach;
+	opens io.jstach.examples to com.samskivert.jmustache, io.jstach.jstachio;
 
 	exports io.jstach.examples to org.mapstruct;
 

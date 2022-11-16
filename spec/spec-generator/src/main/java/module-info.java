@@ -9,7 +9,7 @@ module io.jstach.spec.generator {
 	
 	opens io.jstach.spec.generator to com.samskivert.jmustache;
 
-	requires transitive io.jstach;
+	requires transitive io.jstach.jstachio;
 
 	requires static org.eclipse.jdt.annotation;
 

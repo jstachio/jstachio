@@ -31,7 +31,7 @@ package io.jstach.examples;
 
 import java.util.List;
 
-import io.jstach.annotation.JStache;
+import io.jstach.jstache.JStache;
 
 /**
  * @author Victor Nazarov

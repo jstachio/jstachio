@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import io.jstach.JStachio;
-import io.jstach.annotation.JStache;
+import io.jstach.jstache.JStache;
+import io.jstach.jstachio.JStachio;
 
 public class ServiceTest {
 

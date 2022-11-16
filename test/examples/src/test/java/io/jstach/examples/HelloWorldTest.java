@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.jstach.JStachio;
-import io.jstach.annotation.JStache;
-import io.jstach.annotation.JStacheLambda;
+import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheLambda;
+import io.jstach.jstachio.JStachio;
 
 public class HelloWorldTest {
 

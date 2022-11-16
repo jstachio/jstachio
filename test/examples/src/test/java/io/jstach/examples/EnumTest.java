@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import io.jstach.JStachio;
 import io.jstach.examples.EnumExample.Sign;
+import io.jstach.jstachio.JStachio;
 
 public class EnumTest {
 

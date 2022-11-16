@@ -10,21 +10,21 @@ import org.junit.Test;
 
 import com.samskivert.mustache.Mustache;
 
-import io.jstach.Appender;
-import io.jstach.Escaper;
-import io.jstach.Formatter;
-import io.jstach.Renderer;
-import io.jstach.Template;
-import io.jstach.TemplateInfo;
-import io.jstach.annotation.JStacheContentType.AutoContentType;
-import io.jstach.annotation.JStacheFlags;
-import io.jstach.annotation.JStacheFormatter.AutoFormatter;
-import io.jstach.context.ContextNode;
-import io.jstach.escapers.Html;
-import io.jstach.escapers.PlainText;
-import io.jstach.formatters.DefaultFormatter;
-import io.jstach.spi.JStacheServices;
-import io.jstach.spi.RendererProvider;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheContentType.AutoContentType;
+import io.jstach.jstache.JStacheFormatter.AutoFormatter;
+import io.jstach.jstachio.Appender;
+import io.jstach.jstachio.Escaper;
+import io.jstach.jstachio.Formatter;
+import io.jstach.jstachio.Renderer;
+import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.context.ContextNode;
+import io.jstach.jstachio.escapers.Html;
+import io.jstach.jstachio.escapers.PlainText;
+import io.jstach.jstachio.formatters.DefaultFormatter;
+import io.jstach.jstachio.spi.JStacheServices;
+import io.jstach.jstachio.spi.RendererProvider;
 
 public class PrismsTest {
 
@@ -136,18 +136,18 @@ public class PrismsTest {
 
 	private static List<Class<?>> allAnnotations() {
 		return List.of(//
-				io.jstach.annotation.JStaches.class, //
-				io.jstach.annotation.JStache.class, //
-				io.jstach.annotation.JStachePath.class, //
-				io.jstach.annotation.JStacheInterfaces.class, //
-				io.jstach.annotation.JStachePartials.class, //
-				io.jstach.annotation.JStachePartial.class, //
-				io.jstach.annotation.JStacheLambda.class, //
-				io.jstach.annotation.JStacheLambda.Raw.class, //
-				io.jstach.annotation.JStacheContentType.class, //
-				io.jstach.annotation.JStacheFormatter.class, //
-				io.jstach.annotation.JStacheFormatterTypes.class, //
-				io.jstach.annotation.JStacheFlags.class //
+				io.jstach.jstache.JStaches.class, //
+				io.jstach.jstache.JStache.class, //
+				io.jstach.jstache.JStachePath.class, //
+				io.jstach.jstache.JStacheInterfaces.class, //
+				io.jstach.jstache.JStachePartials.class, //
+				io.jstach.jstache.JStachePartial.class, //
+				io.jstach.jstache.JStacheLambda.class, //
+				io.jstach.jstache.JStacheLambda.Raw.class, //
+				io.jstach.jstache.JStacheContentType.class, //
+				io.jstach.jstache.JStacheFormatter.class, //
+				io.jstach.jstache.JStacheFormatterTypes.class, //
+				io.jstach.jstache.JStacheFlags.class //
 		);
 	}
 

@@ -1,6 +1,6 @@
 package io.jstach.examples;
 
-import io.jstach.annotation.JStache;
+import io.jstach.jstache.JStache;
 
 @JStache(template = """
 		Hello {{name}}!""")

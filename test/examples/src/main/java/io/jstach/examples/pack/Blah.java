@@ -2,7 +2,7 @@ package io.jstach.examples.pack;
 
 import java.util.UUID;
 
-import io.jstach.annotation.JStache;
+import io.jstach.jstache.JStache;
 
 @JStache(path = "blah")
 public class Blah implements BlahInf {

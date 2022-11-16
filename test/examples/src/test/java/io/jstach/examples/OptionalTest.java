@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import io.jstach.JStachio;
+import io.jstach.jstachio.JStachio;
 
 public class OptionalTest {
 

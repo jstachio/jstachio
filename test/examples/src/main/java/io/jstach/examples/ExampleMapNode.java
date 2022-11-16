@@ -3,8 +3,8 @@ package io.jstach.examples;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.jstach.annotation.JStache;
-import io.jstach.context.ContextNode;
+import io.jstach.jstache.JStache;
+import io.jstach.jstachio.context.ContextNode;
 
 @JStache(path = "example-map-node.mustache")
 class ExampleMapNode implements ContextNode {

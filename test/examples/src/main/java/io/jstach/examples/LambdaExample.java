@@ -2,11 +2,11 @@ package io.jstach.examples;
 
 import java.util.Map;
 
-import io.jstach.annotation.JStache;
-import io.jstach.annotation.JStacheFlags;
-import io.jstach.annotation.JStacheLambda;
-import io.jstach.annotation.JStacheLambda.Raw;
-import io.jstach.annotation.JStacheFlags.Flag;
+import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheLambda;
+import io.jstach.jstache.JStacheFlags.Flag;
+import io.jstach.jstache.JStacheLambda.Raw;
 
 @JStache(path = "lambda-example.mustache")
 @JStacheFlags(flags = { Flag.DEBUG })

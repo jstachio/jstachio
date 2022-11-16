@@ -25,7 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Escaper;
 
-import io.jstach.annotation.JStacheFormatterTypes;
+import io.jstach.jstache.JStacheFormatterTypes;
 
 import com.samskivert.mustache.Template;
 
@@ -99,15 +99,15 @@ public class SpecGenerator {
 		}
 
 		ClassRef annotation() {
-			return new ClassRef(io.jstach.annotation.JStache.class);
+			return new ClassRef(io.jstach.jstache.JStache.class);
 		}
 
 		ClassRef templatePathsAnnotation() {
-			return new ClassRef(io.jstach.annotation.JStachePartials.class);
+			return new ClassRef(io.jstach.jstache.JStachePartials.class);
 		}
 
 		ClassRef templatePathAnnotation() {
-			return new ClassRef(io.jstach.annotation.JStachePartial.class);
+			return new ClassRef(io.jstach.jstache.JStachePartial.class);
 		}
 
 		String templateName() {
