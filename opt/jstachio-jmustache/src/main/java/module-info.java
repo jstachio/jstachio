@@ -1,5 +1,5 @@
 
-import io.jstach.jmustache.JMustacheRenderer;
+import io.jstach.opt.jmustache.JMustacheRenderer;
 import io.jstach.spi.JStacheServices;
 
 /**
@@ -9,11 +9,11 @@ import io.jstach.spi.JStacheServices;
  *
  * @provides JStacheServices
  */
-module io.jstach.jmustache {
+module io.jstach.opt.jmustache {
 	
-	exports io.jstach.jmustache;
+	exports io.jstach.opt.jmustache;
 	
-	opens io.jstach.jmustache to io.jstach, com.samskivert.jmustache;
+	opens io.jstach.opt.jmustache to io.jstach, com.samskivert.jmustache;
 	
 	requires static java.compiler;
 	

@@ -374,8 +374,7 @@
                 </group>
                 <group>
                   <title>Optional</title>
-                  <!-- todo maybe make all optional packages be io.jstach.opt.* -->
-                  <packages>io.jstach.jmustache</packages>
+                  <packages>io.jstach.opt.*</packages>
                 </group>
               </groups>
               <additionalJOptions>--allow-script-in-comments</additionalJOptions>

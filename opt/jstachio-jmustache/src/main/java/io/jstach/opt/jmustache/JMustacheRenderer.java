@@ -1,4 +1,4 @@
-package io.jstach.jmustache;
+package io.jstach.opt.jmustache;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -12,6 +12,7 @@ import org.junit.Test;
 import io.jstach.JStachio;
 import io.jstach.annotation.JStache;
 import io.jstach.annotation.JStacheLambda;
+import io.jstach.opt.jmustache.JMustacheRenderer;
 import io.jstach.spi.JStacheServices;
 
 public class JMustacheRendererTest {
