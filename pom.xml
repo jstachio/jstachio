@@ -19,6 +19,8 @@
     <!-- The original timestamp for first release -->
     <project.build.outputTimestamp>1667844704</project.build.outputTimestamp>
     <javadoc.stylesheet></javadoc.stylesheet>
+    <jstachio.doc.resources>../</jstachio.doc.resources>
+
     <deploy>snapshot</deploy>
   </properties>
   <modules>
@@ -272,6 +274,11 @@
           <version>3.4.1</version>
         </plugin>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.moditect</groupId>
           <artifactId>moditect-maven-plugin</artifactId>
           <version>1.0.0.RC2</version>
@@ -344,7 +351,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <aggregate>true</aggregate>
               <show>public</show>
               <overview>src/main/javadoc/overview.html</overview>
               <doctitle>jstachio API ${project.version}</doctitle>

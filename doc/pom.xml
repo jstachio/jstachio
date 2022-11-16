@@ -9,6 +9,7 @@
   <packaging>pom</packaging>
   <properties>
     <javadoc.stylesheet>jstachio.css</javadoc.stylesheet>
+    <jstachio.doc.resources>/resources</jstachio.doc.resources>
   </properties>
   <profiles>
     <profile>
@@ -35,8 +36,6 @@
               <bottom>
                 <![CDATA[
                 Copyright &#169; {currentYear} {organizationName}. All rights reserved.
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js"></script>
-                <script src="resources/jstachio.js"></script>
                 ]]>
               </bottom>
               <addStylesheets>
@@ -62,6 +61,26 @@
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>java</executable>
+              <!-- optional -->
+              <workingDirectory>../bin</workingDirectory>
+              <arguments>
+                <argument>src/main/java/io/jstach/script/JavadocJavascript.java</argument>
+              </arguments>
+            </configuration>
           </plugin>
         </plugins>
       </build>

@@ -9,3 +9,4 @@
    hasInnerContainers: true,
    collapseDepth: 4
  });
+ $('#related-package-summary').parent().detach().appendTo('.summary-list');
