@@ -56,7 +56,8 @@ public interface JStacheFilter {
 			FilterChain previous);
 
 	/**
-	 * Applies filter with previous filter broken unless the template is a renderer.
+	 * Applies filter with previous filter broken unless the template is a filter chain
+	 * which generated renderers usually are.
 	 * @param template info about the template
 	 * @return an advised render function or often the previous render function if no
 	 * advise is needed.

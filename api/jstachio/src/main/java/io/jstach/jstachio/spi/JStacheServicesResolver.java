@@ -1,14 +1,19 @@
 package io.jstach.jstachio.spi;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 
@@ -16,7 +21,7 @@ enum JStacheServicesResolver implements JStacheServices {
 
 	INSTANCE;
 
-	private static class Holder {
+	private static class Holder implements JStachio {
 
 		private static Holder INSTANCE = Holder.of();
 
@@ -26,11 +31,15 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private final JStacheFilter filter;
 
-		private Holder(List<JStacheServices> services, JStacheConfig config, JStacheFilter filter) {
+		private final JStachio jstachio;
+
+		private Holder(List<JStacheServices> services, JStacheConfig config, JStacheFilter filter,
+				@Nullable JStachio jstachio) {
 			super();
 			this.services = services;
 			this.config = config;
 			this.filter = filter;
+			this.jstachio = jstachio == null ? this : jstachio;
 		}
 
 		private static Holder of() {
@@ -47,20 +56,76 @@ enum JStacheServicesResolver implements JStacheServices {
 				}
 			}
 			JStacheConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
+			@Nullable
+			JStachio jstachio = null;
+
 			for (var sv : svs) {
 				sv.init(config);
 				filters.add(sv.provideFilter());
+				var js = sv.provideJStachio();
+				if (jstachio != null && js != null) {
+					throw new ServiceConfigurationError("Multiple JStachios found by service loader. first = "
+							+ jstachio.getClass().getName() + ", second = " + js.getClass().getName());
+				}
+				jstachio = js;
 			}
+
 			JStacheFilter filter = new CompositeFilterChain(filters);
-			return new Holder(List.copyOf(svs), config, filter);
+			return new Holder(List.copyOf(svs), config, filter, jstachio);
 		}
 
-		JStacheConfig provideConfig() {
+		@Override
+		public void execute(Object model, Appendable appendable) throws IOException {
+			TemplateInfo template = template(model.getClass());
+			filter.filter(template).process(model, appendable);
+		}
+
+		@Override
+		public String execute(Object model) {
+			return execute(model, new StringBuilder()).toString();
+		}
+
+		@Override
+		public StringBuilder execute(Object model, StringBuilder sb) {
+			try {
+				execute(model, (Appendable) sb);
+				return sb;
+			}
+			catch (IOException e) {
+				sneakyThrow0(e);
+				throw new UncheckedIOException(e);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		static <E extends Throwable> void sneakyThrow0(final Throwable x) throws E {
+			throw (E) x;
+		}
+
+		protected TemplateInfo template(Class<?> modelType) throws IOException {
+			TemplateInfo template;
+			try {
+				template = _templateInfo(modelType);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			if (template == null) {
+				throw new RuntimeException("template not found for modelType: " + modelType);
+			}
+			return template;
+		}
+
+		JStacheConfig config() {
 			return config;
 		}
 
-		JStacheFilter provideFilter() {
+		JStacheFilter filter() {
 			return filter;
+		}
+
+		JStachio jstachio() {
+			return jstachio;
 		}
 
 	}
@@ -74,11 +139,11 @@ enum JStacheServicesResolver implements JStacheServices {
 	}
 
 	static JStacheConfig _config() {
-		return Holder.INSTANCE.provideConfig();
+		return Holder.INSTANCE.config();
 	}
 
 	static JStacheFilter _filter() {
-		return Holder.INSTANCE.provideFilter();
+		return Holder.INSTANCE.filter();
 	}
 
 	@Override
@@ -89,6 +154,11 @@ enum JStacheServicesResolver implements JStacheServices {
 	@Override
 	public @NonNull JStacheFilter provideFilter() {
 		return _filter();
+	}
+
+	@Override
+	public @NonNull JStachio provideJStachio() {
+		return Holder.INSTANCE.jstachio();
 	}
 
 	static TemplateInfo _templateInfo(Class<?> contextType) throws Exception {

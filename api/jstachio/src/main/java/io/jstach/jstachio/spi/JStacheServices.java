@@ -6,16 +6,12 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.jstache.JStache;
-import io.jstach.jstachio.Renderer;
-import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.JStachio;
 
 /**
  * An SPI extension point via the {@link ServiceLoader} that is a factory that provides
  * services. All methods are optional (default) so that implementations can decide what
  * particularly plugins/services they want to provide.
- *
- * TODO this still in the works and subject to change greatly!
  *
  * @author agentgt
  *
@@ -48,11 +44,19 @@ public interface JStacheServices {
 	}
 
 	/**
+	 * Provide a rendering engine or not. Only one JStachio is allowed and if multiples
+	 * are found other than the default a {@link RuntimeException} will be thrown.
+	 * @return jstachio rendering engine
+	 */
+	default @Nullable JStachio provideJStachio() {
+		return null;
+	}
+
+	/**
 	 * Called before the services are used but after {@link #provideConfig()}.
 	 * @param config the config never null
 	 */
 	default void init(JStacheConfig config) {
-
 	}
 
 	/**
@@ -79,29 +83,6 @@ public interface JStacheServices {
 	 */
 	public static <T extends JStacheServices> Optional<T> find(Class<T> c) {
 		return findAll().filter(s -> c.isAssignableFrom(s.getClass())).map(c::cast).findFirst();
-	}
-
-	/**
-	 * Resolve template information if possible.
-	 * <p>
-	 * Implementations are only called if the compiled renderers is missing.
-	 * @param contextType models class.
-	 * @return resolved template info
-	 * @throws Exception if any problem happens creating template information
-	 */
-	public static TemplateInfo templateInfo(Class<?> contextType) throws Exception {
-		return JStacheServicesResolver._templateInfo(contextType);
-	}
-
-	/**
-	 * Finds a renderer for a model class.
-	 * @param <T> the type of model.
-	 * @param modelType the class of the model (annotated with {@link JStache})
-	 * @return renderer for the specific type.
-	 * @throws RuntimeException if the renderer is not found for the type.
-	 */
-	public static <T> Renderer<T> renderer(Class<T> modelType) {
-		return JStacheServicesResolver._renderer(modelType);
 	}
 
 }
