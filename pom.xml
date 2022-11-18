@@ -1,10 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.jstach</groupId>
   <artifactId>jstachio-maven-parent</artifactId>
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.8.0-SNAPSHOT</version>
   <url>https://github.com/jstachio/jstachio</url>
   <description>Compile time typesafe Java Mustache templating engine.</description>
   <organization>
@@ -17,8 +17,8 @@
     <metainf-services.version>1.9</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <!-- The original timestamp for first release -->
-    <project.build.outputTimestamp>1667844704</project.build.outputTimestamp>
-    <javadoc.stylesheet></javadoc.stylesheet>
+    <project.build.outputTimestamp>1668805294104</project.build.outputTimestamp>
+    <javadoc.stylesheet/>
     <jstachio.doc.resources>../</jstachio.doc.resources>
 
     <deploy>snapshot</deploy>
