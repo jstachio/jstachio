@@ -1,6 +1,7 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
+import java.util.ServiceLoader;
 
 import io.jstach.jstache.JStache;
 import io.jstach.jstachio.spi.JStacheServices;
@@ -8,6 +9,10 @@ import io.jstach.jstachio.spi.JStacheServices;
 /**
  * Render models by using reflection to lookup renderers as well as apply filtering and
  * fallback mechanisms.
+ * <p>
+ * The static <strong><code>render</code></strong> methods are convenience methods that
+ * will use the ServiceLoader based JStachio which loads all extensions via the
+ * {@link ServiceLoader}.
  *
  * @see JStacheServices
  * @see JStache
@@ -15,55 +20,58 @@ import io.jstach.jstachio.spi.JStacheServices;
 public interface JStachio extends Renderer<Object> {
 
 	/**
-	 * Finds a render by using the models class if possible and then applies filtering and
-	 * then finally render the model by writing to the appendable.
+	 * Finds a template by using the models class if possible and then applies filtering
+	 * and then finally render the model by writing to the appendable.
 	 * <p>
 	 * {@inheritDoc}
 	 */
 	public void execute(Object model, Appendable appendable) throws IOException;
 
 	/**
-	 * Finds a render by using the models class if possible and then applies filtering and
-	 * then finally render the model by writing to the {@link StringBuilder}.
+	 * Finds a template by using the models class if possible and then applies filtering
+	 * and then finally render the model by writing to the {@link StringBuilder}.
 	 * <p>
 	 * {@inheritDoc}
 	 */
 	public StringBuilder execute(Object model, StringBuilder sb);
 
 	/**
-	 * Finds a render by using the models class if possible and then applies filtering and
-	 * then finally render the model to a String.
+	 * Finds a template by using the models class if possible and then applies filtering
+	 * and then finally render the model to a String.
 	 * <p>
 	 * {@inheritDoc}
 	 */
 	public String execute(Object model);
 
 	/**
-	 * Finds a render by using the models class if possible and then applies filtering and
-	 * then finally render the model by writting to the appendable.
+	 * Executes the ServiceLoader instance of JStachio
+	 * {@link #execute(Object, Appendable)}.
 	 * @param model never <code>null</code>
 	 * @param a appendable never <code>null</code>
 	 * @throws IOException if there is an error using the appendable
+	 * @see #execute(Object, Appendable)
 	 */
 	public static void render(Object model, Appendable a) throws IOException {
 		of().execute(model, a);
 	}
 
 	/**
-	 * Finds a render by using the models class and then render the model by writting to
-	 * the passed StringBuilder.
+	 * Executes the ServiceLoader instance of JStachio
+	 * {@link #execute(Object, StringBuilder)}.
 	 * @param model never <code>null</code>
 	 * @param a appendable never <code>null</code>
 	 * @return the passed in {@link StringBuilder}
+	 * @see #execute(Object, StringBuilder)
 	 */
 	public static StringBuilder render(Object model, StringBuilder a) {
 		return of().execute(model, a);
 	}
 
 	/**
-	 * Convenience method to render a model as a String.
+	 * Executes the ServiceLoader instance of JStachio {@link #execute(Object)}.
 	 * @param model the root context model. Never <code>null</code>.
 	 * @return the rendered string.
+	 * @see #execute(Object)
 	 */
 	public static String render(Object model) {
 		return of().execute(model);

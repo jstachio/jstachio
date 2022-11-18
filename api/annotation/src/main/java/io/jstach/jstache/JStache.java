@@ -5,6 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Map;
+import java.util.Optional;
 
 import io.jstach.jstache.JStacheContentType.AutoContentType;
 import io.jstach.jstache.JStacheFormatter.AutoFormatter;
@@ -14,9 +16,12 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * <p>
  * Classes annotated are typically called "models" as they will be the root context for
  * the template.
- * 
- * <h2>Contents</h2> <div class="js-toc"></div> <div class="js-toc-content">
- * <h2 id="_example">Example Usage</h2> <pre class="code">
+ *
+ * <h2 class="toc-title">Contents</h2> <div class="js-toc"></div>
+ * <div class="js-toc-content">
+ * <h2 id="_example">Example Usage</h2>
+ *
+ * <pre class="code">
  * <code>
  * &#64;JStache(template = &quot;&quot;&quot;
  *     {{#people}}
@@ -50,17 +55,20 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * versa. The way to create Renderer (what we call the model and template combined) is to
  * annotate your model with {@link io.jstach.jstache.JStache}.
  *
- * <h3 id="_models">Models</h3> <strong>{@link io.jstach.jstache.JStache}</strong>
+ * <h3 id="_models">Models</h3> <strong>&#64;{@link io.jstach.jstache.JStache}</strong>
  * <p>
  * A JStachio model can be any class type including Records and Enums so long as you can
  * you annotate the type with {@link io.jstach.jstache.JStache}.
  * <p>
  * When the compiler runs the annotation processor will create readable java classes that
  * are suffixed with "Renderer" which will have methods to write the model to an
- * {@link java.lang.Appendable}.
+ * {@link java.lang.Appendable}. The generated instance methods are named
+ * <code>execute</code> and the corresponding static methods are named
+ * <code>render</code>.
  * <p>
- * <em>TIP: If you like to see the output usually annotation processor generated classes
- * get put in <code>target/generated-sources/annotations</code> for Maven projects.</em>
+ * <em>TIP: If you like to see the generated classes from the annotation processor they
+ * usually get put in <code>target/generated-sources/annotations</code> for Maven
+ * projects.</em>
  *
  * <h4 id="_decorating_models">Adding interfaces to models and renderers</h4>
  * <strong>{@link io.jstach.jstache.JStacheInterfaces}</strong>
@@ -104,27 +112,127 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * how that is done with {@link io.jstach.jstache.JStachePath}.
  *
  * <h4 id="_partials">Partials</h4>
- * <strong><code>{{&gt; partial }} and {{&lt; partial }}</code></strong>
+ * <strong><code>{{&gt; partial }} and {{&lt; parent }}{{/parent}} </code></strong>
  * <p>
- * JStachio supports Mustache partials and by default works just like template resources
- * such that {@link io.jstach.jstache.JStachePath} is used for resolution if specified.
+ * JStachio supports Mustache partials (and parents) and by default works just like
+ * template resources such that {@link io.jstach.jstache.JStachePath} is used for
+ * resolution if specified.
  * <p>
  * You may also remap partial names via {@link io.jstach.jstache.JStachePartial} to a
  * different location as well as to an inline template (string literal).
  *
- * <h2 id="_formatting">Formatting variables</h2> JStachio has strict control on what
- * happens when you output a variable like <code>{{variable}}</code> or
- * <code>{{{variable}}}</code>.
+ * <h3 id="_context_ext">Context Lookup</h3>
+ *
+ * JStachio unlike almost all other Mustache implementations does its context lookup
+ * statically during compile time. Consequently JStachio pedantically is early bound where
+ * as Mustache is traditionally late bound. Most of the time this difference will not
+ * manifest itself so long as you avoid using {@link Map} in your models.
+ * <p>
+ * The other notable difference is JStachio does not like missing variables (a compiler
+ * error will happen) where as many Mustache implementations sometimes allow this and will
+ * just not output anything.
+ *
+ * <h4 id="_context_java_types">Interpretation of Java-types and values</h4> When some
+ * value is null nothing is rendered if it is used as a section. If some value is null and
+ * it is used as a variable a null pointer exception will be thrown by default. This is
+ * configurable via {@link JStacheFormatterTypes} and custom {@link JStacheFormatter}.
+ * <p>
+ * Boxed and unboxed <code>boolean</code> can be used for mustache-sections. Section is
+ * only rendered if value is true.
+ * <p>
+ * {@link Optional} empty is treated like an empty list or a boolean false. Optional
+ * values are always assumed to be non null.
+ * <p>
+ * {@code Map<String,?>} follow different nesting rules than other types. If you are in a
+ * {@link Map} nested section the rest of the context is checked before the
+ * <code>Map</code>. Once that is done the Map is then checked using
+ * {@link Map#get(Object)}' where the key is the <em>last part of the dotted name</em>.
+ * <p>
+ * Data-binding contexts are nested. Names are looked up in innermost context first. If
+ * name is not found in current context, parent context is inspected. This process
+ * continues up to root context.
+ *
+ * In each rendering context name lookup is performed as follows:
+ *
+ * <ol>
+ * <li>Method with requested name is looked up. Method should have no arguments and should
+ * throw no checked exceptions. If there is such method it is used to fetch actual data to
+ * render. Compile-time error is raised if there is method with given name, but it is not
+ * accessible, has parameters or throws checked exceptions.</li>
+ * <li>Method with requested name and annotated correctly with {@link JStacheLambda} and
+ * the lookup is for a section than the method lambda method will be used.</li>
+ * <li>Method with getter-name for requested name is looked up. (For example, if 'age' is
+ * requested, 'getAge' method is looked up.) Method should have no arguments and should
+ * throw no checked exceptions. If there is such method it is used to fetch actual data to
+ * render. Compile-time error is raised if there is method with such name, but it is not
+ * accessible, has parameters or throws checked exceptions</li>
+ *
+ * <li>Field with requested name is looked up. Compile-time error is raised if there is
+ * field with such name but it's not accessible.</li>
+ * </ol>
+ *
+ * <h4 id="_enums">Enum matching Support Extension</h4> Basically enums have boolean keys
+ * that are the enums name (`Enum.name()`) that can be used as conditional sections.
+ * Assume `light` is an enum like:
+ *
+ * <pre>
+ * <code class="language-java">
+ * public enum Light {
+ *   RED,
+ *   GREEN,
+ *   YELLOW
+ * }
+ * </code> </pre>
+ *
+ * You can conditinally select on the enum like a pattern match:
+ *
+ * <pre>
+ * <code class="language-hbs">
+ * {{#light.RED}}
+ * STOP
+ * {{/light.RED}}
+ * {{#light.GREEN}}
+ * GO
+ * {{/light.GREEN}}
+ * {{#light.YELLOW}}
+ * Proceeed with caution
+ * {{/light.YELLOW}}
+ * </code> </pre>
+ *
+ * <h4 id="_index_support">Index Support Extension</h4>
+ *
+ * JStachio is compatible with both handlebars and JMustache index keys for iterable
+ * sections.
+ * <ol>
+ * <li><code>-first</code> is boolean that is true when you are on the first item
+ * <li><code>-last</code> is a boolean that is true when you are on the last item in the
+ * iterable
+ * <li><code>-index</code> is a one based index. The first item would be `1` and not `0`
+ * </ol>
+ *
+ * <h3 id="_lambdas">Lambda Support</h3>
+ *
+ * <strong>&#64;{@link JStacheLambda}</strong>
+ * <p>
+ * JStachio supports lambda section calls in a similar manner to
+ * <a href="https://github.com/samskivert/jmustache">JMustache</a>. Just tag your methods
+ * with {@link JStacheLambda} and the returned models will be used to render the contents
+ * of the lambda section. The top of the context stack can be passed to the lambda.
+ *
+ * <h2 id="_formatting">Formatting variables</h2>
+ *
+ * JStachio has strict control on what happens when you output a variable like
+ * <code>{{variable}}</code> or <code>{{{variable}}}</code>.
  *
  * <h3 id="_allowed_types">Allowed formatting types</h3> <strong>
- * {@link io.jstach.jstache.JStacheFormatterTypes}</strong>
+ * &#64;{@link io.jstach.jstache.JStacheFormatterTypes}</strong>
  * <p>
  * Only a certain set of types are allowed to be formatted and if they are not a compiler
  * error will happen (as in the annotation processor will fail). To understand more about
  * that see {@link io.jstach.jstache.JStacheFormatterTypes}.
  *
  * <h3 id="_runtime_formatting">Runtime formatting</h3>
- * <strong>{@link io.jstach.jstache.JStacheFormatter} and
+ * <strong>&#64;{@link io.jstach.jstache.JStacheFormatter} and
  * {@link io.jstach.jstache.JStache#formatter()}</strong>
  * <p>
  * Assuming the compiler allowed the variable to be formatted you can control the output
@@ -132,7 +240,7 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * {@link io.jstach.jstache.JStache#formatter()}.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
- * <strong>{@link io.jstach.jstache.JStacheContentType} and
+ * <strong>&#64;{@link io.jstach.jstache.JStacheContentType} and
  * {@link io.jstach.jstache.JStache#contentType()}</strong>
  * <p>
  * If you are using the JStachio runtime (io.jstach.jstachio) you will get out of the box

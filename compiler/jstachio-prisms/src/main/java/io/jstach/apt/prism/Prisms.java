@@ -30,7 +30,7 @@ public interface Prisms {
 
 	public static final String TEMPLATE_CLASS = "io.jstach.jstachio.Template";
 
-	public static final String RENDERER_PROVIDER_CLASS = "io.jstach.jstachio.spi.RendererProvider";
+	public static final String TEMPLATE_PROVIDER_CLASS = "io.jstach.jstachio.spi.TemplateProvider";
 
 	public static final String APPENDER_CLASS = "io.jstach.jstachio.Appender";
 

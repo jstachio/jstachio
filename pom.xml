@@ -345,54 +345,6 @@
       <modules>
         <module>doc</module>
       </modules>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <show>public</show>
-              <overview>src/main/javadoc/overview.html</overview>
-              <doctitle>jstachio API ${project.version}</doctitle>
-              <windowtitle>jstachio API ${project.version}</windowtitle>
-              <header>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
-</header>
-              <addStylesheets>
-                <addStylesheet>${javadoc.stylesheet}</addStylesheet>
-              </addStylesheets>
-              <tags>
-                <tag>
-                  <name>apiNote</name>
-                  <placement>a</placement>
-                  <head>API Note</head>
-                </tag>
-              </tags>
-              <groups>
-                <group>
-                  <title>API</title>
-                  <packages>io.jstach:io.jstach.*</packages>
-                </group>
-                <group>
-                  <title>Optional</title>
-                  <packages>io.jstach.opt.*</packages>
-                </group>
-              </groups>
-              <additionalJOptions>--allow-script-in-comments</additionalJOptions>
-            </configuration>
-            <executions>
-              <execution>
-                <id>aggregate</id>
-                <goals>
-                  <goal>aggregate</goal>
-                </goals>
-                <phase>package</phase>
-                <configuration>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>format-apply</id>

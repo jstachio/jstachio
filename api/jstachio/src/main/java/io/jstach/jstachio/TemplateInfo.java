@@ -9,7 +9,7 @@ import io.jstach.jstache.JStacheContentType;
 /**
  * Template meta data like its location, formatters, escapers and or its contents.
  * <p>
- * This data is usually available on generated {@link Renderer}s.
+ * This data is usually available on generated {@link Template}s.
  *
  * @author agentgt
  */

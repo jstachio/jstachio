@@ -57,9 +57,8 @@ public class JavadocJavascript {
 			if (line.startsWith("</body>")) {
 				found = true;
 				processed.add(scriptTag("https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js"));
-				processed.add(scriptTag(resourcesPath + "/" + "jstachio.js"));
 				processed.add(scriptTag("https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"));
-				processed.add("<script>anchors.add();</script>");
+				processed.add(scriptTag(resourcesPath + "/" + "jstachio.js"));
 			}
 			processed.add(line);
 		}

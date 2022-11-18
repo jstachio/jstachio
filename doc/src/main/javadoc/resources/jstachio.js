@@ -10,3 +10,5 @@
    collapseDepth: 6
  });
  $('#related-package-summary').parent().detach().appendTo('.summary-list');
+
+anchors.add();

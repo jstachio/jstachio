@@ -2,8 +2,6 @@ package io.jstach.jstachio.spi;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceConfigurationError;
@@ -14,7 +12,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 
 enum JStacheServicesResolver implements JStacheServices {
@@ -31,15 +28,22 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private final JStacheFilter filter;
 
+		private final JStacheTemplateFinder templateFinder;
+
 		private final JStachio jstachio;
 
-		private Holder(List<JStacheServices> services, JStacheConfig config, JStacheFilter filter,
+		private Holder( //
+				List<JStacheServices> services, //
+				JStacheConfig config, //
+				JStacheFilter filter, //
+				@Nullable JStacheTemplateFinder templateFinder, //
 				@Nullable JStachio jstachio) {
 			super();
 			this.services = services;
 			this.config = config;
 			this.filter = filter;
-			this.jstachio = jstachio == null ? this : jstachio;
+			this.templateFinder = templateFinder != null ? templateFinder : new DefaultTemplateFinder(config);
+			this.jstachio = jstachio != null ? jstachio : this;
 		}
 
 		private static Holder of() {
@@ -58,10 +62,20 @@ enum JStacheServicesResolver implements JStacheServices {
 			JStacheConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
 			@Nullable
 			JStachio jstachio = null;
+			@Nullable
+			JStacheTemplateFinder templateFinder = null;
 
+			// TODO if we find a non default JStachio should we even bother loading other
+			// extensions?
 			for (var sv : svs) {
 				sv.init(config);
 				filters.add(sv.provideFilter());
+				var finder = sv.provideTemplateFinder();
+				if (templateFinder != null && finder != null) {
+					throw new ServiceConfigurationError("Multiple template finders found by service loader. first = "
+							+ templateFinder.getClass().getName() + ", second = " + finder.getClass().getName());
+				}
+				templateFinder = finder;
 				var js = sv.provideJStachio();
 				if (jstachio != null && js != null) {
 					throw new ServiceConfigurationError("Multiple JStachios found by service loader. first = "
@@ -71,7 +85,7 @@ enum JStacheServicesResolver implements JStacheServices {
 			}
 
 			JStacheFilter filter = new CompositeFilterChain(filters);
-			return new Holder(List.copyOf(svs), config, filter, jstachio);
+			return new Holder(List.copyOf(svs), config, filter, templateFinder, jstachio);
 		}
 
 		@Override
@@ -103,17 +117,13 @@ enum JStacheServicesResolver implements JStacheServices {
 		}
 
 		protected TemplateInfo template(Class<?> modelType) throws IOException {
-			TemplateInfo template;
 			try {
-				template = _templateInfo(modelType);
+				return templateFinder.findTemplate(modelType);
 			}
 			catch (Exception e) {
+				sneakyThrow0(e);
 				throw new RuntimeException(e);
 			}
-			if (template == null) {
-				throw new RuntimeException("template not found for modelType: " + modelType);
-			}
-			return template;
 		}
 
 		JStacheConfig config() {
@@ -128,10 +138,10 @@ enum JStacheServicesResolver implements JStacheServices {
 			return jstachio;
 		}
 
-	}
+		JStacheTemplateFinder templateFinder() {
+			return templateFinder;
+		}
 
-	static <T> Template<T> _renderer(Class<T> modelType) {
-		return Renderers.getRenderer(modelType);
 	}
 
 	static Stream<JStacheServices> _services() {
@@ -142,8 +152,9 @@ enum JStacheServicesResolver implements JStacheServices {
 		return Holder.INSTANCE.config();
 	}
 
-	static JStacheFilter _filter() {
-		return Holder.INSTANCE.filter();
+	@Override
+	public @Nullable JStacheTemplateFinder provideTemplateFinder() {
+		return Holder.INSTANCE.templateFinder();
 	}
 
 	@Override
@@ -153,35 +164,12 @@ enum JStacheServicesResolver implements JStacheServices {
 
 	@Override
 	public @NonNull JStacheFilter provideFilter() {
-		return _filter();
+		return Holder.INSTANCE.filter();
 	}
 
 	@Override
 	public @NonNull JStachio provideJStachio() {
 		return Holder.INSTANCE.jstachio();
-	}
-
-	static TemplateInfo _templateInfo(Class<?> contextType) throws Exception {
-		Exception error;
-		try {
-			Template<?> r = _renderer(contextType);
-			return r;
-		}
-		catch (Exception e) {
-			error = e;
-		}
-		var config = _config();
-
-		if (!config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_DISABLE)) {
-			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
-			if (logger.isLoggable(Level.WARNING)) {
-				logger.log(Level.WARNING, "Could not find renderer for: " + contextType, error);
-			}
-			return TemplateInfos.templateOf(contextType);
-
-		}
-		throw error;
-
 	}
 
 }

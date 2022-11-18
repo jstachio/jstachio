@@ -1,13 +1,15 @@
 <html>
 <body>
 
-<h1>JStachio</h1>
+
+
+<h1><img src="resources/social-media.svg" alt="jstachio" width="50%"></h1>
 
 A typesafe Java Mustache templating engine.
 Templates are compiled into readable Java source code and value bindings are statically checked using the
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/annotation/processing/package-summary.html">Java Annotation processing framework</a>.
 
-<h2>Contents</h2>
+<h2 class="toc-title">Contents</h2>
 
 <nav class="js-toc"></nav>
 
@@ -26,7 +28,7 @@ the context stack.
 
 <h2 id="2">Java Code</h2>
 
-Simply annotate a class with {@link io.jstach.jstache.JStache}
+Simply annotate a class with <strong>{@link io.jstach.jstache.JStache}</strong>
 
 <pre><code class="language-java">
 /*
@@ -59,8 +61,8 @@ public interface AgeLambdaSupport {
 The above will generate a <code>HelloWorldRenderer</code> class.
 <p>
 While you may use the generated classes directly to render HelloWorld instances in some cases it is
-easier and better to use {@link io.jstach.jstachio.JStachio} to render directly from the model without referencing 
-generated code.
+easier and better to use <strong>{@link io.jstach.jstachio.JStachio}</strong> 
+to render directly from the model without referencing generated code.
 
 Below is an example of that:
 

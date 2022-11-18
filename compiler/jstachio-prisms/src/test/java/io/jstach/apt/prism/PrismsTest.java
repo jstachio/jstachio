@@ -24,7 +24,7 @@ import io.jstach.jstachio.escapers.Html;
 import io.jstach.jstachio.escapers.PlainText;
 import io.jstach.jstachio.formatters.DefaultFormatter;
 import io.jstach.jstachio.spi.JStacheServices;
-import io.jstach.jstachio.spi.RendererProvider;
+import io.jstach.jstachio.spi.TemplateProvider;
 
 public class PrismsTest {
 
@@ -118,7 +118,7 @@ public class PrismsTest {
 		return List.of( //
 				Renderer.class, //
 				Template.class, //
-				RendererProvider.class, //
+				TemplateProvider.class, //
 				Appender.class, //
 				Escaper.class, //
 				Formatter.class, //

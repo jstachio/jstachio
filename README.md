@@ -1,15 +1,21 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.jstach/jstachio/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.jstach/jstachio)
-[![Javadoc](https://javadoc.io/badge/io.jstach/jstachio.svg)](https://javadoc.io/doc/io.jstach/jstachio/latest)
 [![Github](https://github.com/jstachio/jstachio/actions/workflows/maven.yml/badge.svg)](https://github.com/jstachio/jstachio/actions)
 
 <img src="etc/social-media.svg" alt="jstachio">
-
 
 A typesafe Java Mustache templating engine.
 
 Templates are compiled into readable Java source code and value bindings are statically checked.
 
 (formerly called [static-mustache](https://github.com/sviperll/static-mustache))
+
+## Documentation
+
+**[Latest JStachio API javadoc](https://jstach.io/jstachio/)**
+
+The doc is also on javadoc.io but is not aggregated like the above.
+The javadoc is the preferred documentation and the rest of this readme
+is mainly for ~~propaganda~~ marketing purposes.
 
 ## Features
 
@@ -50,13 +56,6 @@ Templates are compiled into readable Java source code and value bindings are sta
  * Zero dependencies other than JStachio itself
 
     * An absolutely zero runtime dependency option is in the works (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects.
-
-## Documentation
-
-[Latest JStachio API javadoc](https://jstach.io/jstachio/)
-
-The doc is also on javadoc.io but is not aggregated like the above.
-
 
 ## Quick Example
 

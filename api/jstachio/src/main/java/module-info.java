@@ -30,5 +30,5 @@ module io.jstach.jstachio {
 	requires static org.eclipse.jdt.annotation;
 	
 	uses io.jstach.jstachio.spi.JStacheServices;
-	uses io.jstach.jstachio.spi.RendererProvider;
+	uses io.jstach.jstachio.spi.TemplateProvider;
 }

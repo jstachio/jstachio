@@ -44,6 +44,15 @@ public interface JStacheServices {
 	}
 
 	/**
+	 * Provide a template finder or not. Only template finder is allowed and if multiples
+	 * are found other than the default a {@link RuntimeException} will be thrown.
+	 * @return template finder or not
+	 */
+	default @Nullable JStacheTemplateFinder provideTemplateFinder() {
+		return null;
+	}
+
+	/**
 	 * Provide a rendering engine or not. Only one JStachio is allowed and if multiples
 	 * are found other than the default a {@link RuntimeException} will be thrown.
 	 * @return jstachio rendering engine
