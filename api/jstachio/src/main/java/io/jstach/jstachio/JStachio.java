@@ -7,13 +7,25 @@ import io.jstach.jstache.JStache;
 import io.jstach.jstachio.spi.JStacheServices;
 
 /**
- * Render models by using reflection to lookup renderers as well as apply filtering and
- * fallback mechanisms.
- * <p>
- * The static <strong><code>render</code></strong> methods are convenience methods that
- * will use the ServiceLoader based JStachio which loads all extensions via the
- * {@link ServiceLoader}.
+ * Render models by using reflection to lookup generated templates as well as apply
+ * filtering and fallback mechanisms.
+ * <h2>Example Usage</h2> <pre><code class="language-java">
+ * &#64;JStache(template = "Hello {{name}}!")
+ * public record HelloWorld(String name) {}
  *
+ * public static String output(String name) {
+ *   //Normally you would have to use generated class HelloWorldRenderer
+ *   //but this JStachio allows you to render directly
+ *   //from the model.
+ *   return JStachio.render(new HelloWorld(name));
+ * }
+ * </code> </pre> Not only is the above more convenient than using the raw generated code
+ * it also allows additional custom runtime behavior like filtering as well as allows
+ * easier integration with web frameworks.
+ *
+ * @apiNote The static <strong><code>render</code></strong> methods are convenience
+ * methods that will use the ServiceLoader based JStachio which loads all extensions via
+ * the {@link ServiceLoader}.
  * @see JStacheServices
  * @see JStache
  */
