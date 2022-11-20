@@ -138,7 +138,7 @@ enum Command {
 			}
 			else {
 				v = Version.of(params.get(0));
-				timestamp = System.currentTimeMillis();
+				timestamp = java.time.Instant.now().getEpochSecond();
 			}
 			switch (setCmd) {
 				case CURRENT -> {
