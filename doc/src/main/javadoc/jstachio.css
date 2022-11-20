@@ -32,15 +32,17 @@ h3 {
   counter-reset: h4counter;
 }
 
-h2::before {
+/* class-description, package-description, module-description */
+
+.js-toc-content h2::before {
     counter-increment: h2counter;
     content: counter(h2counter) ".\0000a0\0000a0";
 }
-h3::before {
+.js-toc-content h3::before {
     counter-increment: h3counter;
     content: counter(h2counter) "." counter(h3counter) ".\0000a0\0000a0";
 }
-h4::before {
+.js-toc-content h4::before {
     counter-increment: h4counter;
     content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) ".\0000a0\0000a0";
 }
