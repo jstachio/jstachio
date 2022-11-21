@@ -12,7 +12,7 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
 /**
  *
  * Statically sets allowed formatting types as well as registers static formatters for all
- * models ({@link JStache}) in a package.
+ * models ({@link JStache}) in a package or module.
  * <p>
  * If a type is not allowed or known a compile error will happen. This annotation allows
  * you to override that behavior.
@@ -27,7 +27,7 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * @see JStacheFormatter
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
+@Target({ ElementType.PACKAGE, ElementType.MODULE })
 @Documented
 public @interface JStacheFormatterTypes {
 

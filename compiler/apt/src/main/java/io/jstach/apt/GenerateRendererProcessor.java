@@ -30,6 +30,13 @@
  */
 package io.jstach.apt;
 
+import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
+import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
+import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
+import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
+import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
+import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -46,7 +53,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -58,6 +67,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -77,8 +87,8 @@ import io.jstach.apt.internal.FormatterTypes;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.Position;
 import io.jstach.apt.internal.ProcessingConfig;
-import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.ProcessingConfig.PathConfig;
+import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.JavaLanguageModel;
 import io.jstach.apt.internal.context.RenderingCodeGenerator;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
@@ -96,8 +106,6 @@ import io.jstach.apt.prism.JStachePartialsPrism;
 import io.jstach.apt.prism.JStachePathPrism;
 import io.jstach.apt.prism.JStachePrism;
 import io.jstach.apt.prism.Prisms;
-
-import static io.jstach.apt.prism.Prisms.*;
 
 /**
  * Renderer processor
@@ -229,24 +237,44 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return new PathConfig(prism.prefix(), prism.suffix());
 	}
 
-	private List<String> resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
-		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-		JStacheInterfacesPrism prism = JStacheInterfacesPrism.getInstanceOn(packageElement);
-		if (prism != null) {
+	private InterfacesConfig resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
+		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn);
 
-			var modelImplements = prism.modelImplements();
-			assert modelImplements != null;
-			for (TypeMirror mi : modelImplements) {
-				if (!JavaLanguageModel.getInstance().isSubtype(element.asType(), mi)) {
-					throw new AnnotatedException(element, "per package declaration of @" + JSTACHE_INTERFACES_CLASS
-							+ " model required to implement " + mi.toString());
-				}
+		List<String> templateInterfaces = prisms.stream().map(JStacheInterfacesPrism::templateImplements)
+				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
+
+		List<String> templateAnnotions = prisms.stream().map(JStacheInterfacesPrism::templateAnnotations)
+				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
+		var modelInterfaces = prisms.stream().map(JStacheInterfacesPrism::modelImplements)
+				.flatMap(faces -> faces.stream()).toList();
+
+		for (TypeMirror mi : modelInterfaces) {
+			if (!JavaLanguageModel.getInstance().isSubtype(element.asType(), mi)) {
+				throw new AnnotatedException(element, "per package declaration of @" + JSTACHE_INTERFACES_CLASS
+						+ " model required to implement " + mi.toString());
 			}
-			var ri = prism.rendererImplements();
-			assert ri != null;
-			return ri.stream().map(tm -> getTypeName(tm)).toList();
 		}
-		return List.of();
+
+		return new InterfacesConfig(templateInterfaces, templateAnnotions);
+	}
+
+	private <T> List<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
+		ModuleElement moduleElement = processingEnv.getElementUtils().getModuleOf(element);
+		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+		return findPrisms(Stream.of(moduleElement, packageElement, element), prismSupplier);
+	}
+
+	private <T> List<T> findPrismsReverse(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
+		ModuleElement moduleElement = processingEnv.getElementUtils().getModuleOf(element);
+		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
+		return findPrisms(Stream.of(element, packageElement, moduleElement), prismSupplier);
+	}
+
+	private <T> List<T> findPrisms(Stream<Element> elements, Function<Element, @Nullable T> prismSupplier) {
+		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null).toList();
+	}
+
+	record InterfacesConfig(List<String> templateInterfaces, List<String> templateAnnotations) {
 	}
 
 	private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
@@ -302,13 +330,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private FormatterTypes resolveFormatterTypes(TypeElement element) {
-		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-		JStacheFormatterTypesPrism prism = JStacheFormatterTypesPrism.getInstanceOn(packageElement);
-		if (prism == null) {
+		var prisms = findPrisms(element, JStacheFormatterTypesPrism::getInstanceOn);
+		List<String> classNames = prisms.stream().flatMap(p -> p.types().stream()).map(tm -> getTypeName(tm)).toList();
+		List<String> patterns = prisms.stream().flatMap(p -> p.patterns().stream()).toList();
+		if (classNames.isEmpty() && patterns.isEmpty()) {
 			return FormatterTypes.acceptOnlyKnownTypes();
 		}
-		List<String> classNames = prism.types().stream().map(tm -> getTypeName(tm)).toList();
-		List<String> patterns = prism.patterns().stream().toList();
 		return new FormatterTypes.ConfiguredFormatterTypes(classNames, patterns);
 	}
 
@@ -323,7 +350,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			FormatterTypes formatterTypes, //
 			TypeElement formatterTypeElement, //
 			Map<String, NamedTemplate> partials, //
-			List<String> ifaces, //
+			InterfacesConfig ifaces, //
 			Set<Flag> flags) implements ProcessingConfig {
 
 		public NamedTemplate namedTemplate() {
@@ -363,7 +390,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
 		assert template != null;
-		List<String> ifaces = resolveBaseInterfaces(element);
+		var ifaces = resolveBaseInterfaces(element);
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
 		FormatterTypes formatterTypes = resolveFormatterTypes(element);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
@@ -425,24 +452,34 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
 
-		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-		JStacheFormatterTypesPrism formatterTypes = JStacheFormatterTypesPrism.getInstanceOn(packageElement);
-
 		var lm = JavaLanguageModel.getInstance();
-		TypeMirror templateFormatType = gp.formatter();
-
-		TypeElement formatElement = formatterElement(templateFormatType);
 
 		TypeElement autoFormatElement = lm.getElements().getTypeElement(AUTO_FORMATTER_CLASS);
 
-		if (formatterTypes != null && lm.isSameType(autoFormatElement.asType(), formatElement.asType())) {
-			formatElement = formatterElement(formatterTypes.formatter());
+		Stream<TypeMirror> formatterProviderTypes = //
+				findPrismsReverse(element, JStacheFormatterTypesPrism::getInstanceOn) //
+						.stream() //
+						.map(p -> p.formatter());
+
+		@Nullable
+		TypeElement formatterProviderElement = Stream.concat(Stream.of(gp.formatter()), formatterProviderTypes) //
+				.map(t -> {
+					try {
+						return formatterElement(t);
+					}
+					catch (DeclarationException de) {
+						Throwables.sneakyThrow(de);
+						throw new RuntimeException();
+					}
+				}) //
+				.filter(e -> !lm.isSameType(autoFormatElement.asType(), e.asType())) //
+				.findFirst().orElse(null);
+
+		if (formatterProviderElement == null) {
+			formatterProviderElement = lm.getElements().getTypeElement(DEFAULT_FORMATTER_CLASS);
 		}
 
-		if (lm.isSameType(autoFormatElement.asType(), formatElement.asType())) {
-			formatElement = lm.getElements().getTypeElement(DEFAULT_FORMATTER_CLASS);
-		}
-		return formatElement;
+		return formatterProviderElement;
 	}
 
 	private TypeElement formatterElement(TypeMirror templateFormatType) throws DeclarationException {
@@ -569,7 +606,11 @@ class ClassWriter {
 		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
 		assert formatterPrism != null;
 
-		String implementsString = ifaces.isEmpty() ? "" : ", " + ifaces.stream().collect(Collectors.joining(", "));
+		String implementsString = ifaces.templateInterfaces().isEmpty() ? ""
+				: ", " + ifaces.templateInterfaces().stream().collect(Collectors.joining(", "));
+
+		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta + "\n")
+				.collect(Collectors.joining());
 
 		String rendererImplements = " implements " + TEMPLATE_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
 				+ ", " + TEMPLATE_PROVIDER_CLASS + implementsString;
@@ -600,7 +641,9 @@ class ClassWriter {
 		println(" * Generated Renderer.");
 		println(" */");
 		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
-
+		if (!rendererAnnotated.isBlank()) {
+			println(rendererAnnotated);
+		}
 		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
 
 		println("    /**");

@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
+ * @author agentgt
  * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
  */
 public class Throwables {
@@ -47,6 +48,11 @@ public class Throwables {
 	}
 
 	private Throwables() {
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E extends Throwable> void sneakyThrow(final Throwable x) throws E {
+		throw (E) x;
 	}
 
 }
