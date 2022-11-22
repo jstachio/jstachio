@@ -36,6 +36,7 @@ import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
+import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -607,14 +608,18 @@ class ClassWriter {
 		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
 		assert formatterPrism != null;
 
-		String implementsString = ifaces.templateInterfaces().isEmpty() ? ""
-				: ", " + ifaces.templateInterfaces().stream().collect(Collectors.joining(", "));
+		List<String> interfaces = new ArrayList<>();
+		interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
+		interfaces.add(TEMPLATE_INFO_CLASS);
+		interfaces.add(TEMPLATE_PROVIDER_CLASS);
+		interfaces.add(FILTER_CHAIN_CLASS);
+		interfaces.addAll(ifaces.templateInterfaces());
+		String implementsString = interfaces.stream().collect(Collectors.joining(",\n    "));
 
 		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta + "\n")
 				.collect(Collectors.joining());
 
-		String rendererImplements = " implements " + TEMPLATE_CLASS + "<" + className + ">, " + TEMPLATE_INFO_CLASS
-				+ ", " + TEMPLATE_PROVIDER_CLASS + implementsString;
+		String rendererImplements = " implements " + implementsString;
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
 
@@ -631,8 +636,15 @@ class ClassWriter {
 		String _Appendable = Appendable.class.getName();
 		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
 
-		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
+		String _Escaper = ESCAPER_CLASS;
+
+		String _F_Formatter = Function.class.getName() + "< /* @Nullable */ Object, String>";
+		String _F_Escaper = Function.class.getName() + "<String, String>";
+		String contentTypeProvideCall = contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod()
+				+ "()";
+		String formatterProvideCall = formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod()
+				+ "()";
 
 		String idt = "\n        ";
 
@@ -666,14 +678,44 @@ class ClassWriter {
 		println("    /**");
 		println("     * @hidden");
 		println("     */");
+		println("    public static final Class<?> MODEL_CLASS = " + className + ".class;");
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
 		println("    private static final " + rendererClassSimpleName + " INSTANCE = new " + rendererClassSimpleName
 				+ "();");
-
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
+		println("    private final " + _Formatter + " formatter;");
+		println("");
+		println("    /**");
+		println("     * @hidden");
+		println("     */");
+		println("    private final " + _Escaper + " escaper;");
+		println("");
+		println("    /**");
+		println("     * Renderer constructor for wiring");
+		println("     * @param formatter formatter if null the static formatter will be used.");
+		println("     * @param escaper escaper if null the static escaper will be used");
+		println("     */");
+		println("    public " + rendererClassSimpleName + "(");
+		println("        /* @Nullable */ " + _F_Formatter + " formatter,");
+		println("        /* @Nullable */ " + _F_Escaper + " escaper) {");
+		println("        this.formatter = " + _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall
+				+ ");");
+		println("        this.escaper = " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall
+				+ ");");
+		println("    }");
+		println("");
 		println("    /**");
 		println("     * Renderer constructor for reflection (use of() instead).");
 		println("     * For programmatic consider using {@link #of()} for a shared singleton.");
 		println("     */");
 		println("    public " + rendererClassSimpleName + "() {");
+		println("        this(null, null);");
 		println("    }");
 		println("");
 		println("    @Override");
@@ -693,7 +735,7 @@ class ClassWriter {
 		println("");
 		println("    @Override");
 		println("    public boolean supportsType(Class<?> type) {");
-		println("        return " + className + ".class.isAssignableFrom(type);");
+		println("        return MODEL_CLASS.isAssignableFrom(type);");
 		println("    }");
 		println("");
 		println("    @Override");
@@ -723,14 +765,12 @@ class ClassWriter {
 
 		println("    @Override");
 		println("    public  " + _Escaper + " templateEscaper() {");
-		println("        return " + _Escaper + ".of(" //
-				+ contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod() + "());");
+		println("        return this.escaper;");
 		println("    }");
 
 		println("    @Override");
 		println("    public " + _Formatter + " templateFormatter() {");
-		println("        return " + _Formatter + ".of(" //
-				+ formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod() + "());");
+		println("        return this.formatter;");
 		println("    }");
 		println("");
 		println("    /**");
@@ -739,6 +779,26 @@ class ClassWriter {
 		println("     */");
 		println("    public " + _Appender + " templateAppender() {");
 		println("        return " + APPENDER_CLASS + ".defaultAppender();");
+		println("    }");
+		println("");
+		println("    /**");
+		println("     * Model class.");
+		println("     * @return class used as model (annotated with JStache).");
+		println("     */");
+		println("    @Override");
+		println("    public Class<?> modelClass() {");
+		println("        return MODEL_CLASS;");
+		println("    }");
+		println("");
+		println("    @SuppressWarnings(\"unchecked\")");
+		println("    @Override");
+		println("    public void process(Object model, Appendable appendable) throws java.io.IOException {");
+		println("        execute( (" + className + ") model, appendable);");
+		println("    }");
+		println("");
+		println("    @Override");
+		println("    public boolean isBroken(Object model) {");
+		println("        return !supportsType(model.getClass());");
 		println("    }");
 		println("");
 		println("    /**");

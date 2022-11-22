@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.JStachioProvider;
 
 /**
  * An SPI extension point via the {@link ServiceLoader} that is a factory that provides
@@ -17,6 +18,14 @@ import io.jstach.jstachio.JStachio;
  *
  */
 public interface JStachioServices {
+
+	/**
+	 * @hidden
+	 * @return provider for service loader
+	 */
+	public static JStachioProvider provides() {
+		return () -> JStachioServices.find().provideJStachio();
+	}
 
 	/**
 	 * Provide a filter or not. The final filter is a composite and becomes a filter

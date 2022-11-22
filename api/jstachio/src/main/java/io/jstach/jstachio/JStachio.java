@@ -95,7 +95,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @throws NullPointerException if jstachio is not found
 	 */
 	public static JStachio of() {
-		JStachio jstachio = JStachioServices.find().provideJStachio();
+		JStachio jstachio = JStachioHolder.get();
 		if (jstachio == null) {
 			throw new NullPointerException("JStachio not found. This is probably a classloading issue.");
 		}

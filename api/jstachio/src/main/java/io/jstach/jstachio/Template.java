@@ -2,8 +2,6 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 
-import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
-
 /**
  * A JStachio Template is a renderer that has template meta data.
  * <p>
@@ -12,9 +10,7 @@ import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
  * @author agentgt
  * @param <T> the model type
  */
-public interface Template<T> extends Renderer<T>, TemplateInfo, FilterChain {
-
-	/* TODO remove implements filter chain and add to generated code directly */
+public interface Template<T> extends Renderer<T>, TemplateInfo {
 
 	/**
 	 * Renders the passed in model.
@@ -39,15 +35,11 @@ public interface Template<T> extends Renderer<T>, TemplateInfo, FilterChain {
 			Formatter formatter, //
 			Escaper escaper) throws IOException;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default void process(Object model, Appendable appendable) throws IOException {
-		execute((T) model, appendable);
-	}
-
-	@Override
-	default boolean isBroken(Object model) {
-		return !supportsType(model.getClass());
-	}
+	/**
+	 * Return the model class (root context class annotated with JStache) that generated
+	 * this template.
+	 * @return model class
+	 */
+	public Class<?> modelClass();
 
 }

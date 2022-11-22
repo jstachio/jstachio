@@ -3,6 +3,7 @@ package io.jstach.jstachio.spi;
 import java.io.IOException;
 import java.util.List;
 
+import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 
 /**
@@ -56,17 +57,27 @@ public interface JStachioFilter {
 			FilterChain previous);
 
 	/**
-	 * Applies filter with previous filter broken unless the template is a filter chain
-	 * which generated renderers usually are.
+	 * Applies filter with previous filter broken unless the parameter template is a
+	 * {@link FilterChain} or is a{@link Template} which generated renderers usually are.
 	 * @param template info about the template
 	 * @return an advised render function or often the previous render function if no
 	 * advise is needed.
 	 */
+	@SuppressWarnings("unchecked")
 	default FilterChain filter( //
 			TemplateInfo template) {
 		FilterChain previous = BrokenFilter.INSTANCE;
 		if (template instanceof FilterChain c) {
 			previous = c;
+		}
+		else if (template instanceof @SuppressWarnings("rawtypes") Template t) {
+			/*
+			 * This is sort of abusing that filter chains happen to be a functional
+			 * interface
+			 */
+			previous = (model, appendable) -> {
+				t.execute(model, appendable);
+			};
 		}
 		return filter(template, previous);
 	}
