@@ -7,7 +7,7 @@ import io.jstach.opt.jmustache.JMustacheRenderer;
  * or dynamic development of templates.
  * @author agentgt
  *
- * @provides JStacheServices
+ * @provides JStachioServices
  */
 module io.jstach.opt.jmustache {
 	

@@ -1,17 +1,19 @@
-package io.jstach.jstachio.spi;
+package io.jstach.opt.jmustache;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNull;
 
 import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.spi.JStachioFilter;
+import io.jstach.jstachio.spi.JStachioServices;
 
 /**
  * Adapts a filter to ease adding a fallback template engine such as JMustache.
  *
  * @author agentgt
  */
-public abstract class AbstractJStacheEngine implements JStachioFilter, JStachioServices {
+abstract class AbstractJStacheEngine implements JStachioFilter, JStachioServices {
 
 	/**
 	 * Do nothing constructor

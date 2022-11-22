@@ -19,7 +19,6 @@ import com.samskivert.mustache.Template;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
-import io.jstach.jstachio.spi.AbstractJStacheEngine;
 import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioServices;
 
