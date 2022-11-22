@@ -17,6 +17,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface TemplateConfig {
 
 	/**
+	 * A config with no provided collaborators.
+	 * @return empty config
+	 */
+	public static TemplateConfig empty() {
+		return EmptyTemplateConfig.INSTANCE;
+	}
+
+	/**
 	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.
 	 * @apiNote While the return signature is {@link Function} the function is often an
 	 * {@link Escaper} but does not have to be.
@@ -38,5 +46,11 @@ public interface TemplateConfig {
 	default @Nullable Function<@Nullable Object, String> formatter() {
 		return null;
 	}
+
+}
+
+enum EmptyTemplateConfig implements TemplateConfig {
+
+	INSTANCE;
 
 }

@@ -3,6 +3,7 @@ package io.jstach.jstachio.spi;
 import java.util.List;
 
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateConfig;
 
 /**
  * A {@link java.util.ServiceLoader} interface for finding {@link Template}s.
@@ -22,8 +23,17 @@ public interface TemplateProvider {
 
 	/**
 	 * Provides a list of instantiated renderers.
+	 * @param templateConfig template collaborators.
 	 * @return a list of renderers. An empty list would mean none were found.
 	 */
-	public List<Template<?>> provideTemplates();
+	public List<Template<?>> provideTemplates(TemplateConfig templateConfig);
+
+	/**
+	 * Provides templates with empty config.
+	 * @return a list of templates. An empty list would mean none were fond.
+	 */
+	default List<Template<?>> provideTemplates() {
+		return provideTemplates(TemplateConfig.empty());
+	}
 
 }

@@ -32,11 +32,12 @@ package io.jstach.apt;
 
 import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
 import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
+import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
 import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
-import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
+import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -697,7 +698,7 @@ class ClassWriter {
 		println("    private final " + _Escaper + " escaper;");
 		println("");
 		println("    /**");
-		println("     * Renderer constructor for wiring");
+		println("     * Renderer constructor for manual wiring.");
 		println("     * @param formatter formatter if null the static formatter will be used.");
 		println("     * @param escaper escaper if null the static escaper will be used");
 		println("     */");
@@ -708,6 +709,14 @@ class ClassWriter {
 				+ ");");
 		println("        this.escaper = " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall
 				+ ");");
+		println("    }");
+		println("");
+		println("    /**");
+		println("     * Renderer constructor using config.");
+		println("     * @param templateConfig config that has collaborators");
+		println("     */");
+		println("    public " + rendererClassSimpleName + "(" + TEMPLATE_CONFIG_CLASS + " templateConfig) {");
+		println("        this(templateConfig.formatter(), templateConfig.escaper());");
 		println("    }");
 		println("");
 		println("    /**");
@@ -739,8 +748,9 @@ class ClassWriter {
 		println("    }");
 		println("");
 		println("    @Override");
-		println("    public java.util.List<" + TEMPLATE_CLASS + "<?>> " + "provideTemplates() {");
-		println("        return java.util.List.of(of());");
+		println("    public java.util.List<" + TEMPLATE_CLASS + "<?>> " + "provideTemplates(" + TEMPLATE_CONFIG_CLASS
+				+ " templateConfig ) {");
+		println("        return java.util.List.of(new " + rendererClassSimpleName + "(templateConfig));");
 		println("    }");
 		println("");
 		println("    @Override");

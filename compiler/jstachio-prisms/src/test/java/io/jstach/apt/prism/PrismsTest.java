@@ -18,6 +18,7 @@ import io.jstach.jstachio.Escaper;
 import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.Renderer;
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateConfig;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.context.ContextNode;
 import io.jstach.jstachio.escapers.Html;
@@ -125,6 +126,7 @@ public class PrismsTest {
 				Formatter.class, //
 				DefaultFormatter.class, //
 				TemplateInfo.class, //
+				TemplateConfig.class, //
 				FilterChain.class, //
 				JStachioServices.class, //
 				ContextNode.class, //
