@@ -29,7 +29,6 @@ module io.jstach.jstachio {
 	
 	requires static org.eclipse.jdt.annotation;
 	
-	uses io.jstach.jstachio.JStachioProvider;
 	uses io.jstach.jstachio.spi.JStachioServices;
 	uses io.jstach.jstachio.spi.TemplateProvider;
 }
