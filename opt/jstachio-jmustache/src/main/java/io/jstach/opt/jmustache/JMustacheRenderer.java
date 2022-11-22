@@ -20,8 +20,8 @@ import com.samskivert.mustache.Template;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.AbstractJStacheEngine;
-import io.jstach.jstachio.spi.JStacheConfig;
-import io.jstach.jstachio.spi.JStacheServices;
+import io.jstach.jstachio.spi.JStachioConfig;
+import io.jstach.jstachio.spi.JStachioServices;
 
 /**
  * Use JMustache instead of JStachio for rendering. The idea of this extension is to allow
@@ -38,7 +38,7 @@ import io.jstach.jstachio.spi.JStacheServices;
  * @author agentgt
  * @see JStachio
  */
-@MetaInfServices(JStacheServices.class)
+@MetaInfServices(JStachioServices.class)
 public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	/**
@@ -60,7 +60,7 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	private String sourcePath = "src/main/resources";
 
-	private Logger logger = JStacheConfig.noopLogger();
+	private Logger logger = JStachioConfig.noopLogger();
 
 	private long initTime = System.currentTimeMillis();
 
@@ -125,7 +125,7 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 	}
 
 	@Override
-	public void init(JStacheConfig config) {
+	public void init(JStachioConfig config) {
 		logger = config.getLogger(getClass().getCanonicalName());
 		sourcePath(config.requireProperty(JSTACHIO_JMUSTACHE_SOURCE_PATH, sourcePath));
 		use(!config.getBoolean(JSTACHIO_JMUSTACHE_DISABLE));

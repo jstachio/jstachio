@@ -1,6 +1,6 @@
 import javax.annotation.processing.Processor;
 
-import io.jstach.jstachio.spi.JStacheServices;
+import io.jstach.jstachio.spi.JStachioServices;
 module io.jstach.examples {
 	requires transitive io.jstach.jstachio;
 	requires java.compiler;
@@ -15,5 +15,5 @@ module io.jstach.examples {
 	exports io.jstach.examples to org.mapstruct;
 
 	uses Processor;
-	uses JStacheServices;
+	uses JStachioServices;
 }

@@ -42,7 +42,7 @@ public interface Prisms {
 
 	public static final String TEMPLATE_INFO_CLASS = "io.jstach.jstachio.TemplateInfo";
 
-	public static final String JSTACHE_SERVICES_CLASS = "io.jstach.jstachio.spi.JStacheServices";
+	public static final String JSTACHIO_SERVICES_CLASS = "io.jstach.jstachio.spi.JStachioServices";
 
 	public static final String CONTEXT_NODE_CLASS = "io.jstach.jstachio.context.ContextNode";
 

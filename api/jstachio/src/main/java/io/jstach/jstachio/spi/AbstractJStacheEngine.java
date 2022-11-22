@@ -11,7 +11,7 @@ import io.jstach.jstachio.TemplateInfo;
  *
  * @author agentgt
  */
-public abstract class AbstractJStacheEngine implements JStacheFilter, JStacheServices {
+public abstract class AbstractJStacheEngine implements JStachioFilter, JStachioServices {
 
 	/**
 	 * Do nothing constructor
@@ -34,7 +34,7 @@ public abstract class AbstractJStacheEngine implements JStacheFilter, JStacheSer
 	 * {@inheritDoc} The implementation is a filter and provides itself.
 	 */
 	@Override
-	public final @NonNull JStacheFilter provideFilter() {
+	public final @NonNull JStachioFilter provideFilter() {
 		return this;
 	}
 

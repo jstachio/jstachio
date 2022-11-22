@@ -14,7 +14,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
 
-enum JStacheServicesResolver implements JStacheServices {
+enum JStachioServicesResolver implements JStachioServices {
 
 	INSTANCE;
 
@@ -22,21 +22,21 @@ enum JStacheServicesResolver implements JStacheServices {
 
 		private static Holder INSTANCE = Holder.of();
 
-		private final List<JStacheServices> services;
+		private final List<JStachioServices> services;
 
-		private final JStacheConfig config;
+		private final JStachioConfig config;
 
-		private final JStacheFilter filter;
+		private final JStachioFilter filter;
 
-		private final JStacheTemplateFinder templateFinder;
+		private final JStachioTemplateFinder templateFinder;
 
 		private final JStachio jstachio;
 
 		private Holder( //
-				List<JStacheServices> services, //
-				JStacheConfig config, //
-				JStacheFilter filter, //
-				@Nullable JStacheTemplateFinder templateFinder, //
+				List<JStachioServices> services, //
+				JStachioConfig config, //
+				JStachioFilter filter, //
+				@Nullable JStachioTemplateFinder templateFinder, //
 				@Nullable JStachio jstachio) {
 			super();
 			this.services = services;
@@ -47,11 +47,11 @@ enum JStacheServicesResolver implements JStacheServices {
 		}
 
 		private static Holder of() {
-			Iterable<JStacheServices> it = ServiceLoader.load(JStacheServices.class);
-			List<JStacheServices> svs = new ArrayList<>();
+			Iterable<JStachioServices> it = ServiceLoader.load(JStachioServices.class);
+			List<JStachioServices> svs = new ArrayList<>();
 			it.forEach(svs::add);
-			List<JStacheConfig> configs = new ArrayList<>();
-			List<JStacheFilter> filters = new ArrayList<>();
+			List<JStachioConfig> configs = new ArrayList<>();
+			List<JStachioFilter> filters = new ArrayList<>();
 
 			for (var sv : svs) {
 				var c = sv.provideConfig();
@@ -59,11 +59,11 @@ enum JStacheServicesResolver implements JStacheServices {
 					configs.add(c);
 				}
 			}
-			JStacheConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
+			JStachioConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
 			@Nullable
 			JStachio jstachio = null;
 			@Nullable
-			JStacheTemplateFinder templateFinder = null;
+			JStachioTemplateFinder templateFinder = null;
 
 			// TODO if we find a non default JStachio should we even bother loading other
 			// extensions?
@@ -84,7 +84,7 @@ enum JStacheServicesResolver implements JStacheServices {
 				jstachio = js;
 			}
 
-			JStacheFilter filter = new CompositeFilterChain(filters);
+			JStachioFilter filter = new CompositeFilterChain(filters);
 			return new Holder(List.copyOf(svs), config, filter, templateFinder, jstachio);
 		}
 
@@ -126,11 +126,11 @@ enum JStacheServicesResolver implements JStacheServices {
 			}
 		}
 
-		JStacheConfig config() {
+		JStachioConfig config() {
 			return config;
 		}
 
-		JStacheFilter filter() {
+		JStachioFilter filter() {
 			return filter;
 		}
 
@@ -138,32 +138,32 @@ enum JStacheServicesResolver implements JStacheServices {
 			return jstachio;
 		}
 
-		JStacheTemplateFinder templateFinder() {
+		JStachioTemplateFinder templateFinder() {
 			return templateFinder;
 		}
 
 	}
 
-	static Stream<JStacheServices> _services() {
+	static Stream<JStachioServices> _services() {
 		return Holder.INSTANCE.services.stream();
 	}
 
-	static JStacheConfig _config() {
+	static JStachioConfig _config() {
 		return Holder.INSTANCE.config();
 	}
 
 	@Override
-	public @Nullable JStacheTemplateFinder provideTemplateFinder() {
+	public @Nullable JStachioTemplateFinder provideTemplateFinder() {
 		return Holder.INSTANCE.templateFinder();
 	}
 
 	@Override
-	public @NonNull JStacheConfig provideConfig() {
+	public @NonNull JStachioConfig provideConfig() {
 		return _config();
 	}
 
 	@Override
-	public @NonNull JStacheFilter provideFilter() {
+	public @NonNull JStachioFilter provideFilter() {
 		return Holder.INSTANCE.filter();
 	}
 

@@ -2,10 +2,10 @@ package io.jstach.spec.generator;
 
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.jstachio.spi.JStacheServices;
+import io.jstach.jstachio.spi.JStachioServices;
 
-@MetaInfServices(JStacheServices.class)
-public class SpecRenderService implements JStacheServices {
+@MetaInfServices(JStachioServices.class)
+public class SpecRenderService implements JStachioServices {
 
 	// @Override
 	// public Formatter formatter(Formatter previous) {

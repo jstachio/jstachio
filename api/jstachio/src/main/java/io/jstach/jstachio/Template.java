@@ -2,7 +2,7 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 
-import io.jstach.jstachio.spi.JStacheFilter.FilterChain;
+import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**
  * A JStachio Template is a renderer that has template meta data.

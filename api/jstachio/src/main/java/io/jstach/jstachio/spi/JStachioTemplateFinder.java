@@ -17,7 +17,7 @@ import io.jstach.jstachio.TemplateInfo;
  * @author agentgt
  *
  */
-public interface JStacheTemplateFinder {
+public interface JStachioTemplateFinder {
 
 	/**
 	 * Finds a {@link Template} if possible otherwise possibly falling back to a
@@ -35,11 +35,11 @@ public interface JStacheTemplateFinder {
 
 }
 
-class DefaultTemplateFinder implements JStacheTemplateFinder {
+class DefaultTemplateFinder implements JStachioTemplateFinder {
 
-	private final JStacheConfig config;
+	private final JStachioConfig config;
 
-	public DefaultTemplateFinder(JStacheConfig config) {
+	public DefaultTemplateFinder(JStachioConfig config) {
 		super();
 		this.config = config;
 	}

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ServiceLoader;
 
 import io.jstach.jstache.JStache;
-import io.jstach.jstachio.spi.JStacheServices;
+import io.jstach.jstachio.spi.JStachioServices;
 
 /**
  * Render models by using reflection to lookup generated templates as well as apply
@@ -26,7 +26,7 @@ import io.jstach.jstachio.spi.JStacheServices;
  * @apiNote The static <strong><code>render</code></strong> methods are convenience
  * methods that will use the ServiceLoader based JStachio which loads all extensions via
  * the {@link ServiceLoader}.
- * @see JStacheServices
+ * @see JStachioServices
  * @see JStache
  */
 public interface JStachio extends Renderer<Object> {
@@ -95,7 +95,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @throws NullPointerException if jstachio is not found
 	 */
 	public static JStachio of() {
-		JStachio jstachio = JStacheServices.find().provideJStachio();
+		JStachio jstachio = JStachioServices.find().provideJStachio();
 		if (jstachio == null) {
 			throw new NullPointerException("JStachio not found. This is probably a classloading issue.");
 		}

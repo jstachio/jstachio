@@ -52,7 +52,7 @@ public final class Templates {
 	 * template was found.
 	 * @throws Exception if any reflection error happes or the template is not found
 	 */
-	public static TemplateInfo findTemplate(Class<?> modelType, JStacheConfig config) throws Exception {
+	public static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config) throws Exception {
 		Exception error;
 		try {
 			Template<?> r = Templates.getTemplate(modelType);
@@ -61,8 +61,8 @@ public final class Templates {
 		catch (Exception e) {
 			error = e;
 		}
-		if (!config.getBoolean(JStacheConfig.REFLECTION_TEMPLATE_DISABLE)) {
-			Logger logger = config.getLogger(JStacheServices.class.getCanonicalName());
+		if (!config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
+			Logger logger = config.getLogger(JStachioServices.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING,
 						"Could not find generated template and will try reflection for model type: " + modelType,

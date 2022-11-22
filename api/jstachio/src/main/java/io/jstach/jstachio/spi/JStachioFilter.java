@@ -12,7 +12,7 @@ import io.jstach.jstachio.TemplateInfo;
  * @author agentgt
  *
  */
-public interface JStacheFilter {
+public interface JStachioFilter {
 
 	/**
 	 * A fully composed chain that renders a model by applying filtering.
@@ -73,7 +73,7 @@ public interface JStacheFilter {
 
 }
 
-enum BrokenFilter implements io.jstach.jstachio.spi.JStacheFilter.FilterChain {
+enum BrokenFilter implements io.jstach.jstachio.spi.JStachioFilter.FilterChain {
 
 	INSTANCE;
 
@@ -89,11 +89,11 @@ enum BrokenFilter implements io.jstach.jstachio.spi.JStacheFilter.FilterChain {
 
 }
 
-class CompositeFilterChain implements JStacheFilter {
+class CompositeFilterChain implements JStachioFilter {
 
-	private final List<JStacheFilter> filters;
+	private final List<JStachioFilter> filters;
 
-	public CompositeFilterChain(List<JStacheFilter> filters) {
+	public CompositeFilterChain(List<JStachioFilter> filters) {
 		super();
 		this.filters = filters;
 	}
