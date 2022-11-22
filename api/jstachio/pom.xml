@@ -19,13 +19,13 @@
     </plugins>
   </build>
   <dependencies>
-       <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>jstachio-annotation</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jdt</groupId>
-        <artifactId>org.eclipse.jdt.annotation</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jstachio-annotation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.annotation</artifactId>
+    </dependency>
   </dependencies>
 </project>

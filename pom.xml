@@ -113,7 +113,12 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit4</artifactId>
+        <version>1.0.1</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>jstachio</artifactId>
