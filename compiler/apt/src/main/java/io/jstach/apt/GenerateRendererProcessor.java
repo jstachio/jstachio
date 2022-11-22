@@ -385,7 +385,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		TypeElement contentTypeElement = resolveContentType(gp);
 		TypeElement formatterElement = resolveFormatter(element, gp);
-		Charset charset = gp.charset().equals(":default") ? Charset.defaultCharset() : Charset.forName(gp.charset());
+		Charset charset = gp.charset().isBlank() ? Charset.defaultCharset() : Charset.forName(gp.charset());
 		String path = gp.path();
 		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
@@ -503,12 +503,13 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		String directiveAdapterName = null;
 		directiveAdapterName = gp.adapterName();
 		String adapterClassSimpleName;
-		if (!directiveAdapterName.equals(":auto")) {
-			adapterClassSimpleName = directiveAdapterName;
-		}
-		else {
+
+		if (directiveAdapterName.isBlank()) {
 			ClassRef ref = ClassRef.of(element);
 			adapterClassSimpleName = ref.getSimpleName() + IMPLEMENTATION_SUFFIX;
+		}
+		else {
+			adapterClassSimpleName = directiveAdapterName;
 		}
 		return adapterClassSimpleName;
 	}

@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Create multiple Renderers for a single type.
+ * Create multiple generated templates (renderers) for a single type.
  * <p>
  * <em>If this is used {@link JStache#adapterName()} should be set otherwise there will be
  * name collisions!</em>
@@ -55,10 +55,13 @@ import java.lang.annotation.Target;
  * {{> html.mustache}}
  * {{/isHtml}}
  * </pre>
+ * 
+ * However the above only works if one of your views is plain text.
  *
  * @author Victor Nazarov
  * @author agentgt
  * @see JStachePartial
+ * @deprecated for now as it does not really work well
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)

@@ -118,11 +118,11 @@ public final class Templates {
 	private static String resolveName(Class<?> c) {
 		var a = c.getAnnotation(JStache.class);
 		String cname;
-		if (a != null && !":auto".equals(a.adapterName())) {
-			cname = a.adapterName();
+		if (a == null || a.adapterName().isBlank()) {
+			cname = c.getSimpleName() + Template.IMPLEMENTATION_SUFFIX;
 		}
 		else {
-			cname = c.getSimpleName() + Template.IMPLEMENTATION_SUFFIX;
+			cname = a.adapterName();
 		}
 		String packageName = c.getPackageName();
 		String fqn = packageName + (packageName.isEmpty() ? "" : ".") + cname;

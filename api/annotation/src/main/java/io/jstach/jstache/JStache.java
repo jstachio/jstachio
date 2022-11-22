@@ -71,13 +71,15 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * projects.</em>
  *
  * <h4 id="_decorating_models">Adding interfaces to models and renderers</h4>
- * <strong>{@link io.jstach.jstache.JStacheInterfaces}</strong>
+ * <strong>&#64;{@link io.jstach.jstache.JStacheInterfaces}</strong>
  * <p>
  * Java has a huge advantage over JSON and Javascript. You can use interfaces to add
  * additional variables as well as lambda methods
  * ({@link io.jstach.jstache.JStacheLambda}). To enforce that certain interfaces are added
  * to models (the ones annotated) and renderers (the generated classes) you can use
- * {@link io.jstach.jstache.JStacheInterfaces} on packages or the classes themselves.
+ * {@link io.jstach.jstache.JStacheInterfaces} on packages or the classes themselves. You
+ * can also make generated classes have {@link ElementType#TYPE} annotations as well which
+ * maybe useful for integration with other frameworks.
  *
  * <h3 id="_templates">Templates</h3>
  *
@@ -276,7 +278,7 @@ public @interface JStache {
 	 * adapterName can be omitted. "{{className}}Renderer" name is used by default.
 	 * @return Name of generated class
 	 */
-	String adapterName() default ":auto";
+	String adapterName() default "";
 
 	/**
 	 * Class representing template content type to be used by escapers.
@@ -304,6 +306,6 @@ public @interface JStache {
 	 * charset can be omitted. Default system charset is used by default.
 	 * @return encoding of given template file
 	 */
-	String charset() default ":default";
+	String charset() default "";
 
 }
