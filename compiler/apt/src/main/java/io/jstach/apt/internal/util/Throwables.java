@@ -32,6 +32,9 @@ package io.jstach.apt.internal.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.function.Function;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author agentgt
@@ -48,6 +51,24 @@ public class Throwables {
 	}
 
 	private Throwables() {
+	}
+
+	public interface SneakyFunction<@Nullable T, @Nullable R, E extends Exception>
+			extends Function<@Nullable T, @Nullable R> {
+
+		@Override
+		default R apply(T t) {
+			try {
+				return _apply(t);
+			}
+			catch (Exception e) {
+				sneakyThrow(e);
+				throw new RuntimeException(e);
+			}
+		}
+
+		public R _apply(T t) throws E;
+
 	}
 
 	@SuppressWarnings("unchecked")

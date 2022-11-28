@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.samskivert.mustache.Mustache;
 
+import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheFlags;
 import io.jstach.jstache.JStacheContentType.AutoContentType;
 import io.jstach.jstache.JStacheFormatter.AutoFormatter;
@@ -36,7 +37,7 @@ public class PrismsTest {
 		}
 
 		String rendererSuffix() {
-			return Renderer.IMPLEMENTATION_SUFFIX;
+			return JStache.IMPLEMENTATION_SUFFIX;
 		}
 	}
 
@@ -142,6 +143,7 @@ public class PrismsTest {
 		return List.of(//
 				io.jstach.jstache.JStaches.class, //
 				io.jstach.jstache.JStache.class, //
+				io.jstach.jstache.JStacheConfig.class, //
 				io.jstach.jstache.JStachePath.class, //
 				io.jstach.jstache.JStacheInterfaces.class, //
 				io.jstach.jstache.JStachePartials.class, //

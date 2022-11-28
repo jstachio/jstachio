@@ -39,11 +39,6 @@ public @interface JStachePartial {
 	 * Inline template. If not set {@link #path()} will be used.
 	 * @return inlined template maybe not set.
 	 */
-	String template() default NOT_SET;
-
-	/**
-	 * Marks that the inline template is not set
-	 */
-	public static String NOT_SET = "__NOT_SET__";
+	String template() default "";
 
 }

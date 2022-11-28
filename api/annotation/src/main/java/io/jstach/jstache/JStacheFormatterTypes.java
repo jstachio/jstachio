@@ -7,12 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URI;
 
-import io.jstach.jstache.JStacheFormatter.AutoFormatter;
-
 /**
  *
- * Statically sets allowed formatting types as well as registers static formatters for all
- * models ({@link JStache}) in a package or module.
+ * Statically sets allowed formatting types.
  * <p>
  * If a type is not allowed or known a compile error will happen. This annotation allows
  * you to override that behavior.
@@ -42,13 +39,5 @@ public @interface JStacheFormatterTypes {
 	 * @return regex used to match class names that are allowed to be formatted.
 	 */
 	public String[] patterns() default {};
-
-	/**
-	 * Optional base formatter for all models in the annotated package. The formatter
-	 * provider needs a {@link JStacheFormatter} annotation.
-	 * @return the base formatter for all models in the annotated package
-	 * @see JStacheFormatter
-	 */
-	public Class<?> formatter() default AutoFormatter.class;
 
 }

@@ -6,17 +6,20 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
 import io.jstach.jstache.JStacheContentType.AutoContentType;
 import io.jstach.jstache.JStacheFormatter;
 import io.jstach.jstache.JStacheFormatter.AutoFormatter;
-import io.jstach.jstache.JStacheFormatterTypes;
 import io.jstach.jstache.JStachePath;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
@@ -30,8 +33,11 @@ import io.jstach.jstachio.formatters.SpecFormatter;
  *
  * Locates generated templates by their model via reflection.
  * <p>
- * This utility class is useful if you plan on implementing your own {@link JStachio}.
+ * This utility class is useful if you plan on implementing your own {@link JStachio} and
+ * or other integrations.
  *
+ * @apiNote In order to use reflection in a modular setup one must <code>open</code>
+ * packages to the {@link io.jstach.jstachio/ } module.
  * @author agentgt
  *
  */
@@ -73,6 +79,20 @@ public final class Templates {
 		}
 		throw error;
 
+	}
+
+	/**
+	 * Finds template info by accessing JStache annotations through reflective lookup.
+	 * <p>
+	 * This allows you to lookup template meta data regardless of whether or not the
+	 * annotation processor has generated code. This method is mainly used for fallback
+	 * mechanisms and extensions.
+	 * @param modelType the class that is annotated with {@link JStache}
+	 * @return template info meta data
+	 * @throws Exception if any reflection error happes or the template is not found
+	 */
+	public static TemplateInfo getInfoByReflection(Class<?> modelType) throws Exception {
+		return TemplateInfos.templateOf(modelType);
 	}
 
 	/**
@@ -119,7 +139,11 @@ public final class Templates {
 		var a = c.getAnnotation(JStache.class);
 		String cname;
 		if (a == null || a.adapterName().isBlank()) {
-			cname = c.getSimpleName() + Template.IMPLEMENTATION_SUFFIX;
+			@Nullable
+			String suffix = findAnnotations(c, JStacheConfig.class).map(config -> config.nameSuffix())
+					.filter(s -> !s.isBlank()).findFirst().orElse(null);
+			suffix = suffix != null ? suffix : JStache.IMPLEMENTATION_SUFFIX;
+			cname = c.getSimpleName() + suffix;
 		}
 		else {
 			cname = a.adapterName();
@@ -127,6 +151,11 @@ public final class Templates {
 		String packageName = c.getPackageName();
 		String fqn = packageName + (packageName.isEmpty() ? "" : ".") + cname;
 		return fqn;
+	}
+
+	private static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
+		return Stream.of(c.getPackage(), c.getModule()).filter(p -> p != null)
+				.map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
 	}
 
 	private static <T> @Nullable Template<?> getTemplateFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
@@ -162,30 +191,44 @@ public final class Templates {
 				throw new IllegalArgumentException(
 						"Model class is not annotated with " + JStache.class.getSimpleName() + ". class: " + model);
 			}
-			JStachePath path = getAnnotation(JStachePath.class, model);
-
-			String templateName = stache.adapterName();
-			String templatePath = stache.path();
-			if (path != null) {
-				templatePath = path.prefix() + templatePath + path.suffix();
-			}
+			@Nullable
+			JStachePath pathConfig = findAnnotations(model, JStachePath.class).findFirst().orElse(null);
 			String templateString = stache.template();
 
-			Class<?> templateContentType = EscaperProvider.INSTANCE.nullToDefault(stache.contentType());
-
-			Function<String, String> templateEscaper = EscaperProvider.INSTANCE.provides(templateContentType);
-
-			Class<?> formatterProvider = FormatterProvider.INSTANCE.autoToNull(stache.formatter());
-
-			if (formatterProvider == null) {
-				JStacheFormatterTypes formatterTypes = getAnnotation(JStacheFormatterTypes.class, model);
-				if (formatterTypes != null) {
-					formatterProvider = FormatterProvider.INSTANCE.autoToNull(formatterTypes.formatter());
-				}
+			String templateName;
+			String path = stache.path();
+			String templatePath;
+			if (templateString.isEmpty() && path.isEmpty()) {
+				String folder = model.getPackageName().replace('.', '/');
+				folder = folder.isEmpty() ? folder : folder + "/";
+				templatePath = folder + model.getSimpleName();
+			}
+			else if (!path.isEmpty()) {
+				templatePath = path;
+			}
+			else {
+				templatePath = "";
+			}
+			if (pathConfig != null && !templatePath.isBlank()) {
+				templateName = templatePath;
+				templatePath = pathConfig.prefix() + templatePath + pathConfig.suffix();
+			}
+			else if (templatePath.isBlank() && !templateString.isEmpty()) {
+				templateName = model.getCanonicalName() + "#template";
+			}
+			else {
+				templateName = path;
 			}
 
+			// Class<?> templateContentType =
+			// EscaperProvider.INSTANCE.nullToDefault(stache.contentType());
+
+			var ee = EscaperProvider.INSTANCE.providesFromModelType(model, stache);
+			Function<String, String> templateEscaper = ee.getValue();
+			Class<?> templateContentType = ee.getKey();
+
 			Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE
-					.provides(formatterProvider);
+					.providesFromModelType(model, stache).getValue();
 
 			long lastLoaded = System.currentTimeMillis();
 			return new SimpleTemplateInfo( //
@@ -198,14 +241,6 @@ public final class Templates {
 					lastLoaded, //
 					model);
 
-		}
-
-		static <A extends Annotation> @Nullable A getAnnotation(Class<A> annotation, Class<?> model) {
-			var a = model.getAnnotation(annotation);
-			if (a == null) {
-				a = model.getPackage().getAnnotation(annotation);
-			}
-			return a;
 		}
 
 		sealed interface StaticProvider<P> {
@@ -234,9 +269,29 @@ public final class Templates {
 
 			Class<?> defaultProvider();
 
+			Class<?> providerFromJStache(JStache jstache);
+
+			Class<?> providerFromConfig(JStacheConfig config);
+
+			default Class<?> findProvider(Class<?> modelType, JStache jstache) {
+				@Nullable
+				Class<?> provider = autoToNull(providerFromJStache(jstache));
+				if (provider != null) {
+					return provider;
+				}
+				provider = findAnnotations(modelType, JStacheConfig.class)
+						.map(config -> autoToNull(providerFromConfig(config))).filter(p -> p != null).findFirst()
+						.orElse(null);
+				return nullToDefault(provider);
+			}
+
+			default Entry<Class<?>, P> providesFromModelType(Class<?> modelType, JStache jstache) throws Exception {
+				var t = findProvider(modelType, jstache);
+				return Map.entry(t, provides(t));
+			}
+
 			@SuppressWarnings("unchecked")
-			default P provides(@Nullable Class<?> type) throws Exception {
-				type = nullToDefault(type);
+			default P provides(Class<?> type) throws Exception {
 				String provides = providesMethod(type);
 				var method = type.getMethod(provides);
 				Object r = method.invoke(provides);
@@ -257,6 +312,16 @@ public final class Templates {
 			@Override
 			public Class<?> defaultProvider() {
 				return Html.class;
+			}
+
+			@Override
+			public Class<?> providerFromJStache(JStache jstache) {
+				return jstache.contentType();
+			}
+
+			@Override
+			public Class<?> providerFromConfig(JStacheConfig config) {
+				return config.contentType();
 			}
 
 			@Override
@@ -290,6 +355,16 @@ public final class Templates {
 			@Override
 			public Class<?> defaultProvider() {
 				return DefaultFormatter.class;
+			}
+
+			@Override
+			public Class<?> providerFromJStache(JStache jstache) {
+				return jstache.formatter();
+			}
+
+			@Override
+			public Class<?> providerFromConfig(JStacheConfig config) {
+				return config.formatter();
 			}
 
 			@Override

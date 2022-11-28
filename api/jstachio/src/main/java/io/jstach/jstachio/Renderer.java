@@ -13,12 +13,6 @@ import java.io.UncheckedIOException;
 public interface Renderer<T> {
 
 	/**
-	 * The generated renderers by default are suffix with this literal:
-	 * <code>"Renderer"</code>
-	 */
-	public static final String IMPLEMENTATION_SUFFIX = "Renderer";
-
-	/**
 	 * Renders the passed in model.
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param appendable the appendable to write to.

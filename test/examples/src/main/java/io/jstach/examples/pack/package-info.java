@@ -2,9 +2,6 @@
 @io.jstach.jstache.JStacheInterfaces( //
 		templateImplements = { io.jstach.examples.pack.BlahInf.class },
 		modelImplements = { io.jstach.examples.pack.BlahInf.class })
-@io.jstach.jstache.JStacheFormatterTypes(types = { io.jstach.examples.pack.SomeUnknownType.class },
-		formatter = io.jstach.jstachio.formatters.SpecFormatter.class)
-
+@io.jstach.jstache.JStacheFormatterTypes(types = { io.jstach.examples.pack.SomeUnknownType.class })
+@io.jstach.jstache.JStacheConfig(formatter = io.jstach.jstachio.formatters.SpecFormatter.class)
 package io.jstach.examples.pack;
-
-import io.jstach.jstachio.formatters.SpecFormatter;

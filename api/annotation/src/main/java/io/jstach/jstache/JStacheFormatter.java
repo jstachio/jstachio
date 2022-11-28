@@ -16,7 +16,7 @@ import java.util.ServiceLoader;
  * <p>
  * A class that is annotated statically provides a formatter instead of using the
  * {@link ServiceLoader} and can be used as marker for a particular formatter in
- * {@link JStacheFormatterTypes#formatter()}.
+ * {@link JStacheConfig#formatter()}.
  * <p>
  * There are two supported Formatter types:
  * <ul>
@@ -30,7 +30,7 @@ import java.util.ServiceLoader;
  * On the otherhand the Formatter interfaces allows potentially greater performance and or
  * if you need to format native types.
  * <p>
- * It is important to understand that formatters do not have controll what types are
+ * It is important to understand that formatters do not have control what types are
  * allowed to be formatted. *That is formatter might be able to output a certain class but
  * the annotation processor will fail before that* as only certain types are allowed to be
  * formatted. To control that see {@link JStacheFormatterTypes}.

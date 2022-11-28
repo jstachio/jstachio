@@ -98,6 +98,8 @@ import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.meta.ElementMessage;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.Throwables;
+import io.jstach.apt.internal.util.Throwables.SneakyFunction;
+import io.jstach.apt.prism.JStacheConfigPrism;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
@@ -299,14 +301,13 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return paths;
 	}
 
-	private static NamedTemplate resolveNamedTemplate(@Nullable String name, @Nullable String path,
-			@Nullable String template) {
+	private static NamedTemplate resolveNamedTemplate(String name, @Nullable String path, @Nullable String template) {
 		NamedTemplate nt;
 		assert name != null;
 		if (path != null && !path.isBlank()) {
 			nt = new NamedTemplate.FileTemplate(name, path);
 		}
-		else if (template != null && !template.equals("__NOT_SET__")) {
+		else if (template != null && !template.isEmpty()) {
 			nt = new NamedTemplate.InlineTemplate(name, template);
 		}
 		else {
@@ -356,14 +357,22 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			Set<Flag> flags) implements ProcessingConfig {
 
 		public NamedTemplate namedTemplate() {
-			String name = element.getQualifiedName().toString() + ".mustache";
+			String name;
 			String path = path();
 			String template = null;
 			if (!path.isBlank()) {
 				name = path;
 			}
-			if (!template().isBlank()) {
+			else if (!template().isEmpty()) {
+				name = element.getQualifiedName().toString() + "#template";
 				template = template();
+			}
+			else {
+				var pe = JavaLanguageModel.getInstance().getElements().getPackageOf(element);
+				String folder = pe.getQualifiedName().toString().replace('.', '/');
+				path = folder.isEmpty() ? element.getQualifiedName().toString()
+						: folder + "/" + element.getSimpleName();
+				name = path;
 			}
 			return resolveNamedTemplate(name, path, template);
 
@@ -385,7 +394,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			throw new AnnotatedException(element, "Missing annotation. bug.");
 		}
 
-		TypeElement contentTypeElement = resolveContentType(gp);
+		TypeElement contentTypeElement = resolveContentType(element, gp);
 		TypeElement formatterElement = resolveFormatter(element, gp);
 		Charset charset = gp.charset().isBlank() ? Charset.defaultCharset() : Charset.forName(gp.charset());
 		String path = gp.path();
@@ -422,34 +431,31 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return rendererClassRef;
 	}
 
-	private TypeElement resolveContentType(JStachePrism gp) throws DeclarationException {
-		TypeElement templateFormatElement = null;
-		TypeMirror templateFormatType = gp.contentType();
-		if (templateFormatType instanceof DeclaredType dt) {
-			templateFormatElement = (TypeElement) dt.asElement();
-		}
-		else {
-			throw new ClassCastException("Expecting DeclaredType for contentType " + gp.contentType());
+	private TypeElement resolveContentType(TypeElement element, JStachePrism gp) throws DeclarationException {
+
+		var lm = JavaLanguageModel.getInstance();
+
+		TypeElement autoContentTypeElement = JavaLanguageModel.getInstance().getElements()
+				.getTypeElement(AUTO_CONTENT_TYPE_CLASS);
+
+		Stream<TypeMirror> contentTypeProviderTypes = //
+				findPrismsReverse(element, JStacheConfigPrism::getInstanceOn) //
+						.stream() //
+						.map(p -> p.contentType());
+
+		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::contentTypeElement;
+
+		@Nullable
+		TypeElement contentTypeProviderElement = Stream.concat(Stream.of(gp.contentType()), contentTypeProviderTypes) //
+				.map(f) //
+				.filter(e -> !lm.isSameType(autoContentTypeElement.asType(), e.asType())) //
+				.findFirst().orElse(null);
+
+		if (contentTypeProviderElement == null) {
+			contentTypeProviderElement = lm.getElements().getTypeElement(HTML_CLASS);
 		}
 
-		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(templateFormatElement);
-		if (contentTypePrism == null) {
-			throw new DeclarationException(templateFormatElement.getQualifiedName()
-					+ " class is used as a template content type, but not marked with " + JSTACHE_CONTENT_TYPE_CLASS
-					+ " annotation");
-		}
-
-		/*
-		 * TODO clean this up to resolve format
-		 */
-		var autoFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(AUTO_CONTENT_TYPE_CLASS);
-		if (JavaLanguageModel.getInstance().isSameType(autoFormatElement.asType(), templateFormatElement.asType())) {
-			templateFormatElement = JavaLanguageModel.getInstance().getElements().getTypeElement(HTML_CLASS);
-			if (templateFormatElement == null) {
-				throw new DeclarationException("Missing default TextFormat class of Html");
-			}
-		}
-		return templateFormatElement;
+		return contentTypeProviderElement;
 	}
 
 	private TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
@@ -459,21 +465,15 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		TypeElement autoFormatElement = lm.getElements().getTypeElement(AUTO_FORMATTER_CLASS);
 
 		Stream<TypeMirror> formatterProviderTypes = //
-				findPrismsReverse(element, JStacheFormatterTypesPrism::getInstanceOn) //
+				findPrismsReverse(element, JStacheConfigPrism::getInstanceOn) //
 						.stream() //
 						.map(p -> p.formatter());
 
+		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::formatterElement;
+
 		@Nullable
 		TypeElement formatterProviderElement = Stream.concat(Stream.of(gp.formatter()), formatterProviderTypes) //
-				.map(t -> {
-					try {
-						return formatterElement(t);
-					}
-					catch (DeclarationException de) {
-						Throwables.sneakyThrow(de);
-						throw new RuntimeException();
-					}
-				}) //
+				.map(f) //
 				.filter(e -> !lm.isSameType(autoFormatElement.asType(), e.asType())) //
 				.findFirst().orElse(null);
 
@@ -501,14 +501,34 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return formatElement;
 	}
 
-	private String resolveAdapterName(TypeElement element, JStachePrism gp) {
-		String directiveAdapterName = null;
-		directiveAdapterName = gp.adapterName();
-		String adapterClassSimpleName;
+	private TypeElement contentTypeElement(TypeMirror templateContentType) throws DeclarationException {
+		TypeElement contentTypeElement = null;
+		if (templateContentType instanceof DeclaredType dt) {
+			contentTypeElement = (TypeElement) dt.asElement();
+		}
+		else {
+			throw new ClassCastException("Expecting DeclaredType for content type " + templateContentType);
+		}
 
+		JStacheContentTypePrism formatterPrism = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
+		if (formatterPrism == null) {
+			throw new DeclarationException(
+					contentTypeElement.getQualifiedName() + " class is used as a contentType, but not marked with "
+							+ JSTACHE_CONTENT_TYPE_CLASS + " annotation");
+		}
+		return contentTypeElement;
+	}
+
+	private String resolveAdapterName(TypeElement element, JStachePrism gp) {
+		String directiveAdapterName = gp.adapterName();
+		String adapterClassSimpleName;
 		if (directiveAdapterName.isBlank()) {
+			@Nullable
+			String suffix = findPrismsReverse(element, JStacheConfigPrism::getInstanceOn).stream()
+					.map(config -> config.nameSuffix()).filter(n -> !n.isBlank()).findFirst().orElse(null);
+			suffix = suffix != null ? suffix : IMPLEMENTATION_SUFFIX;
 			ClassRef ref = ClassRef.of(element);
-			adapterClassSimpleName = ref.getSimpleName() + IMPLEMENTATION_SUFFIX;
+			adapterClassSimpleName = ref.getSimpleName() + suffix;
 		}
 		else {
 			adapterClassSimpleName = directiveAdapterName;
@@ -629,7 +649,7 @@ class ClassWriter {
 		NamedTemplate namedTemplate = model.namedTemplate();
 
 		String templateName = namedTemplate.name();
-		String templatePath = model.pathConfig().resolveTemplatePath(model.path());
+		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
 		String templateString = namedTemplate.template();
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);
@@ -750,7 +770,8 @@ class ClassWriter {
 		println("    @Override");
 		println("    public java.util.List<" + TEMPLATE_CLASS + "<?>> " + "provideTemplates(" + TEMPLATE_CONFIG_CLASS
 				+ " templateConfig ) {");
-		println("        return java.util.List.of(new " + rendererClassSimpleName + "(templateConfig));");
+		println("        return java.util.List.of(" + TEMPLATE_CONFIG_CLASS + ".empty() == templateConfig ? "
+				+ "INSTANCE :  new " + rendererClassSimpleName + "(templateConfig));");
 		println("    }");
 		println("");
 		println("    @Override");

@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * If the annotation is present on the class it will take precedence over the annotation
  * in its package (package-info.java) if there is one.
  *
- * @author agent
+ * @author agentgt
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

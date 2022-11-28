@@ -234,29 +234,52 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * that see {@link io.jstach.jstache.JStacheFormatterTypes}.
  *
  * <h3 id="_runtime_formatting">Runtime formatting</h3>
- * <strong>&#64;{@link io.jstach.jstache.JStacheFormatter} and
- * {@link io.jstach.jstache.JStache#formatter()}</strong>
+ * <strong>&#64;{@link io.jstach.jstache.JStacheFormatter},
+ * {@link io.jstach.jstache.JStache#formatter()} and
+ * &#64;{@link JStacheConfig#formatter()}</strong>
  * <p>
  * Assuming the compiler allowed the variable to be formatted you can control the output
  * via {@link io.jstach.jstache.JStacheFormatter} and setting
  * {@link io.jstach.jstache.JStache#formatter()}.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
- * <strong>&#64;{@link io.jstach.jstache.JStacheContentType} and
- * {@link io.jstach.jstache.JStache#contentType()}</strong>
+ * <strong>&#64;{@link io.jstach.jstache.JStacheContentType},
+ * {@link io.jstach.jstache.JStache#contentType()} and
+ * &#64;{@link JStacheConfig#contentType()} </strong>
  * <p>
  * If you are using the JStachio runtime (io.jstach.jstachio) you will get out of the box
- * escaping for HTML per the mustache spec. </div>
+ * escaping for HTML (see <code>io.jstach.jstachio.escapers.Html</code>) per the mustache
+ * spec.
+ * <p>
+ * <strong>To disable escaping</strong> set {@link #contentType()} to
+ * <code>io.jstach.jstachio.escapers.PlainText</code>
  *
+ * <h2 id="_config">Configuration</h2> <strong>&#64;{@link JStacheConfig}</strong>
+ * <p>
+ * You can set global configuration on packages and module elements. JStache annotation
+ * non default methods take precedence over config. See {@link JStacheConfig} for more
+ * details.
+ *
+ *
+ * </div>
  *
  * @author agentgt
  * @see JStachePath
  * @see JStacheFormatterTypes
+ * @see JStacheConfig
+ * @see JStacheFormatter
+ * @see JStacheContentType
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStache {
+
+	/**
+	 * The generated renderers by default are suffix with this literal:
+	 * <code>"Renderer"</code>
+	 */
+	public static final String IMPLEMENTATION_SUFFIX = "Renderer";
 
 	/**
 	 * Resource path to template
@@ -275,7 +298,8 @@ public @interface JStache {
 	/**
 	 * Name of generated class.
 	 * <p>
-	 * adapterName can be omitted. "{{className}}Renderer" name is used by default.
+	 * adapterName can be omitted. <code>model.getClass().getName()</code> +
+	 * {@link #IMPLEMENTATION_SUFFIX} name is used by default.
 	 * @return Name of generated class
 	 */
 	String adapterName() default "";

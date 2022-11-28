@@ -11,6 +11,7 @@ module io.jstach.examples {
 	requires static org.eclipse.jdt.annotation;
 
 	opens io.jstach.examples to com.samskivert.jmustache, io.jstach.jstachio;
+	opens io.jstach.examples.reflect to io.jstach.jstachio;
 
 	exports io.jstach.examples to org.mapstruct;
 

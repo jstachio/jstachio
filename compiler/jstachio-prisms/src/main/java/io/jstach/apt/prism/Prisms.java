@@ -63,6 +63,8 @@ public interface Prisms {
 
 	public static final String JSTACHE_CLASS = "io.jstach.jstache.JStache";
 
+	public static final String JSTACHE_CONFIG_CLASS = "io.jstach.jstache.JStacheConfig";
+
 	public static final String JSTACHE_PATH_CLASS = "io.jstach.jstache.JStachePath";
 
 	public static final String JSTACHE_INTERFACES_CLASS = "io.jstach.jstache.JStacheInterfaces";
@@ -86,6 +88,7 @@ public interface Prisms {
 	public static final List<String> ANNOTATIONS = List.of( //
 			JSTACHES_CLASS, //
 			JSTACHE_CLASS, //
+			JSTACHE_CONFIG_CLASS, //
 			JSTACHE_PATH_CLASS, //
 			JSTACHE_INTERFACES_CLASS, //
 			JSTACHE_PARTIALS_CLASS, //
