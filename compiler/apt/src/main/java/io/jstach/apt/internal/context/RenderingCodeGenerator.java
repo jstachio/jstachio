@@ -47,6 +47,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.FormatterTypes;
+import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.context.Lambda.Lambdas;
 import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.internal.context.types.KnownType;
@@ -69,8 +70,9 @@ public class RenderingCodeGenerator {
 	 * contain type variables.
 	 * @return
 	 */
-	public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes) {
-		return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes);
+	public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes,
+			FormatCallType formatCallType) {
+		return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes, formatCallType);
 	}
 
 	private final KnownTypes knownTypes;
@@ -79,10 +81,14 @@ public class RenderingCodeGenerator {
 
 	private final FormatterTypes formatterTypes;
 
-	private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes) {
+	private final FormatCallType formatCallType;
+
+	private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes,
+			FormatCallType formatCallType) {
 		this.knownTypes = types;
 		this.javaModel = javaModel;
 		this.formatterTypes = formatterTypes;
+		this.formatCallType = formatCallType;
 	}
 
 	String generateRenderingCode(JavaExpression expression, VariableContext variables, String path)
@@ -98,10 +104,7 @@ public class RenderingCodeGenerator {
 		KnownType knownType = javaModel.resolveType(type).orElse(null);
 
 		if (knownType != null && ((knownType instanceof NativeType) || knownType.equals(knownTypes._String))) {
-			return variables.formatter() + ".format(" + variables.escaper() //
-					+ ", " + variables.unescapedWriter() //
-					+ ", " + "\"" + path + "\"" //
-					+ ", " + text + ");";
+			return renderFormatCall(variables, path, text);
 		}
 		else if (knownType != null && knownType instanceof ObjectType) {
 			String cname = knownType.renderClassName() + ".class";
@@ -120,11 +123,40 @@ public class RenderingCodeGenerator {
 	}
 
 	private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
+		return switch (formatCallType) {
+			case JSTACHIO -> renderFormatCallJStache(variables, path, text, cname);
+			case STACHE -> renderFormatCallStache(variables, text);
+		};
+	}
+
+	private String renderFormatCall(VariableContext variables, String path, String text) {
+		return switch (formatCallType) {
+			case JSTACHIO -> renderFormatCallJStache(variables, path, text);
+			case STACHE -> renderFormatCallStache(variables, text);
+		};
+	}
+
+	private String renderFormatCallJStache(VariableContext variables, String path, String text) {
+		return variables.formatter() + ".format(" + variables.escaper() //
+				+ ", " + variables.unescapedWriter() //
+				+ ", " + "\"" + path + "\"" //
+				+ ", " + text + ");";
+	}
+
+	private String renderFormatCallJStache(VariableContext variables, String path, String text, String cname) {
 		return variables.formatter() + ".format(" + variables.escaper() //
 				+ ", " + variables.unescapedWriter() //
 				+ ", " + "\"" + path + "\"" //
 				+ ", " + cname //
 				+ ", " + text + ");";
+	}
+
+	private String renderFormatCallStache(VariableContext variables, String text) {
+		String fmt = variables.formatter() + ".apply(" + text + ")";
+		if (variables.isEscaped()) {
+			fmt = variables.escaper() + ".apply(" + fmt + ")";
+		}
+		return variables.unescapedWriter() + ".append(" + fmt + ");";
 	}
 
 	@SuppressWarnings("null")

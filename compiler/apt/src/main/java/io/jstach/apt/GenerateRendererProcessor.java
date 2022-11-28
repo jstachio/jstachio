@@ -30,15 +30,6 @@
  */
 package io.jstach.apt;
 
-import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
-import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
-import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
-import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
-import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
-import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
-import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
-import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -56,7 +47,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -68,7 +58,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -81,11 +70,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import io.jstach.apt.GenerateRendererProcessor.RendererModel;
-import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.internal.AnnotatedException;
-import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.FormatterTypes;
+import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.Position;
 import io.jstach.apt.internal.ProcessingConfig;
@@ -93,8 +80,6 @@ import io.jstach.apt.internal.ProcessingConfig.PathConfig;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.JavaLanguageModel;
 import io.jstach.apt.internal.context.RenderingCodeGenerator;
-import io.jstach.apt.internal.context.TemplateCompilerContext;
-import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.meta.ElementMessage;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.Throwables;
@@ -343,6 +328,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	record RendererModel( //
+			FormatCallType formatCallType, //
 			TypeElement element, //
 			ClassRef rendererClassRef, //
 			String path, //
@@ -394,6 +380,13 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			throw new AnnotatedException(element, "Missing annotation. bug.");
 		}
 
+		FormatCallType formatCallType = FormatCallType.JSTACHIO;
+
+		Boolean minimal = findPrismsReverse(element, JStacheConfigPrism::getInstanceOn).stream()
+				.map(config -> config.minimal()).findFirst().orElse(null);
+		if (Boolean.TRUE.equals(minimal)) {
+			formatCallType = FormatCallType.STACHE;
+		}
 		TypeElement contentTypeElement = resolveContentType(element, gp);
 		TypeElement formatterElement = resolveFormatter(element, gp);
 		Charset charset = gp.charset().isBlank() ? Charset.defaultCharset() : Charset.forName(gp.charset());
@@ -408,6 +401,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		Set<Flag> flags = resolveFlags(element);
 
 		var model = new RendererModel( //
+				formatCallType, //
 				element, //
 				rendererClassRef, //
 				path, //
@@ -547,9 +541,10 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				TextFileObject templateResource = new TextFileObject(config, Objects.requireNonNull(processingEnv));
 				JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
 				RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel,
-						model.formatterTypes());
+						model.formatterTypes(), model.formatCallType());
 				CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, model.partials(), config);
-				ClassWriter writer = new ClassWriter(codeWriter, templateResource);
+				TemplateClassWriter writer = new TemplateClassWriter(codeWriter, templateResource,
+						model.formatCallType());
 
 				writer.writeRenderableAdapterClass(model);
 			}
@@ -590,296 +585,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			errors.add(ElementMessage.of(element, Throwables.render(ex)));
 		}
 		return null;
-	}
-
-}
-
-class ClassWriter {
-
-	private final CodeWriter codeWriter;
-
-	private final TextFileObject templateLoader;
-
-	ClassWriter(CodeWriter compilerManager, TextFileObject templateLoader) {
-		this.codeWriter = compilerManager;
-		this.templateLoader = templateLoader;
-	}
-
-	void println(String s) {
-		codeWriter.println(s);
-	}
-
-	void writeRenderableAdapterClass(RendererModel model) throws IOException, ProcessingException, AnnotatedException {
-		var element = model.element();
-		var contentTypeElement = model.contentTypeElement();
-		var formatterTypeElement = model.formatterTypeElement();
-		var ifaces = model.ifaces();
-		var renderClassRef = model.rendererClassRef();
-		ClassRef modelClassRef = ClassRef.of(element);
-		String className = modelClassRef.getCanonicalName();
-		if (className == null) {
-			throw new AnnotatedException(element, "Anonymous classes can not be used as models");
-		}
-		String packageName = modelClassRef.getPackageName();
-		/*
-		 * TODO we should make this whole "provides" pattern DRY
-		 */
-		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
-		assert contentTypePrism != null;
-		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
-		assert formatterPrism != null;
-
-		List<String> interfaces = new ArrayList<>();
-		interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
-		interfaces.add(TEMPLATE_INFO_CLASS);
-		interfaces.add(TEMPLATE_PROVIDER_CLASS);
-		interfaces.add(FILTER_CHAIN_CLASS);
-		interfaces.addAll(ifaces.templateInterfaces());
-		String implementsString = interfaces.stream().collect(Collectors.joining(",\n    "));
-
-		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta + "\n")
-				.collect(Collectors.joining());
-
-		String rendererImplements = " implements " + implementsString;
-
-		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
-
-		String rendererClassSimpleName = renderClassRef.getSimpleName();
-
-		NamedTemplate namedTemplate = model.namedTemplate();
-
-		String templateName = namedTemplate.name();
-		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
-		String templateString = namedTemplate.template();
-
-		String templateStringJava = CodeAppendable.stringConcat(templateString);
-
-		String _Appendable = Appendable.class.getName();
-		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
-
-		String _Formatter = FORMATTER_CLASS;
-		String _Escaper = ESCAPER_CLASS;
-
-		String _F_Formatter = Function.class.getName() + "< /* @Nullable */ Object, String>";
-		String _F_Escaper = Function.class.getName() + "<String, String>";
-		String contentTypeProvideCall = contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod()
-				+ "()";
-		String formatterProvideCall = formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod()
-				+ "()";
-
-		String idt = "\n        ";
-
-		println("package " + packageName + ";");
-		println("");
-		println("/**");
-		println(" * Generated Renderer.");
-		println(" */");
-		println("// @javax.annotation.Generated(\"" + GenerateRendererProcessor.class.getName() + "\")");
-		if (!rendererAnnotated.isBlank()) {
-			println(rendererAnnotated);
-		}
-		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
-
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    public static final String TEMPLATE_PATH = \"" + templatePath + "\";");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("");
-		println("    public static final String TEMPLATE_STRING = " + templateStringJava + ";");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    public static final Class<?> MODEL_CLASS = " + className + ".class;");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    private static final " + rendererClassSimpleName + " INSTANCE = new " + rendererClassSimpleName
-				+ "();");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    private final " + _Formatter + " formatter;");
-		println("");
-		println("    /**");
-		println("     * @hidden");
-		println("     */");
-		println("    private final " + _Escaper + " escaper;");
-		println("");
-		println("    /**");
-		println("     * Renderer constructor for manual wiring.");
-		println("     * @param formatter formatter if null the static formatter will be used.");
-		println("     * @param escaper escaper if null the static escaper will be used");
-		println("     */");
-		println("    public " + rendererClassSimpleName + "(");
-		println("        /* @Nullable */ " + _F_Formatter + " formatter,");
-		println("        /* @Nullable */ " + _F_Escaper + " escaper) {");
-		println("        this.formatter = " + _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall
-				+ ");");
-		println("        this.escaper = " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall
-				+ ");");
-		println("    }");
-		println("");
-		println("    /**");
-		println("     * Renderer constructor using config.");
-		println("     * @param templateConfig config that has collaborators");
-		println("     */");
-		println("    public " + rendererClassSimpleName + "(" + TEMPLATE_CONFIG_CLASS + " templateConfig) {");
-		println("        this(templateConfig.formatter(), templateConfig.escaper());");
-		println("    }");
-		println("");
-		println("    /**");
-		println("     * Renderer constructor for reflection (use of() instead).");
-		println("     * For programmatic consider using {@link #of()} for a shared singleton.");
-		println("     */");
-		println("    public " + rendererClassSimpleName + "() {");
-		println("        this(null, null);");
-		println("    }");
-		println("");
-		println("    @Override");
-		println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
-		println("        execute(model, a, templateFormatter(), templateEscaper());");
-		println("    }");
-		println("");
-		println("    @Override");
-		println("    public void execute(" //
-				+ idt + className + " model, " //
-				+ idt + _Appendable + " a, " //
-				+ idt + _Formatter + " formatter" + "," //
-				+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
-		println("        render(model, a, formatter, escaper, templateAppender());");
-		println("    }");
-
-		println("");
-		println("    @Override");
-		println("    public boolean supportsType(Class<?> type) {");
-		println("        return MODEL_CLASS.isAssignableFrom(type);");
-		println("    }");
-		println("");
-		println("    @Override");
-		println("    public java.util.List<" + TEMPLATE_CLASS + "<?>> " + "provideTemplates(" + TEMPLATE_CONFIG_CLASS
-				+ " templateConfig ) {");
-		println("        return java.util.List.of(" + TEMPLATE_CONFIG_CLASS + ".empty() == templateConfig ? "
-				+ "INSTANCE :  new " + rendererClassSimpleName + "(templateConfig));");
-		println("    }");
-		println("");
-		println("    @Override");
-		println("    public String " + "templatePath() {");
-		println("        return TEMPLATE_PATH;");
-		println("    }");
-
-		println("    @Override");
-		println("    public String " + "templateName() {");
-		println("        return TEMPLATE_NAME;");
-		println("    }");
-
-		println("    @Override");
-		println("    public String " + "templateString() {");
-		println("        return TEMPLATE_STRING;");
-		println("    }");
-
-		println("    @Override");
-		println("    public Class<?> " + "templateContentType() {");
-		println("        return " + contentTypeElement.getQualifiedName() + ".class;");
-		println("    }");
-
-		println("    @Override");
-		println("    public  " + _Escaper + " templateEscaper() {");
-		println("        return this.escaper;");
-		println("    }");
-
-		println("    @Override");
-		println("    public " + _Formatter + " templateFormatter() {");
-		println("        return this.formatter;");
-		println("    }");
-		println("");
-		println("    /**");
-		println("     * Appender.");
-		println("     * @return appender for writing unescaped variables.");
-		println("     */");
-		println("    public " + _Appender + " templateAppender() {");
-		println("        return " + APPENDER_CLASS + ".defaultAppender();");
-		println("    }");
-		println("");
-		println("    /**");
-		println("     * Model class.");
-		println("     * @return class used as model (annotated with JStache).");
-		println("     */");
-		println("    @Override");
-		println("    public Class<?> modelClass() {");
-		println("        return MODEL_CLASS;");
-		println("    }");
-		println("");
-		println("    @SuppressWarnings(\"unchecked\")");
-		println("    @Override");
-		println("    public void process(Object model, Appendable appendable) throws java.io.IOException {");
-		println("        execute( (" + className + ") model, appendable);");
-		println("    }");
-		println("");
-		println("    @Override");
-		println("    public boolean isBroken(Object model) {");
-		println("        return !supportsType(model.getClass());");
-		println("    }");
-		println("");
-		println("    /**");
-		println("     * Convience static factory that will reuse the same singleton instance.");
-		println("     * @return renderer same as calling no-arg constructor but is cached with singleton instance");
-		println("     */");
-		println("    public static " + rendererClassSimpleName + " of() {");
-		println("        return INSTANCE;");
-		println("    }");
-		println("");
-		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
-		println("}");
-	}
-
-	private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model)
-			throws IOException, ProcessingException, AnnotatedException {
-		var element = model.element();
-		VariableContext variables = VariableContext.createDefaultContext();
-		String dataName = variables.introduceNewNameLike("data");
-		String className = element.getQualifiedName().toString();
-		String _Appender = APPENDER_CLASS;
-		String _Appendable = Appendable.class.getName();
-		String _Formatter = FORMATTER_CLASS;
-
-		String _A = "<A extends " + _Appendable + ">";
-
-		String idt = "\n        ";
-
-		println("    /**");
-		println("     * Renders the passed in model.");
-		println("     * @param <A> appendable type.");
-		println("     * @param " + dataName + " model");
-		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
-		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
-		println("     * @param " + variables.escaper() + " used to write escaped variables.");
-		println("     * @param " + variables.appender() + " used to write unescaped variables.");
-		println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
-		println("     */");
-		println("    public static " + _A + " void render(" //
-				+ idt + className + " " + dataName + ", " //
-				+ idt + "A" + " " + variables.unescapedWriter() + "," //
-				+ idt + _Formatter + " " + variables.formatter() + "," //
-				+ idt + _Appender + "<? super A> " + variables.escaper() + "," //
-				+ idt + _Appender + "<A> " + variables.appender() + ") throws java.io.IOException {");
-		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
-				variables, model.flags());
-		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
-		println("");
-		println("    }");
-
 	}
 
 }

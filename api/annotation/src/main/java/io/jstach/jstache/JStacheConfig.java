@@ -53,6 +53,12 @@ public @interface JStacheConfig {
 	 */
 	Class<?> formatter() default JStacheFormatter.AutoFormatter.class;
 
+	/**
+	 * Enables zero dep generated renderer.
+	 * @return false if full jstachio support
+	 */
+	boolean minimal() default false;
+
 	// TODO allow compiler flags here?
 	// /**
 	// * Compiler flags that will be used on all models in the package or module.

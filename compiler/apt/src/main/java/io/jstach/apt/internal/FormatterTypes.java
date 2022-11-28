@@ -53,4 +53,10 @@ public interface FormatterTypes {
 
 	}
 
+	public enum FormatCallType {
+
+		STACHE, JSTACHIO
+
+	}
+
 }
