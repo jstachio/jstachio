@@ -8,6 +8,8 @@
  * If this extension is enabled which it is by default if the ServiceLoader finds it
  * JMustache will be used when a runtime filtered rendering call is made (see
  * {@link JStachio}).
+ * <p>
+ * <strong>See {@link io.jstach.opt.jmustache.JMustacheRenderer}</strong>.
  *
  */
 @org.eclipse.jdt.annotation.NonNullByDefault

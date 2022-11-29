@@ -3,8 +3,26 @@ import io.jstach.jstachio.spi.JStachioServices;
 import io.jstach.opt.jmustache.JMustacheRenderer;
 
 /**
- * JMustache extension to JStachio to enable seamless fallback and
- * or dynamic development of templates.
+ * JMustache extension to JStachio to enable dynamic development of templates.
+ * <p>
+ * This extension will use JMustache instead of JStachio for rendering. The idea of this
+ * extension is to allow you to edit Mustache templates in real time without waiting for
+ * the compile reload cycle.
+ * <p>
+ * If this extension is enabled which it is by default if the ServiceLoader finds it
+ * JMustache will be used when a runtime filtered rendering call is made (see
+ * {@link io.jstach.jstachio.JStachio}).
+ * <p>
+ * <strong>See {@link io.jstach.opt.jmustache.JMustacheRenderer}</strong>.
+ * <p>
+ * 
+ * IF you are using modules you might need to:
+ * <pre>
+ * <code class="language-java">
+ * opens your.package.with.templates to io.jstach.jstachio, com.samskivert.jmustache;
+ * </code>
+ * </pre>
+ * 
  * @author agentgt
  *
  * @provides JStachioServices

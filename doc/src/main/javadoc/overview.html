@@ -1,13 +1,16 @@
 <html>
 <body>
 
-
-
 <h1><img src="resources/social-media.svg" alt="jstachio" width="50%"></h1>
 
+<strong>
 A typesafe Java Mustache templating engine.
+</strong>
+<p>
+<em>
 Templates are compiled into readable Java source code and value bindings are statically checked using the
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/annotation/processing/package-summary.html">Java Annotation processing framework</a>.
+</em>
 
 <h2 class="toc-title">Contents</h2>
 
@@ -135,17 +138,68 @@ You will need to set that up otherwise code will not be generated.
 }
 </pre>
 
+If all of your JStache are configured for zero dependency via  <code>JStacheConfig.type() == STACHE</code>
+you can instead rely on only one compile time dependency (replace dependencies section with following):
+
+<pre class="language-xml">
+{@code
+<dependencies>
+    <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-annotation</artifactId>
+        <version>${io.jstach.version}</version>
+        <optional>true</optional>
+        <scope>provided</scope>
+    </dependency>
+<dependencies>
+}
+</pre>
 <h3 id="3.2">Gradle</h3>
 
 <pre><code class="language-kotlin">
 dependencies {
- 
+    
     implementation 'io.jstach:jstachio:VERSION'
  
     annotationProcessor 'io.jstach:jstachio-apt:VERSION'
 }
 </code>
 </pre>
+
+If all of your JStache are configured for zero dependency via  <code>JStacheConfig.type() == STACHE</code>
+you can instead configure Gradle like:
+
+<pre><code class="language-kotlin">
+dependencies {
+    
+    compileOnly 'io.jstach:jstachio-annotation:VERSION'
+ 
+    annotationProcessor 'io.jstach:jstachio-apt:VERSION'
+}
+</code>
+</pre>
+
+<h2 id="configuration">Configuration</h2>
+
+{@link io.jstach.jstache.JStache} and {@link io.jstach.jstache.JStacheConfig} 
+are heavily documented on configuration of JStachio via annotations.
+<p>
+The most notable configuration is that you can configure whether or not  zero dependency
+code is generated via {@link io.jstach.jstache.JStacheConfig#type()} as well as 
+location paths of template files via {@link io.jstach.jstache.JStachePath}.  
+
+<h2 id="integration">Extensions and Integrations</h2>
+
+Using the {@link io.jstach.jstachio.JStachio} {@link io.jstach.jstachio/  runtime module}
+additional extensions are available. They are in the 
+<a href="https://github.com/jstachio/jstachio/tree/main/opt"><code>opt</code></a> directory of the project.
+<p>
+Most extensions just require the extension jars be in the classpath and are loaded via
+the ServiceLoader automatically (unless disabled).
+<p>
+The most notable extension is the {@link io.jstach.opt.jmustache/ JMustache extension} as it allows you to change templates without
+recompiling the application.
+
 </div>
 </body>
 </html>

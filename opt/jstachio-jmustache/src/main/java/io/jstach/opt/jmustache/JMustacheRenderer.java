@@ -27,9 +27,19 @@ import io.jstach.jstachio.spi.JStachioServices;
  * you to edit Mustache templates in real time without waiting for the compile reload
  * cycle.
  * <p>
+ * You are probably asking yourself <em>why do I need JMustache if I have JStachio</em>?
+ * Unfortunately JStachio needs the annotation processor to run <em>every time a template
+ * is changed!</em>. While there are incremental compilers like Eclipse that do support
+ * incrementally compiling annotations they are often not triggered via editing resources.
+ * Furthermore incremental compilation often just doesn't work.
+ * <p>
+ * Enter JMustache. Through reflection you can edit your templates while an application is
+ * running. Luckily JMustache and JStachio are almost entirely compatible especially
+ * through this extension which configures JMustache to act like JStachio.
+ * <p>
  * If this extension is enabled which it is by default if the ServiceLoader finds it
  * JMustache will be used when a runtime filtered rendering call is made (see
- * {@link JStachio}).
+ * {@link io.jstach.jstachio.JStachio}).
  * <p>
  * <strong>Strongly recommended you disable this in production via
  * {@link #JSTACHIO_JMUSTACHE_DISABLE} or {@link #use}</strong>

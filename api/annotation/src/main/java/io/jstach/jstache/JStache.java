@@ -8,9 +8,6 @@ import java.lang.annotation.Target;
 import java.util.Map;
 import java.util.Optional;
 
-import io.jstach.jstache.JStacheContentType.AutoContentType;
-import io.jstach.jstache.JStacheFormatter.AutoFormatter;
-
 /**
  * Generates a JStachio Renderer from a template and a model (the annotated class).
  * <p>
@@ -107,7 +104,7 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * it is <em>highly recommend you use the new triple quote string literal for inline
  * templates</em>
  *
- * <h4 id="_resource_templates">Resource Template</h4>
+ * <h4 id="_resource_templates">Resource Templates</h4>
  * <strong>{@link io.jstach.jstache.JStache#path()}</strong>
  * <p>
  * Resource templates are more complicated because of lookup resolution. You can control
@@ -221,6 +218,37 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * with {@link JStacheLambda} and the returned models will be used to render the contents
  * of the lambda section. The top of the context stack can be passed to the lambda.
  *
+ *
+ * <h2 id="_code_generation">Code Generation and Runtime</h2>
+ *
+ * <strong>&#64;{@link io.jstach.jstache.JStacheConfig#type()}</strong>
+ * <p>
+ * JStachio by default reads mustache syntax and generates code that needs the jstachio
+ * runtime (io.jstache.jstachio). However it is possible to generate code that does not
+ * need the runtime and possibly in the future other syntaxs like Handlebars might be
+ * supported.
+ *
+ * <h3 id="_zero_dep">Zero dependency code generation</h3>
+ *
+ * <strong>&#64;{@link io.jstach.jstache.JStacheConfig#type()} ==
+ * {@link JStacheType#STACHE}</strong>
+ * <p>
+ * Zero dependency code generation is useful if you want to avoid coupling your runtime
+ * and downstream dependencies with JStachio (including the annotations themselves) as
+ * well as minimize the overall footprint and or classes loaded. A common use case would
+ * be using jstachio for code generation in an annotation processing library where you
+ * want as minimal class path issues as possible.
+ * <p>
+ * If this configuration is selected generated code will <strong>ONLY have references to
+ * stock base JDK module ({@link java.base/}) classes</strong>. However one major caveat
+ * is that generated classes will not be reflectively accessible to the JStachio runtime
+ * and thus fallback and filtering will not work. Thus in a web framework environment this
+ * configuration choice is less desirable.
+ * <p>
+ * <em>n.b. as long as the jstachio annotations are not accessed reflectively you do not
+ * need the annotation jar in the classpath during runtime thus the annotations jar is
+ * effectively an optional compile time dependency.</em>
+ *
  * <h2 id="_formatting">Formatting variables</h2>
  *
  * JStachio has strict control on what happens when you output a variable like
@@ -314,7 +342,7 @@ public @interface JStache {
 	 * @deprecated use {@link JStacheConfig#contentType()}
 	 */
 	@Deprecated
-	Class<?> contentType() default AutoContentType.class;
+	Class<?> contentType() default JStacheContentType.AutoContentType.class;
 
 	/**
 	 * Class providing the formatter.
@@ -327,6 +355,6 @@ public @interface JStache {
 	 * @deprecated use {@link JStacheConfig#formatter()}
 	 */
 	@Deprecated
-	Class<?> formatter() default AutoFormatter.class;
+	Class<?> formatter() default JStacheFormatter.AutoFormatter.class;
 
 }

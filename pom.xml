@@ -16,8 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.9</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
-    <!-- The original timestamp for first release -->
-    <project.build.outputTimestamp>1668805294104</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1669758472</project.build.outputTimestamp>
     <javadoc.stylesheet/>
     <jstachio.doc.resources>../</jstachio.doc.resources>
 

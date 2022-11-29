@@ -14,6 +14,14 @@
  * use models (classes annotated with {@link io.jstach.jstache.JStache}) 
  * without needing rendering do not necessarily need this module.
  * Furthermore it might be possible to generate code that does not need the runtime in the future.
+ * <p>
+ * If your application is modular you <em>might</em> need to open your model packages to this module
+ * if you plan on using {@link io.jstach.jstachio.JStachio} convenience render methods.
+ * <pre>
+ * <code class="language-java">
+ * opens your.package.with.models to io.jstach.jstachio;
+ * </code>
+ * </pre>
  * 
  * @see io.jstach.jstachio.JStachio
  */

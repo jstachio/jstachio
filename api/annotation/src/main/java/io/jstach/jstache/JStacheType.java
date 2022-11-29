@@ -3,7 +3,7 @@ package io.jstach.jstache;
 /**
  * Tells the annotation processor what kind of code to generate namely whether to generate
  * full fledged jstachio templates (default {@link JStacheType#JSTACHIO}) or zero
- * dependency templates (StacheType{@link #STACHE}).
+ * dependency templates ({@link #STACHE}).
  * @author agentgt
  * @see JStacheConfig#type()
  */
@@ -29,7 +29,7 @@ public enum JStacheType {
 	 * <li>The <code>jstachio-annotation</code> dependency as an optional dependency (e.g.
 	 * in Maven {@code <optional>true</optional>})</li>
 	 * <li>as well as set in your module-info
-	 * <code>requires transitive io.jstach.jstache</code>.</li>
+	 * <code>requires static io.jstach.jstache</code>.</li>
 	 * </ul>
 	 * The above will minimize your deployed footprint and downstream dependencies will
 	 * have not transitively need jstachio. <strong>N.B if you go this route you will not
