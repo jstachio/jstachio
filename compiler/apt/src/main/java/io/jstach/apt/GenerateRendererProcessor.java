@@ -429,7 +429,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		var lm = JavaLanguageModel.getInstance();
 
-		TypeElement autoContentTypeElement = JavaLanguageModel.getInstance().getElements()
+		TypeElement autoContentTypeElement = lm.getElements()
 				.getTypeElement(AUTO_CONTENT_TYPE_CLASS);
 
 		Stream<TypeMirror> contentTypeProviderTypes = //

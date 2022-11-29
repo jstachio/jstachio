@@ -173,9 +173,9 @@ class TemplateClassWriter {
 		println("        /* @Nullable */ " + _F_Formatter + " formatter,");
 		println("        /* @Nullable */ " + _F_Escaper + " escaper) {");
 
-		println("        this.formatter = " + (!jstachio ? "formatter;"
+		println("        this.formatter = " + (!jstachio ? "formatter != null ? formatter : (i -> \"\" + i);"
 				: _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall + ");"));
-		println("        this.escaper = " + (!jstachio ? "escaper;"
+		println("        this.escaper = " + (!jstachio ? "escaper != null ? escaper : (i -> i);"
 				: _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall + ");"));
 
 		println("    }");
@@ -185,12 +185,7 @@ class TemplateClassWriter {
 		println("     * For programmatic consider using {@link #of()} for a shared singleton.");
 		println("     */");
 		println("    public " + rendererClassSimpleName + "() {");
-		if (jstachio) {
-			println("        this(null, null);");
-		}
-		else {
-			println("        this((i -> \"\" + i), i -> i);");
-		}
+		println("        this(null, null);");
 		println("    }");
 		println("");
 		if (jstachio)
