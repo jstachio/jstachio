@@ -11,9 +11,10 @@ import org.junit.Test;
 import com.samskivert.mustache.Mustache;
 
 import io.jstach.jstache.JStache;
-import io.jstach.jstache.JStacheFlags;
 import io.jstach.jstache.JStacheContentType.AutoContentType;
+import io.jstach.jstache.JStacheFlags;
 import io.jstach.jstache.JStacheFormatter.AutoFormatter;
+import io.jstach.jstache.JStacheType;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Escaper;
 import io.jstach.jstachio.Formatter;
@@ -34,6 +35,11 @@ public class PrismsTest {
 	record CodeModel(List<ClassModel> annotations, List<ClassModel> apiClasses) {
 		JStacheFlags.Flag[] flags() {
 			return JStacheFlags.Flag.values();
+		}
+
+		JStacheType[] types() {
+			return JStacheType.values();
+
 		}
 
 		String rendererSuffix() {
@@ -79,6 +85,15 @@ public class PrismsTest {
 					{{#flags}}
 						{{.}}, //
 					{{/flags}}
+
+					}
+
+					@NonNullByDefault
+					public enum JStacheType {
+
+					{{#types}}
+						{{.}}, //
+					{{/types}}
 
 					}
 

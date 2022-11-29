@@ -9,14 +9,19 @@ import java.lang.annotation.Target;
 /**
  * Configure how the paths of templates map to actual source resources.
  *
- * If the annotation is present on the class it will take precedence over the annotation
- * in its package (package-info.java) if there is one.
- *
+ * Order of path config lookup and precedence is as follows:
+ * <ol>
+ * <li>type annotated with JStache and this annotation.
+ * <li>package annotated with this annotation.
+ * <li>module annotated with this annotation.
+ * </ol>
+ * If multiple annotations are found the first one is picked and there is no combining of
+ * settings.
  * @author agentgt
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PACKAGE, ElementType.TYPE })
+@Target({ ElementType.MODULE, ElementType.PACKAGE, ElementType.TYPE })
 @Documented
 public @interface JStachePath {
 

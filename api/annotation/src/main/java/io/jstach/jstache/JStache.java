@@ -269,6 +269,7 @@ import io.jstach.jstache.JStacheFormatter.AutoFormatter;
  * @see JStacheConfig
  * @see JStacheFormatter
  * @see JStacheContentType
+ * @see JStacheConfig
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -305,31 +306,27 @@ public @interface JStache {
 	String adapterName() default "";
 
 	/**
-	 * Class representing template content type to be used by escapers.
+	 * Class providing escaper and representing template content type.
 	 * <p>
 	 * You can create custom escapers using {@link JStacheContentType} annotation.
 	 * @return contentType of given template. If not provided it will be resolved (HTML is
 	 * the default if the jstachio runtime is found).
+	 * @deprecated use {@link JStacheConfig#contentType()}
 	 */
+	@Deprecated
 	Class<?> contentType() default AutoContentType.class;
 
 	/**
-	 * Class providing the base formatter.
+	 * Class providing the formatter.
 	 * <p>
 	 * You can create custom formatters using {@link JStacheFormatter} annotation.
 	 * @return formatter of given template. The default will be resolved (a non null that
 	 * will throw NPE is the default if the jstachio runtime is found)
 	 *
 	 * @see JStacheFormatterTypes
+	 * @deprecated use {@link JStacheConfig#formatter()}
 	 */
+	@Deprecated
 	Class<?> formatter() default AutoFormatter.class;
-
-	/**
-	 * Encoding of given template file.
-	 * <p>
-	 * charset can be omitted. Default system charset is used by default.
-	 * @return encoding of given template file
-	 */
-	String charset() default "";
 
 }

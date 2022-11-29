@@ -8,14 +8,25 @@ import java.lang.annotation.Target;
 
 /**
  * Compiler flags that are subject to change. Use at your own risk.
- *
- * Flags maybe added without a major version change unlike the rest of the API.
+ * <p>
+ * <strong>Flags maybe added without a major version change unlike the rest of the
+ * API.</strong>
+ * <p>
+ * Order of flag lookup and precedence is as follows:
+ * <ol>
+ * <li>type annotated with JStache and this annotation.
+ * <li>package annotated with this annotation.
+ * <li>module annotated with this annotation.
+ * </ol>
+ * <em>The flags are NOT combined but rather the first found dictates the flags set or not
+ * (including empty)</em>
  *
  * @author agentgt
- *
+ * @apiNote the retention policy is purposely {@link RetentionPolicy#SOURCE} as these
+ * flags only impact compiling of the template.
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE)
+@Target({ ElementType.MODULE, ElementType.PACKAGE, ElementType.TYPE })
 @Documented
 public @interface JStacheFlags {
 
@@ -27,15 +38,16 @@ public @interface JStacheFlags {
 
 	/**
 	 * Compiler flags.
-	 * 
-	 * @apiNote subject to change
+	 *
+	 * @apiNote SUBJECT TO CHANGE!
 	 * @author agentgt
 	 *
 	 */
 	public enum Flag {
 
 		/**
-		 * This will produce additional logging that is sent to standard out.
+		 * This will produce additional logging that is sent to standard out while the
+		 * annotation processor runs (not during runtime).
 		 */
 		DEBUG,
 		/**

@@ -25,6 +25,15 @@ public interface Prisms {
 
 	}
 
+	@NonNullByDefault
+	public enum JStacheType {
+
+		AUTO, //
+		JSTACHIO, //
+		STACHE, //
+
+	}
+
 	/* API classes */
 	public static final String RENDERER_CLASS = "io.jstach.jstachio.Renderer";
 

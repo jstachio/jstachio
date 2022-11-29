@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * Allows you to define and remap/override partials on a model ({@link JStache}) <pre>
  *  {{> name }}
- *  </pre> Name in this case is defined by {@link #name()} and would be the logical name
+ *  </pre>. Name in this case is defined by {@link #name()} and would be the logical name
  * of the partial. The physical definition of the partial is defined with a resource
  * {@link #path()} or inlined {@link #template()}.
  * <p>

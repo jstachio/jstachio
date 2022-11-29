@@ -8,23 +8,33 @@ import java.lang.annotation.Target;
 import java.net.URI;
 
 /**
- *
  * Statically sets allowed formatting types.
  * <p>
  * If a type is not allowed or known a compile error will happen. This annotation allows
- * you to override that behavior.
+ * you to change that behavior by adding types.
  * <p>
- * By default the only allowed types to be formatted are:
+ * By default the only allowed (and always allowed) types to be formatted are:
  * <ul>
  * <li>{@link String}
  * <li>native types both unboxed or boxed
  * <li>{@link URI}
  * </ul>
+ * <p>
+ * Order of config lookup and precedence is as follows:
+ * <ol>
+ * <li>type annotated with JStache and this annotation.
+ * <li>package annotated with this annotation.
+ * <li>module annotated with this annotation.
+ * </ol>
+ * If multiple annotations are found the first one is picked and there is no combining of
+ * settings.
+ * @apiNote n.b. the retention policy is SOURCE as this settings are only needed for the
+ * compiler
  * @author agentgt
  * @see JStacheFormatter
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PACKAGE, ElementType.MODULE })
+@Retention(RetentionPolicy.SOURCE)
+@Target({ ElementType.TYPE, ElementType.PACKAGE, ElementType.MODULE })
 @Documented
 public @interface JStacheFormatterTypes {
 

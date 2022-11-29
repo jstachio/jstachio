@@ -12,6 +12,15 @@ import java.lang.annotation.Target;
  * interface. It also maybe useful to make generateed code have annotations for DI
  * frameworks (Spring, Dagger, CDI, etc) to find generated templates as components.
  * <p>
+ * Order of config lookup and precedence is as follows:
+ * <ol>
+ * <li>type annotated with JStache and this annotation.
+ * <li>package annotated with this annotation.
+ * <li>module annotated with this annotation.
+ * </ol>
+ * If multiple annotations are found the first one is picked and there is no combining of
+ * settings.
+ * <p>
  * <strong>Example</strong>
  *
  * <pre><code class="language-java">
@@ -34,11 +43,12 @@ import java.lang.annotation.Target;
  * }
  * </code> </pre>
  *
+ * @apiNote N.B. the rention policy is SOURCE.
  * @author agentgt
  * @see JStacheLambda
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PACKAGE, ElementType.MODULE })
+@Retention(RetentionPolicy.SOURCE)
+@Target({ ElementType.TYPE, ElementType.PACKAGE, ElementType.MODULE })
 @Documented
 public @interface JStacheInterfaces {
 

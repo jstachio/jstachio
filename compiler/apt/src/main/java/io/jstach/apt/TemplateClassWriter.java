@@ -190,12 +190,30 @@ class TemplateClassWriter {
 		println("");
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Renders the passed in model.");
+			println("     * @param model a model assumed never to be <code>null</code>.");
+			println("     * @param appendable the appendable to write to.");
+			println("     * @throws IOException if there is an error writing to the appendable");
+			println("     */");
+		}
 		println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
 		println("        execute(model, a, templateFormatter(), templateEscaper());");
 		println("    }");
 		println("");
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Renders the passed in model.");
+			println("     * @param model a model assumed never to be <code>null</code>.");
+			println("     * @param a appendable to write to.");
+			println("     * @param formatter formats variables before they are passed to the escaper");
+			println("     * @param escaper used to write escaped variables");
+			println("     * @throws IOException if an error occurs while writing to the appendable");
+			println("     */");
+		}
 		println("    public void execute(" //
 				+ idt + className + " model, " //
 				+ idt + _Appendable + " a, " //
@@ -212,6 +230,13 @@ class TemplateClassWriter {
 		println("");
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * If this template support the model class");
+			println("     * @param type model class.");
+			println("     * @return true if the renderer supports the class");
+			println("     */");
+		}
 		println("    public boolean supportsType(Class<?> type) {");
 		println("        return MODEL_CLASS.isAssignableFrom(type);");
 		println("    }");
@@ -227,36 +252,67 @@ class TemplateClassWriter {
 		}
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Template path.");
+			println("     * @return template path of resource or pseudo inline path");
+			println("     */");
+		}
 		println("    public String " + "templatePath() {");
 		println("        return TEMPLATE_PATH;");
 		println("    }");
 
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Logical template name.");
+			println("     * @return template name");
+			println("     */");
+		}
 		println("    public String " + "templateName() {");
 		println("        return TEMPLATE_NAME;");
 		println("    }");
 
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Template contents or blank if path.");
+			println("     * @return inline template");
+			println("     */");
+		}
 		println("    public String " + "templateString() {");
 		println("        return TEMPLATE_STRING;");
 		println("    }");
 
-		if (jstachio)
+		if (jstachio) {
 			println("    @Override");
-		println("    public Class<?> " + "templateContentType() {");
-		println("        return " + contentTypeElement.getQualifiedName() + ".class;");
-		println("    }");
+			println("    public Class<?> " + "templateContentType() {");
+			println("        return " + contentTypeElement.getQualifiedName() + ".class;");
+			println("    }");
+		}
 
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Current escaper.");
+			println("     * @return escaper");
+			println("     */");
+		}
 		println("    public  " + _Escaper + " templateEscaper() {");
 		println("        return this.escaper;");
 		println("    }");
 
 		if (jstachio)
 			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Current formatter.");
+			println("     * @return formatter");
+			println("     */");
+		}
 		println("    public " + _Formatter + " templateFormatter() {");
 		println("        return this.formatter;");
 		println("    }");
