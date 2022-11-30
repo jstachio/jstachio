@@ -224,6 +224,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private InterfacesConfig resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
+
 		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn);
 
 		List<String> templateInterfaces = prisms.stream().map(JStacheInterfacesPrism::templateImplements)
@@ -231,6 +232,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		List<String> templateAnnotions = prisms.stream().map(JStacheInterfacesPrism::templateAnnotations)
 				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
+
+		List<String> templateConstructorAnnotations = prisms.stream()
+				.map(JStacheInterfacesPrism::templateConstructorAnnotations).flatMap(faces -> faces.stream())
+				.map(tm -> getTypeName(tm)).toList();
+
 		var modelInterfaces = prisms.stream().map(JStacheInterfacesPrism::modelImplements)
 				.flatMap(faces -> faces.stream()).toList();
 
@@ -241,7 +247,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		}
 
-		return new InterfacesConfig(templateInterfaces, templateAnnotions);
+		return new InterfacesConfig(templateInterfaces, templateAnnotions, templateConstructorAnnotations);
 	}
 
 	private <T> List<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
@@ -254,7 +260,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null).toList();
 	}
 
-	record InterfacesConfig(List<String> templateInterfaces, List<String> templateAnnotations) {
+	record InterfacesConfig(//
+			List<String> templateInterfaces, //
+			List<String> templateAnnotations, //
+			List<String> templateConstructorAnnotations //
+	) {
 	}
 
 	private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
@@ -380,7 +390,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
 		assert template != null;
-		var ifaces = resolveBaseInterfaces(element);
+		InterfacesConfig ifaces = resolveBaseInterfaces(element);
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
 		FormatterTypes formatterTypes = resolveFormatterTypes(element);
 		Map<String, NamedTemplate> partials = resolvePartials(element);

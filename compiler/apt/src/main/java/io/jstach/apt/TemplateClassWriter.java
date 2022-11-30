@@ -92,6 +92,9 @@ class TemplateClassWriter {
 		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta + "\n")
 				.collect(Collectors.joining());
 
+		String constructorAnnotated = ifaces.templateConstructorAnnotations().stream().map(ta -> "@" + ta + "\n")
+				.collect(Collectors.joining());
+
 		String rendererImplements = implementsString.isBlank() ? "" : " implements " + implementsString;
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
@@ -353,6 +356,9 @@ class TemplateClassWriter {
 			println("     * Renderer constructor using config.");
 			println("     * @param templateConfig config that has collaborators");
 			println("     */");
+			if (!constructorAnnotated.isBlank()) {
+				println(constructorAnnotated);
+			}
 			println("    public " + rendererClassSimpleName + "(" + TEMPLATE_CONFIG_CLASS + " templateConfig) {");
 			println("        this(templateConfig.formatter(), templateConfig.escaper());");
 			println("    }");

@@ -111,12 +111,17 @@ enum JStachioServicesResolver implements JStachioServices {
 			}
 		}
 
+		@Override
+		public boolean supportsType(Class<?> modelType) {
+			return templateFinder.supportsType(modelType);
+		}
+
 		@SuppressWarnings("unchecked")
 		static <E extends Throwable> void sneakyThrow0(final Throwable x) throws E {
 			throw (E) x;
 		}
 
-		protected TemplateInfo template(Class<?> modelType) throws IOException {
+		protected TemplateInfo template(Class<?> modelType) {
 			try {
 				return templateFinder.findTemplate(modelType);
 			}

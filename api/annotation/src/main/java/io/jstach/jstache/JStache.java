@@ -70,13 +70,17 @@ import java.util.Optional;
  * <h4 id="_decorating_models">Adding interfaces to models and renderers</h4>
  * <strong>&#64;{@link io.jstach.jstache.JStacheInterfaces}</strong>
  * <p>
- * Java has a huge advantage over JSON and Javascript. You can use interfaces to add
+ * Java has a huge advantage over JSON and Javascript. <em>You can use interfaces to add
  * additional variables as well as lambda methods
- * ({@link io.jstach.jstache.JStacheLambda}). To enforce that certain interfaces are added
- * to models (the ones annotated) and renderers (the generated classes) you can use
- * {@link io.jstach.jstache.JStacheInterfaces} on packages or the classes themselves. You
- * can also make generated classes have {@link ElementType#TYPE} annotations as well which
- * maybe useful for integration with other frameworks.
+ * ({@link io.jstach.jstache.JStacheLambda})!</em> To enforce that certain interfaces are
+ * added to models (the ones annotated) and renderers (the generated classes) you can use
+ * {@link io.jstach.jstache.JStacheInterfaces} on packages or the classes themselves.
+ * <p>
+ * You can also make generated classes have {@link ElementType#TYPE} annotations (see
+ * {@link JStacheInterfaces#templateAnnotations()}) and constructor method annotations
+ * ({@link ElementType#CONSTRUCTOR} see
+ * {@link JStacheInterfaces#templateConstructorAnnotations()}) as well which maybe useful
+ * for integration with other frameworks particularly DI frameworks.
  *
  * <h3 id="_templates">Templates</h3>
  *
@@ -105,10 +109,34 @@ import java.util.Optional;
  * templates</em>
  *
  * <h4 id="_resource_templates">Resource Templates</h4>
- * <strong>{@link io.jstach.jstache.JStache#path()}</strong>
+ * <strong>{@link io.jstach.jstache.JStache#path()} and
+ * &#64;{@link io.jstach.jstache.JStachePath} </strong>
  * <p>
- * Resource templates are more complicated because of lookup resolution. You can control
- * how that is done with {@link io.jstach.jstache.JStachePath}.
+ * Resource templates are files that are in the classpath and are more complicated because
+ * of lookup resolution.
+ * <p>
+ * When the annotation processor runs these files usually are in:
+ * <code>javax.tools.StandardLocation#CLASS_OUTPUT</code> and in a Maven or Gradle project
+ * they normally would reside in <code>src/main/resources</code> or
+ * <code>src/test/resources</code> which get copied on build to
+ * <code>target/classes</code> or similar. <em>N.B. becareful not to have resource
+ * filtering turned on for mustache templates.</em>
+ * <p>
+ * Ideally JStachio would use <code>javax.tools.StandardLocation#SOURCE_PATH</code> to
+ * find resource templates but that is currently <a href=
+ * "https://stackoverflow.com/questions/22494596/eclipse-annotation-processor-get-project-path">
+ * problematic with incremental compilers such as Eclipse</a>.
+ * <p>
+ * Another issue with incremental compiling is that template files are not always copied
+ * after being edited to <code>target/classes</code> and thus are not found by the
+ * annotation processor. To deal with this issue JStachio during compilation fallsback to
+ * direct filesystem access and assumes that your templates
+ * <code>CWD/src/main/resources</code>. (TODO make that configurable).
+ * <p>
+ * Normally you need to specify the full path which is a resource path as specified by
+ * {@link ClassLoader#getResource(String)}) however you can make path expansion happen
+ * with {@link io.jstach.jstache.JStachePath} which allows you to prefix and suffix the
+ * path.
  *
  * <h4 id="_partials">Partials</h4>
  * <strong><code>{{&gt; partial }} and {{&lt; parent }}{{/parent}} </code></strong>

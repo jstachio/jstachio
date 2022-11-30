@@ -37,7 +37,7 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	public void execute(Object model, Appendable appendable) throws IOException;
+	void execute(Object model, Appendable appendable) throws IOException;
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering
@@ -45,7 +45,7 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	public StringBuilder execute(Object model, StringBuilder sb);
+	StringBuilder execute(Object model, StringBuilder sb);
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering
@@ -53,7 +53,16 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	public String execute(Object model);
+	String execute(Object model);
+
+	/**
+	 * Determines if this jstachio can render the model type (the class annotated by
+	 * JStache).
+	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
+	 * not the Templates class</em>)
+	 * @return true if this jstachio can render instances of modelType
+	 */
+	boolean supportsType(Class<?> modelType);
 
 	/**
 	 * Executes the ServiceLoader instance of JStachio

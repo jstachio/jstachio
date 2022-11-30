@@ -61,16 +61,29 @@ public @interface JStacheInterfaces {
 	public Class<?>[] templateImplements() default {};
 
 	/**
-	 * Will make all generated templates that are in the annotated package be annotated
-	 * with the array of interfaces. The order is preserved in the generated code.
+	 * Will make all generated templates that are in the annotated class/package/module be
+	 * annotated with the array of annotations. The order is preserved in the generated
+	 * code.
 	 * @return annotations to be added to generate templates
 	 */
 	public Class<?>[] templateAnnotations() default {};
 
 	/**
-	 * Will <strong>check</strong> that all models in the annotated package annotated with
-	 * {@link io.jstach.jstache.JStache} implement the array of interfaces. If a model
-	 * does not a compilation error will happen.
+	 * Will make all generated templates that are in the annotated class/package/module
+	 * have their constructor that takes a io.jstach.jstachio.TemplateConfig annotated
+	 * with the array of annotations. The order is preserved in the generated code.
+	 * <p>
+	 * This is useful for DI frameworks and a common pattern is to use
+	 * <code>jakarta.inject.Inject.class</code> which will make the DI framework
+	 * instantiate the template with a common config.
+	 * @return annotations to be added to generate templates
+	 */
+	public Class<?>[] templateConstructorAnnotations() default {};
+
+	/**
+	 * Will <strong>check</strong> that all models in the annotated class/package/module
+	 * annotated with {@link io.jstach.jstache.JStache} implement the array of interfaces.
+	 * If a model does not a compilation error will happen.
 	 * @return interfaces that the moduls <strong>should</strong> implement
 	 */
 	public Class<?>[] modelImplements() default {};

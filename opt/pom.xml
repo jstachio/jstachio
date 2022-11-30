@@ -8,6 +8,21 @@
   <artifactId>jstachio-opt-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
-  <module>jstachio-jmustache</module>
+    <module>jstachio-jmustache</module>
+    <module>jstachio-spring</module>
   </modules>
+  <properties>
+    <spring.version>6.0.2</spring.version>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

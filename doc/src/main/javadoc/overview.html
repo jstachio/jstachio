@@ -194,11 +194,21 @@ Using the {@link io.jstach.jstachio.JStachio} {@link io.jstach.jstachio/  runtim
 additional extensions are available. They are in the 
 <a href="https://github.com/jstachio/jstachio/tree/main/opt"><code>opt</code></a> directory of the project.
 <p>
-Most extensions just require the extension jars be in the classpath and are loaded via
-the ServiceLoader automatically (unless disabled).
-<p>
+Many extensions just require the extension jars be in the classpath and are loaded via
+the ServiceLoader automatically (unless disabled or using DI framework).
+
+<h3 id="jmustache">JMustache</h3>
 The most notable extension is the {@link io.jstach.opt.jmustache/ JMustache extension} as it allows you to change templates without
 recompiling the application.
+<p>
+<strong>See {@link io.jstach.opt.jmustache/ }</strong>
+
+
+<h3 id="springframework">Spring Framework</h3>
+JStachio normally uses the {@link java.util.ServiceLoader} for loading runtime components. 
+This extension will use Spring DI to find components as well as provides integration with Spring Web.
+<p>
+<strong>See {@link io.jstach.opt.spring/ }</strong>
 
 </div>
 </body>

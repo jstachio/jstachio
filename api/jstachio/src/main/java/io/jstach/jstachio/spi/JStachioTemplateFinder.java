@@ -33,6 +33,23 @@ public interface JStachioTemplateFinder {
 	 */
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception;
 
+	/**
+	 * Determines if this template finder has a template for the model type (the class
+	 * annotated by JStache).
+	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
+	 * not the Templates class</em>)
+	 * @return true if this finder has template for modelType
+	 */
+	default boolean supportsType(Class<?> modelType) {
+		try {
+			findTemplate(modelType);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
 }
 
 class DefaultTemplateFinder implements JStachioTemplateFinder {
