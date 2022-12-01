@@ -75,6 +75,6 @@ public @interface JStacheConfig {
 	 * @return {@link JStacheType#AUTO} by default which means the generated code will
 	 * depend on jstachio runtime if no other config overrides (ie is not set to auto).
 	 */
-	JStacheType type() default JStacheType.JSTACHIO;
+	JStacheType type() default JStacheType.AUTO;
 
 }

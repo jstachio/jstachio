@@ -1,4 +1,3 @@
-
 /**
  * JStachio Core Runtime API.
  * <p>
@@ -10,10 +9,12 @@
  * This module also provides runtime extension points via the {@link java.util.ServiceLoader} and
  * the SPI of {@link io.jstach.jstachio.spi.JStachioServices}
  * <p>
- * By default JStachio generates code that needs this module however libraries that
+ * By {@link io.jstach.jstache.JStacheType#JSTACHIO default JStachio generates code} that needs this module however libraries that
  * use models (classes annotated with {@link io.jstach.jstache.JStache}) 
  * without needing rendering do not necessarily need this module.
- * Furthermore it might be possible to generate code that does not need the runtime in the future.
+ * <p>
+ * Also if all {@link io.jstach.jstache.JStacheType#STACHE JStaches are configured for zero dependency mode}
+ * then this module is <em>not needed</em>.
  * <p>
  * If your application is modular you <em>might</em> need to open your model packages to this module
  * if you plan on using {@link io.jstach.jstachio.JStachio} convenience render methods.
