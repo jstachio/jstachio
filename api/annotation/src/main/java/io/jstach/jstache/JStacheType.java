@@ -4,6 +4,66 @@ package io.jstach.jstache;
  * Tells the annotation processor what kind of code to generate namely whether to generate
  * full fledged jstachio templates (default {@link JStacheType#JSTACHIO}) or zero
  * dependency templates ({@link #STACHE}).
+ * <p>
+ * JStachio will guarantee to generate the following methods for this specific major
+ * version (this will only change on major version changes):
+ *
+ * <table border="1">
+ * <caption><strong>Guaranteed Generated Methods</strong></caption>
+ * <tr>
+ * <th>Type</th>
+ * <th>Method</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}<br/>
+ * {@link JStacheType#STACHE}</td>
+ * <td>{@code <T extends Model> void execute(T model, Appendable appendable)}</td>
+ * <td>Executes model</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}</td>
+ * <td>{@code <T extends Model> void execute(T model, Appendable appendable, Formatter formatter, Escaper escaper)}</td>
+ * <td>Executes model with supplied formatter and escaper</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}<br/>
+ * {@link JStacheType#STACHE}</td>
+ * <td>{@code Class<?> modelClass()}</td>
+ * <td>Return the model class (root context class annotated with JStache) that generated
+ * this template.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}<br/>
+ * {@link JStacheType#STACHE}</td>
+ * <td>{@code this()}</td>
+ * <td>No arg constructor that will resolve the formatter and escaper based on
+ * configuration.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}<br/>
+ * {@link JStacheType#STACHE}</td>
+ * <td>{@code this(Function<@Nullable Object,String> formatter, Function<String,String> escaper)}</td>
+ * <td>Constructor that uses the supplied formatter and escaper for
+ * {@code execute(T model, Appendable appendable)}.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}</td>
+ * <td>{@code this(TemplateConfig templateConfig)}</td>
+ * <td>Constructor that configures a JStachio template based on configuration.</td>
+ * </tr>
+ * <tr>
+ * <td>{@link JStacheType#JSTACHIO}<br/>
+ * {@link JStacheType#STACHE}</td>
+ * <td>{@code public static GENERATED_CLASS of()}</td>
+ * <td>Similar to the no arg constructor but reuses a single static singleton.</td>
+ * </tr>
+ * </table>
+ * <br/>
+ * Class that are generated with type {@link JStacheType#JSTACHIO} will implement
+ * {@code io.jstach.jstachio.Template} interface and thus all methods on that interface
+ * (and parent interfaces) will be generated if needed (ie no default method).
+ *
  * @author agentgt
  * @see JStacheConfig#type()
  */

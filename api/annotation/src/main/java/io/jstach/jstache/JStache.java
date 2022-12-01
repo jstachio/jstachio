@@ -89,16 +89,61 @@ import java.util.Optional;
  * <a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">mustache manual</a> and
  * formally explained by the <a href="https://github.com/mustache/spec">spec</a>. There
  * are some subtle differences in JStachio version of Mustache due to the static nature
- * that are discussed elsewhere.
- * <p>
- * Template resolution is as follows:
+ * that are discussed in <a href="#_context_lookup">context lookup</a>. <strong>Template
+ * finding is as follows:</strong>
  * <ol>
  * <li><code>path</code> which is a classpath with slashes following the same format as
  * the ClassLoader resources. The path maybe augmented with {@link JStachePath}.
  * <li><code>template</code> which if not empty is used as the template contents
  * <li>if the above is not set then the name of the class suffixed with ".mustache" is
- * used as the resource
+ * used as the resource.
  * </ol>
+ *
+ * <h4 id="_optional_spec">Optional Spec Support</h4> JStachio implements some optional
+ * parts of the specification. Below shows what is and is not supported.
+ * <table border="1">
+ * <caption><strong>Optional Spec Features Table</strong></caption>
+ * <tr>
+ * <th>Name</th>
+ * <th>Supported</th>
+ * <th>Manual Description</th>
+ * </tr>
+ * <tr>
+ * <td>Lambda variables (arity 0)</td>
+ * <td style="color:red;">NO</td>
+ * <td>An optional part of the specification states that if the final key in the name is a
+ * lambda that returns a string, then that string should be rendered as a Mustache
+ * template before interpolation. It will be rendered using the default delimiters (see
+ * Set Delimiter below) against the current context.</td>
+ * </tr>
+ * <tr>
+ * <td>Lambda sections (arity 1)</td>
+ * <td style="color:blue;">YES</td>
+ * <td>An optional part of the specification states that if the final key in the name is a
+ * lambda that returns a string, then that string replaces the content of the section. It
+ * will be rendered using the same delimiters (see Set Delimiter below) as the original
+ * section content. In this way you can implement filters or caching.</td>
+ * </tr>
+ * <tr>
+ * <td>Dynamic Names</td>
+ * <td style="color:red;">NO</td>
+ * <td>Partials can be loaded dynamically at runtime using Dynamic Names; an optional part
+ * of the Mustache specification which allows to dynamically determine a tag's content at
+ * runtime.</td>
+ * </tr>
+ * <tr>
+ * <td>Blocks</td>
+ * <td style="color:blue;">YES</td>
+ * <td>A block begins with a dollar and ends with a slash. That is, {{$title}} begins a
+ * "title" block and {{/title}} ends it.</td>
+ * </tr>
+ * <tr>
+ * <td>Parents</td>
+ * <td style="color:blue;">YES</td>
+ * <td>A parent begins with a less than sign and ends with a slash. That is,
+ * {{&lt;article}} begins an "article" parent and {{/article}} ends it.</td>
+ * </tr>
+ * </table>
  *
  * <h4 id="_inline_templates">Inline Templates</h4>
  * <strong>{@link io.jstach.jstache.JStache#template()}</strong>
@@ -130,13 +175,13 @@ import java.util.Optional;
  * Another issue with incremental compiling is that template files are not always copied
  * after being edited to <code>target/classes</code> and thus are not found by the
  * annotation processor. To deal with this issue JStachio during compilation fallsback to
- * direct filesystem access and assumes that your templates
+ * direct filesystem access and assumes that your templates are located:
  * <code>CWD/src/main/resources</code>. (TODO make that configurable).
  * <p>
- * Normally you need to specify the full path which is a resource path as specified by
- * {@link ClassLoader#getResource(String)}) however you can make path expansion happen
- * with {@link io.jstach.jstache.JStachePath} which allows you to prefix and suffix the
- * path.
+ * Normally you need to specify the full path in {@link #path()} which is a resource path
+ * as specified by {@link ClassLoader#getResource(String)}) however you can make path
+ * expansion happen with {@link io.jstach.jstache.JStachePath} which allows you to prefix
+ * and suffix the path.
  *
  * <h4 id="_partials">Partials</h4>
  * <strong><code>{{&gt; partial }} and {{&lt; parent }}{{/parent}} </code></strong>
@@ -148,7 +193,7 @@ import java.util.Optional;
  * You may also remap partial names via {@link io.jstach.jstache.JStachePartial} to a
  * different location as well as to an inline template (string literal).
  *
- * <h3 id="_context_ext">Context Lookup</h3>
+ * <h3 id="_context_lookup">Context Lookup</h3>
  *
  * JStachio unlike almost all other Mustache implementations does its context lookup
  * statically during compile time. Consequently JStachio pedantically is early bound where
@@ -276,6 +321,13 @@ import java.util.Optional;
  * <em>n.b. as long as the jstachio annotations are not accessed reflectively you do not
  * need the annotation jar in the classpath during runtime thus the annotations jar is
  * effectively an optional compile time dependency.</em>
+ *
+ * <h3 id="_methods_generated">Generated Template/Renderer Classes</h3> JStachio generates
+ * a single class from a mustache template and model (class annotated with JStache) pair.
+ * The generated classes are generally called "Renderers" or sometimes "Templates".
+ * Depending on which JStache type is picked different methods are generated. <strong> The
+ * guaranteed methods not to change on minor version or less generated on the renderer
+ * classes are discussed in {@link JStacheType}. </strong>
  *
  * <h2 id="_formatting">Formatting variables</h2>
  *

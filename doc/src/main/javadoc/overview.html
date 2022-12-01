@@ -19,15 +19,28 @@ Templates are compiled into readable Java source code and value bindings are sta
 <div class="js-toc-content">
 <h2 id="1">Mustache Syntax</h2>
 
-The format of the templates should by default be Mustache. The syntax is informally
+The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
+specifically <a href="https://github.com/mustache/spec/tree/v1.3.0">v1.3.0 syntax</a> . The syntax is informally
 explained by the
-<a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">mustache manual</a> and
-formally explained by the <a href="https://github.com/mustache/spec">spec</a>. There
-are some subtle differences in JStachio version of Mustache due to the static nature notable
-how <code>Map&lt;String, ?&gt;</code> is handled}.
-
-The contents of a <code>Map</code> are checked last even if it is a directly on the top of
-the context stack.
+<strong>
+<a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html"><em>latest</em> mustache manual</a>
+</strong> 
+and
+formally explained by the <a href="https://github.com/mustache/spec">spec</a>. 
+<p>
+<strong>N.B.</strong><em> currently 
+<a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">
+    "https://jgonggrijp.gitlab.io/wontache/mustache.5.html"
+</a> is the latest manual and <strong>NOT</strong>
+"https://mustache.github.io/mustache.5.html".
+</em>
+<p>
+There are some subtle differences in JStachio version of Mustache due to the static nature notably
+how <code>Map&lt;String, ?&gt;</code> is handled}. The contents of a <code>Map</code> are 
+checked last even if it is a directly on the top of the context stack.
+<p>
+<strong>Most of the documentation of what mustache spec options are implemented and how
+are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 
 <h2 id="2">Java Code</h2>
 
