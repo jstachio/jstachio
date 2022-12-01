@@ -99,52 +99,6 @@ import java.util.Optional;
  * used as the resource.
  * </ol>
  *
- * <h4 id="_optional_spec">Optional Spec Support</h4> JStachio implements some optional
- * parts of the specification. Below shows what is and is not supported.
- * <table border="1">
- * <caption><strong>Optional Spec Features Table</strong></caption>
- * <tr>
- * <th>Name</th>
- * <th>Supported</th>
- * <th>Manual Description</th>
- * </tr>
- * <tr>
- * <td>Lambda variables (arity 0)</td>
- * <td style="color:red;">NO</td>
- * <td>An optional part of the specification states that if the final key in the name is a
- * lambda that returns a string, then that string should be rendered as a Mustache
- * template before interpolation. It will be rendered using the default delimiters (see
- * Set Delimiter below) against the current context.</td>
- * </tr>
- * <tr>
- * <td>Lambda sections (arity 1)</td>
- * <td style="color:blue;">YES</td>
- * <td>An optional part of the specification states that if the final key in the name is a
- * lambda that returns a string, then that string replaces the content of the section. It
- * will be rendered using the same delimiters (see Set Delimiter below) as the original
- * section content. In this way you can implement filters or caching.</td>
- * </tr>
- * <tr>
- * <td>Dynamic Names</td>
- * <td style="color:red;">NO</td>
- * <td>Partials can be loaded dynamically at runtime using Dynamic Names; an optional part
- * of the Mustache specification which allows to dynamically determine a tag's content at
- * runtime.</td>
- * </tr>
- * <tr>
- * <td>Blocks</td>
- * <td style="color:blue;">YES</td>
- * <td>A block begins with a dollar and ends with a slash. That is, {{$title}} begins a
- * "title" block and {{/title}} ends it.</td>
- * </tr>
- * <tr>
- * <td>Parents</td>
- * <td style="color:blue;">YES</td>
- * <td>A parent begins with a less than sign and ends with a slash. That is,
- * {{&lt;article}} begins an "article" parent and {{/article}} ends it.</td>
- * </tr>
- * </table>
- *
  * <h4 id="_inline_templates">Inline Templates</h4>
  * <strong>{@link io.jstach.jstache.JStache#template()}</strong>
  * <p>
@@ -192,6 +146,53 @@ import java.util.Optional;
  * <p>
  * You may also remap partial names via {@link io.jstach.jstache.JStachePartial} to a
  * different location as well as to an inline template (string literal).
+ *
+ *
+ * <h4 id="_optional_spec">Optional Spec Support</h4> JStachio implements some optional
+ * parts of the specification. Below shows what is and is not supported.
+ * <table border="1">
+ * <caption><strong>Optional Spec Features Table</strong></caption>
+ * <tr>
+ * <th>Name</th>
+ * <th>Supported</th>
+ * <th>Manual Description</th>
+ * </tr>
+ * <tr>
+ * <td>Lambda variables (arity 0)</td>
+ * <td style="color:red;">NO</td>
+ * <td>An optional part of the specification states that if the final key in the name is a
+ * lambda that returns a string, then that string should be rendered as a Mustache
+ * template before interpolation. It will be rendered using the default delimiters (see
+ * Set Delimiter below) against the current context.</td>
+ * </tr>
+ * <tr>
+ * <td>Lambda sections (arity 1)</td>
+ * <td style="color:blue;">YES</td>
+ * <td>An optional part of the specification states that if the final key in the name is a
+ * lambda that returns a string, then that string replaces the content of the section. It
+ * will be rendered using the same delimiters (see Set Delimiter below) as the original
+ * section content. In this way you can implement filters or caching.</td>
+ * </tr>
+ * <tr>
+ * <td>Dynamic Names</td>
+ * <td style="color:red;">NO</td>
+ * <td>Partials can be loaded dynamically at runtime using Dynamic Names; an optional part
+ * of the Mustache specification which allows to dynamically determine a tag's content at
+ * runtime.</td>
+ * </tr>
+ * <tr>
+ * <td>Blocks</td>
+ * <td style="color:blue;">YES</td>
+ * <td>A block begins with a dollar and ends with a slash. That is, {{$title}} begins a
+ * "title" block and {{/title}} ends it.</td>
+ * </tr>
+ * <tr>
+ * <td>Parents</td>
+ * <td style="color:blue;">YES</td>
+ * <td>A parent begins with a less than sign and ends with a slash. That is,
+ * {{&lt;article}} begins an "article" parent and {{/article}} ends it.</td>
+ * </tr>
+ * </table>
  *
  * <h3 id="_context_lookup">Context Lookup</h3>
  *
@@ -292,7 +293,7 @@ import java.util.Optional;
  * of the lambda section. The top of the context stack can be passed to the lambda.
  *
  *
- * <h2 id="_code_generation">Code Generation and Runtime</h2>
+ * <h2 id="_code_generation">Code Generation</h2>
  *
  * <strong>&#64;{@link io.jstach.jstache.JStacheConfig#type()}</strong>
  * <p>
@@ -300,6 +301,13 @@ import java.util.Optional;
  * runtime (io.jstache.jstachio). However it is possible to generate code that does not
  * need the runtime and possibly in the future other syntaxs like Handlebars might be
  * supported.
+ *
+ * <h3 id="_methods_generated">Generated Renderer Classes</h3> JStachio generates a single
+ * class from a mustache template and model (class annotated with JStache) pair. The
+ * generated classes are generally called "Renderers" or sometimes "Templates". Depending
+ * on which JStache type is picked different methods are generated. The guaranteed
+ * generated methods <em>not to change on minor version or less</em> on the renderer
+ * classes are discussed in <strong>{@link JStacheType}</strong>.
  *
  * <h3 id="_zero_dep">Zero dependency code generation</h3>
  *
@@ -322,12 +330,6 @@ import java.util.Optional;
  * need the annotation jar in the classpath during runtime thus the annotations jar is
  * effectively an optional compile time dependency.</em>
  *
- * <h3 id="_methods_generated">Generated Template/Renderer Classes</h3> JStachio generates
- * a single class from a mustache template and model (class annotated with JStache) pair.
- * The generated classes are generally called "Renderers" or sometimes "Templates".
- * Depending on which JStache type is picked different methods are generated. <strong> The
- * guaranteed methods not to change on minor version or less generated on the renderer
- * classes are discussed in {@link JStacheType}. </strong>
  *
  * <h2 id="_formatting">Formatting variables</h2>
  *
