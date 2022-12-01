@@ -9,7 +9,7 @@ module io.jstach.opt.spring {
 	requires static spring.jcl;
 	requires transitive spring.web;
 	requires spring.beans;
-	requires spring.core;
+	requires transitive spring.core;
 	
 	exports io.jstach.opt.spring;
 }

@@ -48,7 +48,9 @@ public final class Templates {
 
 	/**
 	 * Finds a {@link Template} if possible otherwise falling back to a
-	 * {@link TemplateInfo} based on annotation metadata.
+	 * {@link TemplateInfo} based on annotation metadata. This method is effectively calls
+	 * {@link #getTemplate(Class)} first and if that fails possibly tries
+	 * {@link #getInfoByReflection(Class)} based on config.
 	 * @apiNote Callers can do an <code>instanceof Template t</code> to see if a generated
 	 * template was returned instead of the fallback.
 	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
@@ -74,7 +76,7 @@ public final class Templates {
 						"Could not find generated template and will try reflection for model type: " + modelType,
 						error);
 			}
-			return TemplateInfos.templateOf(modelType);
+			return getInfoByReflection(modelType);
 
 		}
 		throw error;

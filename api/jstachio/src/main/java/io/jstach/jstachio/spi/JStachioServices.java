@@ -53,15 +53,6 @@ public interface JStachioServices {
 	}
 
 	/**
-	 * Provide a rendering engine or not. Only one JStachio is allowed and if multiples
-	 * are found other than the default a {@link RuntimeException} will be thrown.
-	 * @return jstachio rendering engine
-	 */
-	default @Nullable JStachio provideJStachio() {
-		return null;
-	}
-
-	/**
 	 * Called before the services are used but after {@link #provideConfig()}.
 	 * @param config the config never null
 	 */
@@ -74,6 +65,14 @@ public interface JStachioServices {
 	 */
 	public static JStachioServices find() {
 		return JStachioServicesResolver.INSTANCE;
+	}
+
+	/**
+	 * Finds service loaded jstachio.
+	 * @return ServiceLoader based jstachio.
+	 */
+	public static JStachio jstachio() {
+		return JStachioServicesResolver.INSTANCE.provideJStachio();
 	}
 
 	/**

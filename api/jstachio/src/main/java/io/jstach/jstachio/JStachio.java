@@ -2,6 +2,7 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 import io.jstach.jstache.JStache;
 import io.jstach.jstachio.spi.JStachioServices;
@@ -115,29 +116,30 @@ public interface JStachio extends Renderer<Object> {
 	 * Set the static singleton of JStachio.
 	 * <p>
 	 * Useful if you would like to avoid using the default ServiceLoader mechanism.
-	 * @param jstachio if null a NPE will be thrown.
+	 * @param jstachioProvider if null a NPE will be thrown.
 	 */
-	public static void setStaticJStachio(JStachio jstachio) {
-		jstachio.getClass(); // to trigger NPE
-		JStachioHolder.jstachio = jstachio;
+	public static void setStaticJStachio(Supplier<JStachio> jstachioProvider) {
+		if (jstachioProvider == null) {
+			throw new NullPointerException("JStachio provider cannot be null");
+		}
+		JStachioHolder.provider = jstachioProvider;
+		JStachioHolder.jstachio = null;
 	}
 
 }
 
 final class JStachioHolder {
 
+	static Supplier<JStachio> provider = io.jstach.jstachio.spi.JStachioServices::jstachio;
+
 	static JStachio jstachio;
 
 	static JStachio get() {
 		JStachio j = jstachio;
 		if (j == null) {
-			jstachio = j = load();
+			jstachio = j = provider.get();
 		}
 		return j;
-	}
-
-	private static JStachio load() {
-		return io.jstach.jstachio.spi.JStachioServices.find().provideJStachio();
 	}
 
 }

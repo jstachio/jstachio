@@ -1,6 +1,8 @@
 package io.jstach.jstachio.spi;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import io.jstach.jstachio.Template;
@@ -80,6 +82,30 @@ public interface JStachioFilter {
 			};
 		}
 		return filter(template, previous);
+	}
+
+	/**
+	 * Hint on order of filter chain. The found {@link JStachioFilter}s are sorted
+	 * naturally (lower number comes first) based on the returned number. Thus the filter
+	 * that has the greatest say is the filter with the highest number.
+	 * @return default returns zero
+	 */
+	default int order() {
+		return 0;
+	}
+
+	/**
+	 * Creates a composite filter of a many filters.
+	 * @param filters not null.
+	 * @return a composite filter ordered by {@link JStachioFilter#order()}
+	 */
+	public static JStachioFilter compose(Iterable<JStachioFilter> filters) {
+		List<JStachioFilter> fs = new ArrayList<>();
+		for (var f : filters) {
+			fs.add(f);
+		}
+		fs.sort(Comparator.comparingInt(JStachioFilter::order));
+		return new CompositeFilterChain(List.copyOf(fs));
 	}
 
 }
