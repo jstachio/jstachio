@@ -15,5 +15,25 @@
       <groupId>io.jstach</groupId>
       <artifactId>jstachio-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-jmustache</artifactId>
+    </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <annotationProcessorPath>
+              <groupId>io.jstach</groupId>
+              <artifactId>jstachio-apt</artifactId>
+              <version>${project.version}</version>
+            </annotationProcessorPath>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

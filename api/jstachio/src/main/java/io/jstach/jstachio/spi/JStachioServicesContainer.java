@@ -55,7 +55,11 @@ public final class JStachioServicesContainer {
 
 		for (var sv : svs) {
 			sv.init(config);
-			filters.add(sv.provideFilter());
+			@Nullable
+			JStachioFilter f = sv.provideFilter();
+			if (f != null) {
+				filters.add(f);
+			}
 			var finder = sv.provideTemplateFinder();
 			if (templateFinder != null && finder != null) {
 				throw new ServiceConfigurationError("Multiple template finders found by service loader. first = "

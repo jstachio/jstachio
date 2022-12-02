@@ -103,7 +103,6 @@
         <groupId>com.samskivert</groupId>
         <artifactId>jmustache</artifactId>
         <version>1.15</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson</groupId>
@@ -364,6 +363,9 @@
                 </tag>
               </tags>
               <failOnWarnings>true</failOnWarnings>
+              <excludePackageNames>
+              *.internal:*.internal.*
+              </excludePackageNames>
             </configuration>
             <executions>
               <execution>
@@ -534,7 +536,7 @@
                 </goals>
                 <configuration>
                   <excludePackageNames>
-                  io.jstach.apt.internal:io.jstach.apt.internal.*
+                  io.jstach.apt.internal:io.jstach.apt.internal.*:*.example.*
                   </excludePackageNames>
                 </configuration>
               </execution>

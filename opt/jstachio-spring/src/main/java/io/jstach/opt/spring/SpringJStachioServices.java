@@ -27,7 +27,7 @@ public class SpringJStachioServices implements JStachioServices {
 	 * @param environment springs environment to be used for {@link JStachioConfig}
 	 * @param templates templates found via spring
 	 */
-	public SpringJStachioServices(Environment environment, List<Template<?>> templates) {
+	public SpringJStachioServices(@SuppressWarnings("exports") Environment environment, List<Template<?>> templates) {
 		super();
 		this.environment = environment;
 		this.templates = templates;

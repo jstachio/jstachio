@@ -4,7 +4,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -172,17 +171,9 @@ public final class Templates {
 		return null;
 	}
 
-	private static List<ClassLoader> collectClassLoaders(ClassLoader classLoader) {
-		List<ClassLoader> classLoaders = new ArrayList<>(3);
-		classLoaders.add(classLoader);
-
-		if (Thread.currentThread().getContextClassLoader() != null) {
-			classLoaders.add(Thread.currentThread().getContextClassLoader());
-		}
-
-		classLoaders.add(Template.class.getClassLoader());
-
-		return classLoaders;
+	private static List<ClassLoader> collectClassLoaders(@Nullable ClassLoader classLoader) {
+		return Stream.of(classLoader, Thread.currentThread().getContextClassLoader(), Template.class.getClassLoader())
+				.filter(cl -> cl != null).toList();
 	}
 
 	static class TemplateInfos {

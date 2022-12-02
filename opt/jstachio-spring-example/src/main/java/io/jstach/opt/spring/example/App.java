@@ -3,6 +3,10 @@ package io.jstach.opt.spring.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @hidden
+ * @author agent
+ */
 @SpringBootApplication
 public class App {
 

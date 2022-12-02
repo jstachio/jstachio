@@ -45,7 +45,7 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	}
 
 	@Override
-	public boolean canRead(Class<?> clazz, MediaType mediaType) {
+	public boolean canRead(Class<?> clazz, @SuppressWarnings("exports") MediaType mediaType) {
 		return false;
 	}
 
