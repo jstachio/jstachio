@@ -10,9 +10,11 @@
   <modules>
     <module>jstachio-jmustache</module>
     <module>jstachio-spring</module>
+    <module>jstachio-spring-example</module>
   </modules>
   <properties>
     <spring.version>6.0.2</spring.version>
+    <spring-boot.version>3.0.0</spring-boot.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -22,6 +24,18 @@
         <version>${spring.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-spring</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

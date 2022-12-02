@@ -14,6 +14,12 @@ import io.jstach.jstachio.TemplateInfo;
  */
 public abstract class AbstractJStachio implements JStachio {
 
+	/**
+	 * Do nothing constructor
+	 */
+	public AbstractJStachio() {
+	}
+
 	@Override
 	public void execute(Object model, Appendable appendable) throws IOException {
 		TemplateInfo template = template(model.getClass());
