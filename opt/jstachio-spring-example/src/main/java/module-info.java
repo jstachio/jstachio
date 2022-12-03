@@ -5,7 +5,21 @@ import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStachePath;
 
 /**
- * Spring example app for JStachio
+ * Spring example app for JStachio.
+ * This module is an example modularized Spring Boot application.
+ * <p>
+ * <strong>
+ * Make sure to take note of the annotations on this module as they define the jstachio config
+ * needed to integrate with Spring.
+ * </strong>
+ * <p>
+ * Next checkout the projects main package {@link io.jstach.opt.spring.example}.
+ * <p>
+ * <em>
+ * While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
+ * it might be easier to look at the source 
+ * <a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">directly on github.</a> 
+ * </em>
  * 
  * @author agentgt
  */

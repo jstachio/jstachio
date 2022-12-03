@@ -49,6 +49,7 @@
                 </tag>
               </tags>
               <additionalJOptions>--allow-script-in-comments</additionalJOptions>
+              <linksource>true</linksource>
             </configuration>
             <executions>
               <execution>
