@@ -252,6 +252,10 @@ class TemplateClassWriter {
 		println("    }");
 		println("");
 		if (jstachio) {
+			println("    /**");
+			println("     * Needed for jstachio runtime.");
+			println("     * @hidden");
+			println("     */");
 			println("    @Override");
 			println("    public java.util.List<" + TEMPLATE_CLASS + "<?>> " + "provideTemplates("
 					+ TEMPLATE_CONFIG_CLASS + " templateConfig ) {");
@@ -348,12 +352,20 @@ class TemplateClassWriter {
 		println("    }");
 		println("");
 		if (jstachio) {
+			println("    /**");
+			println("     * Needed for jstachio runtime.");
+			println("     * @hidden");
+			println("     */");
 			println("    @SuppressWarnings(\"unchecked\")");
 			println("    @Override");
 			println("    public void process(Object model, Appendable appendable) throws java.io.IOException {");
 			println("        execute( (" + className + ") model, appendable);");
 			println("    }");
 			println("");
+			println("    /**");
+			println("     * Needed for jstachio runtime.");
+			println("     * @hidden");
+			println("     */");
 			println("    @Override");
 			println("    public boolean isBroken(Object model) {");
 			println("        return !supportsType(model.getClass());");
