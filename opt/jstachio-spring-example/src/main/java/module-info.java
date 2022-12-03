@@ -1,5 +1,6 @@
 import org.springframework.stereotype.Component;
 
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStachePath;
 
@@ -10,6 +11,7 @@ import io.jstach.jstache.JStachePath;
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
 @JStacheInterfaces(templateAnnotations = {Component.class})
+@JStacheConfig(nameSuffix = "View")
 module io.jstach.opt.spring.example {
 	requires transitive io.jstach.opt.spring;
 	requires io.jstach.opt.jmustache;
@@ -30,5 +32,12 @@ module io.jstach.opt.spring.example {
 	, io.jstach.jstachio, io.jstach.opt.jmustache //
 	, com.fasterxml.jackson.databind //
 	;
+
+	/*
+	 * The following is just to make Javadoc for
+	 * the example project. Not recommended you do
+	 * this in a real world app.
+	 */
+	exports io.jstach.opt.spring.example;
 
 }

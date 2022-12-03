@@ -8,10 +8,19 @@ import io.jstach.jstachio.spi.JStachioServices;
 import io.jstach.jstachio.spi.JStachioServicesContainer;
 import io.jstach.jstachio.spi.JStachioTemplateFinder;
 
+/**
+ * A JStachio that does not use the service loader.
+ *
+ * @author agentgt
+ */
 public class SpringJStachio extends AbstractJStachio {
 
 	private final JStachioServicesContainer container;
 
+	/**
+	 * Passed the found services usually injected by Spring.
+	 * @param services not null.
+	 */
 	public SpringJStachio(List<JStachioServices> services) {
 		container = JStachioServicesContainer.of(services);
 	}

@@ -11,7 +11,8 @@ import io.jstach.jstachio.JStachio;
 import io.jstach.opt.spring.JStachioHttpMessageConverter;
 
 /**
- * @hidden
+ * Configures MVC to allow returning models which will be rendered using JStachio runtime.
+ *
  * @author agentgt
  */
 @Configuration
@@ -19,6 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
 
 	private final JStachio jstachio;
 
+	/**
+	 * Configures based on the jstachio found by spring
+	 * @param jstachio the found jstachio
+	 */
 	@Autowired
 	public WebConfig(JStachio jstachio) {
 		this.jstachio = jstachio;
