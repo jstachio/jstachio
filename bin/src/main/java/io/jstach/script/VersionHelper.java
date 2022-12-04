@@ -195,9 +195,9 @@ enum Command {
 	}
 
 	static void current(Version v, long timestamp) throws IOException {
-		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1,
-				StandardOpenOption.WRITE)) {
+		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1)) {
 			writeProperties(br, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
+			br.flush();
 		}
 	}
 
@@ -361,8 +361,8 @@ enum Command {
 		String line;
 		while ((line = lr.readLine()) != null) {
 			if (!line.startsWith("#")) {
-				sb.append(line).append(System.lineSeparator());
-				out.append(line).append(System.lineSeparator());
+				sb.append(line).append("\n");
+				out.append(line).append("\n");
 			}
 		}
 	}
