@@ -5,7 +5,7 @@ import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 import io.jstach.jstache.JStache;
-import io.jstach.jstachio.spi.JStachioServices;
+import io.jstach.jstachio.spi.JStachioExtension;
 
 /**
  * Render models by using reflection to lookup generated templates as well as apply
@@ -27,7 +27,7 @@ import io.jstach.jstachio.spi.JStachioServices;
  * @apiNote The static <strong><code>render</code></strong> methods are convenience
  * methods that will use the ServiceLoader based JStachio which loads all extensions via
  * the {@link ServiceLoader}.
- * @see JStachioServices
+ * @see JStachioExtension
  * @see JStache
  */
 public interface JStachio extends Renderer<Object> {
@@ -130,7 +130,7 @@ public interface JStachio extends Renderer<Object> {
 
 final class JStachioHolder {
 
-	static Supplier<JStachio> provider = io.jstach.jstachio.spi.JStachioServices::jstachio;
+	static Supplier<JStachio> provider = io.jstach.jstachio.spi.JStachioResolver::defaultJStachio;
 
 	static JStachio jstachio;
 

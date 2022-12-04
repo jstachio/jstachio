@@ -22,6 +22,17 @@ import io.jstach.jstachio.JStachio;
  * <p>
  * For this to work the controllers need to return JStache models and have the controller
  * method return annotated with {@link ResponseBody}.
+ * <p>
+ * <strong>Example:</strong> <pre><code class="language-java">
+ * &#64;JStache
+ * public record HelloModel(String message){}
+ *
+ * &#64;GetMapping(value = "/")
+ * &#64;ResponseBody
+ * public HelloModel hello() {
+ *     return new HelloModel("Spring Boot is now JStachioed!");
+ * }
+ * </code> </pre>
  *
  * @author agentgt
  *

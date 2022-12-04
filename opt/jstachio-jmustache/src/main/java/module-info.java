@@ -1,5 +1,5 @@
 
-import io.jstach.jstachio.spi.JStachioServices;
+import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.opt.jmustache.JMustacheRenderer;
 
 /**
@@ -25,7 +25,7 @@ import io.jstach.opt.jmustache.JMustacheRenderer;
  * 
  * @author agentgt
  *
- * @provides JStachioServices
+ * @provides JStachioExtension
  */
 module io.jstach.opt.jmustache {
 	
@@ -41,7 +41,7 @@ module io.jstach.opt.jmustache {
 	requires static org.kohsuke.metainf_services;
 	requires static org.eclipse.jdt.annotation;
 
-	provides JStachioServices with JMustacheRenderer;
+	provides JStachioExtension with JMustacheRenderer;
 	
 	uses javax.annotation.processing.Processor;
 }

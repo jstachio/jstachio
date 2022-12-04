@@ -12,18 +12,12 @@ import io.jstach.jstachio.TemplateInfo;
  *
  * @author agentgt
  */
-public abstract class AbstractJStachio implements JStachio {
-
-	/**
-	 * Do nothing constructor
-	 */
-	public AbstractJStachio() {
-	}
+public abstract class AbstractJStachio implements JStachio, JStachioExtensions.Provider {
 
 	@Override
 	public void execute(Object model, Appendable appendable) throws IOException {
 		TemplateInfo template = template(model.getClass());
-		filter().filter(template).process(model, appendable);
+		extensions().getFilter().filter(template).process(model, appendable);
 	}
 
 	@Override
@@ -45,7 +39,7 @@ public abstract class AbstractJStachio implements JStachio {
 
 	@Override
 	public boolean supportsType(Class<?> modelType) {
-		return templateFinder().supportsType(modelType);
+		return extensions().getTemplateFinder().supportsType(modelType);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,16 +49,12 @@ public abstract class AbstractJStachio implements JStachio {
 
 	protected TemplateInfo template(Class<?> modelType) {
 		try {
-			return templateFinder().findTemplate(modelType);
+			return extensions().getTemplateFinder().findTemplate(modelType);
 		}
 		catch (Exception e) {
 			sneakyThrow(e);
 			throw new RuntimeException(e);
 		}
 	}
-
-	protected abstract JStachioTemplateFinder templateFinder();
-
-	protected abstract JStachioFilter filter();
 
 }

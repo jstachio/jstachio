@@ -1,5 +1,7 @@
 /**
- * Spring MVC application with:
+ * Spring Boot MVC application using JStachio.
+ * <p>
+ * Application has the following:
  * <ul>
  * <li>{@link io.jstach.opt.spring.example.HelloController Controller}</li>
  * <li>{@link io.jstach.opt.spring.example.HelloModel Model}</li>

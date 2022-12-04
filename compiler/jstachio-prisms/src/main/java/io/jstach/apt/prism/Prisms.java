@@ -55,7 +55,7 @@ public interface Prisms {
 
 	public static final String FILTER_CHAIN_CLASS = "io.jstach.jstachio.spi.JStachioFilter.FilterChain";
 
-	public static final String JSTACHIO_SERVICES_CLASS = "io.jstach.jstachio.spi.JStachioServices";
+	public static final String JSTACHIO_EXTENSION_CLASS = "io.jstach.jstachio.spi.JStachioExtension";
 
 	public static final String CONTEXT_NODE_CLASS = "io.jstach.jstachio.context.ContextNode";
 

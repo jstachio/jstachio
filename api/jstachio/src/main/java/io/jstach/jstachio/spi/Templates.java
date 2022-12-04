@@ -69,7 +69,7 @@ public final class Templates {
 			error = e;
 		}
 		if (!config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
-			Logger logger = config.getLogger(JStachioServices.class.getCanonicalName());
+			Logger logger = config.getLogger(JStachioExtension.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING,
 						"Could not find generated template and will try reflection for model type: " + modelType,
@@ -85,9 +85,15 @@ public final class Templates {
 	/**
 	 * Finds template info by accessing JStache annotations through reflective lookup.
 	 * <p>
-	 * This allows you to lookup template meta data regardless of whether or not the
-	 * annotation processor has generated code. This method is mainly used for fallback
-	 * mechanisms and extensions.
+	 * This allows you to lookup template meta data <strong>regardless of whether or not
+	 * the annotation processor has generated code</strong>. This method is mainly used
+	 * for fallback mechanisms and extensions.
+	 * <p>
+	 * Why might you need the reflective data instead of the static generated meta data?
+	 * Well often times the annotation processor in a hot reload environment such as
+	 * JRebel, JBoss modles, or Spring Reloadhas not generated the code from a JStache
+	 * model and or it is not desired. This allows reflection based engines like JMustache
+	 * to keep working even if code is not generated.
 	 * @param modelType the class that is annotated with {@link JStache}
 	 * @return template info meta data
 	 * @throws Exception if any reflection error happes or the template is not found

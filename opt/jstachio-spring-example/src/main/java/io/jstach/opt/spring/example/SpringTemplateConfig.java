@@ -8,10 +8,10 @@ import org.springframework.core.env.Environment;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
-import io.jstach.jstachio.spi.JStachioServices;
+import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.opt.jmustache.JMustacheRenderer;
 import io.jstach.opt.spring.SpringJStachio;
-import io.jstach.opt.spring.SpringJStachioServices;
+import io.jstach.opt.spring.SpringJStachioExtension;
 
 /**
  * Configures JStachio Spring style.
@@ -32,8 +32,9 @@ public class SpringTemplateConfig {
 	 * @return the services
 	 */
 	@Bean
-	public SpringJStachioServices jstachioService(Environment environment, List<Template<?>> templates) {
-		return new SpringJStachioServices(environment, templates);
+	public SpringJStachioExtension jstachioService(@SuppressWarnings("exports") Environment environment,
+			List<Template<?>> templates) {
+		return new SpringJStachioExtension(environment, templates);
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class SpringTemplateConfig {
 	 * @return spring version fo jstachio
 	 */
 	@Bean
-	public SpringJStachio jstachio(List<JStachioServices> services) {
+	public SpringJStachio jstachio(List<JStachioExtension> services) {
 		var js = new SpringJStachio(services);
 		JStachio.setStaticJStachio(() -> js);
 		return js;
@@ -53,7 +54,7 @@ public class SpringTemplateConfig {
 	 * @return jmustache plugin
 	 */
 	@Bean
-	public JStachioServices jmustache() {
+	public JStachioExtension jmustache() {
 		return new JMustacheRenderer();
 	}
 

@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  * }
  * </code> </pre>
  *
- * @apiNote N.B. the rention policy is SOURCE.
+ * @apiNote N.B. the rention policy is SOURCE hence why it is not in JStacheConfig.
  * @author agentgt
  * @see JStacheLambda
  */

@@ -3,10 +3,8 @@ package io.jstach.opt.spring;
 import java.util.List;
 
 import io.jstach.jstachio.spi.AbstractJStachio;
-import io.jstach.jstachio.spi.JStachioFilter;
-import io.jstach.jstachio.spi.JStachioServices;
-import io.jstach.jstachio.spi.JStachioServicesContainer;
-import io.jstach.jstachio.spi.JStachioTemplateFinder;
+import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioExtensions;
 
 /**
  * A JStachio that does not use the service loader.
@@ -15,24 +13,19 @@ import io.jstach.jstachio.spi.JStachioTemplateFinder;
  */
 public class SpringJStachio extends AbstractJStachio {
 
-	private final JStachioServicesContainer container;
+	private final JStachioExtensions extensions;
 
 	/**
 	 * Passed the found services usually injected by Spring.
-	 * @param services not null.
+	 * @param extensions not null.
 	 */
-	public SpringJStachio(List<JStachioServices> services) {
-		container = JStachioServicesContainer.of(services);
+	public SpringJStachio(List<JStachioExtension> extensions) {
+		this.extensions = JStachioExtensions.of(extensions);
 	}
 
 	@Override
-	protected JStachioTemplateFinder templateFinder() {
-		return container.getTemplateFinder();
-	}
-
-	@Override
-	protected JStachioFilter filter() {
-		return container.getFilter();
+	public JStachioExtensions extensions() {
+		return this.extensions;
 	}
 
 }

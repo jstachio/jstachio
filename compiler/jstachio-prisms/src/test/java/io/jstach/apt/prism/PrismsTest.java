@@ -27,7 +27,7 @@ import io.jstach.jstachio.escapers.Html;
 import io.jstach.jstachio.escapers.PlainText;
 import io.jstach.jstachio.formatters.DefaultFormatter;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
-import io.jstach.jstachio.spi.JStachioServices;
+import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.jstachio.spi.TemplateProvider;
 
 public class PrismsTest {
@@ -144,7 +144,7 @@ public class PrismsTest {
 				TemplateInfo.class, //
 				TemplateConfig.class, //
 				FilterChain.class, //
-				JStachioServices.class, //
+				JStachioExtension.class, //
 				ContextNode.class, //
 				AutoFormatter.class, //
 				AutoContentType.class, //
