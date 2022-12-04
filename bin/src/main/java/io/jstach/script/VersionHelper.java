@@ -142,7 +142,7 @@ enum Command {
 			}
 			switch (setCmd) {
 				case CURRENT -> {
-					current(v);
+					current(v, timestamp);
 				}
 				case POM -> {
 					pom(v, timestamp);
@@ -194,10 +194,9 @@ enum Command {
 		return Version.of(v);
 	}
 
-	static void current(Version v) throws IOException {
+	static void current(Version v, long timestamp) throws IOException {
 		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1,
 				StandardOpenOption.WRITE)) {
-			long timestamp = System.currentTimeMillis();
 			writeProperties(br, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
 		}
 	}
