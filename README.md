@@ -9,6 +9,17 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 (formerly called [static-mustache](https://github.com/sviperll/static-mustache))
 
+## News
+
+Version 0.8.0 has been released and has the following new notable features:
+
+* [Zero dependency mode](https://github.com/jstachio/jstachio/issues/3). [doc](https://jstach.io/jstachio/io.jstach.jstache/io/jstach/jstache/JStacheType.html)
+* [Spring support](https://jstach.io/jstachio/io.jstach.opt.spring/module-summary.html)
+* [Spring example app](https://jstach.io/jstachio/io.jstach.opt.spring.example/module-summary.html)
+* API is finally stabilized (apologies for all the package name changes but that should stop now)
+* There will be one more 0.9.0 release before 1.0.0 (1.0.0 should be released circa Jan 2023)
+* Feedback on anything is much appreciated as soon as possible to lock down 1.0.0 features/changes.
+
 ## Documentation
 
 **[Latest JStachio API javadoc](https://jstach.io/jstachio/)**
@@ -54,8 +65,8 @@ is mainly for ~~propaganda~~ marketing purposes.
  * Compatible with [JMustache](https://github.com/samskivert/jmustache#-first-and--last) and [Handlebars](https://handlebarsjs.com/api-reference/data-variables.html#root) list index extensions (like `-first`, `-last`, `-index`)
  * It is by far the [fastest Java Mustache-like template engine as well one of the fastest in general](#performance).
  * Zero dependencies other than JStachio itself
-
-    * An absolutely zero runtime dependency option is in the works (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects.
+ * An absolutely zero runtime dependency option is avaialable (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects. Also useful for Graal VM native projects for as minimal footprint as possible.
+ * First class support for Spring Framework (as in the project itself will provide plugins as opposed to an aux project)
 
 ## Quick Example
 
