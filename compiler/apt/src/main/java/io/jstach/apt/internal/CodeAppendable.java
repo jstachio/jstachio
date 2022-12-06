@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.escape.EscapeUtils;
+
 public interface CodeAppendable extends Appendable {
 
 	default void print(String s) {
@@ -154,7 +156,7 @@ public interface CodeAppendable extends Appendable {
 				code.append(" +");
 			}
 			code.append("\n    \"");
-			code.append(escapeJava(line));
+			code.append(EscapeUtils.escapeJava(line));
 			code.append("\"");
 			i++;
 		}
@@ -180,13 +182,6 @@ public interface CodeAppendable extends Appendable {
 			i = end;
 		}
 		return tokens;
-	}
-
-	public static String escapeJava(String s) {
-		s = s.replace("\"", "\\\"");
-		s = s.replace("\\", "\\\\");
-		s = s.replace("\n", "\\n");
-		return s;
 	}
 
 }
