@@ -383,7 +383,7 @@
       <id>format-apply</id>
       <activation>
         <property>
-          <name>!format.validate</name>
+          <name>format.apply</name>
         </property>
       </activation>
       <build>
@@ -412,7 +412,7 @@
       <id>format-validate</id>
        <activation>
         <property>
-          <name>format.validate</name>
+          <name>!format.apply</name>
         </property>
       </activation>
       <build>
