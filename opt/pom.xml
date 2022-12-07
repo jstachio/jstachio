@@ -33,6 +33,12 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>io.jstach</groupId>
         <artifactId>jstachio-jmustache</artifactId>
         <version>${project.version}</version>

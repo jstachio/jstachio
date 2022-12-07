@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.View;
 
+import io.jstach.jstache.JStacheInterfaces;
+import io.jstach.jstachio.Template;
 import io.jstach.opt.spring.JStachioHttpMessageConverter;
 
 /**
@@ -32,11 +35,13 @@ public class HelloController {
 	 * {@link Component} to all generated code.
 	 */
 	@Autowired(required = true)
-	public HelloModelView view;
+	public Template<HelloModel> view;
 
 	/**
 	 * Here we use JStachio runtime to resolve the renderer (in this case we are calling
-	 * them Views).
+	 * them Views) via Springs Http Message Converter.
+	 * @apiNote Notice that the method has to be annotated with
+	 * <code>&#64;ResponseBody</code>.
 	 * @return the model that will be used to find the correct view and then rendered
 	 * using that view
 	 * @see JStachioHttpMessageConverter
@@ -45,6 +50,25 @@ public class HelloController {
 	@ResponseBody
 	public HelloModel hello() {
 		return new HelloModel("Spring Boot is now JStachioed!");
+	}
+
+	/**
+	 * Here we use {@link JStacheInterfaces} to make our model implement a Spring View to
+	 * support the traditional servlet MVC approach. The model will use the static
+	 * jstachio singleton that will be the spring one.
+	 * <p>
+	 * This approach has pros and cons. It makes your models slightly coupled to Spring
+	 * MVC but allows you to return different views if say you had to redirect on some
+	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
+	 *
+	 * @apiNote Notice that the return type is {@link View}.
+	 * @return the model that will be used as View
+	 * @see JStachioHttpMessageConverter
+	 */
+	@SuppressWarnings("exports")
+	@GetMapping(value = "/mvc")
+	public View mvc() {
+		return new HelloModel("Spring Boot MVC is now JStachioed!");
 	}
 
 	/**

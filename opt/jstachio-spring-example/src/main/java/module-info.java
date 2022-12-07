@@ -3,6 +3,7 @@ import org.springframework.stereotype.Component;
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStachePath;
+import io.jstach.opt.spring.JStachioModelView;
 
 /**
  * Spring example app for JStachio.
@@ -24,7 +25,10 @@ import io.jstach.jstache.JStachePath;
  * @author agentgt
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
-@JStacheInterfaces(templateAnnotations = {Component.class})
+@JStacheInterfaces(
+		templateAnnotations = {Component.class}, //
+		modelImplements = {JStachioModelView.class}
+)
 @JStacheConfig(nameSuffix = "View")
 module io.jstach.opt.spring.example {
 	requires transitive io.jstach.opt.spring;
@@ -32,6 +36,7 @@ module io.jstach.opt.spring.example {
 	requires com.samskivert.jmustache;
 
 	requires static spring.jcl;
+	requires static jakarta.servlet;
 	requires spring.web;
 	requires spring.beans;
 	requires spring.core;
@@ -40,7 +45,7 @@ module io.jstach.opt.spring.example {
 	requires spring.boot.autoconfigure;
 	requires spring.webmvc;
 	requires com.fasterxml.jackson.databind;
-
+	
 	opens io.jstach.opt.spring.example to //
 	spring.core, spring.web, spring.beans, spring.context //
 	, io.jstach.jstachio, io.jstach.opt.jmustache //

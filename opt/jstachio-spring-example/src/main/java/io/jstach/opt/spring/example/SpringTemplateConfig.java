@@ -45,6 +45,7 @@ public class SpringTemplateConfig {
 	@Bean
 	public SpringJStachio jstachio(List<JStachioExtension> services) {
 		var js = new SpringJStachio(services);
+		// We need this for the view mixins.
 		JStachio.setStaticJStachio(() -> js);
 		return js;
 	}
