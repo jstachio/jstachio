@@ -53,10 +53,16 @@ import java.lang.annotation.Target;
 public @interface JStacheInterfaces {
 
 	/**
-	 * Will make all generated templates that are in the annotated package implement the
-	 * array of interfaces. The interfaces should have a default implementation for all of
-	 * its methods otherwise compilation errors will happen.
-	 * @return interfaces that generate template will implement
+	 * Will make all generated templates that are in the annotated class/package/module
+	 * implement the array of interfaces. If the interface has a single generic type
+	 * parameter (e.g. {@code SomeInterface<T>}) then the parameter will be assumed to be
+	 * the model type (the class annotated with JStache) and thus will be parameterized
+	 * with the model type (e.g.
+	 * {@code SomeModelRenderer implements SomeInterface<SomeModel>}).
+	 * <p>
+	 * The interfaces should have a default implementation for all of its methods
+	 * otherwise possible compilation errors might happen.
+	 * @return interfaces that generated template will implement
 	 */
 	public Class<?>[] templateImplements() default {};
 
@@ -76,7 +82,7 @@ public @interface JStacheInterfaces {
 	 * This is useful for DI frameworks and a common pattern is to use
 	 * <code>jakarta.inject.Inject.class</code> which will make the DI framework
 	 * instantiate the template with a common config.
-	 * @return annotations to be added to generate templates
+	 * @return annotations to be added to generated templates
 	 */
 	public Class<?>[] templateConstructorAnnotations() default {};
 
@@ -84,7 +90,7 @@ public @interface JStacheInterfaces {
 	 * Will <strong>check</strong> that all models in the annotated class/package/module
 	 * annotated with {@link io.jstach.jstache.JStache} implement the array of interfaces.
 	 * If a model does not a compilation error will happen.
-	 * @return interfaces that the moduls <strong>should</strong> implement
+	 * @return interfaces that the models <strong>should</strong> implement
 	 */
 	public Class<?>[] modelImplements() default {};
 

@@ -89,11 +89,11 @@ class TemplateClassWriter {
 		interfaces.addAll(ifaces.templateInterfaces());
 		String implementsString = interfaces.stream().collect(Collectors.joining(",\n    "));
 
-		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta + "\n")
-				.collect(Collectors.joining());
+		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta)
+				.collect(Collectors.joining("\n"));
 
-		String constructorAnnotated = ifaces.templateConstructorAnnotations().stream().map(ta -> "@" + ta + "\n")
-				.collect(Collectors.joining());
+		String constructorAnnotated = ifaces.templateConstructorAnnotations().stream().map(ta -> "@" + ta)
+				.collect(Collectors.joining("\n"));
 
 		String rendererImplements = implementsString.isBlank() ? "" : " implements " + implementsString;
 

@@ -62,8 +62,10 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
@@ -228,7 +230,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn);
 
 		List<String> templateInterfaces = prisms.stream().map(JStacheInterfacesPrism::templateImplements)
-				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
+				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm, element)).toList();
 
 		List<String> templateAnnotions = prisms.stream().map(JStacheInterfacesPrism::templateAnnotations)
 				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
@@ -315,6 +317,24 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		var e = ((DeclaredType) tm).asElement();
 		var te = (TypeElement) e;
 		return te.getQualifiedName().toString();
+	}
+
+	private String getTypeName(TypeMirror tm, TypeElement modelElement) {
+		var dt = (DeclaredType) tm;
+		var e = dt.asElement();
+		var te = (TypeElement) e;
+		String name = te.getQualifiedName().toString();
+		var tas = te.getTypeParameters();
+		if (tas.isEmpty()) {
+			return name;
+		}
+		if (tas.size() == 1) {
+			/*
+			 * TODO validation of type parameter
+			 */
+			return name + "<" + modelElement.getQualifiedName().toString() + ">";
+		}
+		return name;
 	}
 
 	private FormatterTypes resolveFormatterTypes(TypeElement element) {
