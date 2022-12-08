@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
+import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +36,7 @@ public interface JStachioModelView extends View {
 		 */
 		response.setContentType(contentType());
 		try (var w = response.getWriter()) {
-			jstachio().execute(this, w);
+			jstachio().execute(model(), w);
 		}
 
 	}
@@ -55,6 +56,28 @@ public interface JStachioModelView extends View {
 	 */
 	default String contentType() {
 		return "text/html; charset=utf-8";
+	}
+
+	/**
+	 * The model to be rendered by {@link #jstachio()}.
+	 * @return model defaulting to <code>this</code> instance.
+	 */
+	default Object model() {
+		return this;
+	}
+
+	/**
+	 * Creates a spring view from a model
+	 * @param model an instance of a class annotated with {@link JStache}.
+	 * @return view ready for rendering
+	 */
+	public static JStachioModelView of(Object model) {
+		return new JStachioModelView() {
+			@Override
+			public Object model() {
+				return model;
+			}
+		};
 	}
 
 }

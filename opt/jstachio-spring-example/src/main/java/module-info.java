@@ -4,6 +4,7 @@ import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStachePath;
 import io.jstach.opt.spring.JStachioModelView;
+import io.jstach.opt.spring.ViewFactory;
 
 /**
  * Spring example app for JStachio.
@@ -27,6 +28,7 @@ import io.jstach.opt.spring.JStachioModelView;
 @JStachePath(prefix = "views/", suffix = ".mustache") //
 @JStacheInterfaces(
 		templateAnnotations = {Component.class}, //
+		templateImplements = {ViewFactory.class}, //
 		modelImplements = {JStachioModelView.class}
 )
 @JStacheConfig(nameSuffix = "View")
