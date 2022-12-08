@@ -13,6 +13,13 @@ import io.jstach.jstachio.JStachio;
 public final class JStachioResolver {
 
 	/**
+	 * @hidden
+	 */
+	private JStachioResolver() {
+
+	}
+
+	/**
 	 * Provides a singleton JStachio resolved by the {@link ServiceLoader}
 	 * @return service loader based jstachio.
 	 */
