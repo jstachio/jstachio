@@ -165,8 +165,7 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 	public StringBuilder visitTypeVariable(TypeVariable t, StringBuilder p) {
 		debug("typeVariable", t);
 		/*
-		 * Types can be recursive so we have to check if we have already done 
-		 * this type.
+		 * Types can be recursive so we have to check if we have already done this type.
 		 */
 		String previous = typeVariables.get(t);
 
