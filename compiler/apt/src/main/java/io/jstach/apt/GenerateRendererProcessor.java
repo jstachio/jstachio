@@ -62,10 +62,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
@@ -239,6 +237,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				.map(JStacheInterfacesPrism::templateConstructorAnnotations).flatMap(faces -> faces.stream())
 				.map(tm -> getTypeName(tm)).toList();
 
+		TypeElement extendsElement = prisms.stream().map(JStacheInterfacesPrism::templateExtends)
+				.map(tm -> toTypeElement(tm)).findFirst().orElse(null);
+
 		var modelInterfaces = prisms.stream().map(JStacheInterfacesPrism::modelImplements)
 				.flatMap(faces -> faces.stream()).toList();
 
@@ -249,7 +250,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		}
 
-		return new InterfacesConfig(templateInterfaces, templateAnnotions, templateConstructorAnnotations);
+		return new InterfacesConfig(templateInterfaces, templateAnnotions, templateConstructorAnnotations,
+				extendsElement);
 	}
 
 	private <T> List<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
@@ -265,8 +267,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	record InterfacesConfig(//
 			List<String> templateInterfaces, //
 			List<String> templateAnnotations, //
-			List<String> templateConstructorAnnotations //
-	) {
+			List<String> templateConstructorAnnotations, //
+			@Nullable TypeElement extendsElement) {
 	}
 
 	private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
@@ -313,9 +315,13 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return Collections.unmodifiableSet(flags);
 	}
 
-	private String getTypeName(TypeMirror tm) {
+	TypeElement toTypeElement(TypeMirror tm) {
 		var e = ((DeclaredType) tm).asElement();
-		var te = (TypeElement) e;
+		return (TypeElement) e;
+	}
+
+	private String getTypeName(TypeMirror tm) {
+		var te = toTypeElement(tm);
 		return te.getQualifiedName().toString();
 	}
 

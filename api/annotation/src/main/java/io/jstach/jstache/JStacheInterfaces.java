@@ -60,11 +60,25 @@ public @interface JStacheInterfaces {
 	 * with the model type (e.g.
 	 * {@code SomeModelRenderer implements SomeInterface<SomeModel>}).
 	 * <p>
-	 * The interfaces should have a default implementation for all of its methods
-	 * otherwise possible compilation errors might happen.
+	 * <strong>The interfaces should have a default implementation for all of its methods
+	 * otherwise possible compilation errors might happen. </strong>
 	 * @return interfaces that generated template will implement
 	 */
 	public Class<?>[] templateImplements() default {};
+
+	/**
+	 * Will make all generated templates that are in the annotated class/package/module
+	 * extened a class. If the class has a single generic type parameter (e.g.
+	 * {@code SomeClass<T>}) then the parameter will be assumed to be the model type (the
+	 * class annotated with JStache) and thus will be parameterized with the model type
+	 * (e.g. {@code SomeModelRenderer extends SomeClass<SomeModel>}).
+	 * <p>
+	 * <strong> The class needs a no arg default constructor but may provide other
+	 * constructors that will simply be replicated (including annotations) on the
+	 * genererated template. </strong>
+	 * @return interfaces that generated template will implement
+	 */
+	public Class<?> templateExtends() default Object.class;
 
 	/**
 	 * Will make all generated templates that are in the annotated class/package/module be
@@ -83,6 +97,7 @@ public @interface JStacheInterfaces {
 	 * <code>jakarta.inject.Inject.class</code> which will make the DI framework
 	 * instantiate the template with a common config.
 	 * @return annotations to be added to generated templates
+	 * @deprecated templateExtends is preferred
 	 */
 	public Class<?>[] templateConstructorAnnotations() default {};
 

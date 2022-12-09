@@ -10,12 +10,21 @@ import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
@@ -97,6 +106,21 @@ class TemplateClassWriter {
 
 		String rendererImplements = implementsString.isBlank() ? "" : " implements " + implementsString;
 
+		String rendererExtends = "";
+
+		boolean extendsClass = false;
+
+		TypeElement extendsElement = ifaces.extendsElement();
+		if (extendsElement != null) {
+			String name = extendsElement.getQualifiedName().toString();
+			String extendsDeclare = name;
+			if (extendsElement.getTypeParameters().size() == 1) {
+				extendsDeclare = name + "<" + className + ">";
+			}
+			rendererExtends = " extends " + extendsDeclare + " ";
+			extendsClass = true;
+		}
+
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
 
 		String rendererClassSimpleName = renderClassRef.getSimpleName();
@@ -128,7 +152,7 @@ class TemplateClassWriter {
 		if (!rendererAnnotated.isBlank()) {
 			println(rendererAnnotated);
 		}
-		println(modifier + "class " + rendererClassSimpleName + rendererImplements + " {");
+		println(modifier + "class " + rendererClassSimpleName + rendererExtends + rendererImplements + " {");
 
 		println("    /**");
 		println("     * Template path.");
@@ -182,13 +206,36 @@ class TemplateClassWriter {
 		println("    public " + rendererClassSimpleName + "(");
 		println("        /* @Nullable */ " + _F_Formatter + " formatter,");
 		println("        /* @Nullable */ " + _F_Escaper + " escaper) {");
-
-		println("        this.formatter = " + (!jstachio ? "formatter != null ? formatter : (i -> \"\" + i);"
-				: _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall + ");"));
-		println("        this.escaper = " + (!jstachio ? "escaper != null ? escaper : (i -> i);"
-				: _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall + ");"));
-
+		println("        super();");
+		println("        this.formatter = __formatter(formatter);");
+		println("        this.escaper = __escaper(escaper);");
 		println("    }");
+		println("");
+		if (jstachio) {
+			println("    private static " + _Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
+					+ " formatter) {");
+			println("        return " + _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall
+					+ ");");
+			println("    }");
+		}
+		else {
+			println("    private static " + _F_Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
+					+ " formatter) {");
+			println("        return formatter != null ? formatter : (i -> \"\" + i);");
+			println("    }");
+		}
+		println("");
+		if (jstachio) {
+			println("    private static " + _Escaper + " __escaper(" + "/* @Nullable */ " + _F_Escaper + " escaper) {");
+			println("        return " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall + ");");
+			println("    }");
+		}
+		else {
+			println("    private static " + _F_Escaper + " __escaper(" + "/* @Nullable */ " + _F_Escaper
+					+ " escaper) {");
+			println("        return escaper != null ? escaper : (i -> i);");
+			println("    }");
+		}
 		println("");
 		println("    /**");
 		println("     * Renderer constructor for reflection (use of() instead).");
@@ -392,7 +439,87 @@ class TemplateClassWriter {
 		println("    }");
 		println("");
 		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
+		writeExtendsConstructors(extendsElement, rendererClassSimpleName);
 		println("}");
+	}
+
+	private void writeExtendsConstructors(@Nullable TypeElement extendsElement, String rendererClassSimpleName) {
+		if (extendsElement == null) {
+			return;
+		}
+		List<ExecutableElement> constructors = ElementFilter.constructorsIn(extendsElement.getEnclosedElements())
+				.stream().filter(e -> e.getModifiers().contains(Modifier.PUBLIC)
+						&& !e.getModifiers().contains(Modifier.FINAL) && !e.getParameters().isEmpty())
+				.toList();
+		for (var c : constructors) {
+			writeConstructor(rendererClassSimpleName, c);
+		}
+	}
+
+	private void writeConstructor(String rendererClassSimpleName, ExecutableElement c) {
+		StringBuilder sig = new StringBuilder();
+		StringBuilder _super = new StringBuilder();
+
+		sig.append("public ").append(rendererClassSimpleName).append("(");
+		_super.append("super(");
+		boolean first = true;
+		for (var p : c.getParameters()) {
+			if (!first) {
+				sig.append(", ");
+				_super.append(", ");
+			}
+			else {
+				first = false;
+			}
+			for (var anno : p.getAnnotationMirrors()) {
+				var targets = annotationTargets(anno);
+				if (targets.contains(ElementType.PARAMETER)) {
+					sig.append(anno.toString()).append(" ");
+				}
+			}
+			sig.append(p.asType().toString());
+			sig.append(" ");
+			sig.append(p.getSimpleName());
+			_super.append(p.getSimpleName());
+		}
+		sig.append(")");
+		_super.append(");");
+
+		println("");
+		for (var anno : c.getAnnotationMirrors()) {
+			println("    " + anno);
+		}
+		println("    " + sig.toString() + " {");
+		println("        " + _super.toString());
+		println("        " + "this.formatter = __formatter(null);");
+		println("        " + "this.escaper = __escaper(null);");
+		println("    }");
+		println("");
+	}
+
+	EnumSet<ElementType> annotationTargets(AnnotationMirror anno) {
+
+		System.out.println(anno);
+		Target target = anno.getAnnotationType().getAnnotation(Target.class);
+		System.out.println(target);
+		if (target == null) {
+			return EnumSet.allOf(ElementType.class);
+		}
+		ElementType[] ets = target.value();
+		if (ets == null) {
+			return EnumSet.allOf(ElementType.class);
+		}
+		EnumSet<ElementType> t = EnumSet.noneOf(ElementType.class);
+		for (var et : ets) {
+			t.add(et);
+		}
+		if (t.isEmpty()) {
+			/*
+			 * Per the Target javadoc I think
+			 */
+			t = EnumSet.allOf(ElementType.class);
+		}
+		return t;
 	}
 
 	private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model)
