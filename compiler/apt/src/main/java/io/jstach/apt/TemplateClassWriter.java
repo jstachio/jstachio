@@ -36,6 +36,7 @@ import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.util.ClassRef;
+import io.jstach.apt.internal.util.ToStringTypeVisitor;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
 
@@ -477,7 +478,7 @@ class TemplateClassWriter {
 					sig.append(anno.toString()).append(" ");
 				}
 			}
-			sig.append(p.asType().toString());
+			sig.append(ToStringTypeVisitor.toCodeSafeString(p.asType()));
 			sig.append(" ");
 			sig.append(p.getSimpleName());
 			_super.append(p.getSimpleName());

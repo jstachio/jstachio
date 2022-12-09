@@ -1,5 +1,7 @@
 package io.jstach.examples.jstacheifaces;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 public class AbstractSome {
 
 	private final String name;
@@ -9,7 +11,7 @@ public class AbstractSome {
 	}
 
 	@SomeAnnotation
-	public AbstractSome(@SomeAnnotation /* @Nullable */ String name) {
+	public AbstractSome(@SomeAnnotation @Nullable String name) {
 		this.name = name;
 	}
 
