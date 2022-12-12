@@ -32,6 +32,7 @@ package io.jstach.apt.internal.context;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -40,6 +41,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.util.Interpolator;
+import io.jstach.apt.internal.util.ToStringTypeVisitor;
 
 /**
  * @author Victor Nazarov
@@ -86,10 +88,11 @@ class IterableRenderingContext implements RenderingContext {
 				for (java.util.Iterator<? extends ${elementGeneric}> ${iteratorVar} = ${iterableVar}.iterator(); ${iteratorVar}.hasNext(); ${i}++) {
 				    ${elementType} ${elementVar} = ${iteratorVar}.next();
 				""";
+		String elementType = ToStringTypeVisitor.toCodeSafeString(elementExpession().type());
 		Map<String, String> names = Map.of( //
 				"i", indexVariableName, //
-				"elementGeneric", elementExpession().type().toString().toString(), //
-				"elementType", elementExpession().type().toString(), //
+				"elementGeneric", elementType, //
+				"elementType", elementType, //
 				"elementVar", elementVariableName, //
 				"iteratorVar", iteratorVariableName, //
 				"iterableVar", expression.text() //
@@ -156,19 +159,56 @@ class IterableRenderingContext implements RenderingContext {
 	}
 
 	JavaExpression elementExpession() {
-		DeclaredType iterableType = expression.model().getSupertype((DeclaredType) expression.type(),
-				expression.model().knownTypes()._Iterable);
+		DeclaredType expressionType = (DeclaredType) expression.type();
+		var model = expression.model();
+		DeclaredType iterableType = model.getSupertype(expressionType, model.knownTypes()._Iterable);
 		if (iterableType == null) {
 			throw new IllegalStateException("expected iterable type. bug.");
 		}
-		TypeMirror elementType = iterableType.getTypeArguments().iterator().next();
+
+		/*
+		 * We need to restore the annotations as getSupertype filters them out. This is an
+		 * unusual case as normally jstachio does not make variables and just repeats the
+		 * entire expression and thus a variable declaration is not needed.
+		 *
+		 * However with iterables we need a variable declaration.
+		 *
+		 * Normally we would do the next commented line.
+		 *
+		 * TypeMirror elementType = iterableType.getTypeArguments().iterator().next();
+		 *
+		 * but for some reason Types#directSupertypes() filters out annotations probably
+		 * because of previous annotation bugs like
+		 * https://bugs.openjdk.org/browse/JDK-8281238
+		 *
+		 * TODO this should probably be configurable
+		 *
+		 * For example let us assume we have the expression type of
+		 *
+		 * List<@Nullable String> someList;
+		 *
+		 * Our iterable type should be:
+		 *
+		 * Iterable<@Nullable String> iterable;
+		 *
+		 * but Types#directSupertypes will return:
+		 *
+		 * Iterable<String>
+		 *
+		 * but asMemberOf will fix it provided you pass it the type parameter element.
+		 *
+		 */
+		var iterableElement = (TypeElement) iterableType.asElement();
+		var parameterElement = iterableElement.getTypeParameters().iterator().next();
+
+		TypeMirror elementType = model.getTypes().asMemberOf(expressionType, parameterElement);
 		if (elementType instanceof @NonNull WildcardType wildcardType) {
 			elementType = wildcardType.getExtendsBound();
 			if (elementType == null) {
 				throw new IllegalStateException("expected upper bounds. bug.");
 			}
 		}
-		return expression.model().expression(elementVariableName, elementType);
+		return model.expression(elementVariableName, elementType);
 	}
 
 	@Override

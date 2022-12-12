@@ -10,7 +10,7 @@ public class AbstractSome {
 		this.name = "none";
 	}
 
-	@SomeAnnotation
+	@SomeAnnotation(value = "hello")
 	public AbstractSome(@SomeAnnotation @Nullable String name) {
 		this.name = name;
 	}

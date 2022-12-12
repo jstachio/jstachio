@@ -58,11 +58,11 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 			if (depth > 10) {
 				throw new IllegalStateException();
 			}
-			System.out.println(indent() + "#" + message + ". " + o);
+			System.out.println(indent(depth) + "#" + message + ". " + o);
 		}
 	}
 
-	String indent() {
+	private static String indent(int depth) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < depth; i++) {
 			sb.append("\t");
