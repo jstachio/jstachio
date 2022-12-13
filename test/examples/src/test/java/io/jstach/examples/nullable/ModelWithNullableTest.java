@@ -1,6 +1,6 @@
 package io.jstach.examples.nullable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
-import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheName;
 
 public class ModelWithNullableTest {
 
@@ -18,7 +18,7 @@ public class ModelWithNullableTest {
 		/*
 		 * Yeah this is lame and brittle but whatever
 		 */
-		String filePath = ModelWithNullable.class.getName().replace('.', '/') + JStache.IMPLEMENTATION_SUFFIX + ".java";
+		String filePath = ModelWithNullable.class.getName().replace('.', '/') + JStacheName.DEFAULT_SUFFIX + ".java";
 		String java = Files.readString(Path.of("target/generated-sources/annotations/" + filePath),
 				StandardCharsets.UTF_8);
 		String iterable = "java.util.Iterator<? extends java.lang.@org.eclipse.jdt.annotation.Nullable String>";

@@ -16,9 +16,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
-import io.jstach.jstache.JStacheContentType.AutoContentType;
+import io.jstach.jstache.JStacheContentType.UnspecifiedContentType;
 import io.jstach.jstache.JStacheFormatter;
-import io.jstach.jstache.JStacheFormatter.AutoFormatter;
+import io.jstach.jstache.JStacheFormatter.UnspecifiedFormatter;
+import io.jstach.jstache.JStacheName;
 import io.jstach.jstache.JStachePath;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
@@ -147,10 +148,16 @@ public final class Templates {
 		String cname;
 		if (a == null || a.adapterName().isBlank()) {
 			@Nullable
-			String suffix = findAnnotations(c, JStacheConfig.class).map(config -> config.nameSuffix())
-					.filter(s -> !s.isBlank()).findFirst().orElse(null);
-			suffix = suffix != null ? suffix : JStache.IMPLEMENTATION_SUFFIX;
-			cname = c.getSimpleName() + suffix;
+			String prefix = findAnnotations(c, JStacheConfig.class).map(config -> config.naming()).map(s -> s.prefix())
+					.filter(s -> !JStacheName.UNSPECIFIED.equals(s)).findFirst().orElse(null);
+			@Nullable
+			String suffix = findAnnotations(c, JStacheConfig.class).map(config -> config.naming()).map(s -> s.suffix())
+					.filter(s -> !JStacheName.UNSPECIFIED.equals(s)).findFirst().orElse(null);
+
+			prefix = prefix != null ? prefix : JStacheName.DEFAULT_PREFIX;
+			suffix = suffix != null ? suffix : JStacheName.DEFAULT_SUFFIX;
+
+			cname = prefix + c.getSimpleName() + suffix;
 		}
 		else {
 			cname = a.adapterName();
@@ -161,7 +168,7 @@ public final class Templates {
 	}
 
 	private static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
-		return Stream.of(c.getPackage(), c.getModule()).filter(p -> p != null)
+		return Stream.of(c, c.getPackage(), c.getModule()).filter(p -> p != null)
 				.map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
 	}
 
@@ -305,7 +312,7 @@ public final class Templates {
 
 			@Override
 			public Class<?> autoProvider() {
-				return AutoContentType.class;
+				return UnspecifiedContentType.class;
 			}
 
 			@Override
@@ -348,7 +355,7 @@ public final class Templates {
 
 			@Override
 			public Class<?> autoProvider() {
-				return AutoFormatter.class;
+				return UnspecifiedFormatter.class;
 			}
 
 			@Override

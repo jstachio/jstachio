@@ -2,6 +2,7 @@ import org.springframework.stereotype.Component;
 
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
+import io.jstach.jstache.JStacheName;
 import io.jstach.jstache.JStachePath;
 import io.jstach.opt.spring.JStachioModelView;
 import io.jstach.opt.spring.ViewFactory;
@@ -31,7 +32,7 @@ import io.jstach.opt.spring.ViewFactory;
 		templateImplements = {ViewFactory.class}, //
 		modelImplements = {JStachioModelView.class}
 )
-@JStacheConfig(nameSuffix = "View")
+@JStacheConfig(naming = @JStacheName(suffix="View"))
 module io.jstach.opt.spring.example {
 	requires transitive io.jstach.opt.spring;
 	requires io.jstach.opt.jmustache;

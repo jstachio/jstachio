@@ -58,6 +58,7 @@ import java.util.ServiceLoader;
  *
  * @author agentgt
  * @author Victor Nazarov
+ * @see JStacheConfig#contentType()
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -79,16 +80,17 @@ public @interface JStacheContentType {
 	String mediaType() default "";
 
 	/**
-	 * A sentinel null object content type marker to auto resolve the content type.
+	 * A sentinel null object content type marker to auto resolve the content type based
+	 * on config found elsewhere.
 	 *
 	 * @apiNote The provides method is purposely missing to avoid coupling with the
 	 * runtime.
 	 * @author agentgt
 	 */
 	@JStacheContentType
-	public final class AutoContentType {
+	public final class UnspecifiedContentType {
 
-		private AutoContentType() {
+		private UnspecifiedContentType() {
 		}
 
 	}

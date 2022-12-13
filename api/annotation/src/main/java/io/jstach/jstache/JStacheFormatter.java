@@ -43,6 +43,7 @@ import java.util.ServiceLoader;
  *
  * @author agentgt
  * @see JStacheFormatterTypes
+ * @see JStacheConfig#formatter()
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -60,14 +61,17 @@ public @interface JStacheFormatter {
 	String providesMethod() default "provides";
 
 	/**
-	 * A formatter type marker to auto resolve the base formatter.
+	 * A formatter type marker to resolve the formatter based on config elsewhere.
 	 *
 	 * @apiNote The provides method is purposely missing to avoid coupling with the
 	 * runtime.
 	 * @author agentgt
 	 */
 	@JStacheFormatter
-	public enum AutoFormatter {
+	public final class UnspecifiedFormatter {
+
+		private UnspecifiedFormatter() {
+		}
 
 	}
 

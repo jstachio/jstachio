@@ -38,6 +38,10 @@ import io.jstach.jstache.JStacheInterfaces;
 public interface ViewFactory<T> {
 
 	/**
+	 * Creates Spring MVC View from a model.
+	 * <p>
+	 * <em>The created view will ignore the Map model in render and instead use the model
+	 * passed into this method.</em>
 	 * @param model the {@link JStache} model.
 	 * @return view that has the model and is now ready for rendering
 	 */

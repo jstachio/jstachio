@@ -10,20 +10,42 @@ import java.nio.charset.StandardCharsets;
 /**
  * Set module or package level config for {@link JStache} annotated models that do not
  * have the configuration explicitly set (e.g. they have something other than the default
- * annotation return type).
+ * of <a href="#_unspecified">unspecified</a> annotation return type).
+ *
+ * <h2 id="_config_resolution">Config Resolution</h2>
+ *
+ * The order of which settings is preferred if set in general is
+ * <code>Class > Package > Module</code>.
  * <p>
- * The order of which settings is preferred if set is:
+ * Specifically the resolution is:
+ *
  * <ol>
- * <li>Class annotated with JStache and setting is in JStache annotation to non
- * default</li>
- * <li>Class annotated with JStache and this annotation set to non default</li>
- * <li>Package annotated with this annotation set to non default.</li>
- * <li>Module annotated with this annotation set to non default.</li>
+ * <li>Class annotated with JStache and setting is in JStache annotation set to
+ * <em>NOT</em> <a href="#_unspecified">unspecified</a>.</li>
+ * <li>Class annotated with JStache and this annotation <em>NOT</em> set to
+ * <a href="#_unspecified">unspecified</a>.</li>
+ * <li>Package annotated with this annotation <em>NOT</em> set to
+ * <a href="#_unspecified">unspecified</a>.</li>
+ * <li>Module annotated with this annotation <em>NOT</em> set to
+ * <a href="#_unspecified">unspecified</a>.</li>
+ * <li>If everything is <a href="#_unspecified">unspecified</a> at this point the real
+ * default is used (not the default return of the annotation).</li>
  * </ol>
  *
- * @apiNote Annotation methods that return symbols prefixed with "<code>Auto</code>" (e.g.
- * {@link JStacheType#AUTO}) represent unset default and will be resolved (that is the
- * auto symbol will not actually be used).
+ * <em>While package hiearchy may seem natural for cascading config package hiearchy does
+ * not matter to this library! Resolution will not check up parent package
+ * directories!</em> If you do not want to copy config to each package it is recommended
+ * you use module annotations.
+ *
+ * <h2 id="_unspecified">Unspecified</h2>
+ *
+ * Annotation methods that return symbols prefixed with "<code>Unspecified</code>" (e.g.
+ * {@link JStacheType#UNSPECIFIED}) or have values called <code>UNSPECIFIED</code>
+ * represent unset (they are not the actual default) and will be resolved through the
+ * <a href="_config_resolution">config resolution</a>.
+ *
+ *
+ *
  * @author agentgt
  *
  */
@@ -34,32 +56,32 @@ public @interface JStacheConfig {
 
 	/**
 	 * If {@link JStache#adapterName()} is blank the name of the generated class is
-	 * derived from the models class name plus the return value if the return value is not
-	 * blank.
-	 * @return suffix for generated classes.
-	 * @see JStache#IMPLEMENTATION_SUFFIX
+	 * derived from the models class name plus the return value.
+	 * @return by default a JStacheName that is unspecified will be returned which
+	 * represents NOT SET.
+	 * @see JStacheName
 	 */
-	String nameSuffix() default "";
+	JStacheName naming() default @JStacheName(suffix = JStacheName.UNSPECIFIED, prefix = JStacheName.UNSPECIFIED);
 
 	/**
 	 * Optional base content type for all models in the annotated package or module that
 	 * have {@link JStache#contentType()} set to
-	 * {@link JStacheContentType.AutoContentType}. The content type provider class needs a
-	 * {@link JStacheContentType} annotation.
-	 * @return the base content type for all models that are set to auto.
+	 * {@link JStacheContentType.UnspecifiedContentType}. The content type provider class
+	 * needs a {@link JStacheContentType} annotation.
+	 * @return the content type for all models that are set to unspecified.
 	 * @see JStacheContentType
 	 */
-	Class<?> contentType() default JStacheContentType.AutoContentType.class;
+	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
 
 	/**
 	 * Optional base formatter for all models in the annotated package or module that have
-	 * {@link JStache#formatter()} set to {@link JStacheFormatter.AutoFormatter}. The
-	 * formatter provider class needs a {@link JStacheFormatter} annotation.
+	 * {@link JStache#formatter()} set to {@link JStacheFormatter.UnspecifiedFormatter}.
+	 * The formatter provider class needs a {@link JStacheFormatter} annotation.
 	 * @return the base formatter for all models in the annotated package that are set to
 	 * auto.
 	 * @see JStacheFormatter
 	 */
-	Class<?> formatter() default JStacheFormatter.AutoFormatter.class;
+	Class<?> formatter() default JStacheFormatter.UnspecifiedFormatter.class;
 
 	/**
 	 * Encoding of template files.
@@ -72,9 +94,10 @@ public @interface JStacheConfig {
 
 	/**
 	 * Determines what style of of code to generate. See {@link JStacheType}.
-	 * @return {@link JStacheType#AUTO} by default which means the generated code will
-	 * depend on jstachio runtime if no other config overrides (ie is not set to auto).
+	 * @return {@link JStacheType#UNSPECIFIED} by default which means the generated code
+	 * will depend on jstachio runtime if no other config overrides (ie is not set to
+	 * auto).
 	 */
-	JStacheType type() default JStacheType.AUTO;
+	JStacheType type() default JStacheType.UNSPECIFIED;
 
 }

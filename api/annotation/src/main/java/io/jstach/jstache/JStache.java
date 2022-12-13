@@ -366,9 +366,8 @@ import java.util.Optional;
  *
  * <h2 id="_config">Configuration</h2> <strong>&#64;{@link JStacheConfig}</strong>
  * <p>
- * You can set global configuration on packages and module elements. JStache annotation
- * non default methods take precedence over config. See {@link JStacheConfig} for more
- * details.
+ * You can set global configuration on class, packages and module elements. See
+ * {@link JStacheConfig} for more details on config resolution.
  *
  *
  * </div>
@@ -385,12 +384,6 @@ import java.util.Optional;
 @Target(ElementType.TYPE)
 @Documented
 public @interface JStache {
-
-	/**
-	 * The generated renderers by default are suffix with this literal:
-	 * <code>"Renderer"</code>
-	 */
-	public static final String IMPLEMENTATION_SUFFIX = "Renderer";
 
 	/**
 	 * Resource path to template
@@ -410,7 +403,7 @@ public @interface JStache {
 	 * Name of generated class.
 	 * <p>
 	 * adapterName can be omitted. <code>model.getClass().getName()</code> +
-	 * {@link #IMPLEMENTATION_SUFFIX} name is used by default.
+	 * {@link JStacheName#DEFAULT_SUFFIX} name is used by default.
 	 * @return Name of generated class
 	 */
 	String adapterName() default "";
@@ -424,7 +417,7 @@ public @interface JStache {
 	 * @deprecated use {@link JStacheConfig#contentType()}
 	 */
 	@Deprecated
-	Class<?> contentType() default JStacheContentType.AutoContentType.class;
+	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
 
 	/**
 	 * Class providing the formatter.
@@ -437,6 +430,6 @@ public @interface JStache {
 	 * @deprecated use {@link JStacheConfig#formatter()}
 	 */
 	@Deprecated
-	Class<?> formatter() default JStacheFormatter.AutoFormatter.class;
+	Class<?> formatter() default JStacheFormatter.UnspecifiedFormatter.class;
 
 }

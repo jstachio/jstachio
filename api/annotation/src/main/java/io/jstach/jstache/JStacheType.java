@@ -73,7 +73,8 @@ public enum JStacheType {
 	 * This effectively means not set and to let other {@link JStacheConfig} determine the
 	 * setting.
 	 */
-	AUTO,
+	UNSPECIFIED,
+
 	/**
 	 * The default code generation which allows reflective access to templates and
 	 * requires the jstachio runtime (io.jstach.jstachio).

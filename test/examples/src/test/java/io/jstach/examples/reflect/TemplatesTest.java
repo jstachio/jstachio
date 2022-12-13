@@ -2,9 +2,13 @@ package io.jstach.examples.reflect;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheConfig;
+import io.jstach.jstache.JStacheName;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.escapers.PlainText;
@@ -22,6 +26,11 @@ public class TemplatesTest {
 
 	@JStache(path = "use-resource")
 	public record UseResource() {
+	}
+
+	@JStacheConfig(naming = @JStacheName(prefix = "asdfasdf"))
+	public record Config() {
+
 	}
 
 	@Test
@@ -49,6 +58,16 @@ public class TemplatesTest {
 		TemplateInfo b = Templates.getInfoByReflection(UseResource.class);
 		Template<UseResource> a = Templates.getTemplate(UseResource.class);
 		assertTemplateEquals(a, b);
+	}
+
+	@Test
+	public void testName() throws Exception {
+		var jc = Config.class.getAnnotation(JStacheConfig.class);
+		var naming = jc.naming();
+
+		System.out.println(List.of(naming));
+
+		System.out.println(Config.class.getAnnotation(JStacheName.class));
 	}
 
 	static void assertTemplateEquals(TemplateInfo a, TemplateInfo b) {

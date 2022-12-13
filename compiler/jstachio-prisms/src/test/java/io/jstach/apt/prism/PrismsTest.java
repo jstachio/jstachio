@@ -2,18 +2,20 @@ package io.jstach.apt.prism;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
 import com.samskivert.mustache.Mustache;
 
-import io.jstach.jstache.JStache;
-import io.jstach.jstache.JStacheContentType.AutoContentType;
+import io.jstach.jstache.JStacheContentType.UnspecifiedContentType;
 import io.jstach.jstache.JStacheFlags;
-import io.jstach.jstache.JStacheFormatter.AutoFormatter;
+import io.jstach.jstache.JStacheFormatter.UnspecifiedFormatter;
 import io.jstach.jstache.JStacheType;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Escaper;
@@ -26,8 +28,8 @@ import io.jstach.jstachio.context.ContextNode;
 import io.jstach.jstachio.escapers.Html;
 import io.jstach.jstachio.escapers.PlainText;
 import io.jstach.jstachio.formatters.DefaultFormatter;
-import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 import io.jstach.jstachio.spi.TemplateProvider;
 
 public class PrismsTest {
@@ -42,8 +44,30 @@ public class PrismsTest {
 
 		}
 
-		String rendererSuffix() {
-			return JStache.IMPLEMENTATION_SUFFIX;
+		List<Constant> constants() {
+			return allAnnotations().stream().flatMap(Constant::of).toList();
+		}
+	}
+
+	record Constant(String name, String value) {
+		static Stream<Constant> of(Class<?> c) {
+			return Stream
+					.of(c.getDeclaredFields()).filter(f -> Modifier.isFinal(f.getModifiers())
+							&& Modifier.isStatic(f.getModifiers()) && Modifier.isPublic(f.getModifiers()))
+					.map(f -> of(f));
+
+		}
+
+		static Constant of(Field field) {
+			String name = convertCamelToSnake(field.getDeclaringClass().getSimpleName()) + "_" + field.getName();
+			String value;
+			try {
+				value = (String) field.get(null);
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return new Constant(name, value);
 		}
 	}
 
@@ -77,8 +101,10 @@ public class PrismsTest {
 				 */
 				public interface Prisms {
 
-					public static final String IMPLEMENTATION_SUFFIX = "{{rendererSuffix}}";
+					{{#constants}}
+					public static final String {{name}} = "{{value}}";
 
+					{{/constants}}
 					@NonNullByDefault
 					public enum Flag {
 
@@ -146,8 +172,8 @@ public class PrismsTest {
 				FilterChain.class, //
 				JStachioExtension.class, //
 				ContextNode.class, //
-				AutoFormatter.class, //
-				AutoContentType.class, //
+				UnspecifiedFormatter.class, //
+				UnspecifiedContentType.class, //
 				Html.class, //
 				PlainText.class //
 
@@ -159,6 +185,7 @@ public class PrismsTest {
 				io.jstach.jstache.JStaches.class, //
 				io.jstach.jstache.JStache.class, //
 				io.jstach.jstache.JStacheConfig.class, //
+				io.jstach.jstache.JStacheName.class, //
 				io.jstach.jstache.JStachePath.class, //
 				io.jstach.jstache.JStacheInterfaces.class, //
 				io.jstach.jstache.JStachePartials.class, //

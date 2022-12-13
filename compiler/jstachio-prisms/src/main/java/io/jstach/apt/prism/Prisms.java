@@ -15,7 +15,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 public interface Prisms {
 
-	public static final String IMPLEMENTATION_SUFFIX = "Renderer";
+	public static final String JSTACHE_NAME_UNSPECIFIED = "*";
+
+	public static final String JSTACHE_NAME_DEFAULT_PREFIX = "";
+
+	public static final String JSTACHE_NAME_DEFAULT_SUFFIX = "Renderer";
 
 	@NonNullByDefault
 	public enum Flag {
@@ -28,7 +32,7 @@ public interface Prisms {
 	@NonNullByDefault
 	public enum JStacheType {
 
-		AUTO, //
+		UNSPECIFIED, //
 		JSTACHIO, //
 		STACHE, //
 
@@ -59,9 +63,9 @@ public interface Prisms {
 
 	public static final String CONTEXT_NODE_CLASS = "io.jstach.jstachio.context.ContextNode";
 
-	public static final String AUTO_FORMATTER_CLASS = "io.jstach.jstache.JStacheFormatter.AutoFormatter";
+	public static final String UNSPECIFIED_FORMATTER_CLASS = "io.jstach.jstache.JStacheFormatter.UnspecifiedFormatter";
 
-	public static final String AUTO_CONTENT_TYPE_CLASS = "io.jstach.jstache.JStacheContentType.AutoContentType";
+	public static final String UNSPECIFIED_CONTENT_TYPE_CLASS = "io.jstach.jstache.JStacheContentType.UnspecifiedContentType";
 
 	public static final String HTML_CLASS = "io.jstach.jstachio.escapers.Html";
 
@@ -73,6 +77,8 @@ public interface Prisms {
 	public static final String JSTACHE_CLASS = "io.jstach.jstache.JStache";
 
 	public static final String JSTACHE_CONFIG_CLASS = "io.jstach.jstache.JStacheConfig";
+
+	public static final String JSTACHE_NAME_CLASS = "io.jstach.jstache.JStacheName";
 
 	public static final String JSTACHE_PATH_CLASS = "io.jstach.jstache.JStachePath";
 
@@ -98,6 +104,7 @@ public interface Prisms {
 			JSTACHES_CLASS, //
 			JSTACHE_CLASS, //
 			JSTACHE_CONFIG_CLASS, //
+			JSTACHE_NAME_CLASS, //
 			JSTACHE_PATH_CLASS, //
 			JSTACHE_INTERFACES_CLASS, //
 			JSTACHE_PARTIALS_CLASS, //

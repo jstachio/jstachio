@@ -441,10 +441,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private FormatCallType resolveFormatCallType(TypeElement element) {
 		JStacheType type = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
-				.map(config -> JStacheType.valueOf(config.type())).findFirst().orElse(JStacheType.AUTO);
+				.map(config -> JStacheType.valueOf(config.type())).filter(t -> !JStacheType.UNSPECIFIED.equals(t))
+				.findFirst().orElse(JStacheType.UNSPECIFIED);
 
 		FormatCallType formatCallType = switch (type) {
-			case AUTO -> FormatCallType.JSTACHIO;
+			case UNSPECIFIED -> FormatCallType.JSTACHIO;
 			case STACHE -> FormatCallType.STACHE;
 			case JSTACHIO -> FormatCallType.JSTACHIO;
 		};
@@ -472,7 +473,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		var lm = JavaLanguageModel.getInstance();
 
-		TypeElement autoContentTypeElement = lm.getElements().getTypeElement(AUTO_CONTENT_TYPE_CLASS);
+		TypeElement autoContentTypeElement = lm.getElements().getTypeElement(UNSPECIFIED_CONTENT_TYPE_CLASS);
 
 		Stream<TypeMirror> contentTypeProviderTypes = //
 				findPrisms(element, JStacheConfigPrism::getInstanceOn) //
@@ -498,7 +499,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		var lm = JavaLanguageModel.getInstance();
 
-		TypeElement autoFormatElement = lm.getElements().getTypeElement(AUTO_FORMATTER_CLASS);
+		TypeElement autoFormatElement = lm.getElements().getTypeElement(UNSPECIFIED_FORMATTER_CLASS);
 
 		Stream<TypeMirror> formatterProviderTypes = //
 				findPrisms(element, JStacheConfigPrism::getInstanceOn) //
@@ -560,9 +561,17 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		String adapterClassSimpleName;
 		if (directiveAdapterName.isBlank()) {
 			@Nullable
+			String prefix = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
+					.map(config -> config.naming().prefix()).filter(n -> !JSTACHE_NAME_UNSPECIFIED.equals(n))
+					.findFirst().orElse(null);
+			prefix = prefix != null ? prefix : JSTACHE_NAME_DEFAULT_PREFIX;
+
+			@Nullable
 			String suffix = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
-					.map(config -> config.nameSuffix()).filter(n -> !n.isBlank()).findFirst().orElse(null);
-			suffix = suffix != null ? suffix : IMPLEMENTATION_SUFFIX;
+					.map(config -> config.naming().suffix()).filter(n -> !JSTACHE_NAME_UNSPECIFIED.equals(n))
+					.findFirst().orElse(null);
+			suffix = suffix != null ? suffix : JSTACHE_NAME_DEFAULT_SUFFIX;
+
 			ClassRef ref = ClassRef.of(element);
 			adapterClassSimpleName = ref.getSimpleName() + suffix;
 		}
