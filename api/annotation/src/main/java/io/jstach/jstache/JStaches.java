@@ -38,8 +38,8 @@ import java.lang.annotation.Target;
 /**
  * Create multiple generated templates (renderers) for a single type.
  * <p>
- * <em>If this is used {@link JStache#adapterName()} should be set otherwise there will be
- * name collisions!</em>
+ * <em>If this is used {@link JStache#name()} should be set otherwise there will be name
+ * collisions!</em>
  * <p>
  * It is generally recommend you do not have multiple JStache on a single type as it makes
  * automatic resolution of model to template unpredictable or not possible.
@@ -55,7 +55,7 @@ import java.lang.annotation.Target;
  * {{> html.mustache}}
  * {{/isHtml}}
  * </pre>
- * 
+ *
  * However the above only works if one of your views is plain text.
  *
  * @author Victor Nazarov

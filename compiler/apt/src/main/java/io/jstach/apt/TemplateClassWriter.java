@@ -109,8 +109,6 @@ class TemplateClassWriter {
 
 		String rendererExtends = "";
 
-		boolean extendsClass = false;
-
 		TypeElement extendsElement = ifaces.extendsElement();
 		if (extendsElement != null) {
 			String name = extendsElement.getQualifiedName().toString();
@@ -119,7 +117,6 @@ class TemplateClassWriter {
 				extendsDeclare = name + "<" + className + ">";
 			}
 			rendererExtends = " extends " + extendsDeclare + " ";
-			extendsClass = true;
 		}
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
@@ -128,7 +125,7 @@ class TemplateClassWriter {
 
 		NamedTemplate namedTemplate = model.namedTemplate();
 
-		String templateName = namedTemplate.name();
+		String templateName = (packageName.isEmpty() ? "" : packageName + ".") + rendererClassSimpleName;
 		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
 		String templateString = namedTemplate.template();
 

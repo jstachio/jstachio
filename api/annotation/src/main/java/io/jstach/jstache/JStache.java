@@ -406,7 +406,7 @@ public @interface JStache {
 	 * {@link JStacheName#DEFAULT_SUFFIX} name is used by default.
 	 * @return Name of generated class
 	 */
-	String adapterName() default "";
+	String name() default "";
 
 	/**
 	 * Class providing escaper and representing template content type.

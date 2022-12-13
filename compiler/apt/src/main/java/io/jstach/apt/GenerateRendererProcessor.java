@@ -86,6 +86,7 @@ import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.Throwables;
 import io.jstach.apt.internal.util.Throwables.SneakyFunction;
 import io.jstach.apt.prism.JStacheConfigPrism;
+import io.jstach.apt.prism.JStacheConfigPrism.JStacheName;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFlagsPrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
@@ -336,7 +337,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 		if (tas.size() == 1) {
 			/*
-			 * TODO validation of type parameter
+			 * TODO validation of type parameter Also nullable annotations might need to
+			 * be copied
 			 */
 			return name + "<" + modelElement.getQualifiedName().toString() + ">";
 		}
@@ -557,20 +559,18 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private String resolveAdapterName(TypeElement element, JStachePrism gp) {
-		String directiveAdapterName = gp.adapterName();
+		String directiveAdapterName = gp.name();
 		String adapterClassSimpleName;
 		if (directiveAdapterName.isBlank()) {
-			@Nullable
-			String prefix = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
-					.map(config -> config.naming().prefix()).filter(n -> !JSTACHE_NAME_UNSPECIFIED.equals(n))
-					.findFirst().orElse(null);
-			prefix = prefix != null ? prefix : JSTACHE_NAME_DEFAULT_PREFIX;
+			JStacheName name = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
+					.flatMap(config -> config.naming().stream()).findFirst().orElse(null);
 
-			@Nullable
-			String suffix = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
-					.map(config -> config.naming().suffix()).filter(n -> !JSTACHE_NAME_UNSPECIFIED.equals(n))
-					.findFirst().orElse(null);
-			suffix = suffix != null ? suffix : JSTACHE_NAME_DEFAULT_SUFFIX;
+			String prefix = name == null ? JSTACHE_NAME_UNSPECIFIED : name.prefix();
+
+			String suffix = name == null ? JSTACHE_NAME_UNSPECIFIED : name.suffix();
+
+			prefix = prefix.equals(JSTACHE_NAME_UNSPECIFIED) ? JSTACHE_NAME_DEFAULT_PREFIX : prefix;
+			suffix = suffix.equals(JSTACHE_NAME_UNSPECIFIED) ? JSTACHE_NAME_DEFAULT_SUFFIX : suffix;
 
 			ClassRef ref = ClassRef.of(element);
 			adapterClassSimpleName = ref.getSimpleName() + suffix;

@@ -32,17 +32,17 @@ import java.nio.charset.StandardCharsets;
  * default is used (not the default return of the annotation).</li>
  * </ol>
  *
- * <em>While package hiearchy may seem natural for cascading config package hiearchy does
- * not matter to this library! Resolution will not check up parent package
- * directories!</em> If you do not want to copy config to each package it is recommended
- * you use module annotations.
+ * <em>While package hiearchy may seem natural for cascading config this library does not
+ * do it. Package hiearchy does NOT matter to this library! Resolution will NOT check up
+ * parent package directories.</em> If you do not want to copy config to each package it
+ * is recommended you use module annotations.
  *
  * <h2 id="_unspecified">Unspecified</h2>
  *
  * Annotation methods that return symbols prefixed with "<code>Unspecified</code>" (e.g.
- * {@link JStacheType#UNSPECIFIED}) or have values called <code>UNSPECIFIED</code>
- * represent unset (they are not the actual default) and will be resolved through the
- * <a href="_config_resolution">config resolution</a>.
+ * {@link JStacheType#UNSPECIFIED}) or have values called <code>UNSPECIFIED</code> or
+ * return an empty array or string represent unset (they are not the actual default) and
+ * will be resolved through the <a href="_config_resolution">config resolution</a>.
  *
  *
  *
@@ -55,13 +55,16 @@ import java.nio.charset.StandardCharsets;
 public @interface JStacheConfig {
 
 	/**
-	 * If {@link JStache#adapterName()} is blank the name of the generated class is
-	 * derived from the models class name plus the return value.
-	 * @return by default a JStacheName that is unspecified will be returned which
-	 * represents NOT SET.
+	 * If {@link JStache#name()} is blank the name of the generated class is derived from
+	 * the models class name and then augmented with {@link JStacheName#prefix()} and
+	 * {@link JStacheName#suffix()}.
+	 * @return by default an empty array which represents
+	 * <a href="_unspecified">UNSPECIFIED</a>.
+	 * @apiNote the cardinality of the returned array is currently <code>0..1</code>.
+	 * additional elements after the first will be ignored.
 	 * @see JStacheName
 	 */
-	JStacheName naming() default @JStacheName(suffix = JStacheName.UNSPECIFIED, prefix = JStacheName.UNSPECIFIED);
+	JStacheName[] naming() default {};
 
 	/**
 	 * Optional base content type for all models in the annotated package or module that

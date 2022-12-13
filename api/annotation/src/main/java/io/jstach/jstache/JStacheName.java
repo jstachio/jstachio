@@ -22,8 +22,8 @@ import java.lang.annotation.Target;
 public @interface JStacheName {
 
 	/**
-	 * If {@link JStache#adapterName()} is blank the name of the generated class is
-	 * derived from the models class name plus the return value if the return value is not
+	 * If {@link JStache#name()} is blank the name of the generated class is derived from
+	 * the models class name plus the return value if the return value is not
 	 * "{@value #UNSPECIFIED}".
 	 * @return suffix for generated classes.
 	 * @see #DEFAULT_SUFFIX
@@ -31,8 +31,8 @@ public @interface JStacheName {
 	String prefix() default UNSPECIFIED;
 
 	/**
-	 * If {@link JStache#adapterName()} is blank the name of the generated class is
-	 * derived from the models class name plus the return value if the return value is not
+	 * If {@link JStache#name()} is blank the name of the generated class is derived from
+	 * the models class name plus the return value if the return value is not
 	 * "{@value #UNSPECIFIED}".
 	 * @return suffix for generated classes.
 	 * @see #DEFAULT_SUFFIX

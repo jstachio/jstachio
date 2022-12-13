@@ -146,21 +146,22 @@ public final class Templates {
 	private static String resolveName(Class<?> c) {
 		var a = c.getAnnotation(JStache.class);
 		String cname;
-		if (a == null || a.adapterName().isBlank()) {
-			@Nullable
-			String prefix = findAnnotations(c, JStacheConfig.class).map(config -> config.naming()).map(s -> s.prefix())
-					.filter(s -> !JStacheName.UNSPECIFIED.equals(s)).findFirst().orElse(null);
-			@Nullable
-			String suffix = findAnnotations(c, JStacheConfig.class).map(config -> config.naming()).map(s -> s.suffix())
-					.filter(s -> !JStacheName.UNSPECIFIED.equals(s)).findFirst().orElse(null);
+		if (a == null || a.name().isBlank()) {
 
-			prefix = prefix != null ? prefix : JStacheName.DEFAULT_PREFIX;
-			suffix = suffix != null ? suffix : JStacheName.DEFAULT_SUFFIX;
+			JStacheName name = findAnnotations(c, JStacheConfig.class).flatMap(config -> Stream.of(config.naming()))
+					.findFirst().orElse(null);
+
+			String prefix = name == null ? JStacheName.UNSPECIFIED : name.prefix();
+
+			String suffix = name == null ? JStacheName.UNSPECIFIED : name.suffix();
+
+			prefix = prefix.equals(JStacheName.UNSPECIFIED) ? JStacheName.DEFAULT_PREFIX : prefix;
+			suffix = suffix.equals(JStacheName.UNSPECIFIED) ? JStacheName.DEFAULT_SUFFIX : suffix;
 
 			cname = prefix + c.getSimpleName() + suffix;
 		}
 		else {
-			cname = a.adapterName();
+			cname = a.name();
 		}
 		String packageName = c.getPackageName();
 		String fqn = packageName + (packageName.isEmpty() ? "" : ".") + cname;
@@ -201,7 +202,7 @@ public final class Templates {
 			JStachePath pathConfig = findAnnotations(model, JStachePath.class).findFirst().orElse(null);
 			String templateString = stache.template();
 
-			String templateName;
+			final String templateName = resolveName(model);
 			String path = stache.path();
 			String templatePath;
 			if (templateString.isEmpty() && path.isEmpty()) {
@@ -216,14 +217,7 @@ public final class Templates {
 				templatePath = "";
 			}
 			if (pathConfig != null && !templatePath.isBlank()) {
-				templateName = templatePath;
 				templatePath = pathConfig.prefix() + templatePath + pathConfig.suffix();
-			}
-			else if (templatePath.isBlank() && !templateString.isEmpty()) {
-				templateName = model.getCanonicalName() + "#template";
-			}
-			else {
-				templateName = path;
 			}
 
 			// Class<?> templateContentType =
