@@ -72,8 +72,6 @@ public interface Prisms {
 	public static final String PLAIN_TEXT_CLASS = "io.jstach.jstachio.escapers.PlainText";
 
 	/* Annotation classes */
-	public static final String JSTACHES_CLASS = "io.jstach.jstache.JStaches";
-
 	public static final String JSTACHE_CLASS = "io.jstach.jstache.JStache";
 
 	public static final String JSTACHE_CONFIG_CLASS = "io.jstach.jstache.JStacheConfig";
@@ -101,7 +99,6 @@ public interface Prisms {
 	public static final String JSTACHE_FLAGS_CLASS = "io.jstach.jstache.JStacheFlags";
 
 	public static final List<String> ANNOTATIONS = List.of( //
-			JSTACHES_CLASS, //
 			JSTACHE_CLASS, //
 			JSTACHE_CONFIG_CLASS, //
 			JSTACHE_NAME_CLASS, //

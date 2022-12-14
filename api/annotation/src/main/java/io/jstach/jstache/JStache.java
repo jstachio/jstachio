@@ -344,13 +344,12 @@ import java.util.Optional;
  * that see {@link io.jstach.jstache.JStacheFormatterTypes}.
  *
  * <h3 id="_runtime_formatting">Runtime formatting</h3>
- * <strong>&#64;{@link io.jstach.jstache.JStacheFormatter},
- * {@link io.jstach.jstache.JStache#formatter()} and
+ * <strong>&#64;{@link io.jstach.jstache.JStacheFormatter} and
  * &#64;{@link JStacheConfig#formatter()}</strong>
  * <p>
  * Assuming the compiler allowed the variable to be formatted you can control the output
  * via {@link io.jstach.jstache.JStacheFormatter} and setting
- * {@link io.jstach.jstache.JStache#formatter()}.
+ * {@link io.jstach.jstache.JStacheConfig#formatter()}.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
  * <strong>&#64;{@link io.jstach.jstache.JStacheContentType},
@@ -402,7 +401,7 @@ public @interface JStache {
 	/**
 	 * Name of generated class.
 	 * <p>
-	 * adapterName can be omitted. <code>model.getClass().getName()</code> +
+	 * name can be omitted. <code>model.getClass().getName()</code> +
 	 * {@link JStacheName#DEFAULT_SUFFIX} name is used by default.
 	 * @return Name of generated class
 	 */
@@ -418,18 +417,5 @@ public @interface JStache {
 	 */
 	@Deprecated
 	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
-
-	/**
-	 * Class providing the formatter.
-	 * <p>
-	 * You can create custom formatters using {@link JStacheFormatter} annotation.
-	 * @return formatter of given template. The default will be resolved (a non null that
-	 * will throw NPE is the default if the jstachio runtime is found)
-	 *
-	 * @see JStacheFormatterTypes
-	 * @deprecated use {@link JStacheConfig#formatter()}
-	 */
-	@Deprecated
-	Class<?> formatter() default JStacheFormatter.UnspecifiedFormatter.class;
 
 }

@@ -182,7 +182,6 @@ public class PrismsTest {
 
 	private static List<Class<?>> allAnnotations() {
 		return List.of(//
-				io.jstach.jstache.JStaches.class, //
 				io.jstach.jstache.JStache.class, //
 				io.jstach.jstache.JStacheConfig.class, //
 				io.jstach.jstache.JStacheName.class, //

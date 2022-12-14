@@ -20,14 +20,14 @@ import java.nio.charset.StandardCharsets;
  * Specifically the resolution is:
  *
  * <ol>
- * <li>Class annotated with JStache and setting is in JStache annotation set to
- * <em>NOT</em> <a href="#_unspecified">unspecified</a>.</li>
+ * <li>Class annotated with JStache and setting is in JStache annotation <em>NOT</em> set
+ * to <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Class annotated with JStache and this annotation <em>NOT</em> set to
- * <a href="#_unspecified">unspecified</a>.</li>
+ * <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Package annotated with this annotation <em>NOT</em> set to
- * <a href="#_unspecified">unspecified</a>.</li>
+ * <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Module annotated with this annotation <em>NOT</em> set to
- * <a href="#_unspecified">unspecified</a>.</li>
+ * <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>If everything is <a href="#_unspecified">unspecified</a> at this point the real
  * default is used (not the default return of the annotation).</li>
  * </ol>
@@ -42,7 +42,7 @@ import java.nio.charset.StandardCharsets;
  * Annotation methods that return symbols prefixed with "<code>Unspecified</code>" (e.g.
  * {@link JStacheType#UNSPECIFIED}) or have values called <code>UNSPECIFIED</code> or
  * return an empty array or string represent unset (they are not the actual default) and
- * will be resolved through the <a href="_config_resolution">config resolution</a>.
+ * will be resolved through the <a href="#_config_resolution">config resolution</a>.
  *
  *
  *
@@ -67,21 +67,24 @@ public @interface JStacheConfig {
 	JStacheName[] naming() default {};
 
 	/**
-	 * Optional base content type for all models in the annotated package or module that
-	 * have {@link JStache#contentType()} set to
-	 * {@link JStacheContentType.UnspecifiedContentType}. The content type provider class
-	 * needs a {@link JStacheContentType} annotation.
-	 * @return the content type for all models that are set to unspecified.
+	 * Optional content type for all models in the <a href="#_config_resolution">annotated
+	 * class/package/module</a> or module that have {@link JStache#contentType()} set to
+	 * {@link JStacheContentType.UnspecifiedContentType}.
+	 * <p>
+	 * The content type provider class needs a {@link JStacheContentType} annotation on
+	 * the type.
+	 * @return by default an <a href="_unspecified">UNSPECIFIED</a> content type.
 	 * @see JStacheContentType
 	 */
 	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
 
 	/**
-	 * Optional base formatter for all models in the annotated package or module that have
-	 * {@link JStache#formatter()} set to {@link JStacheFormatter.UnspecifiedFormatter}.
-	 * The formatter provider class needs a {@link JStacheFormatter} annotation.
-	 * @return the base formatter for all models in the annotated package that are set to
-	 * auto.
+	 * Optional formatter if not <a href="_unspecified">UNSPECIFIED</a> for all models in
+	 * the <a href="#_config_resolution">annotated class/package/module</a> .
+	 * <p>
+	 * The formatter provider class needs a {@link JStacheFormatter} annotation on the
+	 * type.
+	 * @return by default an <a href="_unspecified">UNSPECIFIED</a> formatter.
 	 * @see JStacheFormatter
 	 */
 	Class<?> formatter() default JStacheFormatter.UnspecifiedFormatter.class;

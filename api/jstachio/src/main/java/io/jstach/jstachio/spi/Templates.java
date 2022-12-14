@@ -269,6 +269,7 @@ public final class Templates {
 
 			Class<?> defaultProvider();
 
+			@Nullable
 			Class<?> providerFromJStache(JStache jstache);
 
 			Class<?> providerFromConfig(JStacheConfig config);
@@ -358,8 +359,8 @@ public final class Templates {
 			}
 
 			@Override
-			public Class<?> providerFromJStache(JStache jstache) {
-				return jstache.formatter();
+			public @Nullable Class<?> providerFromJStache(JStache jstache) {
+				return null;
 			}
 
 			@Override

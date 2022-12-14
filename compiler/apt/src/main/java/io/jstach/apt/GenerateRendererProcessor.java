@@ -43,7 +43,6 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,10 +54,7 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -172,44 +168,10 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			TypeElement jstacheElement = processingEnv.getElementUtils().getTypeElement(JSTACHE_CLASS);
 			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheElement)) {
 				TypeElement classElement = (TypeElement) element;
-				List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
-				AnnotationMirror directive = null;
-				for (AnnotationMirror annotationMirror : annotationMirrors) {
-					if (processingEnv.getTypeUtils().isSubtype(annotationMirror.getAnnotationType(),
-							jstacheElement.asType()))
-						directive = annotationMirror;
-				}
-				assert directive != null;
-				ClassRef ref = writeRenderableAdapterClass(classElement, directive);
+				JStachePrism jstache = JStachePrism.getInstanceOn(classElement);
+				ClassRef ref = writeRenderableAdapterClass(classElement, jstache);
 				if (ref != null) {
 					rendererClasses.add(ref);
-				}
-			}
-			TypeElement jstachesElement = processingEnv.getElementUtils().getTypeElement(JSTACHES_CLASS);
-			for (Element element : roundEnv.getElementsAnnotatedWith(jstachesElement)) {
-				TypeElement classElement = (TypeElement) element;
-				List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
-				for (AnnotationMirror mirror : annotationMirrors) {
-					if (processingEnv.getTypeUtils().isSubtype(mirror.getAnnotationType(), jstachesElement.asType())) {
-						Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = mirror
-								.getElementValues();
-						for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elementValues
-								.entrySet()) {
-							if (entry.getKey().getSimpleName().contentEquals("value")) {
-								@SuppressWarnings("unchecked")
-								List<? extends AnnotationValue> directives = (List<? extends AnnotationValue>) entry
-										.getValue().getValue();
-								for (AnnotationValue directiveValue : directives) {
-									AnnotationMirror directive = (AnnotationMirror) directiveValue.getValue();
-									assert directive != null;
-									ClassRef ref = writeRenderableAdapterClass(classElement, directive);
-									if (ref != null) {
-										rendererClasses.add(ref);
-									}
-								}
-							}
-						}
-					}
 				}
 			}
 			return true;
@@ -394,7 +356,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	}
 
-	private RendererModel model(TypeElement element, AnnotationMirror directiveMirror)
+	private RendererModel model(TypeElement element, JStachePrism jstache)
 			throws DeclarationException, AnnotatedException, DeclarationException {
 
 		if (!element.getTypeParameters().isEmpty()) {
@@ -402,7 +364,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					"Can't generate renderer for class with type variables: " + element.getQualifiedName());
 		}
 
-		JStachePrism gp = JStachePrism.getInstance(directiveMirror);
+		JStachePrism gp = jstache;
 
 		if (gp == null) {
 			throw new AnnotatedException(element, "Missing annotation. bug.");
@@ -511,7 +473,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::formatterElement;
 
 		@Nullable
-		TypeElement formatterProviderElement = Stream.concat(Stream.of(gp.formatter()), formatterProviderTypes) //
+		TypeElement formatterProviderElement = formatterProviderTypes //
 				.map(f) //
 				.filter(e -> !lm.isSameType(autoFormatElement.asType(), e.asType())) //
 				.findFirst().orElse(null);
@@ -581,11 +543,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return adapterClassSimpleName;
 	}
 
-	private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, AnnotationMirror directiveMirror)
+	private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache)
 			throws AnnotatedException {
 
 		try {
-			var model = model(element, directiveMirror);
+			var model = model(element, jstache);
 			ProcessingConfig config = model;
 			StringWriter stringWriter = new StringWriter();
 			try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)) {

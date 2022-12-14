@@ -14,8 +14,9 @@ import java.lang.annotation.Target;
  * {@link #path()} or inlined {@link #template()}.
  * <p>
  * The {@link #path()} is still expanded by {@link JStachePath} if present.
+ * @apiNote While this annotation looks like {@link JStache} there is no associated model
+ * with a partial.
  * @author agentgt
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
@@ -36,8 +37,9 @@ public @interface JStachePartial {
 	String path() default "";
 
 	/**
-	 * Inline template. If not set {@link #path()} will be used.
-	 * @return inlined template maybe not set.
+	 * Inline template. If not set {@link #path()} will be used. If path is not set then
+	 * the template will be an empty string.
+	 * @return inlined template by default returns empty string which means not set.
 	 */
 	String template() default "";
 
