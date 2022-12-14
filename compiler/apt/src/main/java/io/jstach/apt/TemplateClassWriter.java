@@ -13,8 +13,10 @@ import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,9 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -33,6 +37,7 @@ import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.context.JavaLanguageModel;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.util.ClassRef;
@@ -64,6 +69,56 @@ class TemplateClassWriter {
 
 	void println(String s) {
 		codeWriter.println(s);
+	}
+
+	enum GeneratedMethod {
+
+		execute, templateFormatter, templateEscaper;
+
+		static EnumMap<GeneratedMethod, ExecutableElement> find(TypeElement parentClass) {
+			Elements es = JavaLanguageModel.getInstance().getElements();
+			EnumMap<GeneratedMethod, ExecutableElement> em = new EnumMap<>(GeneratedMethod.class);
+			for (var ee : ElementFilter.methodsIn(es.getAllMembers(parentClass))) {
+				for (var m : values()) {
+					if (m.isMatch(ee)) {
+						em.put(m, ee);
+					}
+				}
+			}
+			return em;
+
+		}
+
+		public boolean gen(Set<GeneratedMethod> gm) {
+			return !gm.contains(this);
+		}
+
+		public boolean isMatch(ExecutableElement e) {
+			var jlm = JavaLanguageModel.getInstance();
+
+			if (!this.name().equals(e.getSimpleName().toString())) {
+				return false;
+			}
+			if (!e.getModifiers().contains(Modifier.PUBLIC) || e.getModifiers().contains(Modifier.ABSTRACT)) {
+				return false;
+			}
+			var appendable = jlm.getElements().getTypeElement(Appendable.class.getName()).asType();
+
+			int parameters = switch (this) {
+				case execute -> 2;
+				case templateFormatter, templateEscaper -> 0;
+			};
+
+			if (e.getParameters().size() != parameters) {
+				return false;
+			}
+			return switch (this) {
+				case execute -> e.getReturnType().getKind() == TypeKind.VOID
+						&& jlm.isSameType(e.getParameters().get(1).asType(), appendable);
+				case templateFormatter, templateEscaper -> e.getParameters().isEmpty();
+			};
+		}
+
 	}
 
 	void writeRenderableAdapterClass(RendererModel model) throws IOException, ProcessingException, AnnotatedException {
@@ -102,21 +157,20 @@ class TemplateClassWriter {
 		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta)
 				.collect(Collectors.joining("\n"));
 
-		String constructorAnnotated = ifaces.templateConstructorAnnotations().stream().map(ta -> "@" + ta)
-				.collect(Collectors.joining("\n"));
-
 		String rendererImplements = implementsString.isBlank() ? "" : " implements " + implementsString;
 
 		String rendererExtends = "";
 
 		TypeElement extendsElement = ifaces.extendsElement();
-		if (extendsElement != null) {
+		Set<GeneratedMethod> generatedMethods = Set.of();
+		if (extendsElement != null && !Object.class.getName().equals(extendsElement.getQualifiedName().toString())) {
 			String name = extendsElement.getQualifiedName().toString();
 			String extendsDeclare = name;
 			if (extendsElement.getTypeParameters().size() == 1) {
 				extendsDeclare = name + "<" + className + ">";
 			}
-			rendererExtends = " extends " + extendsDeclare + " ";
+			rendererExtends = " extends " + extendsDeclare;
+			generatedMethods = GeneratedMethod.find(extendsElement).keySet();
 		}
 
 		String modifier = element.getModifiers().contains(Modifier.PUBLIC) ? "public " : "";
@@ -243,9 +297,10 @@ class TemplateClassWriter {
 		println("        this(null, null);");
 		println("    }");
 		println("");
-		if (jstachio)
+		if (jstachio && GeneratedMethod.execute.gen(generatedMethods)) {
 			println("    @Override");
-		else {
+		}
+		else if (GeneratedMethod.execute.gen(generatedMethods)) {
 			println("    /**");
 			println("     * Renders the passed in model.");
 			println("     * @param model a model assumed never to be <code>null</code>.");
@@ -253,10 +308,12 @@ class TemplateClassWriter {
 			println("     * @throws IOException if there is an error writing to the appendable");
 			println("     */");
 		}
-		println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
-		println("        execute(model, a, templateFormatter(), templateEscaper());");
-		println("    }");
-		println("");
+		if (GeneratedMethod.execute.gen(generatedMethods)) {
+			println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
+			println("        execute(model, a, templateFormatter(), templateEscaper());");
+			println("    }");
+			println("");
+		}
 		if (jstachio)
 			println("    @Override");
 		else {
@@ -351,31 +408,34 @@ class TemplateClassWriter {
 			println("        return " + contentTypeElement.getQualifiedName() + ".class;");
 			println("    }");
 		}
-
-		if (jstachio)
-			println("    @Override");
-		else {
-			println("    /**");
-			println("     * Current escaper.");
-			println("     * @return escaper");
-			println("     */");
+		if (GeneratedMethod.templateEscaper.gen(generatedMethods)) {
+			if (jstachio)
+				println("    @Override");
+			else {
+				println("    /**");
+				println("     * Current escaper.");
+				println("     * @return escaper");
+				println("     */");
+			}
+			println("    public  " + _Escaper + " templateEscaper() {");
+			println("        return this.escaper;");
+			println("    }");
+			println("");
 		}
-		println("    public  " + _Escaper + " templateEscaper() {");
-		println("        return this.escaper;");
-		println("    }");
-
-		if (jstachio)
-			println("    @Override");
-		else {
-			println("    /**");
-			println("     * Current formatter.");
-			println("     * @return formatter");
-			println("     */");
+		if (GeneratedMethod.templateFormatter.gen(generatedMethods)) {
+			if (jstachio)
+				println("    @Override");
+			else {
+				println("    /**");
+				println("     * Current formatter.");
+				println("     * @return formatter");
+				println("     */");
+			}
+			println("    public " + _Formatter + " templateFormatter() {");
+			println("        return this.formatter;");
+			println("    }");
+			println("");
 		}
-		println("    public " + _Formatter + " templateFormatter() {");
-		println("        return this.formatter;");
-		println("    }");
-		println("");
 		if (jstachio) {
 			println("    /**");
 			println("     * Appender.");
@@ -420,9 +480,6 @@ class TemplateClassWriter {
 			println("     * Renderer constructor using config.");
 			println("     * @param templateConfig config that has collaborators");
 			println("     */");
-			if (!constructorAnnotated.isBlank()) {
-				println(constructorAnnotated);
-			}
 			println("    public " + rendererClassSimpleName + "(" + TEMPLATE_CONFIG_CLASS + " templateConfig) {");
 			println("        this(templateConfig.formatter(), templateConfig.escaper());");
 			println("    }");
@@ -436,8 +493,8 @@ class TemplateClassWriter {
 		println("        return INSTANCE;");
 		println("    }");
 		println("");
-		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
 		writeExtendsConstructors(extendsElement, rendererClassSimpleName);
+		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
 		println("}");
 	}
 

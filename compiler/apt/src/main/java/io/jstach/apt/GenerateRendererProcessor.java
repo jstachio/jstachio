@@ -196,10 +196,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		List<String> templateAnnotions = prisms.stream().map(JStacheInterfacesPrism::templateAnnotations)
 				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm)).toList();
 
-		List<String> templateConstructorAnnotations = prisms.stream()
-				.map(JStacheInterfacesPrism::templateConstructorAnnotations).flatMap(faces -> faces.stream())
-				.map(tm -> getTypeName(tm)).toList();
-
 		TypeElement extendsElement = prisms.stream().map(JStacheInterfacesPrism::templateExtends)
 				.map(tm -> toTypeElement(tm)).findFirst().orElse(null);
 
@@ -213,8 +209,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		}
 
-		return new InterfacesConfig(templateInterfaces, templateAnnotions, templateConstructorAnnotations,
-				extendsElement);
+		return new InterfacesConfig(templateInterfaces, templateAnnotions, extendsElement);
 	}
 
 	private <T> List<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
@@ -230,7 +225,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	record InterfacesConfig(//
 			List<String> templateInterfaces, //
 			List<String> templateAnnotations, //
-			List<String> templateConstructorAnnotations, //
 			@Nullable TypeElement extendsElement) {
 	}
 

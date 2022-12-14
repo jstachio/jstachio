@@ -77,10 +77,9 @@ import java.util.Optional;
  * {@link io.jstach.jstache.JStacheInterfaces} on packages or the classes themselves.
  * <p>
  * You can also make generated classes have {@link ElementType#TYPE} annotations (see
- * {@link JStacheInterfaces#templateAnnotations()}) and constructor method annotations
- * ({@link ElementType#CONSTRUCTOR} see
- * {@link JStacheInterfaces#templateConstructorAnnotations()}) as well which maybe useful
- * for integration with other frameworks particularly DI frameworks.
+ * {@link JStacheInterfaces#templateAnnotations()}) and extend a class
+ * {@link JStacheInterfaces#templateExtends()}) as well which maybe useful for integration
+ * with other frameworks particularly DI frameworks.
  *
  * <h3 id="_templates">Templates</h3>
  *

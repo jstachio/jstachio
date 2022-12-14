@@ -74,8 +74,22 @@ public @interface JStacheInterfaces {
 	 * (e.g. {@code SomeModelRenderer extends SomeClass<SomeModel>}).
 	 * <p>
 	 * <strong> The class needs a no arg default constructor but may provide other
-	 * constructors that will simply be replicated (including annotations) on the
-	 * genererated template. </strong>
+	 * constructors that will simply be replicated (<em>including annotations!</em>) on
+	 * the genererated template. </strong>
+	 * <p>
+	 * Furthermore some methods will not be generated if the <code>templateExtends</code>
+	 * class has a concrete implementation (not abstract).
+	 * <p>
+	 * Below are the methods that will not be generated if present on the parent class:
+	 * <ol>
+	 * <li><code>templateFormatter()</code> (see <a href=
+	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">io.jstach.jstachio.TemplateInfo</a>)</li>
+	 * <li><code>templateEscaper()</code> (see <a href=
+	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">io.jstach.jstachio.TemplateInfo</a>)</li>
+	 * <li><code>execute(T, Appendable)</code> (see <a href=
+	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/Template.html">io.jstach.jstachio.Template</a>,
+	 * the templateExtends class will need to be parameterized for this to work)</li>
+	 * </ol>
 	 * @return interfaces that generated template will implement
 	 */
 	public Class<?> templateExtends() default Object.class;
@@ -87,19 +101,6 @@ public @interface JStacheInterfaces {
 	 * @return annotations to be added to generate templates
 	 */
 	public Class<?>[] templateAnnotations() default {};
-
-	/**
-	 * Will make all generated templates that are in the annotated class/package/module
-	 * have their constructor that takes a io.jstach.jstachio.TemplateConfig annotated
-	 * with the array of annotations. The order is preserved in the generated code.
-	 * <p>
-	 * This is useful for DI frameworks and a common pattern is to use
-	 * <code>jakarta.inject.Inject.class</code> which will make the DI framework
-	 * instantiate the template with a common config.
-	 * @return annotations to be added to generated templates
-	 * @deprecated templateExtends is preferred
-	 */
-	public Class<?>[] templateConstructorAnnotations() default {};
 
 	/**
 	 * Will <strong>check</strong> that all models in the annotated class/package/module

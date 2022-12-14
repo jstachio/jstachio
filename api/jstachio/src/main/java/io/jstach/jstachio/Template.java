@@ -1,6 +1,9 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
+import java.util.function.Function;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A JStachio Template is a renderer that has template meta data.
@@ -34,6 +37,21 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 			Appendable a, //
 			Formatter formatter, //
 			Escaper escaper) throws IOException;
+
+	/**
+	 * Renders the passed in model.
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param a appendable to write to.
+	 * @param formatter formats variables before they are passed to the escaper
+	 * @param escaper used to write escaped variables
+	 * @throws IOException if an error occurs while writing to the appendable
+	 */
+	default void execute(T model, //
+			Appendable a, //
+			Function<@Nullable Object, String> formatter, //
+			Function<String, String> escaper) throws IOException {
+		execute(model, a, Formatter.of(formatter), Escaper.of(escaper));
+	}
 
 	/**
 	 * Return the model class (root context class annotated with JStache) that generated

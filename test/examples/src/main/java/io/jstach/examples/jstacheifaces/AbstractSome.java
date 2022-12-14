@@ -1,8 +1,12 @@
 package io.jstach.examples.jstacheifaces;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 
-public class AbstractSome {
+import io.jstach.jstachio.Template;
+
+public abstract class AbstractSome<T> implements Template<T> {
 
 	private final String name;
 
@@ -17,6 +21,10 @@ public class AbstractSome {
 
 	public String getName() {
 		return name;
+	}
+
+	public void execute(T model, Appendable a) throws IOException {
+		execute(model, a, templateFormatter(), templateEscaper());
 	}
 
 }
