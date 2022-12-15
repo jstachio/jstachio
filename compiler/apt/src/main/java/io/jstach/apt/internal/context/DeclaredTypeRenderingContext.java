@@ -88,9 +88,6 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 		JavaExpression result = getMethodEntry(allMethods, name);
 		if (result != null)
 			return result;
-		result = getMethodEntry(allMethods, getterName(name));
-		if (result != null)
-			return result;
 		result = getFieldEntry(enclosedElements, name);
 
 		return result;
@@ -108,11 +105,12 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 		return result;
 	}
 
-	private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String methodName)
+	private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String name)
 			throws ContextException {
 		boolean nameFound = false;
 		for (Element element : elements) {
-			if (element.getKind() == ElementKind.METHOD && element.getSimpleName().contentEquals(methodName)) {
+			if (element.getKind() == ElementKind.METHOD
+					&& element.getSimpleName().toString().toLowerCase().contains(name.toLowerCase())) {
 				nameFound = true;
 				ExecutableType method;
 				try {
@@ -121,6 +119,23 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 				catch (IllegalArgumentException ex) {
 					throw new IllegalArgumentException("Unable to get " + element + " method signature for "
 							+ expression.type() + " type, defined at " + definitionElement, ex);
+				}
+				String methodName = name;
+				if (!element.getSimpleName().contentEquals(methodName)) {
+					if (method.getReturnType().getKind() == TypeKind.BOOLEAN) {
+						// Boolean fields can have "is" getters
+						methodName = isName(name);
+						if (!element.getSimpleName().contentEquals(methodName)) {
+							// But they might also have plain "get" getters
+							methodName = getterName(name);
+						}
+					}
+					else {
+						methodName = getterName(name);
+					}
+					if (!element.getSimpleName().contentEquals(methodName)) {
+						continue;
+					}
 				}
 				if (method.getParameterTypes().isEmpty()) {
 					if (element.getModifiers().contains(Modifier.PRIVATE)) {
@@ -175,6 +190,10 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 
 	private String getterName(String name) {
 		return "get" + name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
+	}
+
+	private String isName(String name) {
+		return "is" + name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
 	}
 
 	private boolean areUnchecked(List<? extends TypeMirror> thrownTypes) {
