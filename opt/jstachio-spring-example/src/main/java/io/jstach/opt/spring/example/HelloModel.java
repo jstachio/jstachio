@@ -1,7 +1,7 @@
 package io.jstach.opt.spring.example;
 
 import io.jstach.jstache.JStache;
-import io.jstach.opt.spring.JStachioModelView;
+import io.jstach.opt.spring.webmvc.JStachioModelView;
 
 /**
  * Model using a resource template that is in src/main/resources/views. The path will be

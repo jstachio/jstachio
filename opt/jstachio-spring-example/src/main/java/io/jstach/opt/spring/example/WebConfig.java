@@ -8,7 +8,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.opt.spring.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 
 /**
  * Configures MVC using {@link JStachioHttpMessageConverter} to allow returning models

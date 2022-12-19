@@ -1,4 +1,4 @@
-package io.jstach.opt.spring;
+package io.jstach.opt.spring.web;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

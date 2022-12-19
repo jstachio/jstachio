@@ -4,8 +4,8 @@ import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStacheName;
 import io.jstach.jstache.JStachePath;
-import io.jstach.opt.spring.JStachioModelView;
-import io.jstach.opt.spring.ViewFactory;
+import io.jstach.opt.spring.webmvc.JStachioModelView;
+import io.jstach.opt.spring.webmvc.ViewFactory;
 
 /**
  * Spring example app for JStachio.

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.View;
 
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Template;
-import io.jstach.opt.spring.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 
 /**
  * Example hello world controller using different ways to use JStachio for web

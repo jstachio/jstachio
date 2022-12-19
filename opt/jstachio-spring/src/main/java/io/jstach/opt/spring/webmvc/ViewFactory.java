@@ -1,4 +1,4 @@
-package io.jstach.opt.spring;
+package io.jstach.opt.spring.webmvc;
 
 import org.springframework.web.servlet.View;
 
