@@ -3,7 +3,6 @@ package io.jstach.jstachio.spi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -12,7 +11,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * A container that will hold all resolved {@link JStachioExtension}s and consolidate them
  * to a single instances of various services.
  *
- * @apiNote While this interface looks similar {@link JStachioExtension} it is not an
+ * @apiNote While this interface looks similar to {@link JStachioExtension} it is not an
  * extension but rather an immutable bean like container. The methods are purposely java
  * bean style (which is not the default in JStachio as JStachio prefers newer record like
  * accessor method names) to support as many frameworks as possible.
@@ -94,12 +93,12 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 	private final JStachioTemplateFinder templateFinder;
 
 	private DefaultJStachioExtensions(List<JStachioExtension> services, JStachioConfig config, JStachioFilter filter,
-			@Nullable JStachioTemplateFinder templateFinder) {
+			JStachioTemplateFinder templateFinder) {
 		super();
 		this.services = services;
 		this.config = config;
 		this.filter = filter;
-		this.templateFinder = templateFinder != null ? templateFinder : new DefaultTemplateFinder(config);
+		this.templateFinder = templateFinder;
 		;
 	}
 
@@ -113,6 +112,7 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 		it.forEach(svs::add);
 		List<JStachioConfig> configs = new ArrayList<>();
 		List<JStachioFilter> filters = new ArrayList<>();
+		List<JStachioTemplateFinder> finders = new ArrayList<>();
 
 		for (var sv : svs) {
 			var c = sv.provideConfig();
@@ -121,24 +121,25 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 			}
 		}
 		JStachioConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
-		@Nullable
-		JStachioTemplateFinder templateFinder = null;
 
 		for (var sv : svs) {
 			sv.init(config);
 			@Nullable
-			JStachioFilter f = sv.provideFilter();
-			if (f != null) {
-				filters.add(f);
+			JStachioFilter filt = sv.provideFilter();
+			if (filt != null) {
+				filters.add(filt);
 			}
-			var finder = sv.provideTemplateFinder();
-			if (templateFinder != null && finder != null) {
-				throw new ServiceConfigurationError("Multiple template finders found by service loader. first = "
-						+ templateFinder.getClass().getName() + ", second = " + finder.getClass().getName());
+			@Nullable
+			JStachioTemplateFinder find = sv.provideTemplateFinder();
+			if (find != null) {
+				finders.add(find);
 			}
-			templateFinder = finder;
 		}
 		JStachioFilter filter = JStachioFilter.compose(filters);
+		if (finders.isEmpty()) {
+			finders.add(JStachioTemplateFinder.defaultTemplateFinder(config));
+		}
+		JStachioTemplateFinder templateFinder = CompositeTemplateFinder.of(finders);
 		return new DefaultJStachioExtensions(List.copyOf(svs), config, filter, templateFinder);
 	}
 

@@ -1,5 +1,9 @@
 package io.jstach.jstachio.spi;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import io.jstach.jstache.JStache;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
@@ -50,13 +54,33 @@ public interface JStachioTemplateFinder {
 		}
 	}
 
+	/**
+	 * Hint on order of template finders. The found {@link JStachioTemplateFinder}s are
+	 * sorted naturally (lower number comes first) based on the returned number. Thus a
+	 * template finder with a lower order number that {@link #supportsType(Class)} the
+	 * model class will be used.
+	 * @return default returns zero
+	 */
+	default int order() {
+		return 0;
+	}
+
+	/**
+	 * The default template finder that uses reflection and or the ServiceLoader.
+	 * @param config used to help find templates as well as logging.
+	 * @return default template finder.
+	 */
+	public static JStachioTemplateFinder defaultTemplateFinder(JStachioConfig config) {
+		return new DefaultTemplateFinder(config);
+	}
+
 }
 
-class DefaultTemplateFinder implements JStachioTemplateFinder {
+final class DefaultTemplateFinder implements JStachioTemplateFinder {
 
 	private final JStachioConfig config;
 
-	public DefaultTemplateFinder(JStachioConfig config) {
+	DefaultTemplateFinder(JStachioConfig config) {
 		super();
 		this.config = config;
 	}
@@ -64,6 +88,39 @@ class DefaultTemplateFinder implements JStachioTemplateFinder {
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
 		return Templates.findTemplate(modelType, config);
+	}
+
+	@Override
+	public int order() {
+		return Integer.MAX_VALUE;
+	}
+
+}
+
+final class CompositeTemplateFinder implements JStachioTemplateFinder {
+
+	private final List<JStachioTemplateFinder> finders;
+
+	private CompositeTemplateFinder(List<JStachioTemplateFinder> finders) {
+		super();
+		this.finders = finders;
+	}
+
+	public static CompositeTemplateFinder of(List<? extends JStachioTemplateFinder> finders) {
+		ArrayList<JStachioTemplateFinder> sorted = new ArrayList<>();
+		sorted.addAll(finders);
+		sorted.sort(Comparator.comparingInt(JStachioTemplateFinder::order));
+		return new CompositeTemplateFinder(List.copyOf(sorted));
+	}
+
+	@Override
+	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
+		for (var f : finders) {
+			if (f.supportsType(modelType)) {
+				return f.findTemplate(modelType);
+			}
+		}
+		throw new RuntimeException("Template not found for type: " + modelType);
 	}
 
 }
