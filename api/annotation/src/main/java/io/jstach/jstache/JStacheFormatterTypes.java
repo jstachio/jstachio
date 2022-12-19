@@ -23,15 +23,18 @@ import java.net.URI;
  * Order of config lookup and precedence is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
+ * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
+ * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
  * </ol>
  * If multiple annotations are found the first one is picked and there is no combining of
  * settings.
  * @apiNote n.b. the retention policy is SOURCE as this settings are only needed for the
- * compiler
+ * compiler and why it is not in {@link JStacheConfig}.
  * @author agentgt
  * @see JStacheFormatter
+ * @see JStacheConfig
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ ElementType.TYPE, ElementType.PACKAGE, ElementType.MODULE })

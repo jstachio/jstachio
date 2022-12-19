@@ -15,6 +15,8 @@ import java.lang.annotation.Target;
  * Order of flag lookup and precedence is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
+ * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
+ * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
  * </ol>

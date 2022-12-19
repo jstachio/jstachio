@@ -12,13 +12,15 @@ import java.lang.annotation.Target;
  * Order of path config lookup and precedence is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
+ * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
+ * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
  * </ol>
  * If multiple annotations are found the first one is picked and there is no combining of
- * settings.
+ * settings. See {@link JStacheConfig} for general config resultion.
  * @author agentgt
- *
+ * @see JStacheConfig
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.MODULE, ElementType.PACKAGE, ElementType.TYPE })

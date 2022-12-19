@@ -24,6 +24,9 @@ import java.nio.charset.StandardCharsets;
  * to <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Class annotated with JStache and this annotation <em>NOT</em> set to
  * <a href="#_unspecified">UNSPECIFIED</a>.</li>
+ * <li>{@link Class#getEnclosingClass() Enclosing classes} enclosing the class annotated
+ * with JStache with inner to outer order annotated with this annotation <em>NOT</em> set
+ * to <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Package annotated with this annotation <em>NOT</em> set to
  * <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Module annotated with this annotation <em>NOT</em> set to
@@ -45,7 +48,8 @@ import java.nio.charset.StandardCharsets;
  * will be resolved through the <a href="#_config_resolution">config resolution</a>.
  *
  *
- *
+ * @apiNote This annotation and thus configuration is available during runtime unlike many
+ * of the other annotations in jstachio.
  * @author agentgt
  *
  */

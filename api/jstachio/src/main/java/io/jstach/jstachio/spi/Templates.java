@@ -3,13 +3,17 @@ package io.jstach.jstachio.spi;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -169,8 +173,28 @@ public final class Templates {
 	}
 
 	private static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
-		return Stream.of(c, c.getPackage(), c.getModule()).filter(p -> p != null)
+		Stream<? extends AnnotatedElement> enclosing = enclosing(c);
+		return Stream.concat(enclosing, Stream.of(c.getPackage(), c.getModule())).filter(p -> p != null)
 				.map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
+	}
+
+	private static Stream<Class<?>> enclosing(Class<?> e) {
+		AbstractSpliterator<Class<?>> split = new AbstractSpliterator<Class<?>>(Long.MAX_VALUE, 0) {
+			@Nullable
+			Class<?> current = e;
+
+			@Override
+			public boolean tryAdvance(Consumer<? super Class<?>> action) {
+				if (current == null) {
+					return false;
+				}
+				var c = current;
+				current = current.getEnclosingClass();
+				action.accept(c);
+				return true;
+			}
+		};
+		return StreamSupport.stream(split, false);
 	}
 
 	private static <T> @Nullable Template<?> getTemplateFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {

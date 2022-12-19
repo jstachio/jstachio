@@ -45,9 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
@@ -179,7 +182,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private PathConfig resolvePathConfig(TypeElement element) {
-		JStachePathPrism prism = findPrisms(element, JStachePathPrism::getInstanceOn).stream().findFirst().orElse(null);
+		JStachePathPrism prism = findPrisms(element, JStachePathPrism::getInstanceOn).findFirst().orElse(null);
 		if (prism == null) {
 			return new PathConfig("", "");
 		}
@@ -188,7 +191,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private InterfacesConfig resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
 
-		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn);
+		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn).toList();
 
 		List<String> templateInterfaces = prisms.stream().map(JStacheInterfacesPrism::templateImplements)
 				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm, element)).toList();
@@ -212,14 +215,31 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return new InterfacesConfig(templateInterfaces, templateAnnotions, extendsElement);
 	}
 
-	private <T> List<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
-		ModuleElement moduleElement = processingEnv.getElementUtils().getModuleOf(element);
-		PackageElement packageElement = processingEnv.getElementUtils().getPackageOf(element);
-		return findPrisms(Stream.of(element, packageElement, moduleElement), prismSupplier);
+	private <T> Stream<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
+		return findPrisms(enclosing(element), prismSupplier);
 	}
 
-	private <T> List<T> findPrisms(Stream<Element> elements, Function<Element, @Nullable T> prismSupplier) {
-		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null).toList();
+	private <T> Stream<T> findPrisms(Stream<Element> elements, Function<Element, @Nullable T> prismSupplier) {
+		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null);
+	}
+
+	private static Stream<Element> enclosing(Element e) {
+		AbstractSpliterator<Element> split = new AbstractSpliterator<Element>(Long.MAX_VALUE, 0) {
+			@Nullable
+			Element current = e;
+
+			@Override
+			public boolean tryAdvance(Consumer<? super Element> action) {
+				if (current == null) {
+					return false;
+				}
+				var c = current;
+				current = current.getEnclosingElement();
+				action.accept(c);
+				return true;
+			}
+		};
+		return StreamSupport.stream(split, false);
 	}
 
 	record InterfacesConfig(//
@@ -231,7 +251,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	private Map<String, NamedTemplate> resolvePartials(TypeElement element) {
 
 		Map<String, NamedTemplate> paths = new LinkedHashMap<>();
-		var prisms = findPrisms(element, JStachePartialsPrism::getInstanceOn);
+		var prisms = findPrisms(element, JStachePartialsPrism::getInstanceOn).toList();
 		for (var prism : prisms) {
 			var tps = prism.value();
 			for (JStachePartialPrism tp : tps) {
@@ -264,7 +284,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private Set<Flag> resolveFlags(TypeElement element) {
-		var prism = findPrisms(element, JStacheFlagsPrism::getInstanceOn).stream().findFirst().orElse(null);
+		var prism = findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
+				.findFirst().orElse(null);
 		var flags = EnumSet.noneOf(Flag.class);
 		if (prism != null) {
 			prism.flags().stream().map(Flag::valueOf).forEach(flags::add);
@@ -302,7 +323,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private FormatterTypes resolveFormatterTypes(TypeElement element) {
-		var prisms = findPrisms(element, JStacheFormatterTypesPrism::getInstanceOn);
+		var prisms = findPrisms(element, JStacheFormatterTypesPrism::getInstanceOn).toList();
 		List<String> classNames = prisms.stream().flatMap(p -> p.types().stream()).map(tm -> getTypeName(tm)).toList();
 		List<String> patterns = prisms.stream().flatMap(p -> p.patterns().stream()).toList();
 		if (classNames.isEmpty() && patterns.isEmpty()) {
@@ -398,7 +419,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private FormatCallType resolveFormatCallType(TypeElement element) {
-		JStacheType type = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
+		JStacheType type = findPrisms(element, JStacheConfigPrism::getInstanceOn) //
 				.map(config -> JStacheType.valueOf(config.type())).filter(t -> !JStacheType.UNSPECIFIED.equals(t))
 				.findFirst().orElse(JStacheType.UNSPECIFIED);
 
@@ -412,8 +433,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private Charset resolveCharset(TypeElement element) {
 		@Nullable
-		String cs = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream().map(config -> config.charset())
-				.filter(c -> !c.isBlank()).findFirst().orElse(null);
+		String cs = findPrisms(element, JStacheConfigPrism::getInstanceOn) //
+				.map(config -> config.charset()).filter(c -> !c.isBlank()).findFirst().orElse(null);
 		cs = cs == null ? "" : cs;
 		Charset charset = cs.isBlank() ? StandardCharsets.UTF_8 : Charset.forName(cs);
 		return charset;
@@ -435,7 +456,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		Stream<TypeMirror> contentTypeProviderTypes = //
 				findPrisms(element, JStacheConfigPrism::getInstanceOn) //
-						.stream() //
 						.map(p -> p.contentType());
 
 		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::contentTypeElement;
@@ -461,7 +481,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		Stream<TypeMirror> formatterProviderTypes = //
 				findPrisms(element, JStacheConfigPrism::getInstanceOn) //
-						.stream() //
 						.map(p -> p.formatter());
 
 		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::formatterElement;
@@ -518,7 +537,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		String directiveAdapterName = gp.name();
 		String adapterClassSimpleName;
 		if (directiveAdapterName.isBlank()) {
-			JStacheName name = findPrisms(element, JStacheConfigPrism::getInstanceOn).stream()
+			JStacheName name = findPrisms(element, JStacheConfigPrism::getInstanceOn) //
 					.flatMap(config -> config.naming().stream()).findFirst().orElse(null);
 
 			String prefix = name == null ? JSTACHE_NAME_UNSPECIFIED : name.prefix();
