@@ -511,7 +511,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		SneakyFunction<TypeMirror, TypeElement, DeclarationException> f = this::contentTypeElement;
 
 		@Nullable
-		TypeElement contentTypeProviderElement = Stream.concat(Stream.of(gp.contentType()), contentTypeProviderTypes) //
+		TypeElement contentTypeProviderElement = contentTypeProviderTypes //
 				.map(f) //
 				.filter(e -> !lm.isSameType(autoContentTypeElement.asType(), e.asType())) //
 				.findFirst().orElse(null);

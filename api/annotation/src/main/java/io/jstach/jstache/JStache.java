@@ -351,15 +351,14 @@ import java.util.Optional;
  * {@link io.jstach.jstache.JStacheConfig#formatter()}.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
- * <strong>&#64;{@link io.jstach.jstache.JStacheContentType},
- * {@link io.jstach.jstache.JStache#contentType()} and
+ * <strong>&#64;{@link io.jstach.jstache.JStacheContentType}, and
  * &#64;{@link JStacheConfig#contentType()} </strong>
  * <p>
  * If you are using the JStachio runtime (io.jstach.jstachio) you will get out of the box
  * escaping for HTML (see <code>io.jstach.jstachio.escapers.Html</code>) per the mustache
  * spec.
  * <p>
- * <strong>To disable escaping</strong> set {@link #contentType()} to
+ * <strong>To disable escaping</strong> set {@link JStacheConfig#contentType()} to
  * <code>io.jstach.jstachio.escapers.PlainText</code>
  *
  * <h2 id="_config">Configuration</h2> <strong>&#64;{@link JStacheConfig}</strong>
@@ -471,17 +470,6 @@ public @interface JStache {
 	 * @return Name of generated class
 	 */
 	String name() default "";
-
-	/**
-	 * Class providing escaper and representing template content type.
-	 * <p>
-	 * You can create custom escapers using {@link JStacheContentType} annotation.
-	 * @return contentType of given template. If not provided it will be resolved (HTML is
-	 * the default if the jstachio runtime is found).
-	 * @deprecated use {@link JStacheConfig#contentType()}
-	 */
-	@Deprecated
-	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
 
 	/**
 	 * An annotation processor compiler flag that says where the templates files are

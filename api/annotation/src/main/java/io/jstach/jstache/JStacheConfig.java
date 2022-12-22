@@ -83,8 +83,7 @@ public @interface JStacheConfig {
 
 	/**
 	 * Optional content type for all models in the <a href="#_config_resolution">annotated
-	 * class/package/module</a> or module that have {@link JStache#contentType()} set to
-	 * {@link JStacheContentType.UnspecifiedContentType}.
+	 * class/package/module</a>.
 	 * <p>
 	 * The content type provider class needs a {@link JStacheContentType} annotation on
 	 * the type.

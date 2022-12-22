@@ -363,8 +363,8 @@ public final class Templates {
 			}
 
 			@Override
-			public Class<?> providerFromJStache(JStache jstache) {
-				return jstache.contentType();
+			public @Nullable Class<?> providerFromJStache(JStache jstache) {
+				return null;
 			}
 
 			@Override

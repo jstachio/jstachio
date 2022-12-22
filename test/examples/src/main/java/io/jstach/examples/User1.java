@@ -32,12 +32,14 @@ package io.jstach.examples;
 import java.util.List;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstachio.escapers.Html;
 
 /**
  * @author Victor Nazarov
  */
-@JStache(path = "user1.mustache", contentType = Html.class, name = "RenderableHtmlUser1Adapter")
+@JStacheConfig(contentType = Html.class)
+@JStache(path = "user1.mustache", name = "RenderableHtmlUser1Adapter")
 class User1 {
 
 	public final String name;
