@@ -58,7 +58,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ModuleElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -157,6 +156,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		 */
 		JavaLanguageModel.createInstance(processingEnv.getTypeUtils(), processingEnv.getElementUtils(),
 				processingEnv.getMessager());
+		Map<String, String> options = processingEnv.getOptions();
+
 		if (roundEnv.processingOver()) {
 			for (ElementMessage error : errors) {
 				TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
@@ -172,7 +173,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheElement)) {
 				TypeElement classElement = (TypeElement) element;
 				JStachePrism jstache = JStachePrism.getInstanceOn(classElement);
-				ClassRef ref = writeRenderableAdapterClass(classElement, jstache);
+				ClassRef ref = writeRenderableAdapterClass(classElement, jstache, options);
 				if (ref != null) {
 					rendererClasses.add(ref);
 				}
@@ -283,12 +284,38 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return nt;
 	}
 
-	private Set<Flag> resolveFlags(TypeElement element) {
+	static Map<String, Flag> processorOptionNames;
+	static {
+		Map<String, Flag> m = new LinkedHashMap<>();
+		for (var f : Flag.values()) {
+			String name1 = "jstache." + f.name().toLowerCase();
+			String name2 = "jstache." + f.name();
+			m.put(name1, f);
+			m.put(name2, f);
+		}
+		processorOptionNames = Map.copyOf(m);
+	}
+
+	private Set<Flag> resolveFlags(TypeElement element, Map<String, String> options) {
 		var prism = findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
 				.findFirst().orElse(null);
 		var flags = EnumSet.noneOf(Flag.class);
+
 		if (prism != null) {
 			prism.flags().stream().map(Flag::valueOf).forEach(flags::add);
+		}
+		for (var e : options.entrySet()) {
+			@Nullable
+			Flag flag = processorOptionNames.get(e.getKey());
+			if (flag == null) {
+				continue;
+			}
+			if (Boolean.parseBoolean(e.getValue())) {
+				flags.add(flag);
+			}
+			else {
+				flags.remove(flag);
+			}
 		}
 		return Collections.unmodifiableSet(flags);
 	}
@@ -345,7 +372,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			TypeElement formatterTypeElement, //
 			Map<String, NamedTemplate> partials, //
 			InterfacesConfig ifaces, //
-			Set<Flag> flags) implements ProcessingConfig {
+			Set<Flag> flags, Map<String, String> options) implements ProcessingConfig {
 
 		public NamedTemplate namedTemplate() {
 			String name;
@@ -369,9 +396,18 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		}
 
+		@Override
+		public String resourcesPath() {
+			String path = options.get(JSTACHE_RESOURCES_PATH_OPTION);
+			if (path != null) {
+				return path;
+			}
+			return ProcessingConfig.super.resourcesPath();
+		}
+
 	}
 
-	private RendererModel model(TypeElement element, JStachePrism jstache)
+	private RendererModel model(TypeElement element, JStachePrism jstache, Map<String, String> options)
 			throws DeclarationException, AnnotatedException, DeclarationException {
 
 		if (!element.getTypeParameters().isEmpty()) {
@@ -399,7 +435,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
 		FormatterTypes formatterTypes = resolveFormatterTypes(element);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
-		Set<Flag> flags = resolveFlags(element);
+		Set<Flag> flags = resolveFlags(element, options);
 
 		var model = new RendererModel( //
 				formatCallType, //
@@ -414,7 +450,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				formatterElement, //
 				partials, //
 				ifaces, //
-				flags);
+				flags, //
+				options);
 		return model;
 	}
 
@@ -556,11 +593,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return adapterClassSimpleName;
 	}
 
-	private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache)
-			throws AnnotatedException {
+	private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache,
+			Map<String, String> options) throws AnnotatedException {
 
 		try {
-			var model = model(element, jstache);
+			var model = model(element, jstache, options);
 			ProcessingConfig config = model;
 			StringWriter stringWriter = new StringWriter();
 			try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)) {

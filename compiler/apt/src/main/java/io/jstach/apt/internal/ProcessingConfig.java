@@ -27,7 +27,7 @@ public interface ProcessingConfig extends LoggingSupport {
 	}
 
 	default boolean fallbackToFilesystem() {
-		return true;
+		return resourcesPath().isBlank();
 	}
 
 	PathConfig pathConfig();

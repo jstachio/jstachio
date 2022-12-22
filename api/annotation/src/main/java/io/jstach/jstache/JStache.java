@@ -365,7 +365,73 @@ import java.util.Optional;
  * <h2 id="_config">Configuration</h2> <strong>&#64;{@link JStacheConfig}</strong>
  * <p>
  * You can set global configuration on class, packages and module elements. See
- * {@link JStacheConfig} for more details on config resolution.
+ * {@link JStacheConfig} for more details on config resolution. Some configuration is set
+ * through compiler flags and annotation processor options. However {@link JStacheConfig}
+ * unlike compiler flags and annotation processor options are available during runtime
+ * through reflective access.
+ *
+ * <h3 id="_config_flags">Compiler flags</h3>
+ *
+ * The compiler has some boolean flags that can be set statically via {@link JStacheFlags}
+ * as well as through annotation processor options.
+ *
+ * <h3 id="_config_compiler">Annotation processor options</h3>
+ *
+ * Some configuration is available as an annotation processor option. Current available
+ * options are:
+ *
+ * <ul>
+ * <li>{@link #RESOURCES_PATH_OPTION}</li>
+ * </ul>
+ *
+ * The previously mentioned {@link JStacheFlags compiler flags} are also available as
+ * annotation options. The flags are prefixed with "<code>jstache.</code>". For example
+ * {@link JStacheFlags.Flag#DEBUG} would be:
+ * <p>
+ * <code>jstache.debug=true/false</code>.
+ *
+ * <h4 id="_config_compiler_maven">Configuring options with Maven</h4>
+ *
+ * Example configuration with Maven:
+ *
+ * <pre class="language-xml">{@code
+ * <plugin>
+ *     <groupId>org.apache.maven.plugins</groupId>
+ *     <artifactId>maven-compiler-plugin</artifactId>
+ *     <version>3.8.1</version>
+ *     <configuration>
+ *         <source>17</source>
+ *         <target>17</target>
+ *         <annotationProcessorPaths>
+ *             <path>
+ *                 <groupId>io.jstach</groupId>
+ *                 <artifactId>jstachio-apt</artifactId>
+ *                 <version>${io.jstache.version}</version>
+ *             </path>
+ *         </annotationProcessorPaths>
+ *         <compilerArgs>
+ *             <arg>
+ *                 -Ajstache.resourcesPath=src/main/resources
+ *             </arg>
+  *             <arg>
+ *                 -Ajstache.debug=false
+ *             </arg>
+ *         </compilerArgs>
+ *     </configuration>
+ * </plugin>
+ * }</pre>
+ *
+ * <h4 id="_config_compiler_gradle">Configuring options with Gradle</h4>
+ *
+ * Example configuration with Gradle:
+ *
+ * <pre><code class="language-kotlin">
+ * compileJava {
+ *     options.compilerArgs += [
+ *     '-Ajstache.resourcesPath=src/main/resources'
+ *     ]
+ * }
+ * </code> </pre>
  *
  *
  * </div>
@@ -416,5 +482,37 @@ public @interface JStache {
 	 */
 	@Deprecated
 	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
+
+	/**
+	 * An annotation processor compiler flag that says where the templates files are
+	 * located.
+	 * <p>
+	 * When the annotation processor runs these files usually are in:
+	 * <code>javax.tools.StandardLocation#CLASS_OUTPUT</code> and in a Maven or Gradle
+	 * project they normally would reside in <code>src/main/resources</code> or
+	 * <code>src/test/resources</code> which get copied on build to
+	 * <code>target/classes</code> or similar. However due to incremental compiling
+	 * template files are not always copied to <code>target/classes</code> and thus are
+	 * not found by the annotation processor. To deal with this issue JStachio during
+	 * compilation fallsback to direct filesystem access of the <em>source</em> directory
+	 * instead of the output (<code>javax.tools.StandardLocation#CLASS_OUTPUT</code>) if
+	 * the files cannot be found.
+	 * <p>
+	 * If the path does not start with a path separator then it will be appended to the
+	 * the current working directory otherwise it is assumed to be a fully qualified path.
+	 * <p>
+	 * The default location is <code>CWD/src/main/resources</code> where CWD is the
+	 * current working directory.
+	 *
+	 * <strong>If the option is blank or empty then NO fallback will happen and
+	 * effectively disables the above behavior. </strong>
+	 *
+	 * You can change it by passing to the annotation processor a setting for
+	 * {@value #RESOURCES_PATH_OPTION} like:
+	 * <pre><code>jstache.resourcesPath=some/path</code></pre>
+	 *
+	 *
+	 */
+	public static final String RESOURCES_PATH_OPTION = "jstache.resourcesPath";
 
 }

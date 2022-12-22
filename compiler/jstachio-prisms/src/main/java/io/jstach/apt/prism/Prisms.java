@@ -15,6 +15,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 public interface Prisms {
 
+	public static final String JSTACHE_RESOURCES_PATH_OPTION = "jstache.resourcesPath";
+
 	public static final String JSTACHE_NAME_UNSPECIFIED = "*";
 
 	public static final String JSTACHE_NAME_DEFAULT_PREFIX = "";

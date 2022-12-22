@@ -86,6 +86,9 @@ class TextFileObject {
 			 */
 			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
 
+			/*
+			 * Aka the CWD
+			 */
 			Path projectPath;
 
 			if (config.isGradle()) {
@@ -104,8 +107,8 @@ class TextFileObject {
 				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
 			}
 			Path filePath = Path.of(config.resourcesPath(), name);
+			Path fullPath = filePath.isAbsolute() ? filePath : projectPath.resolve(filePath);
 
-			Path fullPath = projectPath.resolve(filePath);
 			if (config.isDebug()) {
 				config.debug("File not found with Filer. Trying direct file access. name:" + name + ", path: "
 						+ fullPath + ", dummy: " + dummy.toUri());
