@@ -206,8 +206,8 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	protected InputStream openFile(Path path) throws IOException {
 		InputStream is = Files.newInputStream(path);
-		if (logger.isLoggable(Level.DEBUG)) {
-			logger.log(Level.DEBUG, "Using JMustache. template:" + "file " + path);
+		if (logger.isLoggable(Level.INFO)) {
+			logger.log(Level.INFO, "Using JMustache. template:" + "file " + path);
 		}
 		return is;
 	}
@@ -218,8 +218,8 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 		if (is == null) {
 			throw new IOException("template not found. template: " + templatePath);
 		}
-		if (logger.isLoggable(Level.DEBUG)) {
-			logger.log(Level.DEBUG, "Using JMustache. template:" + "classpath " + templatePath);
+		if (logger.isLoggable(Level.INFO)) {
+			logger.log(Level.INFO, "Using JMustache. template:" + "classpath " + templatePath);
 		}
 		return is;
 	}

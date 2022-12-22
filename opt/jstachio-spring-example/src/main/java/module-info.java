@@ -18,6 +18,10 @@ import io.jstach.opt.spring.webmvc.ViewFactory;
  * <p>
  * Next checkout the projects main package {@link io.jstach.opt.spring.example}.
  * <p>
+ * This project uses the {@link io.jstach.opt.jmustache jmustache extension} which will
+ * allow editing of mustache template files while the application is loaded 
+ * (e.g. <code>spring-boot:run</code>) without recompiling.
+ * <p>
  * <em>
  * While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
  * it might be easier to look at the source 
