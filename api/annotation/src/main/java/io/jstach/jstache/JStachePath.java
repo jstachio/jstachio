@@ -17,13 +17,17 @@ import java.lang.annotation.Target;
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
  * </ol>
+ * After this lookup is done then the lookup is repeated using
+ * {@link JStacheConfig#pathing()} thus using this annotation directly on an element takes
+ * precedence over {@link JStacheConfig}.
+ * <p>
  * If multiple annotations are found the first one is picked and there is no combining of
  * settings. See {@link JStacheConfig} for general config resultion.
  * @author agentgt
  * @see JStacheConfig
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.MODULE, ElementType.PACKAGE, ElementType.TYPE })
+@Target({ ElementType.MODULE, ElementType.PACKAGE, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Documented
 public @interface JStachePath {
 

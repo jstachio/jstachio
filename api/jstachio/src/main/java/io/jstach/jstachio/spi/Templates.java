@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStache;
@@ -173,9 +174,14 @@ public final class Templates {
 	}
 
 	private static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
+		var s = annotationElements(c);
+		return s.filter(p -> p != null).map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
+	}
+
+	private static @NonNull Stream<AnnotatedElement> annotationElements(Class<?> c) {
 		Stream<? extends AnnotatedElement> enclosing = enclosing(c);
-		return Stream.concat(enclosing, Stream.of(c.getPackage(), c.getModule())).filter(p -> p != null)
-				.map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
+		var s = Stream.concat(enclosing, Stream.of(c.getPackage(), c.getModule()));
+		return s;
 	}
 
 	private static Stream<Class<?>> enclosing(Class<?> e) {
@@ -223,7 +229,7 @@ public final class Templates {
 						"Model class is not annotated with " + JStache.class.getSimpleName() + ". class: " + model);
 			}
 			@Nullable
-			JStachePath pathConfig = findAnnotations(model, JStachePath.class).findFirst().orElse(null);
+			JStachePath pathConfig = resolvePath(model);
 			String templateString = stache.template();
 
 			final String templateName = resolveName(model);
@@ -265,6 +271,23 @@ public final class Templates {
 					lastLoaded, //
 					model);
 
+		}
+
+		private static JStachePath resolvePath(Class<?> model) {
+			return annotationElements(model).map(TemplateInfos::resolvePathOnElement).filter(p -> p != null).findFirst()
+					.orElse(null);
+		}
+
+		private static @Nullable JStachePath resolvePathOnElement(AnnotatedElement a) {
+			var path = a.getAnnotation(JStachePath.class);
+			if (path != null) {
+				return path;
+			}
+			var config = a.getAnnotation(JStacheConfig.class);
+			if (config != null && config.pathing().length > 0) {
+				return config.pathing()[0];
+			}
+			return null;
 		}
 
 		sealed interface StaticProvider<P> {

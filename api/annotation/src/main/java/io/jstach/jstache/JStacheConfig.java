@@ -71,6 +71,17 @@ public @interface JStacheConfig {
 	JStacheName[] naming() default {};
 
 	/**
+	 * If {@link JStache#path()} is not blank the path of the template is resolved by
+	 * augmenting with {@link JStachePath#prefix()} and {@link JStachePath#suffix()}.
+	 * @return by default an empty array which represents
+	 * <a href="_unspecified">UNSPECIFIED</a>.
+	 * @apiNote the cardinality of the returned array is currently <code>0..1</code>.
+	 * additional elements after the first will be ignored.
+	 * @see JStachePath
+	 */
+	JStachePath[] pathing() default {};
+
+	/**
 	 * Optional content type for all models in the <a href="#_config_resolution">annotated
 	 * class/package/module</a> or module that have {@link JStache#contentType()} set to
 	 * {@link JStacheContentType.UnspecifiedContentType}.

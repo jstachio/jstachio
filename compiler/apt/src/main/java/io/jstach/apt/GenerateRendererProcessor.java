@@ -182,8 +182,21 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 	}
 
+	@Nullable
+	JStachePathPrism pathInstanceOn(Element element) {
+		var prism = JStachePathPrism.getInstanceOn(element);
+		if (prism != null) {
+			return prism;
+		}
+		var config = JStacheConfigPrism.getInstanceOn(element);
+		if (config == null || config.pathing() == null || config.pathing().isEmpty()) {
+			return null;
+		}
+		return config.pathing().get(0);
+	}
+
 	private PathConfig resolvePathConfig(TypeElement element) {
-		JStachePathPrism prism = findPrisms(element, JStachePathPrism::getInstanceOn).findFirst().orElse(null);
+		JStachePathPrism prism = findPrisms(element, this::pathInstanceOn).findFirst().orElse(null);
 		if (prism == null) {
 			return new PathConfig("", "");
 		}
