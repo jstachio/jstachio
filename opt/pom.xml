@@ -14,7 +14,7 @@
   </modules>
   <properties>
     <spring.version>6.0.3</spring.version>
-    <spring-boot.version>3.0.0</spring-boot.version>
+    <spring-boot.version>3.0.1</spring-boot.version>
   </properties>
   <dependencyManagement>
     <dependencies>
