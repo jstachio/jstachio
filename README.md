@@ -11,14 +11,24 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 ## News
 
-Version 0.8.0 has been released and has the following new notable features:
+### Version 0.9.0
+
+Not as many changes as we are preparing for 1.0.0 release Jan 2023
+
+* More Spring support
+* Missing `is` getter support
+* Some final refactoring for consistency for 1.0.0
+* More documentation
+* The start of `@Nullable` support #4
+* Feedback on anything is much appreciated as soon as possible to lock down 1.0.0 features/changes.
+
+### Version 0.8.0 
 
 * [Zero dependency mode](https://github.com/jstachio/jstachio/issues/3). [doc](https://jstach.io/jstachio/io.jstach.jstache/io/jstach/jstache/JStacheType.html)
 * [Spring support](https://jstach.io/jstachio/io.jstach.opt.spring/module-summary.html)
 * [Spring example app](https://jstach.io/jstachio/io.jstach.opt.spring.example/module-summary.html)
 * API is finally stabilized (apologies for all the package name changes but that should stop now)
 * There will be one more 0.9.0 release before 1.0.0 (1.0.0 should be released circa Jan 2023)
-* Feedback on anything is much appreciated as soon as possible to lock down 1.0.0 features/changes.
 
 ## Documentation
 
