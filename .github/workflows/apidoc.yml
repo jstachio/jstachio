@@ -33,10 +33,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: mvn install
         run: mvn --batch-mode --no-transfer-progress clean install -DskipTests=true
       - name: Create Aggregate Javadoc
