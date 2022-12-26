@@ -56,6 +56,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
@@ -104,6 +105,8 @@ import io.jstach.apt.prism.Prisms;
  */
 @MetaInfServices(value = Processor.class)
 @SupportedAnnotationTypes("*")
+@SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, Prisms.JSTACHE_FLAGS_DEBUG,
+		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN })
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
 	@Override

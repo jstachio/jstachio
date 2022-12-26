@@ -23,6 +23,10 @@ public interface Prisms {
 
 	public static final String JSTACHE_NAME_DEFAULT_SUFFIX = "Renderer";
 
+	public static final String JSTACHE_FLAGS_DEBUG = "jstache.debug";
+
+	public static final String JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN = "jstache.no_inverted_broken_chain";
+
 	@NonNullByDefault
 	public enum Flag {
 

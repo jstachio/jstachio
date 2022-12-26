@@ -45,11 +45,18 @@ public class PrismsTest {
 		}
 
 		List<Constant> constants() {
-			return allAnnotations().stream().flatMap(Constant::of).toList();
+			Stream<Constant> flags = Stream.of(flags()).map(Constant::of);
+			return Stream.concat(allAnnotations().stream().flatMap(Constant::of), flags).toList();
 		}
 	}
 
 	record Constant(String name, String value) {
+		static Constant of(JStacheFlags.Flag flag) {
+			String name = "JSTACHE_FLAGS_" + flag.name();
+			String value = "jstache." + flag.name().toLowerCase();
+			return new Constant(name, value);
+		}
+
 		static Stream<Constant> of(Class<?> c) {
 			return Stream
 					.of(c.getDeclaredFields()).filter(f -> Modifier.isFinal(f.getModifiers())
