@@ -31,7 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build and Test with Maven
-        run: mvn $MAVEN_CLI_OPTS clean verify
+        run: ./mvnw $MAVEN_CLI_OPTS clean verify
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: always()
