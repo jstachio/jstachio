@@ -24,7 +24,7 @@
     This property is to pin the build to a specific version of maven for reproducible builds
     as well as let dependabot check for maven updates. 
     -->
-    <maven.core.version>3.8.6</maven.core.version>
+    <maven.core.version>3.8.7</maven.core.version>
   </properties>
   <modules>
     <module>etc</module>
