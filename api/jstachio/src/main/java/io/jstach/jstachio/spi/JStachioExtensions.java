@@ -137,7 +137,8 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 		}
 		JStachioFilter filter = JStachioFilter.compose(filters);
 		if (finders.isEmpty()) {
-			finders.add(JStachioTemplateFinder.defaultTemplateFinder(config));
+			finders.add(
+					JStachioTemplateFinder.cachedTemplateFinder(JStachioTemplateFinder.defaultTemplateFinder(config)));
 		}
 		JStachioTemplateFinder templateFinder = CompositeTemplateFinder.of(finders);
 		return new DefaultJStachioExtensions(List.copyOf(svs), config, filter, templateFinder);

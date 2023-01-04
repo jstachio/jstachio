@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.jstache.JStache;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
@@ -67,11 +69,31 @@ public interface JStachioTemplateFinder {
 
 	/**
 	 * The default template finder that uses reflection and or the ServiceLoader.
+	 * <p>
+	 * <em>This implementation performs no caching. If you would like caching call
+	 * {@link #cachedTemplateFinder(JStachioTemplateFinder)} on the returned finder.</em>
 	 * @param config used to help find templates as well as logging.
 	 * @return default template finder.
 	 */
 	public static JStachioTemplateFinder defaultTemplateFinder(JStachioConfig config) {
 		return new DefaultTemplateFinder(config);
+	}
+
+	/**
+	 * Decorates a template finder with a cache using {@link ClassValue} with the
+	 * modelType as the key.
+	 * <p>
+	 * <em>While the finder does not provide any eviction the cache will not prevent
+	 * garbage collection of the model classes.</em>
+	 * @param finder to be decorated unless the finder is already decorated thus it is a
+	 * noop to repeateadly call this method on already cached template finder.
+	 * @return caching template finder
+	 */
+	public static JStachioTemplateFinder cachedTemplateFinder(JStachioTemplateFinder finder) {
+		if (finder instanceof ClassValueCacheTemplateFinder) {
+			return finder;
+		}
+		return new ClassValueCacheTemplateFinder(finder);
 	}
 
 }
@@ -97,6 +119,42 @@ final class DefaultTemplateFinder implements JStachioTemplateFinder {
 
 }
 
+final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
+
+	private final ClassValue<TemplateInfo> cache;
+
+	private final JStachioTemplateFinder delegate;
+
+	public ClassValueCacheTemplateFinder(JStachioTemplateFinder delegate) {
+		super();
+		this.delegate = delegate;
+		this.cache = new ClassValue<TemplateInfo>() {
+
+			@Override
+			protected @Nullable TemplateInfo computeValue(@Nullable Class<?> type) {
+				try {
+					return delegate.findTemplate(type);
+				}
+				catch (Exception e) {
+					Templates.sneakyThrow(e);
+					throw new RuntimeException();
+				}
+			}
+		};
+	}
+
+	@Override
+	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
+		return cache.get(modelType);
+	}
+
+	@Override
+	public int order() {
+		return delegate.order();
+	}
+
+}
+
 final class CompositeTemplateFinder implements JStachioTemplateFinder {
 
 	private final List<JStachioTemplateFinder> finders;
@@ -106,7 +164,10 @@ final class CompositeTemplateFinder implements JStachioTemplateFinder {
 		this.finders = finders;
 	}
 
-	public static CompositeTemplateFinder of(List<? extends JStachioTemplateFinder> finders) {
+	public static JStachioTemplateFinder of(List<? extends JStachioTemplateFinder> finders) {
+		if (finders.size() == 1) {
+			return finders.get(0);
+		}
 		ArrayList<JStachioTemplateFinder> sorted = new ArrayList<>();
 		sorted.addAll(finders);
 		sorted.sort(Comparator.comparingInt(JStachioTemplateFinder::order));

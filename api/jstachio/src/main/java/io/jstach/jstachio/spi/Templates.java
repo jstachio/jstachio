@@ -97,7 +97,7 @@ public final class Templates {
 	 * <p>
 	 * Why might you need the reflective data instead of the static generated meta data?
 	 * Well often times the annotation processor in a hot reload environment such as
-	 * JRebel, JBoss modles, or Spring Reloadhas not generated the code from a JStache
+	 * JRebel, JBoss modules, or Spring Reload has not generated the code from a JStache
 	 * model and or it is not desired. This allows reflection based engines like JMustache
 	 * to keep working even if code is not generated.
 	 * @param modelType the class that is annotated with {@link JStache}
@@ -218,6 +218,11 @@ public final class Templates {
 	private static List<ClassLoader> collectClassLoaders(@Nullable ClassLoader classLoader) {
 		return Stream.of(classLoader, Thread.currentThread().getContextClassLoader(), Template.class.getClassLoader())
 				.filter(cl -> cl != null).toList();
+	}
+
+	@SuppressWarnings("unchecked")
+	static <E extends Throwable> void sneakyThrow(final Throwable x) throws E {
+		throw (E) x;
 	}
 
 	static class TemplateInfos {

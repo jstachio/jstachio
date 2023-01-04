@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
+import static io.jstach.jstachio.spi.Templates.sneakyThrow;
 
 /**
  * An abstract jstachio that just needs a {@link JStachioTemplateFinder} and
@@ -47,11 +48,6 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@Override
 	public boolean supportsType(Class<?> modelType) {
 		return extensions().getTemplateFinder().supportsType(modelType);
-	}
-
-	@SuppressWarnings("unchecked")
-	static <E extends Throwable> void sneakyThrow(final Throwable x) throws E {
-		throw (E) x;
 	}
 
 	protected TemplateInfo template(Class<?> modelType) {
