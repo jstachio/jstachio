@@ -39,6 +39,18 @@ public enum DefaultFormatter implements Formatter {
 				downstream.append(a, String.valueOf(o));
 			}
 		}
+
+		/**
+		 * {@inheritDoc} Will throw an NPE if parameter s is <code>null</code>.
+		 */
+		@Override
+		public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
+				String s) throws IOException {
+			if (s == null) {
+				throw new NullPointerException("null at: " + path);
+			}
+			downstream.append(a, s);
+		}
 	};
 
 	/**

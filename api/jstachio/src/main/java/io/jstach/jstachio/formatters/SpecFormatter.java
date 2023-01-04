@@ -35,6 +35,19 @@ public enum SpecFormatter implements Formatter {
 			}
 
 		}
+
+		/**
+		 * {@inheritDoc} <strong> Unlike the normal behavior of
+		 * {@link String#valueOf(Object)} if a String is null then nothing will be
+		 * rendered per the mustache spec. </strong>.
+		 */
+		@Override
+		public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
+				String s) throws IOException {
+			if (s != null) {
+				downstream.append(a, s);
+			}
+		}
 	};
 
 	/**
