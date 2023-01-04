@@ -331,7 +331,7 @@
                 <pluginExecution>
                   <pluginExecutionFilter>
                     <groupId>io.spring.javaformat</groupId>
-                    <artifactId>fl syway-maven-plugin</artifactId>
+                    <artifactId>spring-javaformat-maven-plugin</artifactId>
                     <versionRange>[0.0.35,)</versionRange>
                     <goals>
                       <goal>apply</goal>
