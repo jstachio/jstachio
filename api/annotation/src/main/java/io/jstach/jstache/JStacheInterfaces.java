@@ -68,6 +68,9 @@ public @interface JStacheInterfaces {
 	 */
 	public Class<?>[] templateImplements() default {};
 
+	// We have to turn off the formatter because it breaks long a href attribute links
+	// into multiple lines which angers javadoc
+	//@formatter:off
 	/**
 	 * Will make all generated templates that are in the annotated class/package/module
 	 * extened a class. If the class has a single generic type parameter (e.g.
@@ -84,16 +87,22 @@ public @interface JStacheInterfaces {
 	 * <p>
 	 * Below are the methods that will not be generated if present on the parent class:
 	 * <ol>
-	 * <li><code>templateFormatter()</code> (see <a href=
-	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">io.jstach.jstachio.TemplateInfo</a>)</li>
-	 * <li><code>templateEscaper()</code> (see <a href=
-	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">io.jstach.jstachio.TemplateInfo</a>)</li>
-	 * <li><code>execute(T, Appendable)</code> (see <a href=
-	 * "../../../../io.jstach.jstachio/io/jstach/jstachio/Template.html">io.jstach.jstachio.Template</a>,
-	 * the templateExtends class will need to be parameterized for this to work)</li>
+	 * <li><code>templateFormatter()</code> (see 
+	 * <a href="{@docRoot}/io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">
+	 * io.jstach.jstachio.TemplateInfo</a>)</li>
+	 * <li><code>templateEscaper()</code> (see 
+	 * <a href="{@docRoot}/io.jstach.jstachio/io/jstach/jstachio/TemplateInfo.html">
+	 * io.jstach.jstachio.TemplateInfo</a>)</li>
+	 * <li><code>execute(T, Appendable)</code> (see 
+	 * <a href="{@docRoot}/io.jstach.jstachio/io/jstach/jstachio/Template.html">
+	 * io.jstach.jstachio.Template
+	 * </a>, 
+	 * the
+	 * templateExtends class will need to be parameterized for this to work)</li>
 	 * </ol>
 	 * @return interfaces that generated template will implement
 	 */
+	//@formatter:on
 	public Class<?> templateExtends() default Object.class;
 
 	/**
