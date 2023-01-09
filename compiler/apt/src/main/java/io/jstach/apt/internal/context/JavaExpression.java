@@ -136,6 +136,14 @@ class JavaExpression {
 				concatPath(executableElement.getSimpleName().toString()));
 	}
 
+	public boolean isNullable() {
+		if (type.getKind().isPrimitive()) {
+			return false;
+		}
+		return type.getAnnotationMirrors().stream()
+				.filter(am -> am.getAnnotationType().toString().endsWith(".Nullable")).findAny().isPresent();
+	}
+
 	public ExecutableType methodSignature(Element element) {
 		ExecutableElement executableElement = (ExecutableElement) element;
 		return (ExecutableType) model.asMemberOf((DeclaredType) type, executableElement);

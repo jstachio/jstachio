@@ -13,6 +13,7 @@ import io.jstach.jstache.JStache;
 		{{#ids}}
 		{{.}}
 		{{/ids}}
+		{{message.length}}
 		""")
 public class ModelWithNullable {
 
@@ -20,10 +21,17 @@ public class ModelWithNullable {
 
 	public final @Nullable String @Nullable [] ids;
 
-	public ModelWithNullable(List<@Nullable String> names, @Nullable String @Nullable [] ids) {
+	private final @Nullable String message;
+
+	public ModelWithNullable(List<@Nullable String> names, @Nullable String @Nullable [] ids, @Nullable String message) {
 		super();
 		this.names = names;
 		this.ids = ids;
+		this.message = message;
+	}
+
+	public @Nullable String getMessage() {
+		return message;
 	}
 
 }
