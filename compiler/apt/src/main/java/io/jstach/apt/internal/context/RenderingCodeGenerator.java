@@ -401,10 +401,14 @@ public class RenderingCodeGenerator {
 
 	private RenderingContext nullableRenderingContext(JavaExpression expression, RenderingContext context) {
 		if (javaModel.isSameType(expression.type(), knownTypes._Object.typeElement().asType())) {
-			return new BooleanRenderingContext(
-					expression.text() + " != null && ! Boolean.FALSE.equals(" + expression.text() + ")", context);
+			String nullableCheck = expression.isNullable() ? expression.text() + " != null && " : "";
+			return new BooleanRenderingContext(nullableCheck + " ! Boolean.FALSE.equals(" + expression.text() + ")",
+					context);
 		}
-		return new BooleanRenderingContext(expression.text() + " != null", context);
+		else if (expression.isNullable()) {
+			return new BooleanRenderingContext(expression.text() + " != null", context);
+		}
+		return new BlockRenderingContext(context);
 	}
 
 }

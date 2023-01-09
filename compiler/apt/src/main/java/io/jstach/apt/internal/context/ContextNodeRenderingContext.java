@@ -30,7 +30,8 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
 		if (getMethod == null) {
 			return null;
 		}
-		return expression.mapGet(getMethod, name);
+		var returnedExpression = expression.mapGet(getMethod, name);
+		return returnedExpression;
 	}
 
 }
