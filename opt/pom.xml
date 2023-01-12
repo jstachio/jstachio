@@ -13,7 +13,7 @@
     <module>jstachio-spring-example</module>
   </modules>
   <properties>
-    <spring.version>6.0.3</spring.version>
+    <spring.version>6.0.4</spring.version>
     <spring-boot.version>3.0.1</spring-boot.version>
   </properties>
   <dependencyManagement>
