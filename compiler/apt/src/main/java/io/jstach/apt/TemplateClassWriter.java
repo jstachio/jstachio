@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,6 +72,10 @@ class TemplateClassWriter {
 		codeWriter.println(s);
 	}
 
+	/*
+	 * This is used for JStacheInterfaces that provide superclasses or interfaces with
+	 * methods that will not generate if they are there.
+	 */
 	enum GeneratedMethod {
 
 		execute, templateFormatter, templateEscaper;
@@ -93,6 +98,9 @@ class TemplateClassWriter {
 			return !gm.contains(this);
 		}
 
+		/*
+		 * See if the method matches one of the allowed override methods
+		 */
 		public boolean isMatch(ExecutableElement e) {
 			var jlm = JavaLanguageModel.getInstance();
 
@@ -139,10 +147,9 @@ class TemplateClassWriter {
 		/*
 		 * TODO we should make this whole "provides" pattern DRY
 		 */
-		JStacheContentTypePrism contentTypePrism = JStacheContentTypePrism.getInstanceOn(contentTypeElement);
-		assert contentTypePrism != null;
-		JStacheFormatterPrism formatterPrism = JStacheFormatterPrism.getInstanceOn(formatterTypeElement);
-		assert formatterPrism != null;
+		Optional<JStacheContentTypePrism> contentTypePrism = contentTypeElement
+				.map(JStacheContentTypePrism::getInstanceOn);
+		Optional<JStacheFormatterPrism> formatterPrism = formatterTypeElement.map(JStacheFormatterPrism::getInstanceOn);
 
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
@@ -189,11 +196,6 @@ class TemplateClassWriter {
 
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 		String _Escaper = jstachio ? ESCAPER_CLASS : _F_Escaper;
-
-		String contentTypeProvideCall = contentTypeElement.getQualifiedName() + "." + contentTypePrism.providesMethod()
-				+ "()";
-		String formatterProvideCall = formatterTypeElement.getQualifiedName() + "." + formatterPrism.providesMethod()
-				+ "()";
 
 		println("package " + packageName + ";");
 		println("");
@@ -264,6 +266,8 @@ class TemplateClassWriter {
 		println("    }");
 		println("");
 		if (jstachio) {
+			String formatterProvideCall = formatterTypeElement.orElseThrow().getQualifiedName() + "."
+					+ formatterPrism.orElseThrow().providesMethod() + "()";
 			println("    private static " + _Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
 					+ " formatter) {");
 			println("        return " + _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall
@@ -273,11 +277,13 @@ class TemplateClassWriter {
 		else {
 			println("    private static " + _F_Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
 					+ " formatter) {");
-			println("        return formatter != null ? formatter : (i -> \"\" + i);");
+			println("        return formatter != null ? formatter : (i -> i.toString());");
 			println("    }");
 		}
 		println("");
 		if (jstachio) {
+			String contentTypeProvideCall = contentTypeElement.orElseThrow().getQualifiedName() + "."
+					+ contentTypePrism.orElseThrow().providesMethod() + "()";
 			println("    private static " + _Escaper + " __escaper(" + "/* @Nullable */ " + _F_Escaper + " escaper) {");
 			println("        return " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall + ");");
 			println("    }");
@@ -314,6 +320,30 @@ class TemplateClassWriter {
 			println("    }");
 			println("");
 		}
+
+		/*
+		 * We do not need to generate the String friendly execute for jstachio as the
+		 * interface takes care of that.
+		 */
+		if (!jstachio) {
+			println("    /**");
+			println("     * Convenience method that directly renders the model as a String.");
+			println("     * @param model never null.");
+			println("     * @return the rendered model.");
+			println("     */");
+			println("    public String execute(" + className + " model) {");
+			println("        StringBuilder sb = new StringBuilder();");
+			println("        try {");
+			println("            execute(model, sb);");
+			println("        }");
+			println("        catch(java.io.IOException e) {");
+			println("            throw new java.io.UncheckedIOException(e);");
+			println("        }");
+			println("        return sb.toString();");
+			println("    }");
+			println("");
+		}
+
 		if (jstachio)
 			println("    @Override");
 		else {
@@ -405,7 +435,7 @@ class TemplateClassWriter {
 		if (jstachio) {
 			println("    @Override");
 			println("    public Class<?> " + "templateContentType() {");
-			println("        return " + contentTypeElement.getQualifiedName() + ".class;");
+			println("        return " + contentTypeElement.orElseThrow().getQualifiedName() + ".class;");
 			println("    }");
 		}
 		if (GeneratedMethod.templateEscaper.gen(generatedMethods)) {

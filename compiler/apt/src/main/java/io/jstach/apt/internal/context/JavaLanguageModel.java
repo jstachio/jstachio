@@ -165,6 +165,14 @@ public class JavaLanguageModel implements TypesMixin {
 
 	}
 
+	boolean isType(TypeMirror type, Optional<? extends KnownType> knownType) {
+		var kt = knownType.orElse(null);
+		if (kt == null) {
+			return false;
+		}
+		return isType(type, kt);
+	}
+
 	public Optional<KnownType> resolveType(TypeMirror type) throws TypeException {
 		if (type instanceof WildcardType wt) {
 			var eb = wt.getExtendsBound();

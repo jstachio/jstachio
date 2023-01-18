@@ -84,6 +84,13 @@ public enum JStacheType {
 	 * Zero runtime dependency renderers are generated if this is selected. Code will not
 	 * have a single reference to JStachio runtime interfaces.
 	 * <p>
+	 * Because there is no reference to the JStachio runtime the escaper and formatter are
+	 * inline implementations that passthrough the result of
+	 * <code>Object.toString()</code> directly to the appendable. Just like JStachios
+	 * default formatter a <code>null</code> variable will fail fast with a null pointer
+	 * exception. <em>If you need different escaping or formatting you will have to
+	 * provide your own implementation!</em>
+	 * <p>
 	 * If all templates in a project are generated this way then you can and ideally
 	 * should set:
 	 * <ul>
@@ -93,8 +100,8 @@ public enum JStacheType {
 	 * <code>requires static io.jstach.jstache</code>.</li>
 	 * </ul>
 	 * The above will minimize your deployed footprint and downstream dependencies will
-	 * have not transitively need jstachio. <strong>N.B if you go this route you will not
-	 * be able to use jstachio runtime extensions</strong>
+	 * not transitively need jstachio. <strong>N.B if you go this route you will not be
+	 * able to use jstachio runtime extensions.</strong>
 	 *
 	 *
 	 * @apiNote if this is selected jstachio runtime extensions will not work for the

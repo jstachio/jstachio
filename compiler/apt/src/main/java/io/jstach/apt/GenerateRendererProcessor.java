@@ -44,6 +44,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -383,9 +384,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			PathConfig pathConfig, //
 			String template, //
 			Charset charset, //
-			TypeElement contentTypeElement, //
+			Optional<TypeElement> contentTypeElement, //
 			FormatterTypes formatterTypes, //
-			TypeElement formatterTypeElement, //
+			Optional<TypeElement> formatterTypeElement, //
 			Map<String, NamedTemplate> partials, //
 			InterfacesConfig ifaces, //
 			Set<Flag> flags, Map<String, String> options) implements ProcessingConfig {
@@ -441,8 +442,22 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 		Charset charset = resolveCharset(element);
 
+		@Nullable
 		TypeElement contentTypeElement = resolveContentType(element, gp);
+		if (contentTypeElement == null && formatCallType != FormatCallType.STACHE) {
+			throw new AnnotatedException(element,
+					"Content Type provider class is missing which usually is a classpath issue"
+							+ " or the JStache type was supposed to be zero dep (JStacheType.STACHE)");
+		}
+
+		@Nullable
 		TypeElement formatterElement = resolveFormatter(element, gp);
+		if (formatterElement == null && formatCallType != FormatCallType.STACHE) {
+			throw new AnnotatedException(element,
+					"Formatter provider class is missing which usually is a classpath issue"
+							+ " or the JStache type was supposed to be zero dep (JStacheType.STACHE)");
+		}
+
 		String path = gp.path();
 		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
@@ -461,9 +476,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				pathConfig, //
 				template, //
 				charset, //
-				contentTypeElement, //
+				Optional.ofNullable(contentTypeElement), //
 				formatterTypes, //
-				formatterElement, //
+				Optional.ofNullable(formatterElement), //
 				partials, //
 				ifaces, //
 				flags, //
@@ -501,7 +516,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return rendererClassRef;
 	}
 
-	private TypeElement resolveContentType(TypeElement element, JStachePrism gp) throws DeclarationException {
+	private @Nullable TypeElement resolveContentType(TypeElement element, JStachePrism gp) throws DeclarationException {
 
 		var lm = JavaLanguageModel.getInstance();
 
@@ -526,7 +541,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return contentTypeProviderElement;
 	}
 
-	private TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
+	private @Nullable TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
 
 		var lm = JavaLanguageModel.getInstance();
 

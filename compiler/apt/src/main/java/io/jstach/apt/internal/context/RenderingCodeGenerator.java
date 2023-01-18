@@ -205,7 +205,7 @@ public class RenderingCodeGenerator {
 		// A special case scenario where the root is a java.util.Map or our custom
 		// MapNode... not recommended but useful for spec tests
 
-		if (javaModel.isType(element.asType(), knownTypes._MapNode)) {
+		if (javaModel.isType(element.asType(), knownTypes._ContextNode)) {
 			rootRenderingContext = new ContextNodeRenderingContext(javaExpression, element, root);
 		}
 		else if (javaModel.isType(element.asType(), knownTypes._Map)) {
@@ -228,7 +228,8 @@ public class RenderingCodeGenerator {
 
 	RenderingContext createRenderingContext(ContextType childType, JavaExpression expression,
 			RenderingContext enclosing) throws TypeException {
-		if (knownTypes._MapNode.isType(expression.type())) {
+		var contextNode = knownTypes._ContextNode.orElse(null);
+		if (contextNode != null && contextNode.isType(expression.type())) {
 			return switch (childType) {
 				case SECTION: {
 					yield createIterableContext(childType, expression, enclosing);
@@ -340,7 +341,7 @@ public class RenderingCodeGenerator {
 		RenderingContext variables = new VariablesRenderingContext(variableContext, nullable);
 		IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName,
 				indexVariableName, variables);
-		if (expression.model().isType(expression.type(), knownTypes._MapNode)) {
+		if (expression.model().isType(expression.type(), knownTypes._ContextNode)) {
 			return createMapNodeContext(iterable.elementExpession(), iterable);
 		}
 		return createRenderingContext(childType, iterable.elementExpession(), iterable);
@@ -348,7 +349,8 @@ public class RenderingCodeGenerator {
 
 	RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing)
 			throws TypeException {
-		if (knownTypes._Iterable.isType(expression.type()) && !knownTypes._MapNode.isType(expression.type())) {
+		if (knownTypes._Iterable.isType(expression.type())
+				&& !expression.model().isType(expression.type(), knownTypes._ContextNode)) {
 			return new BooleanRenderingContext(
 					"(" + expression.text() + " == null )" + " || ! " + expression.text() + ".iterator().hasNext()",
 					enclosing);
@@ -379,11 +381,11 @@ public class RenderingCodeGenerator {
 			var optionalContext = createOptionalContext(ContextType.INVERTED, expression, enclosing);
 			return new BooleanRenderingContext("(" + expression.text() + ".isEmpty())", optionalContext);
 		}
-		else if (javaModel.isType(expression.type(), knownTypes._MapNode)
+		else if (javaModel.isType(expression.type(), knownTypes._ContextNode)
 				&& expression.type() instanceof @NonNull DeclaredType dt) {
 			ContextNodeRenderingContext c = new ContextNodeRenderingContext(expression, javaModel.asElement(dt),
 					enclosing);
-			return new BooleanRenderingContext(knownTypes._MapNode.typeElement().getQualifiedName().toString()
+			return new BooleanRenderingContext(knownTypes._ContextNode.get().typeElement().getQualifiedName().toString()
 					+ ".isFalsey(" + expression.text() + ")", c);
 		}
 		else if (expression.type() instanceof DeclaredType dt) {

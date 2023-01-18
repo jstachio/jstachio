@@ -46,6 +46,7 @@ import io.jstach.apt.prism.Prisms;
 
 /**
  * @author Victor Nazarov
+ * @author agentgt
  */
 public class KnownTypes implements TypesMixin {
 
@@ -101,7 +102,7 @@ public class KnownTypes implements TypesMixin {
 
 	public final ObjectType _Map;
 
-	public final ObjectType _MapNode;
+	public final Optional<ObjectType> _ContextNode;
 
 	public final ObjectType _UUID;
 
@@ -147,8 +148,9 @@ public class KnownTypes implements TypesMixin {
 		_Error = b.objectType(Error.class);
 		_RuntimeException = b.objectType(RuntimeException.class);
 		_Optional = b.objectType(Optional.class);
-		_MapNode = b.objectType(Prisms.CONTEXT_NODE_CLASS); // MapNode needs to be above
-															// _Iterable
+		_ContextNode = b.optionalObjectType(Prisms.CONTEXT_NODE_CLASS); // MapNode needs
+																		// to be above
+		// _Iterable
 		_Iterable = b.objectType(Iterable.class);
 		_List = b.objectType(List.class);
 
@@ -201,11 +203,13 @@ public class KnownTypes implements TypesMixin {
 			return nt;
 		}
 
-		private ObjectType objectType(String canonicalName) {
-			var typeElement = Objects.requireNonNull(elements.getTypeElement(canonicalName));
+		private Optional<ObjectType> optionalObjectType(String canonicalName) {
+			var typeElement = elements.getTypeElement(canonicalName);
+			if (typeElement == null)
+				return Optional.empty();
 			var ot = new ObjectType(mixin, typeElement, canonicalName);
 			objectTypes.add(ot);
-			return ot;
+			return Optional.of(ot);
 		}
 
 		private ObjectType objectType(Class<?> type) {
