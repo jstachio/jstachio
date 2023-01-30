@@ -129,12 +129,15 @@ import java.util.Optional;
  * after being edited to <code>target/classes</code> and thus are not found by the
  * annotation processor. To deal with this issue JStachio during compilation fallsback to
  * direct filesystem access and assumes that your templates are located:
- * <code>CWD/src/main/resources</code>. (TODO make that configurable).
+ * <code>CWD/src/main/resources</code>. That location is configurable via the annotation
+ * processor option {@link #RESOURCES_PATH_OPTION}
+ * (<strong>{@value #RESOURCES_PATH_OPTION}</strong>).
+ *
  * <p>
  * Normally you need to specify the full path in {@link #path()} which is a resource path
- * as specified by {@link ClassLoader#getResource(String)}) however you can make path
- * expansion happen with {@link io.jstach.jstache.JStachePath} which allows you to prefix
- * and suffix the path.
+ * (and not a file path) as specified by {@link ClassLoader#getResource(String)} however
+ * you can make path expansion happen with {@link io.jstach.jstache.JStachePath} which
+ * allows you to prefix and suffix the path.
  *
  * <h4 id="_partials">Partials</h4>
  * <strong><code>{{&gt; partial }} and {{&lt; parent }}{{/parent}} </code></strong>
@@ -472,8 +475,9 @@ public @interface JStache {
 	String name() default "";
 
 	/**
-	 * An annotation processor compiler flag that says where the templates files are
-	 * located.
+	 * An annotation processor compiler flag
+	 * (<strong>{@value #RESOURCES_PATH_OPTION}</strong>) that says where the templates
+	 * files are located.
 	 * <p>
 	 * When the annotation processor runs these files usually are in:
 	 * <code>javax.tools.StandardLocation#CLASS_OUTPUT</code> and in a Maven or Gradle
@@ -496,9 +500,14 @@ public @interface JStache {
 	 * effectively disables the above behavior. </strong>
 	 *
 	 * You can change it by passing to the annotation processor a setting for
-	 * {@value #RESOURCES_PATH_OPTION} like:
+	 * <strong>{@value #RESOURCES_PATH_OPTION}</strong> like:
 	 * <pre><code>jstache.resourcesPath=some/path</code></pre>
 	 *
+	 * For build annotation processor configuration examples see:
+	 * <ol>
+	 * <li><a href="#_config_compiler_maven">Configuring options with Maven</a></li>
+	 * <li><a href="#_config_compiler_gradle">Configuring options with Gradle</a></li>
+	 * </ol>
 	 *
 	 */
 	public static final String RESOURCES_PATH_OPTION = "jstache.resourcesPath";
