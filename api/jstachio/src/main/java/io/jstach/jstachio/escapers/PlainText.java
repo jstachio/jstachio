@@ -45,7 +45,7 @@ public enum PlainText {
 	 * Provides the escaper for static lookup.
 	 * @return noop like escaper singleton
 	 */
-	public static Escaper provides() {
+	public static Escaper provider() {
 		return NoEscaper.INSTANCE;
 	}
 

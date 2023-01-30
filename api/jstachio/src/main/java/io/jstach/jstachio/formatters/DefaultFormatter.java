@@ -57,7 +57,7 @@ public enum DefaultFormatter implements Formatter {
 	 * Provides the default formatter for static lookup.
 	 * @return the default formatter singleton
 	 */
-	public static Formatter provides() {
+	public static Formatter provider() {
 		return INSTANCE;
 	}
 

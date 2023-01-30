@@ -24,7 +24,7 @@ public class Issue52Test {
 
 	@Test
 	public void testSpecFormatterShouldRenderEmptyStringForNull() throws Exception {
-		NullStringModelRenderer r = new NullStringModelRenderer(SpecFormatter.provides(), null);
+		NullStringModelRenderer r = new NullStringModelRenderer(SpecFormatter.provider(), null);
 		String actual = r.execute(new NullStringModel(null));
 		assertEquals("", actual);
 

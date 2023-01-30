@@ -69,9 +69,10 @@ public @interface JStacheContentType {
 	/**
 	 * A static method that will return an implementation of
 	 * {@code io.jstach.api.runtime.Escaper} or {@code Function<String,String> }
-	 * @return default method name is "provides" just like the {@link ServiceLoader}
+	 * @return default method name is <code>provider</code> just like the
+	 * {@link ServiceLoader}
 	 */
-	String providesMethod() default "provides";
+	String providesMethod() default "provider";
 
 	/**
 	 * Media Type of the template to help in renderer lookup.

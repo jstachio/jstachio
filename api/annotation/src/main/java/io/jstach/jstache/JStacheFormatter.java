@@ -56,15 +56,16 @@ public @interface JStacheFormatter {
 	/**
 	 * A static method that will return an implementation of
 	 * {@code io.jstach.api.runtime.Formatter} or {@code Function<Object,String> }
-	 * @return default method name is "provides" just like the {@link ServiceLoader}
+	 * @return default method name is <code>provider</code> just like the
+	 * {@link ServiceLoader}
 	 */
-	String providesMethod() default "provides";
+	String providesMethod() default "provider";
 
 	/**
 	 * A formatter type marker to resolve the formatter based on config elsewhere.
 	 *
-	 * @apiNote The provides method is purposely missing to avoid coupling with the
-	 * runtime.
+	 * @apiNote The <code>provider</code> method is purposely missing to avoid coupling
+	 * with the runtime.
 	 * @author agentgt
 	 */
 	@JStacheFormatter

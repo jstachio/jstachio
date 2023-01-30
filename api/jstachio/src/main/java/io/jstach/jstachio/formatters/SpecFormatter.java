@@ -54,7 +54,7 @@ public enum SpecFormatter implements Formatter {
 	 * Provides the formatter for static lookup.
 	 * @return the single instance of the spec formatter
 	 */
-	public static Formatter provides() {
+	public static Formatter provider() {
 		return INSTANCE;
 	}
 

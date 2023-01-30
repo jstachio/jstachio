@@ -386,10 +386,10 @@ public final class Templates {
 			public Function<String, String> provides(@Nullable Class<?> contentType) throws Exception {
 				contentType = nullToDefault(contentType);
 				if (contentType.equals(Html.class)) {
-					return Html.provides();
+					return Html.provider();
 				}
 				else if (contentType.equals(PlainText.class)) {
-					return PlainText.provides();
+					return PlainText.provider();
 				}
 				return StaticProvider.super.provides(contentType);
 			}
@@ -429,10 +429,10 @@ public final class Templates {
 			public Function<@Nullable Object, String> provides(@Nullable Class<?> formatterType) throws Exception {
 				formatterType = nullToDefault(formatterType);
 				if (formatterType.equals(DefaultFormatter.class)) {
-					return DefaultFormatter.provides();
+					return DefaultFormatter.provider();
 				}
 				else if (formatterType.equals(SpecFormatter.class)) {
-					return SpecFormatter.provides();
+					return SpecFormatter.provider();
 				}
 				return StaticProvider.super.provides(formatterType);
 			}

@@ -29,7 +29,7 @@ public enum Html {
 	 * Provides the escaper.
 	 * @return HTML escaper.
 	 */
-	public static Escaper provides() {
+	public static Escaper provider() {
 		return new HtmlEscaper();
 	}
 
