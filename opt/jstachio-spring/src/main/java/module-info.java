@@ -19,7 +19,7 @@
  * <strong>See {@link io.jstach.opt.spring.web}</strong>
  * <p>
  * Notably {@link io.jstach.opt.spring.web.JStachioHttpMessageConverter} provides a unique way
- * to do MVC in a typesafe way instead of the normal {@code Map<String,String>} model and
+ * to do MVC in a type-safe way instead of the normal {@code Map<String,String>} model and
  * {@link java.lang.String} view way (ModelAndView). This particularly integration
  * is not tied to the Servlet API.
  * 

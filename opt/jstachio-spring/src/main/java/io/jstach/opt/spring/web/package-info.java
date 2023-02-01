@@ -2,7 +2,7 @@
  * <h2>Spring Web integration</h2>
  *
  * {@link io.jstach.opt.spring.web.JStachioHttpMessageConverter} provides a unique way to
- * do MVC in a typesafe way instead of the normal {@code Map<String,String>} model and
+ * do MVC in a type-safe way instead of the normal {@code Map<String,String>} model and
  * {@link java.lang.String} view way (ModelAndView).
  * <p>
  *

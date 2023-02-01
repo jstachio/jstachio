@@ -4,7 +4,7 @@
 <h1><img src="resources/social-media.svg" alt="jstachio" width="50%"></h1>
 
 <strong>
-A typesafe Java Mustache templating engine.
+A type-safe Java Mustache templating engine.
 </strong>
 <p>
 <em>
@@ -18,6 +18,21 @@ Templates are compiled into readable Java source code and value bindings are sta
 <nav class="js-toc"></nav>
 
 <div class="js-toc-content">
+
+<h2 id="use_cases">Use Cases</h2>
+
+There are threee main use cases that this 
+<a href="https://en.wikipedia.org/wiki/Template_processor">templating engine</a> 
+is designed around with the cross cutting feature of 
+<a href="https://en.wikipedia.org/wiki/Type_safety">type safety</a> and performance:
+
+<ol>
+<li>Templating web applications for traditional SEO friendly HTML server side rendering.</li>
+<li>Templating for code generating.</li>
+<li>General purpose inline templating instead of using StringBuilder and or a more powerful 
+    <a href="https://openjdk.org/jeps/430">JEP 430 aka stringtemplates (still in preview)</a></li>
+</ol>
+
 <h2 id="1">Mustache Syntax</h2>
 
 The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
@@ -116,6 +131,9 @@ You will need to set that up otherwise code will not be generated.
 
 <h3 id="3.1">Maven</h3>
 
+Maven configuration has two choices. <code>annotationProcessorPaths</code> or classpath.
+
+<h4 id="maven_annotationProcessorPaths">Option 1 annotationProcessorPaths</h4>
 <pre class="language-xml">
 {@code
 <properties>
@@ -139,6 +157,8 @@ You will need to set that up otherwise code will not be generated.
             <configuration>
                 <source>17</source> <!-- 17 is the minimum -->
                 <target>17</target> <!-- 17 is the minimum -->
+                
+                <!-- You may not need annotationProcessorPaths if jstachio-apt is added as an option dep -->
                 <annotationProcessorPaths>
                     <path>
                         <groupId>io.jstach</groupId>
@@ -153,6 +173,37 @@ You will need to set that up otherwise code will not be generated.
 </build>
 }
 </pre>
+
+<h4 id="maven_classpath">Option 2 classpath</h4>
+
+JStachio annotation processor <em>MAY</em> also work without being registered in <code>annotationProcessorPaths</code>
+even for modular libraries and applications provided there is not already an <code>annotationProcessorPaths</code>
+set. This can be desirable as it allows less explicit maven configuration and normal dependency management
+(as wells avoids this bug: <a href="https://issues.apache.org/jira/browse/MCOMPILER-391">MCOMPILER-391</a>).
+
+<p>
+
+To make it work you would add jstachio-apt as an optional and provided dependency:
+
+<pre class="language-xml">
+{@code
+<dependencies>
+    <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-apt</artifactId>
+        <version>${io.jstach.version}</version>
+        <optional>true</optional>
+        <scope>provided</scope>
+    </dependency>
+<dependencies>
+}
+</pre>
+
+This works because jstachio-apt will be put on the classpath instead of the module path during compilation
+provided you <strong>DO NOT put <code>requires io.jstach.apt</code> in your module-info</strong> 
+which you snould never do in general.
+
+<h4 id="maven_zerodep">Maven Zero dependency configuration</h4>
 
 If all of your JStache are configured for zero dependency via  <code>JStacheConfig.type() == STACHE</code>
 you can instead rely on only one compile time dependency (replace dependencies section with following):
@@ -170,6 +221,7 @@ you can instead rely on only one compile time dependency (replace dependencies s
 <dependencies>
 }
 </pre>
+
 <h3 id="3.2">Gradle</h3>
 
 <pre><code class="language-kotlin">
@@ -181,6 +233,8 @@ dependencies {
 }
 </code>
 </pre>
+
+<h4 id="gradle_zerodep">Gradle Zero dependency configuration</h4>
 
 If all of your JStache are configured for zero dependency via  <code>JStacheConfig.type() == STACHE</code>
 you can instead configure Gradle like:

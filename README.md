@@ -3,7 +3,7 @@
 
 <img src="etc/social-media.svg" alt="jstachio">
 
-A typesafe Java Mustache templating engine.
+A type-safe Java Mustache templating engine.
 
 Templates are compiled into readable Java source code and value bindings are statically checked.
 

@@ -6,7 +6,7 @@
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
   <url>https://github.com/jstachio/jstachio</url>
-  <description>Compile time typesafe Java Mustache templating engine.</description>
+  <description>Compile time type-safe Java Mustache templating engine.</description>
   <organization>
     <name>jstachio</name>
     <url>https://jstach.io/jstachio</url>
