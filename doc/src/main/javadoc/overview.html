@@ -199,9 +199,13 @@ To make it work you would add jstachio-apt as an optional and provided dependenc
 }
 </pre>
 
-This works because jstachio-apt will be put on the classpath instead of the module path during compilation
-provided you <strong>DO NOT put <code>requires io.jstach.apt</code> in your module-info</strong> 
-which you snould never do in general.
+This works because maven will jstachio-apt on the classpath instead of the module path during compilation
+provided you <strong>DO NOT put</strong> <code>requires io.jstach.apt</code> in your module-info</strong> 
+which you should never do in general.
+<p>
+Be aware that the above option may have problems if you have multiple annotation processors 
+as some processors rely on specific order.
+
 
 <h4 id="maven_zerodep">Maven Zero dependency configuration</h4>
 
