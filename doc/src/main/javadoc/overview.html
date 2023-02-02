@@ -151,10 +151,11 @@ This is often desirable if you want to use JStachio for a code generation librar
 
 When the compiler compiles your annotated code JStachio's annotation processor will run.
 An annotation processor has access to the symbolic tree of the source code being compiled.
-The classes that are annotationed with JStachio's annotations are analyzed to find a template
+The classes that are annotated with JStachio's annotations are analyzed to find a template
 and various other configuration. Once the template is found it is parsed while referring
-to the symbolic tree of the class annotated with JStache. From that it deduces how to generate
-Java code that will interact with the model based on the template.
+to the symbolic tree of the class annotated with JStache (the model). 
+From that it deduces how to generate Java code that will navigate the model 
+and output text based on the template.
 
 <p>
     More explanation is available on {@link io.jstach.jstache.JStache} javadoc.
