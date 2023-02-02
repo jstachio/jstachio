@@ -60,9 +60,12 @@ checked last even if it is a directly on the top of the context stack.
 <strong>Most of the documentation of what mustache spec options are implemented and how
 are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 </p>
+
+
 <h2 id="2">Java Code</h2>
 
-Simply annotate a class with <strong>{@link io.jstach.jstache.JStache}</strong>
+Simply annotate a class with <strong>{@link io.jstach.jstache.JStache}</strong> like
+below:
 
 <pre><code class="language-java">
 /*
@@ -123,6 +126,40 @@ public void testPerson() throws Exception {
 
 }
 </code></pre>
+
+<h3 id="code_generation_mode">Code Generation Modes</h3>
+
+JStachio provides two major modes for how code is generated.
+
+<ol>
+<li>JStachio enchanced mode: {@link io.jstach.jstache.JStacheType#JSTACHIO} </li>
+<li>Zero dependency mode: {@link io.jstach.jstache.JStacheType#STACHE} </li>
+</ol>
+
+If you do not care about dependencies or footprint 
+{@link io.jstach.jstache.JStacheType#JSTACHIO} is the preferred mode and is the default.
+
+<p>
+
+On the other hand {@link io.jstach.jstache.JStacheType#STACHE Zero dependency mode} will generate
+code that will only have references to itself and the JDK base module (java.base).
+This is often desirable if you want to use JStachio for a code generation library 
+(e.g. another annotation processor).  
+
+
+<h2 id="how_it_works">How it works</h2>
+
+When the compiler compiles your annotated code JStachio's annotation processor will run.
+An annotation processor has access to the symbolic tree of the source code being compiled.
+The classes that are annotationed with JStachio's annotations are analyzed to find a template
+and various other configuration. Once the template is found it is parsed while referring
+to the symbolic tree of the class annotated with JStache. From that it deduces how to generate
+Java code that will interact with the model based on the template.
+
+<p>
+    More explanation is available on {@link io.jstach.jstache.JStache} javadoc.
+</p>
+
 
 <h2 id="3">Installation</h2>
 
