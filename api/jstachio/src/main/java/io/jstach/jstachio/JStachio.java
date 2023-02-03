@@ -100,9 +100,10 @@ public interface JStachio extends Renderer<Object> {
 	}
 
 	/**
-	 * Finds ServiceLoader based jstachio.
-	 * @return service loaded jstachio
+	 * Gets the static singleton jstachio.
+	 * @return the jstachio from {@link #setStaticJStachio(Supplier)}
 	 * @throws NullPointerException if jstachio is not found
+	 * @see #setStaticJStachio(Supplier)
 	 */
 	public static JStachio of() {
 		JStachio jstachio = JStachioHolder.get();
@@ -110,6 +111,14 @@ public interface JStachio extends Renderer<Object> {
 			throw new NullPointerException("JStachio not found. This is probably a classloading issue.");
 		}
 		return jstachio;
+	}
+
+	/**
+	 * Gets default singleton ServiceLoader based jstachio.
+	 * @return service loaded jstachio
+	 */
+	public static JStachio defaults() {
+		return io.jstach.jstachio.spi.JStachioResolver.defaultJStachio();
 	}
 
 	/**
@@ -123,23 +132,16 @@ public interface JStachio extends Renderer<Object> {
 			throw new NullPointerException("JStachio provider cannot be null");
 		}
 		JStachioHolder.provider = jstachioProvider;
-		JStachioHolder.jstachio = null;
 	}
 
 }
 
 final class JStachioHolder {
 
-	static Supplier<JStachio> provider = io.jstach.jstachio.spi.JStachioResolver::defaultJStachio;
-
-	static JStachio jstachio;
+	static Supplier<JStachio> provider = JStachio::defaults;
 
 	static JStachio get() {
-		JStachio j = jstachio;
-		if (j == null) {
-			jstachio = j = provider.get();
-		}
-		return j;
+		return provider.get();
 	}
 
 }
