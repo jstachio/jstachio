@@ -126,6 +126,8 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * Useful if you would like to avoid using the default ServiceLoader mechanism.
 	 * @param jstachioProvider if null a NPE will be thrown.
+	 * @apiNote the provider will be called on every call of {@link #of()} and thus to
+	 * avoid constant recreation it is recommend the supplier be memoized/cached.
 	 */
 	public static void setStaticJStachio(Supplier<JStachio> jstachioProvider) {
 		if (jstachioProvider == null) {
