@@ -319,7 +319,7 @@
         <plugin>
           <groupId>io.spring.javaformat</groupId>
           <artifactId>spring-javaformat-maven-plugin</artifactId>
-          <version>0.0.35</version>
+          <version>0.0.38</version>
         </plugin>
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
