@@ -1,4 +1,4 @@
-package io.jstach.opt.spring.example;
+package io.jstach.opt.spring.example.hello;
 
 import io.jstach.jstache.JStache;
 import io.jstach.opt.spring.webmvc.JStachioModelView;

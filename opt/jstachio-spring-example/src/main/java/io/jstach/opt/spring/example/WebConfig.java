@@ -3,12 +3,15 @@ package io.jstach.opt.spring.example;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
 
 /**
  * Configures MVC using {@link JStachioHttpMessageConverter} to allow returning models
@@ -34,6 +37,12 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		converters.add(new JStachioHttpMessageConverter(jstachio));
+	}
+
+	@Bean
+	@SuppressWarnings("exports")
+	public ViewSetupHandlerInterceptor viewSetupHandlerInterceptor(ApplicationContext context) {
+		return new ViewSetupHandlerInterceptor(context);
 	}
 
 }

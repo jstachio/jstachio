@@ -31,12 +31,6 @@ import io.jstach.opt.spring.webmvc.ViewFactory;
  * @author agentgt
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
-@JStacheInterfaces(
-		templateAnnotations = {Component.class}, //
-		templateImplements = {ViewFactory.class}, //
-		modelImplements = {JStachioModelView.class}
-)
-@JStacheConfig(naming = @JStacheName(suffix="View"))
 module io.jstach.opt.spring.example {
 	requires transitive io.jstach.opt.spring;
 	requires io.jstach.opt.jmustache;
@@ -54,6 +48,15 @@ module io.jstach.opt.spring.example {
 	requires com.fasterxml.jackson.databind;
 	
 	opens io.jstach.opt.spring.example to //
+	spring.core, spring.web, spring.beans, spring.context
+	;
+
+	opens io.jstach.opt.spring.example.message to //
+	spring.core, spring.web, spring.beans, spring.context //
+	, io.jstach.jstachio, io.jstach.opt.jmustache
+	;
+
+	opens io.jstach.opt.spring.example.hello to //
 	spring.core, spring.web, spring.beans, spring.context //
 	, io.jstach.jstachio, io.jstach.opt.jmustache //
 	, com.fasterxml.jackson.databind //
