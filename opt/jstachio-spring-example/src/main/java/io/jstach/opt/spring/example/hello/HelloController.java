@@ -1,4 +1,4 @@
-package io.jstach.opt.spring.example;
+package io.jstach.opt.spring.example.hello;
 
 import java.io.IOException;
 import java.io.Writer;
