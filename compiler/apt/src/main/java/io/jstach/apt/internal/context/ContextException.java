@@ -38,12 +38,23 @@ public class ContextException extends Exception {
 
 	private static final long serialVersionUID = -1496891677459676774L;
 
-	ContextException(@Nullable String message, TypeException ex) {
+	private ContextException(@Nullable String message, TypeException ex) {
 		super(message + ": type error: " + ex.getMessage(), ex);
 	}
 
-	ContextException(@Nullable String message) {
+	public ContextException(@Nullable String message) {
 		super(message);
+	}
+
+	public static class TypeNotAllowedContextException extends ContextException {
+
+		private static final long serialVersionUID = 3516540102898167374L;
+
+		TypeNotAllowedContextException(@Nullable String message, TypeException ex) {
+			super(message, ex);
+
+		}
+
 	}
 
 	public static class FieldNotFoundContextException extends ContextException {

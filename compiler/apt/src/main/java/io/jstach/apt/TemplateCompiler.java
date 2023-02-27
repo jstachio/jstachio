@@ -51,6 +51,7 @@ import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.internal.context.TemplateCompilerContext.LambdaCompiler;
 import io.jstach.apt.internal.token.MustacheTagKind;
 import io.jstach.apt.internal.token.MustacheTokenizer;
+import io.jstach.apt.prism.Prisms;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
@@ -593,7 +594,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	}
 
 	@Override
-	protected void _variable(String name) throws ProcessingException {
+	protected void _variable(String name) throws ProcessingException.VariableProcessingException {
 		indent();
 		flushUnescaped();
 		println();
@@ -606,11 +607,18 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			println();
 
 		}
+		catch (ContextException.TypeNotAllowedContextException ex) {
+			String message = "Variable type not allowed (see @" + Prisms.JSTACHE_FORMATTER_TYPES_CLASS + ").";
+			throw ProcessingException.VariableProcessingException.of(name, context, position, ex, message);
+		}
+		catch (ContextException.FieldNotFoundContextException ex) {
+			String message = "Variable not found.";
+			throw ProcessingException.VariableProcessingException.of(name, context, position, ex, message);
+		}
 		catch (ContextException ex) {
-			var templateStack = context.getTemplateStack();
-			String message = "Variable not found." + " var: " + name + ", template: "
-					+ templateStack.describeTemplateStack() + " context stack: " + context.printStack() + "\n";
-			throw new ProcessingException.VariableNotFoundProcessingException(position, ex, message);
+			String message = "Unknown variable problem.";
+			throw ProcessingException.VariableProcessingException.of(name, context, position, ex, message);
+
 		}
 	}
 

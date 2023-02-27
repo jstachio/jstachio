@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
@@ -148,6 +149,22 @@ public class JavaLanguageModel implements TypesMixin {
 			}
 			return null;
 		}
+	}
+
+	public Stream<DeclaredType> supers(DeclaredType type) {
+		return Stream.concat(Stream.of(type), operations.directSupertypes(type).stream() //
+				.flatMap(tm -> operations.directSupertypes(tm).stream()) //
+				.filter(tm -> tm instanceof DeclaredType).map(DeclaredType.class::cast));
+	}
+
+	public Stream<TypeElement> supers(TypeElement type) {
+		TypeMirror tm = type.asType();
+		if (tm instanceof DeclaredType dt) {
+			return supers(dt).map(t -> t.asElement()) //
+					.filter(t -> t instanceof TypeElement) //
+					.map(TypeElement.class::cast);
+		}
+		return Stream.empty();
 	}
 
 	TypeElement asElement(DeclaredType declaredType) {

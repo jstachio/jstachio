@@ -1,10 +1,13 @@
 package io.jstach.jstachio.formatters;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStacheFormatter;
+import io.jstach.jstache.JStacheFormatterTypes;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.context.ContextNode;
@@ -15,6 +18,7 @@ import io.jstach.jstachio.context.ContextNode;
  * @author agentgt
  */
 @JStacheFormatter
+@JStacheFormatterTypes(types = { URI.class, URL.class })
 public enum DefaultFormatter implements Formatter {
 
 	/**

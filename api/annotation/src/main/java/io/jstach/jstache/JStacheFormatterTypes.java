@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URI;
+import java.net.URL;
 
 /**
  * Statically sets allowed formatting types.
@@ -18,18 +19,22 @@ import java.net.URI;
  * <li>{@link String}
  * <li>native types both unboxed or boxed
  * <li>{@link URI}
+ * <li>{@link URL}
  * </ul>
  * <p>
- * Order of config lookup and precedence is as follows:
+ * Order of normal config lookup and precedence is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
  * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
  * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
+ * <li><em>the chosen {@link JStacheFormatter formatter} with this annotation.</em>
  * </ol>
- * If multiple annotations are found the first one is picked and there is no combining of
- * settings.
+ * With the exception of formatters with this annotation if multiple annotations are found
+ * the first one is picked and there is no combining of settings. <em>Formatters with this
+ * annotation will always be combined with whatever configuration is found.</em>
+ *
  * @apiNote n.b. the retention policy is SOURCE as this settings are only needed for the
  * compiler and why it is not in {@link JStacheConfig}.
  * @author agentgt

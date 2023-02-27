@@ -92,7 +92,7 @@ public class TemplateCompilerContext {
 			return generator.generateRenderingCode(entry, variables, path);
 		}
 		catch (TypeException ex) {
-			throw new ContextException("Unable to render field", ex);
+			throw new ContextException.TypeNotAllowedContextException("Unable to render field", ex);
 		}
 	}
 
@@ -115,7 +115,7 @@ public class TemplateCompilerContext {
 				entry = lm.callExpression(javaCode, ctx);
 			}
 			catch (TypeException e) {
-				throw new ContextException(e.getMessage(), e);
+				throw new ContextException.TypeNotAllowedContextException(e.getMessage(), e);
 			}
 			return switch (lm.method().returnType()) {
 				case RAW_STRING -> {
@@ -302,7 +302,8 @@ public class TemplateCompilerContext {
 			return __getChildRender(name, childType, enclosing, direct);
 		}
 		catch (TypeException ex) {
-			throw new ContextException(MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
+			throw new ContextException.TypeNotAllowedContextException(
+					MessageFormat.format("Can''t use ''{0}'' field for rendering", name), ex);
 		}
 	}
 

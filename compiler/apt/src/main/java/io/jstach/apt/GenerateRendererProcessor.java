@@ -50,6 +50,7 @@ import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -237,7 +238,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return findPrisms(enclosing(element), prismSupplier);
 	}
 
-	private <T> Stream<T> findPrisms(Stream<Element> elements, Function<Element, @Nullable T> prismSupplier) {
+	private <T> Stream<T> findPrisms(Stream<? extends Element> elements, Function<Element, @Nullable T> prismSupplier) {
 		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null);
 	}
 
@@ -366,10 +367,31 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return name;
 	}
 
-	private FormatterTypes resolveFormatterTypes(TypeElement element) {
+	private FormatterTypes resolveFormatterTypes(TypeElement element, TypeElement formatterElement) {
 		var prisms = findPrisms(element, JStacheFormatterTypesPrism::getInstanceOn).toList();
-		List<String> classNames = prisms.stream().flatMap(p -> p.types().stream()).map(tm -> getTypeName(tm)).toList();
-		List<String> patterns = prisms.stream().flatMap(p -> p.patterns().stream()).toList();
+		List<String> classNames = prisms.stream().flatMap(p -> p.types().stream()).map(tm -> getTypeName(tm))
+				.collect(Collectors.toCollection(ArrayList::new));
+		List<String> patterns = prisms.stream().flatMap(p -> p.patterns().stream())
+				.collect(Collectors.toCollection(ArrayList::new));
+
+		/*
+		 * We get the formatter types off the selected JStacheFormatter and whatever
+		 * classes it inherits from
+		 */
+
+		var formatterSupers = JavaLanguageModel.getInstance().supers(formatterElement);
+
+		var formatterTypesOnFormatter = findPrisms(formatterSupers, JStacheFormatterTypesPrism::getInstanceOn).toList();
+
+		if (formatterTypesOnFormatter != null) {
+
+			classNames.addAll(formatterTypesOnFormatter.stream() //
+					.flatMap(p -> p.types().stream()) //
+					.map(tm -> getTypeName(tm)).toList());
+
+			patterns.addAll(formatterTypesOnFormatter.stream().flatMap(p -> p.patterns().stream()).toList());
+		}
+
 		if (classNames.isEmpty() && patterns.isEmpty()) {
 			return FormatterTypes.acceptOnlyKnownTypes();
 		}
@@ -464,7 +486,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		assert template != null;
 		InterfacesConfig ifaces = resolveBaseInterfaces(element);
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
-		FormatterTypes formatterTypes = resolveFormatterTypes(element);
+		FormatterTypes formatterTypes = resolveFormatterTypes(element, formatterElement);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
 		Set<Flag> flags = resolveFlags(element, options);
 

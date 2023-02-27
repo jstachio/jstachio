@@ -32,6 +32,7 @@ package io.jstach.apt.internal;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.context.ContextException;
+import io.jstach.apt.internal.context.TemplateCompilerContext;
 
 /**
  * @author Victor Nazarov
@@ -80,13 +81,25 @@ public class ProcessingException extends Exception {
 
 	}
 
-	public static class VariableNotFoundProcessingException extends ProcessingException {
+	public static class VariableProcessingException extends ProcessingException {
 
 		private static final long serialVersionUID = -6932648568571932099L;
 
-		public VariableNotFoundProcessingException(Position position, ContextException contextException,
-				String message) {
+		public VariableProcessingException(Position position, ContextException contextException, String message) {
 			super(position, message, contextException);
+		}
+
+		public static VariableProcessingException of(String name, //
+				TemplateCompilerContext context, //
+				Position position, //
+				ContextException ex, //
+				String message) {
+			var templateStack = context.getTemplateStack();
+
+			String m = message + " var: " + name + ", template: " + templateStack.describeTemplateStack()
+					+ " context stack: " + context.printStack() + "\n";
+
+			return new VariableProcessingException(position, ex, m);
 		}
 
 	}

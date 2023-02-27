@@ -1,8 +1,15 @@
 package io.jstach.apt.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.lang.model.type.DeclaredType;
+
+import io.jstach.apt.internal.context.JavaLanguageModel;
 
 public interface FormatterTypes {
 
@@ -20,13 +27,30 @@ public interface FormatterTypes {
 
 	class ConfiguredFormatterTypes implements FormatterTypes {
 
-		private final List<String> classNames;
+		private final Set<String> classNames;
+
+		private final Set<DeclaredType> ifaces;
 
 		private final List<Pattern> patterns;
 
-		public ConfiguredFormatterTypes(List<String> classNames, List<String> classPatterns) {
+		public ConfiguredFormatterTypes(Collection<String> classNames, List<String> classPatterns) {
 			super();
-			this.classNames = classNames;
+			this.classNames = Set.copyOf(classNames);
+
+			Set<DeclaredType> ifaces = new HashSet<>();
+			for (String c : classNames) {
+				var elements = JavaLanguageModel.getInstance().getElements();
+				var te = elements.getTypeElement(c);
+				if (te == null) {
+					continue;
+				}
+				var tm = te.asType();
+				if (tm instanceof DeclaredType dt) {
+					ifaces.add(dt);
+				}
+			}
+			this.ifaces = Set.copyOf(ifaces);
+
 			List<Pattern> patterns = new ArrayList<>();
 			for (String p : classPatterns) {
 				patterns.add(Pattern.compile(p));
@@ -34,14 +58,27 @@ public interface FormatterTypes {
 			this.patterns = List.copyOf(patterns);
 		}
 
+		public boolean isMatch(DeclaredType dt) {
+			var erasedDt = JavaLanguageModel.getInstance().getTypes().erasure(dt);
+			String className = erasedDt.toString();
+			boolean match = isMatch(className);
+			if (match)
+				return true;
+			for (var iface : ifaces) {
+				match = JavaLanguageModel.getInstance().isSubtype(dt, iface);
+				if (match) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public boolean isMatch(String className) {
 			if (classNames.isEmpty() && patterns.isEmpty()) {
 				return true;
 			}
-			for (String n : classNames) {
-				if (n.equals(className)) {
-					return true;
-				}
+			if (classNames.contains(className)) {
+				return true;
 			}
 			for (var p : patterns) {
 				if (p.matcher(className).matches()) {
