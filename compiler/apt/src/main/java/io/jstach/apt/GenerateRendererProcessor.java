@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -208,9 +209,22 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return new PathConfig(prism.prefix(), prism.suffix());
 	}
 
+	@Nullable
+	JStacheInterfacesPrism interfacesInstanceOn(Element element) {
+		var prism = JStacheInterfacesPrism.getInstanceOn(element);
+		if (prism != null) {
+			return prism;
+		}
+		var config = JStacheConfigPrism.getInstanceOn(element);
+		if (config == null || config.interfacing() == null || config.interfacing().isEmpty()) {
+			return null;
+		}
+		return config.interfacing().get(0);
+	}
+
 	private InterfacesConfig resolveBaseInterfaces(TypeElement element) throws AnnotatedException {
 
-		List<JStacheInterfacesPrism> prisms = findPrisms(element, JStacheInterfacesPrism::getInstanceOn).toList();
+		List<JStacheInterfacesPrism> prisms = findPrisms(element, this::interfacesInstanceOn).toList();
 
 		List<String> templateInterfaces = prisms.stream().map(JStacheInterfacesPrism::templateImplements)
 				.flatMap(faces -> faces.stream()).map(tm -> getTypeName(tm, element)).toList();
@@ -235,7 +249,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private <T> Stream<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
-		return findPrisms(enclosing(element), prismSupplier);
+		return findPrisms(expandUsing(enclosing(element)), prismSupplier);
 	}
 
 	private <T> Stream<T> findPrisms(Stream<? extends Element> elements, Function<Element, @Nullable T> prismSupplier) {
@@ -243,7 +257,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private static Stream<Element> enclosing(Element e) {
-		AbstractSpliterator<Element> split = new AbstractSpliterator<Element>(Long.MAX_VALUE, 0) {
+		AbstractSpliterator<Element> split = new AbstractSpliterator<Element>(Long.MAX_VALUE, Spliterator.ORDERED) {
 			@Nullable
 			Element current = e;
 
@@ -259,6 +273,28 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		};
 		return StreamSupport.stream(split, false);
+	}
+
+	private Stream<Element> expandUsing(Stream<Element> e) {
+		return e.flatMap(this::expandUsing);
+	}
+
+	/*
+	 * This is to get referenced config of JStacheConfig.using
+	 */
+	private Stream<Element> expandUsing(Element e) {
+
+		JStacheConfigPrism config = JStacheConfigPrism.getInstanceOn(e);
+		if (config == null) {
+			return Stream.of(e);
+		}
+		var using = config.using();
+		if (!using.toString().equals(void.class.getCanonicalName())) {
+			if (using instanceof DeclaredType dt && dt.asElement() instanceof TypeElement te) {
+				return Stream.of(e, te);
+			}
+		}
+		return Stream.of(e);
 	}
 
 	record InterfacesConfig(//

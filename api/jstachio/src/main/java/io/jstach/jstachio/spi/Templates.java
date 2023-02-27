@@ -179,9 +179,25 @@ public final class Templates {
 	}
 
 	private static @NonNull Stream<AnnotatedElement> annotationElements(Class<?> c) {
-		Stream<? extends AnnotatedElement> enclosing = enclosing(c);
+		Stream<? extends AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
 		var s = Stream.concat(enclosing, Stream.of(c.getPackage(), c.getModule()));
 		return s;
+	}
+
+	/*
+	 * This is to get referenced config of JStacheConfig.using
+	 */
+	private static Stream<Class<?>> expandUsing(Class<?> e) {
+
+		JStacheConfig config = e.getAnnotation(JStacheConfig.class);
+		if (config == null) {
+			return Stream.of(e);
+		}
+		var using = config.using();
+		if (!using.equals(void.class)) {
+			return Stream.of(e, using);
+		}
+		return Stream.of(e);
 	}
 
 	private static Stream<Class<?>> enclosing(Class<?> e) {

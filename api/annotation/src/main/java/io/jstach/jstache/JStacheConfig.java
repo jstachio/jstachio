@@ -35,17 +35,32 @@ import java.nio.charset.StandardCharsets;
  * default is used (not the default return of the annotation).</li>
  * </ol>
  *
- * <em>While package hiearchy may seem natural for cascading config this library does not
- * do it. Package hiearchy does NOT matter to this library! Resolution will NOT check up
+ * <em>While package hierarchy may seem natural for cascading config this library does not
+ * do it. Package hierarchy does NOT matter to this library! Resolution will NOT check up
  * parent package directories.</em> If you do not want to copy config to each package it
- * is recommended you use module annotations.
+ * is recommended you use module annotations or use {@link #using()} to reference other
+ * configuration (see next section).
+ *
+ * <h2 id="_config_using">Config Importing</h2>
+ *
+ * You may import config annotated elsewhere with {@link #using()}. When config is
+ * imported from another class it is essentially a union of NON
+ * <a href="#_unspecified">UNSPECIFIED</a> settings of this annotation instance and the
+ * imported class. Thus <a href="#_config_resolution">config resolution</a> follows as
+ * though the settings are on this instance.
+ * <p>
+ * The referenced config class can be any declared type (interface, enum, etc) but it is
+ * best practice to make it something like an empty Enum to avoid confusing it with
+ * models.
  *
  * <h2 id="_unspecified">Unspecified</h2>
  *
  * Annotation methods that return symbols prefixed with "<code>Unspecified</code>" (e.g.
  * {@link JStacheType#UNSPECIFIED}) or have values called <code>UNSPECIFIED</code> or
- * return an empty array or string represent unset (they are not the actual default) and
- * will be resolved through the <a href="#_config_resolution">config resolution</a>.
+ * return an empty array, empty string, or void.class represent unset and will be resolved
+ * through the <a href="#_config_resolution">config resolution</a>. Consequently unlike
+ * other annotation implementations the <code>default</code> return of the annotation is
+ * not really the concrete default.
  *
  *
  * @apiNote This annotation and thus configuration is available during runtime unlike many
@@ -54,9 +69,27 @@ import java.nio.charset.StandardCharsets;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PACKAGE, ElementType.MODULE, ElementType.TYPE })
+@Target({ ElementType.PACKAGE, ElementType.MODULE, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Documented
 public @interface JStacheConfig {
+
+	/**
+	 * Imports configuration from another class annotated by <strong>this</strong> or
+	 * other JStache annotations. This allows config sharing even across compile
+	 * boundaries.
+	 *
+	 * <p>
+	 * The configuration on this annotation instance (the one calling {@link #using()})
+	 * will however take precedence if is not <a href="_unspecified">UNSPECIFIED</a>.
+	 * <p>
+	 * <em><code>using()</code> is not cascading meaning that the referenced configuration
+	 * classes (the using returned on this instance) that have {@link #using()} set will
+	 * be ignored!</em> Furthermore configuration set on enclosing classes, packages,
+	 * modules on the referenced type are ignored.
+	 * @return by default <code>void.class</code> which represents
+	 * <a href="_unspecified">UNSPECIFIED</a>.
+	 */
+	Class<?> using() default void.class;
 
 	/**
 	 * If {@link JStache#name()} is blank the name of the generated class is derived from
@@ -80,6 +113,16 @@ public @interface JStacheConfig {
 	 * @see JStachePath
 	 */
 	JStachePath[] pathing() default {};
+
+	/**
+	 * Configures what interfaces/annotations the model implements and or extends.
+	 * @return by default an empty array which represents
+	 * <a href="_unspecified">UNSPECIFIED</a>.
+	 * @apiNote the cardinality of the returned array is currently <code>0..1</code>.
+	 * additional elements after the first will be ignored.
+	 * @see JStacheInterfaces
+	 */
+	JStacheInterfaces[] interfacing() default {};
 
 	/**
 	 * Optional content type for all models in the <a href="#_config_resolution">annotated
