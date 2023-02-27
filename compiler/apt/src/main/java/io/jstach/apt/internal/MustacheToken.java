@@ -36,6 +36,7 @@ import io.jstach.apt.internal.token.MustacheTagKind;
 
 /**
  * @author Victor Nazarov
+ * @author agentgt
  */
 public sealed interface MustacheToken {
 

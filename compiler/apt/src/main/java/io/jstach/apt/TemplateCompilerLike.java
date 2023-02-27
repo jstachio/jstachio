@@ -11,7 +11,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
+import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.prism.Prisms.Flag;
 
 interface TemplateCompilerLike extends AutoCloseable {
@@ -22,7 +24,13 @@ interface TemplateCompilerLike extends AutoCloseable {
 
 	TemplateCompilerType getCompilerType();
 
+	LoggingSupport logging();
+
 	String getTemplateName();
+
+	default ClassRef getModelClass() {
+		return Objects.requireNonNull(getCaller()).getModelClass();
+	}
 
 	@Nullable
 	TemplateCompilerLike getCaller();
@@ -49,8 +57,10 @@ interface TemplateCompilerLike extends AutoCloseable {
 	 */
 	public enum TemplateCompilerType {
 
-		SIMPLE, LAMBDA, PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE; // aka parent aka {{<
-																	// parent }}
+		SIMPLE, //
+		LAMBDA, //
+		PARTIAL_TEMPLATE, //
+		PARAM_PARTIAL_TEMPLATE; // aka parent aka {{< parent }}
 
 	}
 
@@ -99,39 +109,26 @@ interface TemplateCompilerLike extends AutoCloseable {
 
 	class ParameterPartial extends AbstractPartial {
 
-		private final Map<String, StringCodeAppendable> blockArgs = new LinkedHashMap<>();
+		private final PartialParameterProcessor processor;
 
-		public ParameterPartial(TemplateCompilerLike templateCompiler) {
+		private boolean ran;
+
+		public ParameterPartial(TemplateCompilerLike templateCompiler, PartialParameterProcessor processor) {
 			super(templateCompiler);
+			this.processor = processor;
 		}
 
-		public Map<String, StringCodeAppendable> getBlockArgs() {
-			return blockArgs;
-		}
-
-		public @Nullable StringCodeAppendable findBlock(String name) {
-			TemplateCompilerLike caller = templateCompiler;
-			ArrayDeque<TemplateCompilerLike> callers = new ArrayDeque<>();
-			callers.push(caller);
-			while ((caller = caller.getCaller()) != null) {
-				callers.push(caller);
-			}
-			for (var c : callers) {
-				var p = c.currentParameterPartial();
-				StringCodeAppendable b;
-				if (p != null) {
-					b = p.getBlockArgs().get(name);
-					if (b != null) {
-						return b;
-					}
-				}
-			}
-			return null;
+		public PartialParameterProcessor getProcessor() {
+			return processor;
 		}
 
 		@Override
-		public String toString() {
-			return "ParameterPartial(template = " + getTemplateName() + " args=" + blockArgs + ")";
+		void run() throws ProcessingException, IOException {
+			if (ran) {
+				throw new IllegalStateException("Already ran");
+			}
+			ran = true;
+			super.run();
 		}
 
 	}

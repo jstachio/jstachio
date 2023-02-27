@@ -46,4 +46,15 @@ public enum MustacheTagKind {
 		};
 	}
 
+	public boolean isBeginSection() {
+		return switch (this) {
+			case BEGIN_SECTION, BEGIN_INVERTED_SECTION, BEGIN_PARENT_SECTION, BEGIN_BLOCK_SECTION -> true;
+			default -> false;
+		};
+	}
+
+	public boolean isEndSection() {
+		return END_SECTION == this;
+	}
+
 }
