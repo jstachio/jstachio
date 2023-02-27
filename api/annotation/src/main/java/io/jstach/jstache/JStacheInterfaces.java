@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * <li>module annotated with this annotation.
  * </ol>
  * If multiple annotations are found the first one is picked and there is no combining of
- * settings.
+ * settings. See {@link JStacheConfig} for general config resolution.
  * <p>
  * <strong>Example</strong>
  *
@@ -45,9 +45,9 @@ import java.lang.annotation.Target;
  * }
  * </code> </pre>
  *
- * @apiNote N.B. the rention policy is SOURCE hence why it is not in JStacheConfig.
  * @author agentgt
  * @see JStacheLambda
+ * @see JStacheConfig
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ ElementType.TYPE, ElementType.PACKAGE, ElementType.MODULE })
