@@ -33,8 +33,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -175,8 +182,8 @@ public class TemplateCompilerContext {
 
 	public TemplateCompilerContext createForParameterPartial(String template) {
 		// No enclosing relation for new partials
-		return new TemplateCompilerContext(templateStack.ofPartial(template), lambdas, generator, variables, context,
-				ContextType.PARENT_PARTIAL);
+		return new TemplateCompilerContext(templateStack.ofParameterPartial(template), lambdas, generator, variables,
+				context, ContextType.PARENT_PARTIAL);
 	}
 
 	public TemplateCompilerContext createForPartial(String template) {

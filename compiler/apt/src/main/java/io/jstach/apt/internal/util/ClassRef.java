@@ -7,6 +7,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.context.JavaLanguageModel;
@@ -116,6 +117,11 @@ public class ClassRef {
 		}
 		// The length will include the "."
 		return binaryName.substring(packageName.length() + 1);
+	}
+
+	@Override
+	public @NonNull String toString() {
+		return binaryName;
 	}
 
 }

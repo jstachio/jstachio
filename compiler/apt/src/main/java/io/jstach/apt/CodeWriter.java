@@ -42,15 +42,16 @@ import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.NamedTemplate;
-import io.jstach.apt.internal.ProcessingConfig;
-import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.NamedTemplate.FileTemplate;
 import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
+import io.jstach.apt.internal.ProcessingConfig;
+import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.RenderingCodeGenerator;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.TemplateStack;
-import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.context.TemplateStack.RootTemplateStack;
+import io.jstach.apt.internal.context.VariableContext;
+import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
@@ -76,7 +77,8 @@ class CodeWriter {
 
 	TemplateCompilerContext createTemplateContext(NamedTemplate template, TypeElement element, String rootExpression,
 			VariableContext variableContext, Set<Flag> flags) throws AnnotatedException {
-		return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(template, flags), element,
+		ClassRef modelClass = ClassRef.of(element);
+		return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(modelClass, template, flags), element,
 				rootExpression, variableContext);
 	}
 

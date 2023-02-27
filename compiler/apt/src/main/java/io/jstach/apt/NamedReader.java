@@ -31,6 +31,7 @@ package io.jstach.apt;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -67,6 +68,13 @@ class NamedReader extends Reader {
 
 	public String path() {
 		return path;
+	}
+
+	static NamedReader ofString(String template) {
+		StringReader sr = new StringReader(template);
+		String name = "inline";
+		String path = "inline";
+		return new NamedReader(sr, name, path);
 	}
 
 }

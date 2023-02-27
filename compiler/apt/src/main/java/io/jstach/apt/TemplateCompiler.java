@@ -31,26 +31,33 @@ package io.jstach.apt;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.PartialParameterProcessor.Block;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
-import io.jstach.apt.internal.ProcessingException;
-import io.jstach.apt.internal.TokenProcessor;
-import io.jstach.apt.internal.CodeAppendable.HiddenCodeAppendable;
 import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
+import io.jstach.apt.internal.LoggingSupport;
+import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.MustacheToken.NewlineChar;
 import io.jstach.apt.internal.MustacheToken.SpecialChar;
 import io.jstach.apt.internal.MustacheToken.TagToken;
+import io.jstach.apt.internal.MustacheTokenProcessor;
+import io.jstach.apt.internal.PositionedToken;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.TokenProcessor;
 import io.jstach.apt.internal.context.ContextException;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.internal.context.TemplateCompilerContext.LambdaCompiler;
+import io.jstach.apt.internal.context.TemplateStack;
 import io.jstach.apt.internal.token.MustacheTagKind;
 import io.jstach.apt.internal.token.MustacheTokenizer;
+import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.prism.Prisms;
 import io.jstach.apt.prism.Prisms.Flag;
 
@@ -74,6 +81,8 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	private TemplateCompilerContext context;
 
+	private final LoggingSupport logging;
+
 	int depth = 0;
 
 	/*
@@ -95,15 +104,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	private @Nullable ParameterPartial _partial;
 
-	protected @Nullable StringCodeAppendable _currentBlockOutput;
-
-	protected @Nullable HiddenCodeAppendable _parentBlockOutput;
-
-	private TemplateCompiler(NamedReader reader, @Nullable TemplateCompilerLike parent,
+	protected TemplateCompiler(NamedReader reader, @Nullable TemplateCompilerLike parent,
 			TemplateCompilerContext context) {
 		this.reader = reader;
 		this.parent = parent;
 		this.context = context;
+		this.logging = context.getTemplateStack();
 	}
 
 	public void run() throws ProcessingException, IOException {
@@ -116,6 +122,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			catch (ProcessingException e) {
 				if (isDebug()) {
 					debug(e.getMessage());
+					debug(context.getTemplateStack().describeTemplateStack());
 					debug(context.printStack());
 					e.printStackTrace();
 				}
@@ -127,9 +134,21 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	}
 
 	@Override
+	public LoggingSupport logging() {
+		return this.logging;
+	}
+
+	@Override
 	protected void processTokenGroup(List<ProcessToken> tokens) throws ProcessingException {
+		var p = currentParameterPartial();
 		if (inLambda()) {
 			processInsideLambdaToken(tokens);
+		}
+		else if (p != null) {
+			processInsideParameterPartial(tokens, true);
+		}
+		else if (containsParentSection(tokens)) {
+			processInsideParameterPartial(tokens, false);
 		}
 		else {
 			super.processTokenGroup(tokens);
@@ -153,7 +172,90 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 				mt.appendRawText(rawLambdaContent);
 			}
 		}
+	}
 
+	boolean containsParentSection(List<ProcessToken> tokens) {
+		return tokens.stream().filter(t -> t.token().innerToken() instanceof TagToken tt
+				&& tt.tagKind() == MustacheTagKind.BEGIN_PARENT_SECTION).findFirst().isPresent();
+	}
+
+	protected void processInsideParameterPartial(List<ProcessToken> tokens, boolean _insideParent)
+			throws ProcessingException {
+		MustacheTokenProcessor parentProcessor = new MustacheTokenProcessor() {
+			boolean insideParent = _insideParent;
+
+			@Override
+			public void processToken(PositionedToken<MustacheToken> token) throws ProcessingException {
+				var mt = token.innerToken();
+				if (!insideParent && mt instanceof TagToken tt
+						&& tt.tagKind() == MustacheTagKind.BEGIN_PARENT_SECTION) {
+					insideParent = true;
+					startParentSection(token);
+				}
+				else if (insideParent) {
+					if (processInsideParameterPartial(token)) {
+						insideParent = false;
+					}
+				}
+				else {
+					_processToken(token);
+				}
+			}
+		};
+		this.processTokenGroup(parentProcessor, tokens);
+	}
+
+	void startParentSection(PositionedToken<MustacheToken> token) throws ProcessingException {
+		flushUnescaped();
+		if (!(token.innerToken() instanceof TagToken tt)) {
+			throw new IllegalStateException("bug");
+		}
+		String name = tt.name();
+		var p = currentParameterPartial();
+		if (p != null) {
+			throw new IllegalStateException("parent (parameter partial) is already started for this context");
+		}
+		println();
+		print("// start " + ContextType.PARENT_PARTIAL + ", template: " + name);
+		println();
+		try {
+			p = createParameterPartial(name);
+		}
+		catch (IOException e) {
+			throw new ProcessingException(position, e);
+		}
+		p.getProcessor().processToken(token);
+		pushPartial(p);
+	}
+
+	boolean processInsideParameterPartial(PositionedToken<MustacheToken> token) throws ProcessingException {
+
+		var p = currentParameterPartial();
+		if (p == null)
+			throw new IllegalStateException("bug");
+		var processor = p.getProcessor();
+		if (processor.isDone()) {
+			throw new IllegalStateException("processor is already done");
+		}
+		beforeProcessToken(token);
+		boolean done = processor.process(token).isDone();
+		afterProcessToken(token);
+		if (done) {
+			try (p) {
+				debug("start parameter partial: ", p.getTemplateName());
+				p.run();
+				debug("end parameter partial: ", p.getTemplateName());
+			}
+			catch (IOException e) {
+				throw new ProcessingException(this.position, e);
+			}
+			debug("end content: ", p.getProcessor().getEndContent());
+			popPartial();
+			println();
+			print("// end " + ContextType.PARENT_PARTIAL + ". template: " + p.getTemplateName());
+			println();
+		}
+		return done;
 	}
 
 	protected boolean inLambda() {
@@ -188,29 +290,22 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	}
 
 	public CodeAppendable currentWriter() {
-		CodeAppendable out = _currentBlockOutput;
-		if (out != null) {
-			return out;
-		}
-		if ((out = _parentBlockOutput) != null) {
-			return out;
-		}
 		return getWriter();
 	}
 
 	@Override
 	public ParameterPartial createParameterPartial(String templateName) throws IOException {
+		debug("Create Parameter Partial: " + templateName);
 		var reader = getTemplateLoader().open(templateName);
 		TemplateCompilerContext context = this.context.createForParameterPartial(templateName);
-		var c = new TemplateCompiler(reader, this, context) {
-			@Override
-			public TemplateCompilerType getCompilerType() {
-				return TemplateCompilerType.PARAM_PARTIAL_TEMPLATE;
-			}
-		};
+		/*
+		 * TODO this is sloppy
+		 */
+		var c = new ParameterPartialTemplateCompiler(templateName, reader, this, context);
+		var processor = c.processor;
 		c.indent = partialIndent;
 		partialIndent = "";
-		return new ParameterPartial(c);
+		return new ParameterPartial(c, processor);
 	}
 
 	public Partial createPartial(String templateName) throws IOException {
@@ -289,7 +384,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		flushUnescaped();
 		var contextType = ContextType.SECTION;
 		try {
-			context = context.getChild(name, contextType);
+			pushContext(name, contextType);
 			printBeginSectionComment();
 			print(context.beginSectionRenderingCode());
 			println();
@@ -305,6 +400,14 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		catch (ContextException ex) {
 			throw new ProcessingException(position, ex);
 		}
+	}
+
+	private void pushContext(String name, ContextType contextType) throws ContextException {
+		context = context.getChild(name, contextType);
+	}
+
+	private void popContext() {
+		context = context.parentContext();
 	}
 
 	protected void _beginLambdaSection(String name) {
@@ -364,7 +467,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		flushUnescaped();
 		var contextType = ContextType.INVERTED;
 		try {
-			context = context.getChild(name, contextType);
+			pushContext(name, contextType);
 			printBeginSectionComment();
 			print(context.beginSectionRenderingCode());
 			println();
@@ -377,27 +480,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	@Override
 	protected void _beginParentSection(String name) throws ProcessingException {
-		flushUnescaped();
-		var contextType = ContextType.PARENT_PARTIAL;
-		try {
-			context = context.getChild(name, contextType);
-			printBeginSectionComment();
-			// We do not increase the printing depth
-			// depth++;
-			var p = currentParameterPartial();
-			if (p != null) {
-				throw new IllegalStateException("parent (parameter partial) is already started for this context");
-			}
-			p = createParameterPartial(name);
-			pushPartial(p);
-			_parentBlockOutput = new HiddenCodeAppendable(s -> {
-				/* if (isDebug()) { debug(s);} */
-			});
-
-		}
-		catch (ContextException | IOException ex) {
-			throw new ProcessingException(position, ex);
-		}
+		throw new IllegalStateException("bug");
 	}
 
 	@Override
@@ -405,7 +488,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		flushUnescaped();
 		var contextType = ContextType.BLOCK;
 		try {
-			context = context.getChild(name, contextType);
+			pushContext(name, contextType);
 			printBeginSectionComment();
 			// We do not increase the printing depth for blocks
 			// depth++;
@@ -413,69 +496,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		catch (ContextException e) {
 			throw new ProcessingException(position, e);
 		}
-		var parameterPartial = currentParameterPartial();
-		var caller = getCaller();
-
-		var templateType = getCompilerType();
-
-		if (parameterPartial != null) {
-			/*
-			 * {{< parent}} {{$block}} <-- We are here some content {{/block}} {{/parent}}
-			 */
-			if (parameterPartial.getBlockArgs().containsKey(name)) {
-				throw new ProcessingException(position, "parameter block was defined earlier. block = " + name);
-			}
-			var writer = new StringCodeAppendable();
-			parameterPartial.getBlockArgs().put(name, writer);
-			if (_currentBlockOutput != null) {
-				throw new IllegalStateException("existing block output. template: " + getTemplateName());
-			}
-			_currentBlockOutput = writer;
-			if (currentWriter() != _currentBlockOutput) {
-				throw new IllegalStateException("unexpected current writer");
-			}
-			// println();
-			print("// start BLOCK parameter. name: \"" + name + "\", template: " + getTemplateName() + ", partial: "
-					+ parameterPartial.getTemplateName());
-			println();
-		}
-		else if (templateType == TemplateCompilerType.PARAM_PARTIAL_TEMPLATE && caller != null) {
-			/*
-			 * We are in a block in a partial template e.g. partial.mustache
-			 * {{$block}}{{/block}}
-			 */
-			if (getCompilerType() == TemplateCompilerType.PARAM_PARTIAL_TEMPLATE
-					&& caller.currentParameterPartial() == null) {
-				throw new IllegalStateException("bug. missing partial parameter info");
-			}
-			if (_currentBlockOutput != null) {
-				throw new IllegalStateException(
-						"existing block output. template: " + getTemplateName() + " name: " + name);
-			}
-			/*
-			 * We will reconcile at the endSection if we actually need the output
-			 */
-			_currentBlockOutput = new StringCodeAppendable();
-			// println();
-			print("// start BLOCK default. name: \"" + name + "\", template: " + getTemplateName());
-			println();
-		}
-		else {
-			/*
-			 * {{$block}}{{/block}}
-			 */
-			// Apparently this either a root or partial template has block parameters.
-			// We do nothing for now
-			// println();
-			print("// unused block: " + name);
-			println();
-		}
 	}
 
 	@Override
 	protected void _endSection(String name) throws ProcessingException {
 		if (!context.isEnclosed()) {
-			throw new ProcessingException(position, "Closing " + name + " block when no block is currently open");
+			throw new ProcessingException(position, "Closing \"" + name + "\" block when no block is currently open");
 		}
 		if (!context.currentEnclosedContextName().equals(name)) {
 			throw new ProcessingException(position,
@@ -506,91 +532,17 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		;
 		print(context.endSectionRenderingCode());
 		printEndSectionComment();
-		context = context.parentContext();
+		popContext();
 	}
 
 	private void _endParentSection(String name) throws ProcessingException {
 		/*
 		 * We are at the end of a parent partial {{< parent}} {{/parent}} <-- we are here
 		 */
-		_parentBlockOutput = null;
-		var p = currentParameterPartial();
-		if (p == null) {
-			throw new IllegalStateException("partial is has not started for this context");
-		}
-		try (p) {
-			if (isDebug()) {
-				debug("Running partial. " + p);
-			}
-			p.run();
-			popPartial();
-		}
-		catch (IOException e) {
-			throw new ProcessingException(position, e);
-		}
+		throw new UnsupportedOperationException("bug close parent should be dealt somewhere else.");
 	}
 
 	private void _endBlockSection(String name) {
-		// Block END
-		switch (getCompilerType()) {
-			case PARAM_PARTIAL_TEMPLATE -> {
-				/*
-				 * We are in a partial template at the end of a block {{$block}}
-				 * {{/block}} <-- we are here
-				 */
-				var callingTemplate = getCaller();
-				if (callingTemplate == null) {
-					throw new IllegalStateException("missing calling template");
-				}
-				StringCodeAppendable output = _currentBlockOutput;
-				if (output == null) {
-					throw new IllegalStateException("Missing block output");
-				}
-
-				ParameterPartial callingPartial = callingTemplate.currentParameterPartial();
-				if (callingPartial == null) {
-					throw new IllegalStateException("missing partial info");
-				}
-				var callingBlock = callingPartial.findBlock(name); // callingPartial.getBlockArgs().get(name);
-				if (callingBlock != null) {
-					output = callingBlock;
-				}
-				_currentBlockOutput = null;
-				/*
-				 * We dump the generated code to the class file being generated.
-				 */
-				currentWriter().print(output.toString());
-				println();
-				if (callingBlock != null) {
-					print("// end BLOCK parameter. name: \"" + name + "\", template: "
-							+ callingTemplate.getTemplateName() + ", partial: " + callingPartial.getTemplateName());
-				}
-				else {
-					print("// end BLOCK default. name: \"" + name + "\", template: " + getTemplateName() + ", partial: "
-							+ callingPartial.getTemplateName());
-				}
-			}
-			case SIMPLE, PARTIAL_TEMPLATE, LAMBDA -> {
-				/*
-				 * We are in the caller template at the end of a block {{$block}}
-				 * {{/block}} <-- we are here
-				 */
-				var p = currentParameterPartial();
-				if (p != null) {
-					/*
-					 * We are inside of some {{< parent }} and the block is done so we can
-					 * restore output
-					 */
-					if (_currentBlockOutput == null) {
-						throw new IllegalStateException("should be capturing for the block");
-					}
-					if (_currentBlockOutput != p.getBlockArgs().get(name)) {
-						throw new IllegalStateException();
-					}
-					_currentBlockOutput = null;
-				}
-			}
-		}
 	}
 
 	@Override
@@ -628,13 +580,13 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		println();
 		var contextType = ContextType.PARTIAL;
 		try {
-			context = context.getChild(name, contextType);
+			pushContext(name, contextType);
 			printBeginSectionComment();
 			// We do not increase the printing depth
 			// depth++;
 			var pp = currentParameterPartial();
 			if (pp != null) {
-				throw new IllegalStateException("parent (parameter partial) is already started for this context");
+				throw new IllegalStateException("bug. parent (parameter partial) is already started for this context");
 			}
 			try (var p = createPartial(name)) {
 				p.run();
@@ -646,7 +598,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		}
 		print(context.endSectionRenderingCode());
 		printEndSectionComment();
-		context = context.parentContext();
+		popContext();
 	}
 
 	@Override
@@ -713,17 +665,25 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 		private final Set<Flag> flags;
 
+		private final TemplateStack templateStack;
+
 		public RootTemplateCompiler(String templateName, TemplateLoader templateLoader, CodeAppendable writer,
 				TemplateCompilerContext context, Set<Flag> flags) throws IOException {
 			super(templateLoader.open(templateName), null, context);
 			this.templateLoader = templateLoader;
 			this.writer = writer;
 			this.flags = flags;
+			this.templateStack = context.getTemplateStack();
 		}
 
 		@Override
 		public @Nullable TemplateCompilerLike getCaller() {
 			return null;
+		}
+
+		@Override
+		public ClassRef getModelClass() {
+			return this.templateStack.getModelClass();
 		}
 
 		@Override
@@ -739,6 +699,111 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		@Override
 		public Set<Flag> flags() {
 			return this.flags;
+		}
+
+	}
+
+	static class ParameterPartialTemplateCompiler extends TemplateCompiler {
+
+		private final PartialParameterProcessor processor;
+
+		private @Nullable Block block;
+
+		private final ArrayDeque<Section<@Nullable Block>> sectionStack = new ArrayDeque<>();
+
+		public ParameterPartialTemplateCompiler(String partialName, //
+				NamedReader reader, //
+				@Nullable TemplateCompilerLike parent, //
+				TemplateCompilerContext context) {
+			super(reader, parent, context);
+			this.processor = new PartialParameterProcessor(partialName, parent.logging());
+		}
+
+		@Override
+		public TemplateCompilerType getCompilerType() {
+			return TemplateCompilerType.PARAM_PARTIAL_TEMPLATE;
+		}
+
+		private @Nullable Block localBlock(String name) {
+			return processor.getBlocks().get(name);
+		}
+
+		@SuppressWarnings("resource")
+		public @Nullable Block findBlock(String name) {
+			@Nullable
+			ParameterPartialTemplateCompiler current = this;
+			while (current != null) {
+				var block = current.localBlock(name);
+				if (block != null)
+					return block;
+				if (current.getCaller() instanceof ParameterPartialTemplateCompiler ppc) {
+					current = ppc;
+				}
+				else {
+					current = null;
+					break;
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected List<PositionedToken<MustacheToken>> filter(PositionedToken<MustacheToken> positionedToken)
+				throws ProcessingException {
+			var mt = positionedToken.innerToken();
+			if (mt instanceof TagToken tt) {
+				if (tt.tagKind().isBeginSection()) {
+					sectionStack.push(new Section<@Nullable Block>(tt, positionedToken.position(), block));
+				}
+				else if (tt.tagKind().isEndSection()) {
+					var section = sectionStack.pop();
+					if (!section.name().equals(tt.name())) {
+						throw new ProcessingException(positionedToken.position(),
+								"bad end section: \"" + tt.name() + "\" expected \"" + section.name() + "\"");
+					}
+				}
+				if (block == null && tt.tagKind() == MustacheTagKind.BEGIN_BLOCK_SECTION) {
+					String name = tt.name();
+					var _block = findBlock(name);
+					this.block = _block;
+					if (_block != null) {
+						debug("Replaying tokens for block: " + name);
+						return _block.tokens();
+					}
+					else {
+						debug("No tokens found for block: " + name);
+						return List.of(positionedToken);
+					}
+				}
+				else if (block != null && tt.name().equals(block.name())
+						&& tt.tagKind() == MustacheTagKind.END_SECTION) {
+					var section = sectionStack.peek();
+					if (section == null || section.data() == null) {
+						debug("Closing block: " + block.name());
+						debug("Section stack: " + sectionStack);
+						block = null;
+						return List.of();
+					}
+					else {
+						debug("Processing inner block tag: " + tt.name());
+						return List.of(positionedToken);
+					}
+				}
+				else if (block != null) {
+					debug("supressing tag: " + tt.name());
+					return List.of();
+				}
+				else {
+					return List.of(positionedToken);
+				}
+			}
+			else if (block != null) {
+				debug("supressing other: " + positionedToken.innerToken());
+				return List.of();
+			}
+			else {
+				return List.of(positionedToken);
+			}
 		}
 
 	}

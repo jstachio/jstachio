@@ -3,8 +3,6 @@ package io.jstach.examples;
 import java.util.List;
 
 import io.jstach.jstache.JStache;
-import io.jstach.jstache.JStacheFlags;
-import io.jstach.jstache.JStacheFlags.Flag;
 
 /**
  * Iterable example
@@ -23,7 +21,7 @@ import io.jstach.jstache.JStacheFlags.Flag;
 		no show
 		{{/items}}
 		""")
-@JStacheFlags(flags = Flag.DEBUG)
+// @JStacheFlags(flags = Flag.DEBUG)
 public record IterableExample(List<String> items, boolean flag) {
 
 }

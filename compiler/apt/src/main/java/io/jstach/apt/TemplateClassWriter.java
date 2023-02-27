@@ -584,9 +584,7 @@ class TemplateClassWriter {
 
 	EnumSet<ElementType> annotationTargets(AnnotationMirror anno) {
 
-		System.out.println(anno);
 		Target target = anno.getAnnotationType().getAnnotation(Target.class);
-		System.out.println(target);
 		if (target == null) {
 			return EnumSet.allOf(ElementType.class);
 		}
