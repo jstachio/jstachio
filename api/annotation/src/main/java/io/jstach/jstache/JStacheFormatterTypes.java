@@ -11,8 +11,8 @@ import java.net.URL;
 /**
  * Statically sets allowed formatting types.
  * <p>
- * If a type is not allowed or known a compile error will happen. This annotation allows
- * you to change that behavior by adding types.
+ * If a type is not allowed or known and used as a variable a compile error will happen.
+ * This annotation allows you to change that behavior by adding types.
  * <p>
  * By default the only allowed (and always allowed) types to be formatted are:
  * <ul>
@@ -22,7 +22,7 @@ import java.net.URL;
  * <li>{@link URL}
  * </ul>
  * <p>
- * Order of normal config lookup and precedence is as follows:
+ * {@link JStacheConfig Config lookup and precedence} is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
  * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
@@ -31,9 +31,9 @@ import java.net.URL;
  * <li>module annotated with this annotation.
  * <li><em>the chosen {@link JStacheFormatter formatter} with this annotation.</em>
  * </ol>
- * With the exception of formatters with this annotation if multiple annotations are found
- * the first one is picked and there is no combining of settings. <em>Formatters with this
- * annotation will always be combined with whatever configuration is found.</em>
+ *
+ * However unlike other annotations in this library the found annotation settings are
+ * combined (union) and consequently the precedence order does not matter.
  *
  * @apiNote n.b. the retention policy is SOURCE as this settings are only needed for the
  * compiler and why it is not in {@link JStacheConfig}.
