@@ -5,8 +5,7 @@
  * <ul>
  * <li>{@link io.jstach.opt.spring.example.hello.HelloController Controller}</li>
  * <li>{@link io.jstach.opt.spring.example.hello.HelloModel Model}</li>
- * <li>{@link io.jstach.opt.spring.example.HelloModelView View (jstachio generated
- * renderer)}</li>
+ * <li>io.jstach.opt.spring.example.HelloModelView (jstachio generated renderer)</li>
  * <li>{@link io.jstach.opt.spring.example.SpringTemplateConfig Bean configuration}</li>
  * <li>{@link io.jstach.opt.spring.example.WebConfig Web configuration}</li>
  * </ul>

@@ -11,14 +11,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
 
 /**
  * Configures MVC using {@link JStachioHttpMessageConverter} to allow returning models
  * which will be rendered using JStachio runtime.
  *
- * @author agentgt
  * @see JStachioHttpMessageConverter
+ * @author agentgt
+ * @author dsyer
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -39,6 +41,12 @@ public class WebConfig implements WebMvcConfigurer {
 		converters.add(new JStachioHttpMessageConverter(jstachio));
 	}
 
+	/**
+	 * Configures an interceptor for before rendering logic useful for adding additional
+	 * data to JStache models.
+	 * @param context searched for {@link JStachioModelViewConfigurer}s.
+	 * @return interceptor that will automatically be added to the web context.
+	 */
 	@Bean
 	@SuppressWarnings("exports")
 	public ViewSetupHandlerInterceptor viewSetupHandlerInterceptor(ApplicationContext context) {
