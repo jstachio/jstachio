@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
  * <p>
  * There are two supported Formatter types:
  * <ul>
- * <li>{@code io.jstach.api.runtime.Formatter}
+ * <li>{@code io.jstach.jstachio.Formatter}
  * <li>{@code java.util.function.Function<Object,String>}
  * </ul>
  *
