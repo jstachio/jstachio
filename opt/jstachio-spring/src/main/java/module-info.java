@@ -26,8 +26,7 @@
  * <h2>Web MVC integration</h2>
  * <strong>See {@link io.jstach.opt.spring.webmvc}</strong>
  * <p>
- * {@link io.jstach.opt.spring.webmvc.JStachioModelView}
- * and {@link io.jstach.opt.spring.webmvc.ViewFactory} allow you to construct
+ * {@link io.jstach.opt.spring.webmvc.JStachioModelView} allows you to construct
  * servlet based Spring Views for traditional Web MVC Spring applications.
  * This integration is tied to the servlet API and thus will need it as
  * a dependency.
