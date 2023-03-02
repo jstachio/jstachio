@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.View;
+import org.springframework.web.reactive.result.view.RedirectView;
+import org.springframework.web.reactive.result.view.View;
 
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Template;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.webflux.JStachioModelView;
 
 /**
  * Example hello world controller using different ways to use JStachio for web
@@ -28,14 +30,6 @@ public class HelloController {
 	 */
 	public HelloController() {
 	}
-
-	/**
-	 * Spring will inject this as the templates are component scanned as this projects
-	 * module {@link io.jstach.opt.spring.example/ } has a config that will add &#64;
-	 * {@link Component} to all generated code.
-	 */
-	@Autowired(required = true)
-	public Template<HelloModel> view;
 
 	/**
 	 * Here we use JStachio runtime to resolve the renderer (in this case we are calling
@@ -59,28 +53,15 @@ public class HelloController {
 	 * <p>
 	 * This approach has pros and cons. It makes your models slightly coupled to Spring
 	 * MVC but allows you to return different views if say you had to redirect on some
-	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
+	 * inputs ({@link RedirectView}).
 	 *
 	 * @apiNote Notice that the return type is {@link View}.
 	 * @return the model that will be used as View
 	 * @see JStachioHttpMessageConverter
 	 */
-	@SuppressWarnings("exports")
-	@GetMapping(value = "/mvc")
+	@GetMapping(value = "/webflux")
 	public View mvc() {
-		return new HelloModel("Spring Boot MVC is now JStachioed!");
-	}
-
-	/**
-	 * Here we use the {@link #view wired renderer} that does not have filtering and thus
-	 * cannot use JMustache for dynamic editing of templates.
-	 * @param writer spring will inject the servlet output
-	 * @throws IOException an error while writing to the output
-	 */
-	@GetMapping(value = "/wired")
-	public void wired(Writer writer) throws IOException {
-		var model = new HelloModel("JStachioed is wired!");
-		view.execute(model, writer);
+		return JStachioModelView.of(new HelloModel("Spring Boot WebFlux is now JStachioed!"));
 	}
 
 }
