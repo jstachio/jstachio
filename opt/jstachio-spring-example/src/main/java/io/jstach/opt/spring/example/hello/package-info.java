@@ -15,8 +15,7 @@
  * <em>This package is only exported for documenting the Spring Example. In a real world
  * app you probably would not export a package like this. </em>
  */
-@JStacheInterfaces(templateAnnotations = { Component.class }, //
-		templateImplements = { ViewFactory.class })
+@JStacheInterfaces(templateAnnotations = { Component.class })
 @JStacheConfig(naming = @JStacheName(suffix = "View"))
 package io.jstach.opt.spring.example.hello;
 
@@ -25,4 +24,3 @@ import org.springframework.stereotype.Component;
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstache.JStacheName;
-import io.jstach.opt.spring.webmvc.ViewFactory;
