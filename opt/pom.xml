@@ -10,7 +10,8 @@
   <modules>
     <module>jstachio-jmustache</module>
     <module>jstachio-spring</module>
-    <module>jstachio-spring-example</module>
+    <module>jstachio-spring-mvc-example</module>
+    <module>jstachio-spring-webflux-example</module>
   </modules>
   <properties>
     <spring.version>6.0.6</spring.version>

@@ -24,7 +24,7 @@ import io.jstach.jstache.JStachePath;
  * @author agentgt
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
-module io.jstach.opt.spring.example {
+module io.jstach.opt.spring.example.mvc {
 	requires transitive io.jstach.opt.spring;
 	requires io.jstach.opt.jmustache;
 	requires com.samskivert.jmustache;
