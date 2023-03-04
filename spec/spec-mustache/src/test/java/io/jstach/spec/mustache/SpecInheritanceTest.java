@@ -1,7 +1,5 @@
 package io.jstach.spec.mustache;
 
-import static org.junit.Assume.assumeTrue;
-
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -34,15 +32,14 @@ public class SpecInheritanceTest extends AbstractSpecTest<InheritanceSpecTemplat
 	protected String adjustResult(InheritanceSpecTemplate specItem, String result, Result type) {
 		return switch (specItem) {
 			case INHERIT -> result.trim();
-			case BLOCK_SCOPE -> ignoreTemplate("Do not correctly support block scope");
 			case OVERRIDE_PARENT_WITH_NEWLINES -> result.trim();
 			default -> result;
 		};
 	}
 
-	private String ignoreTemplate(String message) {
-		assumeTrue(message, false);
-		return "FAIL";
-	}
+	// private String ignoreTemplate(String message) {
+	// assumeTrue(message, false);
+	// return "FAIL";
+	// }
 
 }
