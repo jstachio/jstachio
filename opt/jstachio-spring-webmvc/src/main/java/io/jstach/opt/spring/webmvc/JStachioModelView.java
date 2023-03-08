@@ -31,10 +31,11 @@ public interface JStachioModelView extends View {
 	@Override
 	default void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		/*
-		 * TODO fix this.
-		 */
-		response.setContentType(contentType());
+
+		String contentType = getContentType();
+		if (contentType != null) {
+			response.setContentType(contentType);
+		}
 		try (var w = response.getWriter()) {
 			jstachio().execute(model(), w);
 		}
@@ -51,14 +52,6 @@ public interface JStachioModelView extends View {
 	}
 
 	/**
-	 * The HTTP content type header.
-	 * @return "text/html; charset=utf-8" by default
-	 */
-	default String contentType() {
-		return "text/html; charset=utf-8";
-	}
-
-	/**
 	 * The model to be rendered by {@link #jstachio()}.
 	 * @return model defaulting to <code>this</code> instance.
 	 */
@@ -67,15 +60,31 @@ public interface JStachioModelView extends View {
 	}
 
 	/**
-	 * Creates a spring view from a model
+	 * Creates a spring view from a model with content type:
+	 * "<code>text/html; charset=utf-8</code>".
 	 * @param model an instance of a class annotated with {@link JStache}.
 	 * @return view ready for rendering
 	 */
 	public static JStachioModelView of(Object model) {
+		return of(model, "text/html; charset=utf-8");
+	}
+
+	/**
+	 * Creates a spring view from a model.
+	 * @param model an instance of a class annotated with {@link JStache}.
+	 * @param contentType See {@link #getContentType()}
+	 * @return view ready for rendering
+	 */
+	public static JStachioModelView of(Object model, String contentType) {
 		return new JStachioModelView() {
 			@Override
 			public Object model() {
 				return model;
+			}
+
+			@Override
+			public String getContentType() {
+				return contentType;
 			}
 		};
 	}
