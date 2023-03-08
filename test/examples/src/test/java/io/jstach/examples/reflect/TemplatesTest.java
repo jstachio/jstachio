@@ -70,8 +70,9 @@ public class TemplatesTest {
 		System.out.println(Config.class.getAnnotation(JStacheName.class));
 	}
 
-	static void assertTemplateEquals(TemplateInfo a, TemplateInfo b) {
+	public static void assertTemplateEquals(TemplateInfo a, TemplateInfo b) {
 		assertEquals("templateName", a.templateName(), b.templateName());
+		assertEquals("templatePath", a.templatePath(), b.templatePath());
 		assertEquals("contentType", a.templateContentType(), b.templateContentType());
 		assertEquals("escaper", a.templateEscaper(), b.templateEscaper());
 		assertEquals("formatter", a.templateFormatter(), b.templateFormatter());

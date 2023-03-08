@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
 
 /**
@@ -23,10 +24,30 @@ public interface TemplateInfo {
 	public String templateName();
 
 	/**
-	 * If the template is a classpath resource file this will return the location.
+	 * If the template is a classpath resource file this will return the location that was
+	 * originally resolved via {@link JStacheConfig config resolution}.
 	 * @return the location of the template or empty if the template is inlined.
+	 * @apiNote since the return is the original path resolved by the annotation processor
+	 * it may return a path with a starting "/" and thus it is recommend you call
+	 * {@link #normalizePath()} if you plan on loading the resource.
+	 *
+	 * @see #normalizePath()
 	 */
 	public String templatePath();
+
+	/**
+	 * Normalizes the path to used by {@link ClassLoader#getResource(String)}.
+	 *
+	 * If the templatePath starts with a "/" it is stripped.
+	 * @return normalized path
+	 */
+	default String normalizePath() {
+		String p = templatePath();
+		if (p.startsWith("/")) {
+			return p.substring(1);
+		}
+		return p;
+	}
 
 	/**
 	 * The raw contents of the template. Useful if the template is inline. To determine if
@@ -116,7 +137,8 @@ public interface TemplateInfo {
 	 * @return description of the template.
 	 */
 	default String description() {
-		return String.format("TemplateInfo[%s, %s]", templateName(), templatePath());
+		return String.format("TemplateInfo[name=%s, path=%s, contentType=%s]", templateName(), templatePath(),
+				templateContentType());
 	}
 
 }

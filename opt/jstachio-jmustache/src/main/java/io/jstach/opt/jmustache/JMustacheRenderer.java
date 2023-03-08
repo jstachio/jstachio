@@ -179,7 +179,7 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 				return true;
 			}
 			case RESOURCE -> {
-				String templatePath = template.templatePath();
+				String templatePath = template.normalizePath();
 				var path = Path.of(sourcePath, templatePath);
 				InputStream stream;
 				boolean _broken = template.lastLoaded() > 0 || broken;

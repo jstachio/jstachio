@@ -60,6 +60,18 @@ class TextFileObject {
 	}
 
 	InputStream openInputStream(String name) throws IOException {
+
+		/*
+		 * Issue 61: the name cannot have a starting slash or else it fails so we need to
+		 * normalize if it does.
+		 */
+		if (name.startsWith("/")) {
+			if (config.isDebug()) {
+				config.debug("Path starts with a starting slash. path=" + name);
+			}
+			name = name.substring(1);
+		}
+
 		/*
 		 * Ideally we would use StandardLocation.SOURCE_PATH but that has issues with
 		 * resources for Eclipse.
