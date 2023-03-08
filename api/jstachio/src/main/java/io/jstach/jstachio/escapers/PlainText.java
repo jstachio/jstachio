@@ -34,19 +34,22 @@ import io.jstach.jstachio.Escaper;
 
 /**
  * Provides NOOP escaper for working with plain text.
+ *
  * @author Victor Nazarov
  * @author agentgt
  */
 @JStacheContentType(mediaType = "text/plain")
-public enum PlainText {
+public final class PlainText {
 
-	;
+	private PlainText() {
+	}
+
 	/**
 	 * Provides the escaper for static lookup.
 	 * @return noop like escaper singleton
 	 */
 	public static Escaper provider() {
-		return NoEscaper.INSTANCE;
+		return NoEscaper.PlainText;
 	}
 
 }

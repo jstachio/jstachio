@@ -6,7 +6,7 @@ import io.jstach.jstachio.Escaper;
 
 enum NoEscaper implements Escaper {
 
-	INSTANCE;
+	PlainText;
 
 	@Override
 	public void append(Appendable a, CharSequence s) throws IOException {

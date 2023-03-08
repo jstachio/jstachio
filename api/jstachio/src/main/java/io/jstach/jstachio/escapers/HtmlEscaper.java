@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import io.jstach.jstachio.Escaper;
 
-class HtmlEscaper implements Escaper {
+enum HtmlEscaper implements Escaper {
+
+	Html;
 
 	private static final String QUOT = "&quot;";
 

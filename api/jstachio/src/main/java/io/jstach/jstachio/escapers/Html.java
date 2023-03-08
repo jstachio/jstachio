@@ -22,15 +22,17 @@ import io.jstach.jstachio.Escaper;
  * @author agentgt
  */
 @JStacheContentType(mediaType = "text/html")
-public enum Html {
+public final class Html {
 
-	;
+	private Html() {
+	}
+
 	/**
 	 * Provides the escaper.
 	 * @return HTML escaper.
 	 */
 	public static Escaper provider() {
-		return new HtmlEscaper();
+		return HtmlEscaper.Html;
 	}
 
 }

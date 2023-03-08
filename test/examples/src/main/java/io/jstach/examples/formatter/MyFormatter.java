@@ -25,7 +25,7 @@ public class MyFormatter implements Formatter {
 			downstream.append(a, ld.format(DateTimeFormatter.ISO_DATE));
 			return;
 		}
-		DefaultFormatter.INSTANCE.format(downstream, a, path, c, o);
+		DefaultFormatter.provider().format(downstream, a, path, c, o);
 	}
 
 	public static Formatter provider() {
