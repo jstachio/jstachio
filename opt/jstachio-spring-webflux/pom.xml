@@ -5,7 +5,7 @@
     <artifactId>jstachio-opt-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>jstachio-spring</artifactId>
+  <artifactId>jstachio-spring-webflux</artifactId>
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -13,16 +13,30 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webflux</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.jstach</groupId>
-      <artifactId>jstachio</artifactId>
+      <artifactId>jstachio-spring</artifactId>
+    </dependency>
+    
+    <!-- 
+    The following is because project reactor does not use proper nullable annotations
+    which triggers the infamous both on javadoc and compile:
+    
+    [WARNING] warning: unknown enum constant When.MAYBE
+    
+    Please do not use this garbage. It pains me to even reference it.
+    -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.1</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 </project>

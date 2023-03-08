@@ -10,8 +10,10 @@
   <modules>
     <module>jstachio-jmustache</module>
     <module>jstachio-spring</module>
-    <module>jstachio-spring-mvc-example</module>
+    <module>jstachio-spring-webmvc</module>
+    <module>jstachio-spring-example</module>
     <module>jstachio-spring-webflux-example</module>
+    <module>jstachio-spring-webflux</module>
   </modules>
   <properties>
     <spring.version>6.0.6</spring.version>
@@ -47,6 +49,16 @@
       <dependency>
         <groupId>io.jstach</groupId>
         <artifactId>jstachio-spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-spring-webmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-spring-webflux</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

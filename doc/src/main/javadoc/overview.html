@@ -345,13 +345,37 @@ be rendered to the response.
     }
 </code></pre>
 
-<h4 id="spring-example">Spring Example Application</h4>
+ <h4 id="spring-webmvc">Web MVC integration</h4>
+ <strong>See {@link io.jstach.opt.spring.webmvc}</strong>
+ <p>
+ {@link io.jstach.opt.spring.webmvc.JStachioModelView} allows you to construct
+ servlet based Spring Views for traditional Web MVC Spring applications.
+ This integration is tied to the servlet API and thus will need it as
+ a dependency.
+ 
+ <h4 id="spring-webflux">Web Flux integration</h4>
+ <strong>See {@link io.jstach.opt.spring.webflux}</strong>
+ <p>
+ {@link io.jstach.opt.spring.webflux.JStachioEncoder} allows
+ reactive containers such as Flux/Mono to contain JStache models.
+
+<h4 id="spring-example">Spring Web MVC Example Application</h4>
 <strong>See {@link io.jstach.opt.spring.example/ } module and <a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">github project</a></strong>
 <p>
-There is an example modularized {@link io.jstach.opt.spring.example/ Spring Boot application}.
+There is an example modularized {@link io.jstach.opt.spring.example/ Spring Boot Web MVC application}.
 While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
 it might be easier to look 
 <strong><a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">directly on github (link to project).</a></strong> 
+
+
+<h4 id="spring-webflux-example">Spring Webflux Example Application</h4>
+<strong>See {@link io.jstach.opt.spring.webflux.example/ } module and <a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-webflux-example">github project</a></strong>
+<p>
+There is an example modularized {@link io.jstach.opt.spring.webflux.example/ Spring Boot Webflux reative application}.
+While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
+it might be easier to look 
+<strong><a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">directly on github (link to project).</a></strong> 
+
 </div>
 </body>
 </html>

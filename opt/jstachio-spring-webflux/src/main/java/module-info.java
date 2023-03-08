@@ -1,5 +1,5 @@
 /**
- * JStachio Spring integration module.
+ * JStachio Spring Webflux integration module.
  * <p>
  * 
  * This module has support for various Spring web options. Since
@@ -23,25 +23,35 @@
  * {@link java.lang.String} view way (ModelAndView). This particularly integration
  * is not tied to the Servlet API.
  * 
+ * 
+ * <h2>Web Flux integration</h2>
+ * <strong>See {@link io.jstach.opt.spring.webflux}</strong>
+ * <p>
+ * {@link io.jstach.opt.spring.webflux.JStachioEncoder} allows
+ * reactive containers such as Flux/Mono to contain JStache models.
+ * 
  *  
  * @author agentgt
  */
-module io.jstach.opt.spring {
-	requires transitive io.jstach.jstachio;
+module io.jstach.opt.spring.webflux {
+	requires transitive io.jstach.opt.spring;
 	requires static org.eclipse.jdt.annotation;
 	requires static spring.jcl;
 	
+	
 	/*
-	 * For javadoc and not an actual dep
+	 * start required for Spring webflux support
 	 */
-	requires static spring.webmvc;
+	requires spring.webflux;
+	requires org.reactivestreams;
+	requires reactor.core;
+	/* end spring webflux optional deps */
 	
 	requires spring.web;
 	requires spring.beans;
 	requires spring.core;
 	requires spring.context;
 	
-	exports io.jstach.opt.spring;
-	exports io.jstach.opt.spring.web;
+	exports io.jstach.opt.spring.webflux;
 
 }

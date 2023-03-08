@@ -5,24 +5,20 @@
     <artifactId>jstachio-opt-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>jstachio-spring</artifactId>
+  <artifactId>jstachio-spring-webmvc</artifactId>
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.jstach</groupId>
-      <artifactId>jstachio</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
