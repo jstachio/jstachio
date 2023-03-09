@@ -403,7 +403,10 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return name;
 	}
 
-	private FormatterTypes resolveFormatterTypes(TypeElement element, TypeElement formatterElement) {
+	private FormatterTypes resolveFormatterTypes(TypeElement element, @Nullable TypeElement formatterElement) {
+		/*
+		 * First get the formatter types based on config
+		 */
 		var prisms = findPrisms(element, JStacheFormatterTypesPrism::getInstanceOn).toList();
 		List<String> classNames = prisms.stream().flatMap(p -> p.types().stream()).map(tm -> getTypeName(tm))
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -411,22 +414,26 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				.collect(Collectors.toCollection(ArrayList::new));
 
 		/*
-		 * We get the formatter types off the selected JStacheFormatter and whatever
+		 * Now we get the formatter types off the selected JStacheFormatter and whatever
 		 * classes it inherits from
 		 */
 
-		var formatterSupers = JavaLanguageModel.getInstance().supers(formatterElement);
+		Stream<TypeElement> formatterSupers;
+
+		if (formatterElement == null) {
+			formatterSupers = Stream.empty();
+		}
+		else {
+			formatterSupers = JavaLanguageModel.getInstance().supers(formatterElement);
+		}
 
 		var formatterTypesOnFormatter = findPrisms(formatterSupers, JStacheFormatterTypesPrism::getInstanceOn).toList();
 
-		if (formatterTypesOnFormatter != null) {
+		classNames.addAll(formatterTypesOnFormatter.stream() //
+				.flatMap(p -> p.types().stream()) //
+				.map(tm -> getTypeName(tm)).toList());
 
-			classNames.addAll(formatterTypesOnFormatter.stream() //
-					.flatMap(p -> p.types().stream()) //
-					.map(tm -> getTypeName(tm)).toList());
-
-			patterns.addAll(formatterTypesOnFormatter.stream().flatMap(p -> p.patterns().stream()).toList());
-		}
+		patterns.addAll(formatterTypesOnFormatter.stream().flatMap(p -> p.patterns().stream()).toList());
 
 		if (classNames.isEmpty() && patterns.isEmpty()) {
 			return FormatterTypes.acceptOnlyKnownTypes();
