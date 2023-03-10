@@ -5,15 +5,15 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNull;
 
 import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.spi.JStachioExtensionProvider;
 import io.jstach.jstachio.spi.JStachioFilter;
-import io.jstach.jstachio.spi.JStachioExtension;
 
 /**
  * Adapts a filter to ease adding a fallback template engine such as JMustache.
  *
  * @author agentgt
  */
-abstract class AbstractJStacheEngine implements JStachioFilter, JStachioExtension {
+abstract class AbstractJStacheEngine implements JStachioFilter, JStachioExtensionProvider {
 
 	/**
 	 * Do nothing constructor

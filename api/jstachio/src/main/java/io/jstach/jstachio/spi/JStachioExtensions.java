@@ -99,7 +99,6 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 		this.config = config;
 		this.filter = filter;
 		this.templateFinder = templateFinder;
-		;
 	}
 
 	/**
@@ -108,8 +107,9 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 	 * @return bean like container of services.
 	 */
 	static JStachioExtensions of(Iterable<JStachioExtension> it) {
-		List<JStachioExtension> svs = new ArrayList<>();
-		it.forEach(svs::add);
+		List<JStachioExtensionProvider> svs = new ArrayList<>();
+		it.forEach(s -> svs.add(JStachioExtensionProvider.of(s)));
+
 		List<JStachioConfig> configs = new ArrayList<>();
 		List<JStachioFilter> filters = new ArrayList<>();
 		List<JStachioTemplateFinder> finders = new ArrayList<>();

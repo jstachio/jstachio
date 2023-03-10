@@ -10,17 +10,17 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Runtime Config Service.
  * <p>
- * The default config service uses System properties but can be extended through
- * {@link JStachioExtension#provideConfig()}.
- * <p>
  * While a majority of jstachio config is static and done at compile time some config like
  * logging and disabling extensions is needed at runtime. Config and DI agnostic
- * extensions should use this facility for simple key valuy based config.
- *
+ * extensions should use this facility for simple key value based config.
+ * <p>
+ * The default resolved config uses System properties but can be replaced by implementing
+ * this extension.
+ * 
  * @see JStachioExtension
  * @author agentgt
  */
-public interface JStachioConfig {
+public non-sealed interface JStachioConfig extends JStachioExtension {
 
 	/**
 	 * Config key to disable reflection based lookup of templates for other fallback

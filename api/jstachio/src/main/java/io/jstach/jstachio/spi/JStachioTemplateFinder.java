@@ -23,7 +23,7 @@ import io.jstach.jstachio.TemplateInfo;
  * @author agentgt
  *
  */
-public interface JStachioTemplateFinder {
+public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 
 	/**
 	 * Finds a {@link Template} if possible otherwise possibly falling back to a

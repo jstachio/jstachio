@@ -15,7 +15,7 @@ import io.jstach.jstachio.TemplateInfo;
  * @author agentgt
  *
  */
-public interface JStachioFilter {
+public non-sealed interface JStachioFilter extends JStachioExtension {
 
 	/**
 	 * A fully composed chain that renders a model by applying filtering.

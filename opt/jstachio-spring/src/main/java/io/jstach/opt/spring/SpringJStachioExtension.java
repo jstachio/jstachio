@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioConfig;
-import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioExtensionProvider;
 import io.jstach.jstachio.spi.JStachioTemplateFinder;
 
 /**
@@ -20,7 +20,7 @@ import io.jstach.jstachio.spi.JStachioTemplateFinder;
  * @author agentgt
  *
  */
-public class SpringJStachioExtension implements JStachioExtension {
+public class SpringJStachioExtension implements JStachioExtensionProvider {
 
 	private final Environment environment;
 

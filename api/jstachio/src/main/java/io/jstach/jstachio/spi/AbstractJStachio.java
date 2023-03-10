@@ -1,16 +1,19 @@
 package io.jstach.jstachio.spi;
 
+import static io.jstach.jstachio.spi.Templates.sneakyThrow;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
-import static io.jstach.jstachio.spi.Templates.sneakyThrow;
 
 /**
- * An abstract jstachio that just needs a {@link JStachioTemplateFinder} and
- * {@link JStachioFilter}.
+ * An abstract jstachio that just needs a {@link JStachioExtensions} container.
+ * <p>
+ * To extend just override {@link #extensions()}.
  *
+ * @see JStachioExtensions
  * @author agentgt
  */
 public abstract class AbstractJStachio implements JStachio, JStachioExtensions.Provider {
@@ -58,6 +61,22 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 			sneakyThrow(e);
 			throw new RuntimeException(e);
 		}
+	}
+
+}
+
+class DefaultJStachio extends AbstractJStachio {
+
+	private final JStachioExtensions extensions;
+
+	public DefaultJStachio(JStachioExtensions extensions) {
+		super();
+		this.extensions = extensions;
+	}
+
+	@Override
+	public JStachioExtensions extensions() {
+		return this.extensions;
 	}
 
 }

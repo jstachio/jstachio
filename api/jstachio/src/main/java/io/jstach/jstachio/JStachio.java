@@ -118,7 +118,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @return service loaded jstachio
 	 */
 	public static JStachio defaults() {
-		return io.jstach.jstachio.spi.JStachioResolver.defaultJStachio();
+		return io.jstach.jstachio.spi.JStachioFactory.defaultJStachio();
 	}
 
 	/**

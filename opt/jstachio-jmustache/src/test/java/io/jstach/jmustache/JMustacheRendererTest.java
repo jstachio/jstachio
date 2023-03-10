@@ -13,7 +13,7 @@ import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.spi.JStachioExtensions;
-import io.jstach.jstachio.spi.JStachioResolver;
+import io.jstach.jstachio.spi.JStachioFactory;
 import io.jstach.opt.jmustache.JMustacheRenderer;
 
 public class JMustacheRendererTest {
@@ -63,7 +63,7 @@ public class JMustacheRendererTest {
 		assertEquals(expected, actual);
 		String prefix = "JMUSTACHE ";
 		// This is kind of a hack
-		if (JStachioResolver.defaultJStachio() instanceof JStachioExtensions.Provider je) {
+		if (JStachioFactory.defaultJStachio() instanceof JStachioExtensions.Provider je) {
 			je.extensions().findExtension(JMustacheRenderer.class).orElseThrow().prefix(prefix).use(true);
 		}
 		actual = JStachio.render(new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry)));
