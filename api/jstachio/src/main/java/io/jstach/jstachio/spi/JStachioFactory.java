@@ -71,6 +71,12 @@ public final class JStachioFactory {
 		private List<JStachioExtension> extensions = new ArrayList<>();
 
 		/**
+		 * Constructor is hidden for now.
+		 */
+		private Builder() {
+		}
+
+		/**
 		 * Adds an extension
 		 * @param extension not null
 		 * @return this
