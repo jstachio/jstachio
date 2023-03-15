@@ -95,4 +95,19 @@ public non-sealed interface JStachioExtensionProvider extends JStachioExtension 
 
 record ExtensionProvider(@Nullable JStachioConfig config, @Nullable JStachioFilter filter,
 		@Nullable JStachioTemplateFinder finder) implements JStachioExtensionProvider {
+
+	@Override
+	public @Nullable JStachioTemplateFinder provideTemplateFinder() {
+		return finder;
+	}
+
+	@Override
+	public @Nullable JStachioConfig provideConfig() {
+		return config;
+	}
+
+	@Override
+	public @Nullable JStachioFilter provideFilter() {
+		return filter;
+	}
 }

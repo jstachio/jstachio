@@ -5,10 +5,13 @@ import java.lang.System.Logger.Level;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -66,16 +69,26 @@ public final class Templates {
 	 * @throws Exception if any reflection error happes or the template is not found
 	 */
 	public static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config) throws Exception {
+		EnumSet<TemplateLoadStrategy> strategies = EnumSet.noneOf(TemplateLoadStrategy.class);
+
+		for (var s : ALL_STRATEGIES) {
+			if (s.isEnabled(config)) {
+				strategies.add(s);
+			}
+		}
+		var classLoaders = collectClassLoaders(modelType.getClassLoader());
+
+		Logger logger = config.getLogger(Templates.class.getCanonicalName());
+
 		Exception error;
 		try {
-			Template<?> r = Templates.getTemplate(modelType);
+			Template<?> r = Templates.getTemplate(modelType, strategies, classLoaders, logger);
 			return r;
 		}
 		catch (Exception e) {
 			error = e;
 		}
 		if (!config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
-			Logger logger = config.getLogger(JStachioExtension.class.getCanonicalName());
 			if (logger.isLoggable(Level.WARNING)) {
 				logger.log(Level.WARNING,
 						"Could not find generated template and will try reflection for model type: " + modelType,
@@ -113,39 +126,103 @@ public final class Templates {
 	 * @param <T> the model type
 	 * @param clazz the model type
 	 * @return the template never <code>null</code>.
-	 * @throws ClassNotFoundException if the template is not found
+	 * @throws NoSuchElementException if the template is not found
 	 * @throws Exception if the template is not found or any reflective access errors
 	 */
 	public static <T> Template<T> getTemplate(Class<T> clazz) throws Exception {
 		List<ClassLoader> classLoaders = collectClassLoaders(clazz.getClassLoader());
-		return (Template<T>) getTemplate(clazz, classLoaders);
+		return (Template<T>) getTemplate(clazz, ALL_STRATEGIES, classLoaders, JStachioConfig.noopLogger());
 	}
 
-	private static <T> Template<T> getTemplate(Class<T> templateType, Iterable<ClassLoader> classLoaders)
-			throws Exception {
+	/**
+	 * Finds a template by reflection or an exception is thrown.
+	 * @param <T> the model type
+	 * @param modelType the model type
+	 * @param strategies load strategies
+	 * @param classLoaders class loaders to try loading
+	 * @param logger used to log attempted strategies. If you do not want to log use
+	 * {@link JStachioConfig#noopLogger()}.
+	 * @return the template never <code>null</code>.
+	 * @throws NoSuchElementException if the template is not found
+	 * @throws Exception if the template is not found or any reflective access errors
+	 * 
+	 */
+	public static <T> Template<T> getTemplate(Class<T> modelType, Iterable<TemplateLoadStrategy> strategies,
+			Iterable<ClassLoader> classLoaders, System.Logger logger) throws Exception {
 
-		for (ClassLoader classLoader : classLoaders) {
-			Template<T> template = doGetTemplate(templateType, classLoader);
-			if (template != null) {
-				return template;
+		for (TemplateLoadStrategy s : strategies) {
+			if (logger.isLoggable(Level.DEBUG)) {
+				logger.log(Level.DEBUG, "For modelType: \"" + modelType + "\" trying strategy: \"" + s + "\"");
+			}
+			for (ClassLoader classLoader : classLoaders) {
+				try {
+					Template<T> template = s.load(modelType, classLoader);
+					if (template != null) {
+						return template;
+					}
+				}
+				catch (ClassNotFoundException | TemplateNotFoundException e) {
+					continue;
+				}
 			}
 		}
+		throw new TemplateNotFoundException(modelType);
+	}
 
-		throw new ClassNotFoundException("Cannot find implementation for " + templateType.getName());
+	private static final Set<TemplateLoadStrategy> ALL_STRATEGIES = EnumSet.allOf(TemplateLoadStrategy.class);
+
+	/**
+	 * Strategy to load templates dynamically.
+	 *
+	 * @author agentgt
+	 *
+	 */
+	public enum TemplateLoadStrategy {
+
+		/**
+		 * Strategy that will try no-arg constructor
+		 */
+		CONSTRUCTOR() {
+			@Override
+			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
+				return templateByConstructor(clazz, classLoader);
+			}
+
+			@Override
+			protected final boolean isEnabled(JStachioConfig config) {
+				return !config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE);
+			}
+
+		},
+		/**
+		 * Strategy that will try the {@link ServiceLoader} with the SPI of
+		 * {@link TemplateProvider}.
+		 */
+		SERVICE_LOADER() {
+			@Override
+			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
+				return (Template<T>) templateByServiceLoader(clazz, classLoader);
+			}
+
+			@Override
+			protected final boolean isEnabled(JStachioConfig config) {
+				return !config.getBoolean(JStachioConfig.SERVICELOADER_TEMPLATE_DISABLE);
+			}
+		};
+
+		protected abstract <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception;
+
+		protected abstract boolean isEnabled(JStachioConfig config);
+
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> @Nullable Template<T> doGetTemplate(Class<T> clazz, ClassLoader classLoader) throws Exception {
-		try {
-			Class<?> implementation = (Class<?>) classLoader.loadClass(resolveName(clazz));
-			Constructor<?> constructor = implementation.getDeclaredConstructor();
-			constructor.setAccessible(true);
-
-			return (Template<T>) constructor.newInstance();
-		}
-		catch (ClassNotFoundException e) {
-			return (Template<T>) getTemplateFromServiceLoader(clazz, classLoader);
-		}
+	private static <T> @Nullable Template<T> templateByConstructor(Class<T> clazz, ClassLoader classLoader)
+			throws Exception {
+		Class<?> implementation = (Class<?>) classLoader.loadClass(resolveName(clazz));
+		Constructor<?> constructor = implementation.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		return (Template<T>) constructor.newInstance();
 	}
 
 	private static String resolveName(Class<?> c) {
@@ -219,7 +296,7 @@ public final class Templates {
 		return StreamSupport.stream(split, false);
 	}
 
-	private static <T> @Nullable Template<?> getTemplateFromServiceLoader(Class<T> clazz, ClassLoader classLoader) {
+	private static <T> @Nullable Template<?> templateByServiceLoader(Class<T> clazz, ClassLoader classLoader) {
 		ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, classLoader);
 		for (TemplateProvider rp : loader) {
 			for (var t : rp.provideTemplates()) {

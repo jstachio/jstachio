@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * <p>
  * The default resolved config uses System properties but can be replaced by implementing
  * this extension.
- * 
+ *
  * @see JStachioExtension
  * @author agentgt
  */
@@ -27,6 +27,12 @@ public non-sealed interface JStachioConfig extends JStachioExtension {
 	 * mechanisms
 	 */
 	public static String REFLECTION_TEMPLATE_DISABLE = "jstachio.reflection.template.disable";
+
+	/**
+	 * Config key to disable service loader based lookup of templates for other fallback
+	 * mechanisms
+	 */
+	public static String SERVICELOADER_TEMPLATE_DISABLE = "jstachio.serviceloader.template.disable";
 
 	/**
 	 * Config key to disable if logging. By default logging is enabled.

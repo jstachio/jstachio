@@ -3,6 +3,8 @@ package io.jstach.jstachio.spi;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,8 +38,30 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	 * @return the template info which might be a {@link Template} if the generated
 	 * template was found.
 	 * @throws Exception if any reflection error happes or the template is not found
+	 * @throws NoSuchElementException if the template is not found
+	 * @throws NullPointerException if the modelType is null
 	 */
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception;
+
+	/**
+	 * Finds a template or null if no template is found. Should not throw an exception if
+	 * a template is not found.
+	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
+	 * not the Templates class</em>)
+	 * @return <code>null</code> if the template is was not found or the template info
+	 * which might be a {@link Template} if the generated template was found.
+	 * @throws NullPointerException if the modelType is null
+	 * @see #findTemplate(Class)
+	 */
+	default @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+		Objects.requireNonNull(modelType, "modelType");
+		try {
+			return findTemplate(modelType);
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
 
 	/**
 	 * Determines if this template finder has a template for the model type (the class
@@ -45,15 +69,14 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
 	 * not the Templates class</em>)
 	 * @return true if this finder has template for modelType
+	 * @throws NullPointerException if the modelType is null
 	 */
 	default boolean supportsType(Class<?> modelType) {
-		try {
-			findTemplate(modelType);
-			return true;
-		}
-		catch (Exception e) {
+		var t = findOrNull(modelType);
+		if (t == null) {
 			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -96,6 +119,19 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 		return new ClassValueCacheTemplateFinder(finder);
 	}
 
+	/**
+	 * Creates a template finder from an iterable of templates. The returned finder will
+	 * just loop through the templates and call {@link TemplateInfo#supportsType(Class)}.
+	 * To avoid the looping cost wrap the return with
+	 * {@link #cachedTemplateFinder(JStachioTemplateFinder)}.
+	 * @param templates templates to be searched in order of the iterable
+	 * @param order order hint see {@link #order()}.
+	 * @return adapted template finder
+	 */
+	public static JStachioTemplateFinder of(Iterable<? extends TemplateInfo> templates, int order) {
+		return new IterableTemplateFinder(templates, order);
+	}
+
 }
 
 final class DefaultTemplateFinder implements JStachioTemplateFinder {
@@ -115,6 +151,88 @@ final class DefaultTemplateFinder implements JStachioTemplateFinder {
 	@Override
 	public int order() {
 		return Integer.MAX_VALUE;
+	}
+
+}
+
+class TemplateNotFoundException extends NoSuchElementException {
+
+	private static final long serialVersionUID = -4016359589653582060L;
+
+	private final Class<?> modelType;
+
+	protected TemplateNotFoundException(Class<?> modelType, @Nullable String message, @Nullable Throwable cause) {
+		super(message, cause);
+		this.modelType = modelType;
+	}
+
+	public TemplateNotFoundException(Class<?> modelType) {
+		this(modelType, errorMessage(modelType), (Throwable) null);
+	}
+
+	protected static String errorMessage(Class<?> modelType) {
+		return "template not found for type: " + modelType;
+	}
+
+	public Class<?> modelType() {
+		return modelType;
+	}
+
+}
+
+abstract class AbstractTemplateFinder implements JStachioTemplateFinder {
+
+	private final int order;
+
+	protected AbstractTemplateFinder(int order) {
+		super();
+		this.order = order;
+	}
+
+	@Override
+	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
+		Objects.requireNonNull(modelType, "modelType");
+		var t = findOrNull(modelType);
+		if (t == null) {
+			throw new TemplateNotFoundException(modelType);
+		}
+		return t;
+	}
+
+	@Override
+	public boolean supportsType(Class<?> modelType) {
+		Objects.requireNonNull(modelType, "modelType");
+		var t = findOrNull(modelType);
+		if (t == null) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int order() {
+		return this.order;
+	}
+
+}
+
+final class IterableTemplateFinder extends AbstractTemplateFinder {
+
+	private final Iterable<? extends TemplateInfo> templates;
+
+	public IterableTemplateFinder(Iterable<? extends TemplateInfo> templates, int order) {
+		super(order);
+		this.templates = templates;
+	}
+
+	@Override
+	public @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+		for (var t : templates) {
+			if (t.supportsType(modelType)) {
+				return t;
+			}
+		}
+		return null;
 	}
 
 }
@@ -177,11 +295,12 @@ final class CompositeTemplateFinder implements JStachioTemplateFinder {
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
 		for (var f : finders) {
-			if (f.supportsType(modelType)) {
-				return f.findTemplate(modelType);
+			var t = f.findOrNull(modelType);
+			if (t != null) {
+				return t;
 			}
 		}
-		throw new RuntimeException("Template not found for type: " + modelType);
+		throw new TemplateNotFoundException(modelType);
 	}
 
 }

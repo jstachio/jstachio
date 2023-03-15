@@ -1,10 +1,15 @@
 package io.jstach.jstachio.spi;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.TemplateInfo;
 
 /**
  * Creates JStachios mainly with the {@link ServiceLoader} or a {@link Builder}.
@@ -70,6 +75,10 @@ public final class JStachioFactory {
 
 		private List<JStachioExtension> extensions = new ArrayList<>();
 
+		private List<TemplateInfo> templates = new ArrayList<>();
+
+		private Map<String, String> properties = new LinkedHashMap<>();
+
 		/**
 		 * Constructor is hidden for now.
 		 */
@@ -102,22 +111,47 @@ public final class JStachioFactory {
 		}
 
 		/**
-		 * Builds a JStachio by coalescing the extensions.
+		 * Registers an instantiated template. The templates will be added to
+		 * {@link JStachioTemplateFinder} with order <code>-1</code> when {@link #build()}
+		 * is called.
+		 * @param template usually a generated renderer.
+		 * @return this
+		 */
+		public Builder add(TemplateInfo template) {
+			Objects.requireNonNull(template, "template");
+			templates.add(template);
+			return this;
+		}
+
+		/**
+		 * Registers instantiated templates. The templates will be added
+		 * {@link JStachioTemplateFinder} with order <code>-1</code> when {@link #build()}
+		 * is called.
+		 * @param templates usually a generated renderer.
+		 * @return this
+		 */
+		public Builder add(Collection<? extends TemplateInfo> templates) {
+			this.templates.addAll(templates);
+			return this;
+		}
+
+		/**
+		 * Builds a JStachio by coalescing the extensions and registered templates.
 		 *
 		 * @apiNote See {@link JStachioExtensions} for logic on how the extensions are
 		 * consolidated.
 		 * @return resolved JStachio
 		 */
 		public JStachio build() {
-			return new DefaultJStachio(JStachioExtensions.of(extensions));
-		}
-
-		/**
-		 * Current mutable list of extensions.
-		 * @return mutable list of extensions
-		 */
-		public List<JStachioExtension> extensions() {
-			return extensions;
+			List<JStachioExtension> resolved = new ArrayList<>();
+			if (!templates.isEmpty()) {
+				var templatesCopy = List.copyOf(templates);
+				JStachioTemplateFinder f = JStachioTemplateFinder.of(templatesCopy, -1);
+				f = JStachioTemplateFinder.cachedTemplateFinder(f);
+				resolved.add(f);
+			}
+			resolved.addAll(extensions);
+			return new DefaultJStachio(JStachioExtensions.of(resolved));
 		}
 
 	}
