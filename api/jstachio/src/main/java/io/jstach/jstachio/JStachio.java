@@ -5,7 +5,10 @@ import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstachio.spi.AbstractJStachio;
+import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioFactory;
 
 /**
  * Render models by using reflection to lookup generated templates as well as apply
@@ -24,11 +27,26 @@ import io.jstach.jstachio.spi.JStachioExtension;
  * it also allows additional custom runtime behavior like filtering as well as allows
  * easier integration with web frameworks.
  *
+ * <h2>Customize</h2>
+ *
+ * The default {@link JStachio} uses the {@link ServiceLoader} to load
+ * {@link JStachioExtension}s. You can customize it by adding jars that have provided
+ * {@link JStachioExtension}s or by {@link JStachioConfig adjusting config}.
+ *
+ * <p>
+ *
+ * If you would like to create your own {@link JStachio} instead of the default you can
+ * either extend {@link AbstractJStachio} or use {@link JStachioFactory#builder()}. If you
+ * want your custom {@link JStachio} to be set as the default such that the static render
+ * methods on this class call it you can do that with
+ * {@link #setStaticJStachio(Supplier)}.
+ *
  * @apiNote The static <strong><code>render</code></strong> methods are convenience
- * methods that will use the ServiceLoader based JStachio which loads all extensions via
- * the {@link ServiceLoader}.
+ * methods that will by default use the ServiceLoader based JStachio which loads all
+ * extensions via the {@link ServiceLoader}.
  * @see JStachioExtension
  * @see JStache
+ * @see JStachioFactory#builder()
  */
 public interface JStachio extends Renderer<Object> {
 
