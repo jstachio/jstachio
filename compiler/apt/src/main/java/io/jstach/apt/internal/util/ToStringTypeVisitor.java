@@ -212,6 +212,9 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 			p.append("? super ");
 			superBound.accept(child(), p);
 		}
+		else {
+			p.append("?");
+		}
 		return p;
 	}
 
