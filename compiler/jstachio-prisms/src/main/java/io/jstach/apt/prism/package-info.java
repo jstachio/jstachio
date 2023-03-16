@@ -1,5 +1,7 @@
-
-@net.java.dev.hickory.prism.GeneratePrisms({ //
+/**
+ * Ignore
+ */
+@io.jstach.prism.GeneratePrisms({ //
 		@GeneratePrism(value = io.jstach.jstache.JStache.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.jstache.JStacheConfig.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.jstache.JStacheContentType.class, publicAccess = true), //
@@ -19,4 +21,4 @@ package io.jstach.apt.prism;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 
-import net.java.dev.hickory.prism.GeneratePrism;
+import io.jstach.prism.GeneratePrism;

@@ -7,6 +7,7 @@
   </parent>
   <properties>
     <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    <pistachio.version>0.1.1</pistachio.version>
   </properties>
   <artifactId>jstachio-prisms</artifactId>
 
@@ -28,24 +29,24 @@
     </dependency>
 
     <dependency>
-      <groupId>com.jolira</groupId>
-      <artifactId>hickory</artifactId>
-      <scope>provided</scope>
+      <groupId>io.jstach.pistachio</groupId>
+      <artifactId>pistachio-prism</artifactId>
+      <version>${pistachio.version}</version>
       <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach.pistachio</groupId>
+      <artifactId>pistachio-prism-apt</artifactId>
+      <version>${pistachio.version}</version>
+      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>
       <groupId>com.samskivert</groupId>
       <artifactId>jmustache</artifactId>
       <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>jstachio-eea</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-      <optional>true</optional>
     </dependency>
   
   </dependencies>
@@ -55,14 +56,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <show>public</show>
+          <failOnWarnings>false</failOnWarnings>
         </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
