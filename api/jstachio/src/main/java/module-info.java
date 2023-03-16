@@ -25,6 +25,7 @@
  * </pre>
  * 
  * @see io.jstach.jstachio.JStachio
+ * @jstachioVersion
  */
 module io.jstach.jstachio {
 	exports io.jstach.jstachio;

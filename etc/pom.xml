@@ -8,6 +8,20 @@
   <artifactId>jstachio-etc-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
-      <module>eea</module>
+    <module>eea</module>
   </modules>
+  <properties>
+    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

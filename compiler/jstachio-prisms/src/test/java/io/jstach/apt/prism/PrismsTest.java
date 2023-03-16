@@ -109,22 +109,37 @@ public class PrismsTest {
 				public interface Prisms {
 
 					{{#constants}}
+					/**
+					 * Generated
+					 */
 					public static final String {{name}} = "{{value}}";
 
 					{{/constants}}
+					/**
+					 * Generated
+					 */
 					@NonNullByDefault
 					public enum Flag {
 
 					{{#flags}}
+						/**
+						 * Generated
+						 */
 						{{.}}, //
 					{{/flags}}
 
 					}
 
+					/**
+					 * Generated
+					 */
 					@NonNullByDefault
 					public enum JStacheType {
 
 					{{#types}}
+						/**
+						 * Generated
+						 */
 						{{.}}, //
 					{{/types}}
 
@@ -132,14 +147,23 @@ public class PrismsTest {
 
 					/* API classes */
 					{{#apiClasses}}
+					/**
+					 * Generated
+					 */
 					public static final String {{constant}} = "{{name}}";
 
 					{{/apiClasses}}
 					/* Annotation classes */
 					{{#annotations}}
+					/**
+					 * Generated
+					 */
 					public static final String {{constant}} = "{{name}}";
 
 					{{/annotations}}
+					/**
+					 * Generated
+					 */
 					public static final List<String> ANNOTATIONS = List.of( //
 					{{#annotations}}
 							{{constant}}{{^-last}},{{/-last}} //
