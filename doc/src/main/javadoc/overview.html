@@ -62,7 +62,7 @@ are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 </p>
 
 
-<h2 id="2">Java Code</h2>
+<h2 id="java_code">Java Code</h2>
 
 Simply annotate a class with <strong>{@link io.jstach.jstache.JStache}</strong> like
 below:
@@ -162,12 +162,12 @@ and output text based on the template.
 </p>
 
 
-<h2 id="3">Installation</h2>
+<h2 id="installation">Installation</h2>
 
 JStachio uses the Java annotation processor facility to generate code.
 You will need to set that up otherwise code will not be generated.
 
-<h3 id="3.1">Maven</h3>
+<h3 id="maven">Maven</h3>
 
 Maven configuration has two choices. <code>annotationProcessorPaths</code> or classpath.
 
@@ -237,7 +237,7 @@ To make it work you would add jstachio-apt as an optional and provided dependenc
 }
 </pre>
 
-This works because maven will jstachio-apt on the classpath instead of the module path during compilation
+This works because maven will put jstachio-apt on the classpath instead of the module path during compilation
 provided you <strong>DO NOT put</strong> <code>requires io.jstach.apt</code> in your module-info 
 which you should never do in general.
 <p>
