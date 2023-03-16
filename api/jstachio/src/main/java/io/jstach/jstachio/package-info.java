@@ -1,5 +1,6 @@
 /**
  * JStachio Core Runtime API
+ * @jstachioVersion ssdfsdf
  * @see io.jstach.jstachio.spi
  * @see io.jstach.jstache
  */

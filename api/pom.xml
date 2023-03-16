@@ -25,6 +25,11 @@
               <placement>a</placement>
               <head>API Note</head>
             </tag>
+               <tag>
+                  <name>jstachioVersion</name>
+                  <placement>a</placement>
+                  <head>&lt;a href="${project.version}"&gt;${project.version}&lt;/a&gt;</head>
+                </tag>
           </tags>
           <failOnWarnings>true</failOnWarnings>
         </configuration>
