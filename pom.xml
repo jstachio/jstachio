@@ -408,6 +408,11 @@
                   <placement>a</placement>
                   <head>API Note</head>
                 </tag>
+                                <tag>
+                  <name>jstachioVversion</name>
+                  <placement>a</placement>
+                  <head>${project.version}</head>
+                </tag>
               </tags>
               <failOnWarnings>true</failOnWarnings>
               <excludePackageNames>
