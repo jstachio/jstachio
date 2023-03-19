@@ -112,6 +112,12 @@ import io.jstach.apt.prism.Prisms;
 		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN })
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
+	/**
+	 * No-arg constructor for service loader.
+	 */
+	public GenerateRendererProcessor() {
+	}
+
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latest();
