@@ -22,13 +22,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kohsuke.metainf-services</groupId>
-      <artifactId>metainf-services</artifactId>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>io.jstach.pistachio</groupId>
       <artifactId>pistachio-prism</artifactId>
       <version>${pistachio.version}</version>
@@ -52,12 +45,15 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- 
+      We cannot use the module path for unit testing here because of various issues
+      with requires static.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <show>public</show>
-          <failOnWarnings>false</failOnWarnings>
+          <useModulePath>false</useModulePath>
         </configuration>
       </plugin>
       <plugin>
