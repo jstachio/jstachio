@@ -39,6 +39,8 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import io.jstach.script.Version.PrintFlag;
+
 public final class VersionHelper {
 
 	public static void main(String[] args) {
@@ -219,7 +221,7 @@ enum Command {
 	}
 
 	static void pom(Version current, long timestamp) throws IOException {
-		run("mvn versions:set -DnewVersion=" + current.label());
+		run("mvn versions:set -DnewVersion=" + current.print(PrintFlag.SNAPSHOT));
 		updateTimestamp(timestamp);
 
 	}
