@@ -20,8 +20,9 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -395,7 +396,7 @@ enum Command {
 
 }
 
-record Version(String label, int major, int minor, int patch, boolean snapshot) implements Comparable<Version> {
+record Version(int major, int minor, int patch, boolean snapshot) implements Comparable<Version> {
 
 	static final Pattern pattern = Pattern.compile("v?([0-9]+).([0-9]+).([0-9]+)(-SNAPSHOT)?");
 	static final Comparator<Version> COMPARATOR = Comparator.comparingInt(Version::major)
@@ -413,11 +414,32 @@ record Version(String label, int major, int minor, int patch, boolean snapshot) 
 		if (m.groupCount() > 3 && "-SNAPSHOT".equals(m.group(4))) {
 			snapshot = true;
 		}
-		return new Version(s, major, minor, patch, snapshot);
+		return new Version(major, minor, patch, snapshot);
+	}
+	
+	enum PrintFlag {
+		PREFIX,
+		SNAPSHOT
 	}
 
+	public String print(Set<PrintFlag> flags) {
+		return (flags.contains(PrintFlag.PREFIX) ? "v" : "") 
+				+ major() + "." + minor() + "." + patch()
+				+ (flags.contains(PrintFlag.PREFIX) && snapshot ? "-SNAPSHOT": "");
+	}
+	
 	public String print() {
-		return major() + "." + minor() + "." + patch();
+		return print(Set.of());
+	}
+	
+	public String print(PrintFlag flag, PrintFlag ... flags) {
+		Set<PrintFlag> fs = EnumSet.of(flag, flags);
+		return print(fs);
+	}
+	
+	
+	public String label() {
+		return print(Set.of(PrintFlag.PREFIX, PrintFlag.SNAPSHOT));
 	}
 
 	public String tag() {
@@ -425,7 +447,7 @@ record Version(String label, int major, int minor, int patch, boolean snapshot) 
 	}
 
 	public String toString() {
-		return print();
+		return label();
 	}
 
 	void validate(Version b) {
@@ -433,12 +455,12 @@ record Version(String label, int major, int minor, int patch, boolean snapshot) 
 			out.println(b.print());
 		}
 		else {
-			throw new IllegalArgumentException("version mismatch. a = " + this.print() + " b = " + b.print());
+			throw new IllegalArgumentException("version mismatch. a = " + this.label() + " b = " + b.label());
 		}
 	}
 
 	public Version clean() {
-		return new Version(this.print(), major(), minor(), patch(), false);
+		return new Version(major(), minor(), patch(), false);
 	}
 
 	@Override
