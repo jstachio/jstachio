@@ -22,5 +22,19 @@
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- 
+    The following is because project reactor and others do not use proper nullable annotations
+    which triggers the infamous both on javadoc and compile:
+    
+    [WARNING] warning: unknown enum constant When.MAYBE
+    
+    Please do not use this garbage. It pains me to even reference it.
+    -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
