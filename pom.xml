@@ -24,7 +24,7 @@
     This property is to pin the build to a specific version of maven for reproducible builds
     as well as let dependabot check for maven updates. 
     -->
-    <maven.core.version>3.9.0</maven.core.version>
+    <maven.core.version>3.9.1</maven.core.version>
     <jstachio.website>https://jstach.io/p/jstachio</jstachio.website>
     <jstachio.version>${project.version}</jstachio.version>
     <jstachio.website.doc>${jstachio.website}/${jstachio.version}</jstachio.website.doc>
