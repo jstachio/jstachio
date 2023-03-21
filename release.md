@@ -43,6 +43,22 @@ Here is the process for **release**:
 1. run `bin/vh release` which will tag and temporarily update the pom for release. **DO NOT CHECKIN THE ALTERED POM**
 1. Run the commands it tells you to run
 
+
+### Updating Documentation
+
+All the documentation should be in the aggregated javadoc. While sites like javadoc.io can host singular jars
+they cannot really host aggregate javadoc (e.g. mutltimodule).
+
+We host the aggregate javadoc which includes the critical overview.html in this repo: https://github.com/jstachio/jstachio.github.io
+
+This repository will need to be updated after release.
+
+1. Checkout jstachio.github.io
+1. cd to `p/jstachio` 
+1. Run `build.sh <VERSION>`
+1. A new directory with all the javadoc from that version will be created. 
+1. Checkin the new content and push
+
 ### Reproducing a release
 
 Because we do not alter the pom file reproducing a release build is less trivial but this not a normal use case anyway
@@ -52,6 +68,7 @@ git checkout SOME_TAG
 bin/vh set pom  # no argument means use the version properties
 mvn clean install
 ```
+
 
 
 
