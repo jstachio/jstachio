@@ -25,9 +25,7 @@
  * </pre>
  * 
  * @see io.jstach.jstachio.JStachio
- * @jstachioVersion <div class="jstachio-doc-message">
- * <strong>&#x261D; STOP! For much better doc please use the link above.</strong>
- * </div>
+ * @jstachioVersion
  */
 module io.jstach.jstachio {
 	exports io.jstach.jstachio;

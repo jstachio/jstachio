@@ -445,6 +445,8 @@ import java.util.Optional;
  * @see JStacheFormatter
  * @see JStacheContentType
  * @see JStacheConfig
+ * 
+ * @jstachioVersion
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
