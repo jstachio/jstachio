@@ -8,7 +8,8 @@
  * 
  * @author agentgt
  * @apiNote <em>This module ONLY has annotations, constants, and enums.</em>
- *
+ * 
+ * @jstachioVersion
  */
 module io.jstach.jstache {
 	exports io.jstach.jstache;

@@ -9,7 +9,8 @@
   <packaging>pom</packaging>
   <properties>
     <javadoc.stylesheet>jstachio.css</javadoc.stylesheet>
-    <jstachio.doc.resources>/resources</jstachio.doc.resources>
+    <jstachio.doc.message>JStachio doc ${jstachio.version}</jstachio.doc.message>
+    <jstachio.tag>&lt;a class="jstachio-version" href="${jstachio.javadoc}" &gt;${jstachio.doc.message}&lt;/a&gt;</jstachio.tag>
   </properties>
   <profiles>
     <profile>

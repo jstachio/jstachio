@@ -1,4 +1,6 @@
 .jstachio-version {
-  font-size: 17pt;
+  font-size: 1.6rem;
 }
-
+.jstachio-warn {
+  color: red;
+}

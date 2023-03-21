@@ -27,10 +27,13 @@
     <maven.core.version>3.9.0</maven.core.version>
     <jstachio.website>https://jstach.io/p/jstachio</jstachio.website>
     <jstachio.version>${project.version}</jstachio.version>
-    <jstachio.website.doc>${jstachio.website}/v${jstachio.version}</jstachio.website.doc>
-    <jstachio.doc.message>This is the NON Aggregated Javadoc! The aggregated javadoc provides a better experience.</jstachio.doc.message>
-    <jstachio.tag.style>font-size: 17pt;</jstachio.tag.style>
-    <jstachio.tag>&lt;a class="jstachio-version" href="${jstachio.website.doc}" &gt;${jstachio.doc.message}&lt;/a&gt;</jstachio.tag>
+    <jstachio.website.doc>${jstachio.website}/${jstachio.version}</jstachio.website.doc>
+    <jstachio.javadoc>${jstachio.website.doc}/apidocs</jstachio.javadoc>
+
+    <jstachio.doc.message>&lt;span class="jstachio-warn" &gt;&#x26A0; WARNING! This is the jar javadoc. The aggregated javadoc has better usability:&lt;/span&gt;</jstachio.doc.message>
+    <jstachio.doc.ahref>&lt;a href="${jstachio.javadoc}" &gt;${jstachio.javadoc}&lt;/a&gt;</jstachio.doc.ahref>
+
+    <jstachio.tag>&lt;div class="jstachio-version"&gt; ${jstachio.doc.message} &lt;br/&gt; ${jstachio.doc.ahref}&lt;/div&gt;</jstachio.tag>
     
     <spring.version>6.0.6</spring.version>
     
