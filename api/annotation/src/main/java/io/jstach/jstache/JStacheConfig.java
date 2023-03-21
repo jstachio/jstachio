@@ -130,18 +130,18 @@ public @interface JStacheConfig {
 	 * <p>
 	 * The content type provider class needs a {@link JStacheContentType} annotation on
 	 * the type.
-	 * @return by default an <a href="_unspecified">UNSPECIFIED</a> content type.
+	 * @return by default an <a href="#_unspecified">UNSPECIFIED</a> content type.
 	 * @see JStacheContentType
 	 */
 	Class<?> contentType() default JStacheContentType.UnspecifiedContentType.class;
 
 	/**
-	 * Optional formatter if not <a href="_unspecified">UNSPECIFIED</a> for all models in
+	 * Optional formatter if not <a href="#_unspecified">UNSPECIFIED</a> for all models in
 	 * the <a href="#_config_resolution">annotated class/package/module</a> .
 	 * <p>
 	 * The formatter provider class needs a {@link JStacheFormatter} annotation on the
 	 * type.
-	 * @return by default an <a href="_unspecified">UNSPECIFIED</a> formatter.
+	 * @return by default an <a href="#_unspecified">UNSPECIFIED</a> formatter.
 	 * @see JStacheFormatter
 	 */
 	Class<?> formatter() default JStacheFormatter.UnspecifiedFormatter.class;
