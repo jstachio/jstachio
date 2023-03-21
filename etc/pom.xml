@@ -11,6 +11,7 @@
     <module>eea</module>
   </modules>
   <properties>
+    <parent.root>${basedir}/../..</parent.root>
     <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
   </properties>
   <build>

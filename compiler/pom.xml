@@ -7,6 +7,9 @@
   </parent>
   <artifactId>jstachio-compiler-parent</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <parent.root>${basedir}/../..</parent.root>
+  </properties>
   <modules>
       <module>apt</module>
       <module>jstachio-prisms</module>

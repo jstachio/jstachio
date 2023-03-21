@@ -5,6 +5,7 @@
     <artifactId>jstachio-compiler-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+  <url>${jstachio.website.doc}</url>
   <properties>
     <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     <pistachio.version>0.1.1</pistachio.version>

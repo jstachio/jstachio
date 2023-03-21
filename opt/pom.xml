@@ -18,6 +18,7 @@
   <properties>
     <spring.version>6.0.6</spring.version>
     <spring-boot.version>3.0.4</spring-boot.version>
+    <parent.root>${basedir}/../..</parent.root>
   </properties>
   <dependencyManagement>
     <dependencies>
