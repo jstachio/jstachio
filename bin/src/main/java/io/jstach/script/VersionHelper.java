@@ -381,7 +381,8 @@ enum Command {
 				Node v = (Node) xpath.evaluate(path, doc, XPathConstants.NODE);
 				v.setTextContent("" + timestamp);
 			}
-			try (OutputStream os = Files.newOutputStream(Path.of("pom.xml"), StandardOpenOption.WRITE)) {
+			try (OutputStream os = Files.newOutputStream(Path.of("pom.xml"), StandardOpenOption.WRITE, 
+					StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)) {
 				DOMSource domSource = new DOMSource(doc);
 				StreamResult result = new StreamResult(os);
 				TransformerFactory tf = TransformerFactory.newInstance();
