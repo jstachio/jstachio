@@ -5,6 +5,7 @@
     <artifactId>jstachio-api-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+  <url>${jstachio.website.doc}</url>
   <artifactId>jstachio</artifactId>
   <name>jstachio</name>
   <packaging>jar</packaging>

@@ -8,6 +8,7 @@
   <artifactId>jstachio-test-parent</artifactId>
   <packaging>pom</packaging>
   <properties>
+    <parent.root>${basedir}/../..</parent.root>
     <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
   </properties>
   <modules>

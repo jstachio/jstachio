@@ -5,7 +5,7 @@
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
-  <url>https://github.com/jstachio/jstachio</url>
+  <url>${jstachio.website.doc}</url>
   <description>Compile time type-safe Java Mustache templating engine.</description>
   <organization>
     <name>jstachio</name>
@@ -25,6 +25,13 @@
     as well as let dependabot check for maven updates. 
     -->
     <maven.core.version>3.9.0</maven.core.version>
+    <jstachio.website>https://jstach.io/p/jstachio</jstachio.website>
+    <jstachio.version>${project.version}</jstachio.version>
+    <jstachio.website.doc>${jstachio.website}/v${jstachio.version}</jstachio.website.doc>
+    <jstachio.doc.message>This is the NON Aggregated Javadoc! The aggregated javadoc provides a better experience.</jstachio.doc.message>
+    <jstachio.tag.style>font-size: 17pt;</jstachio.tag.style>
+    <jstachio.tag>&lt;a class="jstachio-version" href="${jstachio.website.doc}" &gt;${jstachio.doc.message}&lt;/a&gt;</jstachio.tag>
+    
   </properties>
   <modules>
     <module>etc</module>
@@ -561,6 +568,10 @@
                   <goal>jar</goal>
                 </goals>
                 <configuration>
+                  <additionalOptions>
+                  --add-stylesheet ${parent.root}/doc/src/main/javadoc/jstachio.css
+                  --add-stylesheet ${parent.root}/doc/src/main/javadoc/jstachio-jar.css
+                  </additionalOptions>
                   <excludePackageNames>
                   io.jstach.apt.internal:io.jstach.apt.internal.*:*.example.*
                   </excludePackageNames>

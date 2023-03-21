@@ -5,10 +5,14 @@
     <artifactId>jstachio-maven-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>jstachio-api-parent</artifactId>
   <packaging>pom</packaging>
   <modules>
       <module>annotation</module>
       <module>jstachio</module>
   </modules>
+  <properties>
+    <parent.root>${basedir}/../..</parent.root>
+  </properties>
 </project>

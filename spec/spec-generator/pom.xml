@@ -6,6 +6,7 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>jstachio-spec-generator</artifactId>
+  <url>${jstachio.website.doc}</url>
   <build>
     <plugins>
       <plugin>
