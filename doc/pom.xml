@@ -28,7 +28,13 @@
               <show>public</show>
               <overview>src/main/javadoc/overview.html</overview>
               <docfilessubdirs>true</docfilessubdirs>
-              <doctitle>jstachio API ${project.version}</doctitle>
+              <doctitle>
+                <![CDATA[
+                  <img src ="resources/social-media.svg" alt="jstachio" title="jstachio" width="66%" />
+                  <br/>
+                  JStachio Version: ${project.version}
+                  ]]>
+              </doctitle>
               <windowtitle>jstachio API ${project.version}</windowtitle>
               <header>
                 &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
