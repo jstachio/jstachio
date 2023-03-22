@@ -10,11 +10,18 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 ## Documentation
 
-**[Latest JStachio API javadoc](https://jstach.io/jstachio/)**
+* **[Latest SNAPSHOT JStachio doc](https://jstach.io/jstachio/)**
+* **[Current released JStachio doc](https://jstach.io/doc/jstachio/current/apidocs)** 
 
 The doc is also on javadoc.io but is not aggregated like the above.
 The javadoc is the preferred documentation and the rest of this readme
 is mainly for ~~propaganda~~ marketing purposes.
+
+For previous releases:
+
+    https://jstach.io/doc/jstachio/VERSION/apidocs
+
+Where `VERSION` is the versino you want.
 
 ## Features
 
