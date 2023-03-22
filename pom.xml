@@ -5,7 +5,7 @@
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
-  <url>${jstachio.website.doc}</url>
+  <url>https://github.com/jstachio/jstachio</url>
   <description>Compile time type-safe Java Mustache templating engine.</description>
   <organization>
     <name>jstachio</name>
@@ -25,7 +25,7 @@
     as well as let dependabot check for maven updates. 
     -->
     <maven.core.version>3.9.1</maven.core.version>
-    <jstachio.website>https://jstach.io/p/jstachio</jstachio.website>
+    <jstachio.website>https://jstach.io/doc/jstachio</jstachio.website>
     <jstachio.version>${project.version}</jstachio.version>
     <jstachio.website.doc>${jstachio.website}/${jstachio.version}</jstachio.website.doc>
     <jstachio.javadoc>${jstachio.website.doc}/apidocs</jstachio.javadoc>
