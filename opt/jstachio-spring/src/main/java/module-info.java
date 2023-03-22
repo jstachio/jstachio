@@ -1,5 +1,6 @@
 /**
- * JStachio Spring integration module.
+ * JStachio Spring integration module:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring/maven-metadata.xml" class="gav">io.jstach:jstachio-spring</a>.
  * <p>
  * 
  * This module has support for various Spring web options. Since

@@ -1,7 +1,9 @@
 import io.jstach.jstache.JStachePath;
 
 /**
- * Spring Web MVC example app for JStachio.
+ * Spring Web MVC example app for JStachio:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-example</a>.
+ * 
  * This module is an example modularized Spring Boot application.
  * <p>
  * <strong>

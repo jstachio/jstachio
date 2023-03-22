@@ -1,5 +1,6 @@
 /**
- * JStachio compile time annotations.
+ * JStachio compile time annotations: 
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-annotation/maven-metadata.xml" class="gav">io.jstach:jstachio-annotation</a>.
  * <p>
  * <strong>{@link io.jstach.jstache.JStache}</strong> 
  * is the main annotation that will trigger the annotation processor.

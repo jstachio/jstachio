@@ -1,6 +1,8 @@
 
 /**
- * Spring Webflux example app for JStachio.
+ * Spring Webflux example app for JStachio:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-webflux-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-webflux-example</a>.
+ * 
  * This module is an example modularized Spring Boot Webflux application.
  * <p>
  * <strong>

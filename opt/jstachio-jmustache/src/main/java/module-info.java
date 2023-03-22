@@ -3,7 +3,8 @@ import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.opt.jmustache.JMustacheRenderer;
 
 /**
- * JMustache extension to JStachio to enable dynamic development of templates.
+ * JMustache extension to enable dynamic development of templates:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-jmustache/maven-metadata.xml" class="gav">io.jstach:jstachio-jmustache</a>.
  * <p>
  * This extension will use JMustache instead of JStachio for rendering. The idea of this
  * extension is to allow you to edit Mustache templates in real time without waiting for

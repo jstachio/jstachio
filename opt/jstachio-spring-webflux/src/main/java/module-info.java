@@ -1,5 +1,6 @@
 /**
- * JStachio Spring Webflux integration module.
+ * JStachio Spring Webflux integration module:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-webflux/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-webflux</a>.
  * <p>
  * 
  * This module has support for various Spring web options. Since

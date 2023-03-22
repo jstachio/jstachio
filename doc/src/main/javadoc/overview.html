@@ -19,6 +19,20 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 <div class="js-toc-content">
 
+<h2 id="quickstart">Quick Start</h2>
+
+Follow these steps:
+
+<ol>
+  <li><a href="#installation">Setup your build correctly</a></li>
+  <li><a href="#java_code">See or copy Java Code example.</a></li>
+  <li><a href="#mustache">Read about mustache syntax if you are not familiar with it.</a></li>
+  <li><a href="#configuration">Explore configuring to make JStachio your way.</a></li>
+</ol>
+
+If you are using Spring it is probably easiest to <a href="#spring-example">see the example projects</a>
+and or copy it.
+
 <h2 id="use_cases">Use Cases</h2>
 
 There are three main use cases that this 
@@ -33,7 +47,7 @@ is designed around with the cross cutting feature of
     <a href="https://openjdk.org/jeps/430">JEP 430 aka stringtemplates (still in preview)</a></li>
 </ol>
 
-<h2 id="1">Mustache Syntax</h2>
+<h2 id="mustache">Mustache Syntax</h2>
 
 The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
 specifically <a href="https://github.com/mustache/spec/tree/v1.3.0">v1.3.0 syntax</a> . The syntax is informally
@@ -112,7 +126,7 @@ public void testPerson() throws Exception {
     Person jerry = new Person(&quot;Jerry&quot;, LocalDate.now().minusYears(35));
     var hello = new HelloWorld(&quot;Hello alien&quot;, List.of(rick, morty, beth, jerry));
     // render without reflective lookup
-    String actual = HelloWorldRenderer.of().render(hello);
+    String actual = HelloWorldRenderer.of().execute(hello);
     // or use JStachio reflective lookup which will also apply filters and other advise
     actual = JStachio.render(hello);
     String expected = &quot;&quot;&quot;
@@ -127,6 +141,13 @@ public void testPerson() throws Exception {
 }
 </code></pre>
 
+<h3 id="jstachio_modules">Modules</h3>
+
+JStachio is fully modularized consequently it is has many jars. The <a href="#all-modules-table">listing
+  of modules</a> at the end of the guide explain what each module does as well as its 
+<a href="https://maven.apache.org/pom.html#maven-coordinates">Maven GAV</a>. 
+
+  
 <h3 id="code_generation_mode">Code Generation Modes</h3>
 
 JStachio provides two major modes for how code is generated.
@@ -146,7 +167,6 @@ code that will only have references to itself and the JDK base module (java.base
 This is often desirable if you want to use JStachio for a code generation library 
 (e.g. another annotation processor).  
 
-
 <h2 id="how_it_works">How it works</h2>
 
 When the compiler compiles your annotated code JStachio's annotation processor will run.
@@ -162,10 +182,13 @@ and output text based on the template.
 </p>
 
 
+
 <h2 id="installation">Installation</h2>
 
 JStachio uses the Java annotation processor facility to generate code.
 You will need to set that up otherwise code will not be generated.
+
+
 
 <h3 id="maven">Maven</h3>
 
@@ -221,7 +244,7 @@ set. This can be desirable as it allows less explicit maven configuration and no
 
 <p>
 
-To make it work you would add jstachio-apt as an optional and provided dependency:
+To make it work you would add <code>jstachio-apt</code> as an optional and provided dependency:
 
 <pre class="language-xml">
 {@code
@@ -237,12 +260,14 @@ To make it work you would add jstachio-apt as an optional and provided dependenc
 }
 </pre>
 
-This works because maven will put jstachio-apt on the classpath instead of the module path during compilation
-provided you <strong>DO NOT put</strong> <code>requires io.jstach.apt</code> in your module-info 
+This works because maven will put <code>jstachio-apt</code> on the classpath instead of the module path during compilation
+provided you <strong>DO NOT put</strong> <code>requires io.jstach.apt</code> in your <code>module-info.java</code>
 which you should never do in general.
 <p>
 Be aware that the above option may have problems if you have multiple annotation processors 
 as some processors rely on specific order.
+
+<em>(note you still need to add either io.jstach:jstache or io.jstach:jstachio as a dependency.)</em>
 
 
 <h4 id="maven_zerodep">Maven Zero dependency configuration</h4>

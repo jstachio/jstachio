@@ -1,5 +1,6 @@
 /**
- * JStachio Core Runtime API.
+ * JStachio Core Runtime API: 
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio/maven-metadata.xml" class="gav">io.jstach:jstachio</a>.
  * <p>
  * The main entry point is {@link io.jstach.jstachio.JStachio} 
  * which provides various reflection based lookup

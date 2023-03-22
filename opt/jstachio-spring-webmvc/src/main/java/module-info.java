@@ -1,5 +1,6 @@
 /**
- * JStachio Spring webmvc module.
+ * JStachio Spring webmvc module:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-webmvc/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-webmvc</a>.
  * <p>
  * 
  * This module has support for various Spring web options. Since
