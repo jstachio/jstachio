@@ -21,7 +21,7 @@ For previous releases:
 
     https://jstach.io/doc/jstachio/VERSION/apidocs
 
-Where `VERSION` is the versino you want.
+Where `VERSION` is the version you want.
 
 ## Features
 
