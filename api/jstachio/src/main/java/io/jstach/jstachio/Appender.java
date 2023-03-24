@@ -28,14 +28,11 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * When a template outputs anything else (e.g. HTML markup) it writes directly to the
  * appendable.
- * <p>
  *
- * <strong>Important:</strong> <em> The interface while public is currently sealed. If you
- * would like to see it unsealed to allow control of intercepting unescaped variable
- * output please file an issue. </em>
- *
- * @apiNote Unlike an Appendable this class is expected to be reused so state should be
- * avoided and implementations should be thread safe.
+ * @apiNote <strong>Important:</strong> <em> The interface while public is currently
+ * sealed. If you would like to see it unsealed to allow control of intercepting unescaped
+ * variable output please file an issue.</em> Unlike an Appendable this class is expected
+ * to be reused so state should be avoided and implementations should be thread safe.
  * @author agentgt
  * @param <A> the appendable
  * @see Escaper

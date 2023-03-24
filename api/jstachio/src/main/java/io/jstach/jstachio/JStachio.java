@@ -38,8 +38,7 @@ import io.jstach.jstachio.spi.JStachioFactory;
  * If you would like to create your own {@link JStachio} instead of the default you can
  * either extend {@link AbstractJStachio} or use {@link JStachioFactory#builder()}. If you
  * want your custom {@link JStachio} to be set as the default such that the static render
- * methods on this class call it you can do that with
- * {@link #setStatic(Supplier)}.
+ * methods on this class call it you can do that with {@link #setStatic(Supplier)}.
  *
  * @apiNote The static <strong><code>render</code></strong> methods are convenience
  * methods that will by default use the ServiceLoader based JStachio which loads all

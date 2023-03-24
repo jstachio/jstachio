@@ -1,10 +1,13 @@
 /**
  * JStachio Core Runtime API.
  *
- * The interfaces and classes in this package are used by generated code that is of type
- * {@link io.jstach.jstache.JStacheType#JSTACHIO}.
+ * {@link io.jstach.jstachio.JStachio} makes it easier to render models without direct
+ * access to the generated code.
  * <p>
- * The notable interfaces this package provides are:
+ * The other interfaces and classes in this package are used by generated code that is of
+ * type {@link io.jstach.jstache.JStacheType#JSTACHIO}.
+ * <p>
+ * The notable other interfaces that this package provides are:
  * <ul>
  * <li>{@link io.jstach.jstachio.Appender}</li>
  * <li>{@link io.jstach.jstachio.Escaper}</li>
