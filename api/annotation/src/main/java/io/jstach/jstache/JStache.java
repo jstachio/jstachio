@@ -247,8 +247,8 @@ import java.util.Optional;
  * </ol>
  *
  * <h4 id="_enums">Enum matching Support Extension</h4> Basically enums have boolean keys
- * that are the enums name (`Enum.name()`) that can be used as conditional sections.
- * Assume `light` is an enum like:
+ * that are the enums name ({@code Enum.name()}) that can be used as conditional sections.
+ * Assume {@code light} is an enum like:
  *
  * <pre>
  * <code class="language-java">
@@ -282,7 +282,8 @@ import java.util.Optional;
  * <li><code>-first</code> is boolean that is true when you are on the first item
  * <li><code>-last</code> is a boolean that is true when you are on the last item in the
  * iterable
- * <li><code>-index</code> is a one based index. The first item would be `1` and not `0`
+ * <li><code>-index</code> is a one based index. The first item would be {@code 1} and not
+ * {@code 0}
  * </ol>
  *
  * <h3 id="_lambdas">Lambda Support</h3>
@@ -352,17 +353,28 @@ import java.util.Optional;
  * Assuming the compiler allowed the variable to be formatted you can control the output
  * via {@link io.jstach.jstache.JStacheFormatter} and setting
  * {@link io.jstach.jstache.JStacheConfig#formatter()}.
+ * <p>
+ * If you are using the JStachio runtime (io.jstach.jstachio) and have
+ * {@link JStacheConfig#type()} set to {@link JStacheType#JSTACHIO} (or UNSPECIFIED aka
+ * default) the default formatter will be used (see
+ * <code class="externalLink">io.jstach.jstachio.formatters.DefaultFormatter</code>). The
+ * default formatter is slightly different than the mustache spec in that it does not
+ * allow formatting nulls. If you would like to follow the spec rules where
+ * <code>null</code> should be an empty string use
+ * <code class="externalLink">io.jstach.jstachio.formatters.SpecFormatter</code>.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
  * <strong>&#64;{@link io.jstach.jstache.JStacheContentType}, and
  * &#64;{@link JStacheConfig#contentType()} </strong>
  * <p>
- * If you are using the JStachio runtime (io.jstach.jstachio) you will get out of the box
- * escaping for HTML (see <code>io.jstach.jstachio.escapers.Html</code>) per the mustache
+ * If you are using the JStachio runtime (io.jstach.jstachio) and have
+ * {@link JStacheConfig#type()} set to {@link JStacheType#JSTACHIO} (or UNSPECIFIED aka
+ * default) you will get out of the box escaping for HTML (see
+ * <code class="externalLink">io.jstach.jstachio.escapers.Html</code>) per the mustache
  * spec.
  * <p>
  * <strong>To disable escaping</strong> set {@link JStacheConfig#contentType()} to
- * <code>io.jstach.jstachio.escapers.PlainText</code>
+ * <code class="externalLink">io.jstach.jstachio.escapers.PlainText</code>.
  *
  * <h2 id="_config">Configuration</h2> <strong>&#64;{@link JStacheConfig}</strong>
  * <p>
@@ -445,7 +457,7 @@ import java.util.Optional;
  * @see JStacheFormatter
  * @see JStacheContentType
  * @see JStacheConfig
- * 
+ *
  * @jstachioVersion
  */
 @Retention(RetentionPolicy.RUNTIME)

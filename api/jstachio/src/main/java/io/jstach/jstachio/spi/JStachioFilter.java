@@ -5,13 +5,35 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 
 /**
- * Advises or filters a previously applied template.
+ * Advises, intercepts or filters a template before being rendered.
+ * <p>
+ * This extension point is largely to support dynamic updates of templates where a
+ * template is being edited while the JVM is fully loaded and we need to intercept the
+ * call to provide rendering of the updated template.
+ * <p>
+ * The extension will only be executed if {@link JStachio} render (and execute) methods
+ * are used and not the generated classes render methods.
+ * <p>
+ * When JStachio renders a model through the runtime it:
+ * <ol>
+ * <li>Loads the template. In some cases it may use reflection and thus
+ * {@link TemplateInfo} may not be a generated {@link Template}.</li>
+ * <li>Loads the composite filter which is all the filters combined in order (see
+ * {@link #order()}).</li>
+ * <li>Calls {@link #filter(TemplateInfo)} on the loaded template which returns a
+ * {@link FilterChain}.</li>
+ * <li>Then tells the chain to {@link FilterChain#process(Object, Appendable) process} the
+ * rendering.</li>
+ * </ol>
  *
- * @apiNote Implementations should be threadsafe!
+ * @apiNote <strong class="warn"> &#x26A0; WARNING! While this extension point is public
+ * API it is recommended you do not use it.</strong> It is less stable than the rest of
+ * the API and is subject to change in the future. Implementations should be threadsafe!
  * @author agentgt
  *
  */

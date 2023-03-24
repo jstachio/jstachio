@@ -70,3 +70,7 @@ h2.toc-title:before {
 h1.overview {
   font-size: 2.1rem;
 }
+
+.warn {
+  color: red;
+}
