@@ -43,7 +43,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	default String apply(@Nullable Object t) {
 		StringBuilder sb = new StringBuilder();
 		try {
-			format(Appender.stringAppender(), sb, "", Object.class, t);
+			format(StringAppender.INSTANCE, sb, "", Object.class, t);
 		}
 		catch (IOException e) {
 			throw new UncheckedIOException(e);

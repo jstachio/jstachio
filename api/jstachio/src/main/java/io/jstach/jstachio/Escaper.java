@@ -6,21 +6,52 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
+import io.jstach.jstache.JStacheType;
 
 /**
  * An Escaper is an {@link Appender} used to escape content such as HTML. A
- * {@link Formatter} is usually what will call the Escaper and like a formatter should be
- * singleton like and expect reuse.
+ * {@link Formatter} is usually what will call the Escaper and like a formatter it should
+ * be singleton like and expect reuse.
+ * <p>
+ * When a template outputs an <strong>escaped</strong> variable the callstack is as
+ * follows:
  *
+ * <pre>
+ * formatter --&gt; escaper --&gt; appendable
+ * </pre>
+ *
+ * Escapers are also a {@code Function<String,String>} to allow compatibility with
+ * {@link JStacheType#STACHE zero dependency generated code} that expects Escapers to be
+ * of type {@code Function<String,String>}.
+ * <p>
+ *
+ * If performance is not a concern an easier way to create an implementation is to adapt a
+ * function by using {@link #of(Function)}.
+ * <p>
+ * To implement a custom escaper:
+ *
+ * <ol>
+ * <li>Implement this interface or use {@link #of(Function)}.</li>
+ * <li>Register the custom escaper. See {@link JStacheContentType}.</li>
+ * <li>Set {@link JStacheConfig#contentType()} to the class that has the
+ * {@link JStacheContentType}.</li>
+ * </ol>
+ *
+ * @apiNote Implementations should be threadsafe and expect reuse!
  * @see JStacheContentType
  * @author agentgt
  */
-public interface Escaper extends Appender<Appendable>, Function<String, String> {
+public non-sealed interface Escaper extends Appender<Appendable>, Function<String, String> {
 
 	/**
 	 * Escapes a String by using StringBuilder and calling
 	 * {@link #append(Appendable, CharSequence)}.
+	 * <p>
+	 * This method is to make Escaper implementations compatible {@link JStacheType#STACHE
+	 * zero dependency generated code} that expects Escapers to be
+	 * {@code Function<String,String>}.
 	 * @param t String to ge escaped.
 	 * @return escaped content
 	 * @throws UncheckedIOException if the appender or appendable throw an
@@ -39,11 +70,27 @@ public interface Escaper extends Appender<Appendable>, Function<String, String> 
 	}
 
 	/**
+	 * Escapes the characters if it needs it. {@inheritDoc}
+	 */
+	public void append(Appendable a, CharSequence s) throws IOException;
+
+	/**
+	 * Escapes the characters if it needs it. {@inheritDoc}
+	 */
+	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException;
+
+	/**
+	 * Escapes the character if it needs escaping. {@inheritDoc}
+	 */
+	public void append(Appendable a, char c) throws IOException;
+
+	/**
 	 * Adapts a function to an Escaper.
 	 *
 	 * If the function is already an Escaper then it is simply returned (noop). Thus it is
-	 * safe to repeatedly call this on Escaper. If the function is adapted the returned
-	 * adapted Escaper does not pass native types to the inputted function.
+	 * safe to repeatedly call this on an Escaper. If the function is adapted the returned
+	 * adapted Escaper will convert native types with {@code String.valueOf} first and
+	 * then apply the escape function.
 	 * @param escapeFunction returned if it is already an escaper
 	 * @return adapted Escaper
 	 */
@@ -68,7 +115,7 @@ class FunctionEscaper implements Escaper {
 
 	@Override
 	public void append(Appendable a, CharSequence s) throws IOException {
-		a.append(function.apply(String.valueOf(s)));
+		a.append(function.apply(s.toString()));
 	}
 
 	@Override
@@ -82,7 +129,7 @@ class FunctionEscaper implements Escaper {
 
 	@Override
 	public void append(Appendable a, char c) throws IOException {
-		a.append(function.apply(String.valueOf(c)));
+		append(a, String.valueOf(c));
 	}
 
 }

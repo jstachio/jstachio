@@ -46,6 +46,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @param escaper used to write escaped variables
 	 * @throws IOException if an error occurs while writing to the appendable
 	 */
+	@SuppressWarnings("exports")
 	default void execute(T model, //
 			Appendable a, //
 			Function<@Nullable Object, String> formatter, //

@@ -7,21 +7,47 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A singleton like decorator for appendables that has additional methods for dealing with
- * native types.
+ * native types used to output variables that have been formatted. This interface is
+ * mostly an internal detail for performance and generally direct implementations are
+ * unnecessary.
  *
- * @apiNote Unlike an Appendable this class is expected to be reused so avoid state and
- * implementations should be thread safe.
+ * <p>
+ * When a template outputs an <strong>escaped</strong> variable the callstack is as
+ * follows:
+ *
+ * <pre>
+ * formatter --&gt; escaper --&gt; appendable
+ * </pre>
+ *
+ * When a template outputs an <strong>unescaped</strong> variable the callstack is as
+ * follows:
+ *
+ * <pre>
+ * formatter --&gt; appender --&gt; appendable
+ * </pre>
+ *
+ * When a template outputs anything else (e.g. HTML markup) it writes directly to the
+ * appendable.
+ * <p>
+ *
+ * <strong>Important:</strong> <em> The interface while public is currently sealed. If you
+ * would like to see it unsealed to allow control of intercepting unescaped variable
+ * output please file an issue. </em>
+ *
+ * @apiNote Unlike an Appendable this class is expected to be reused so state should be
+ * avoided and implementations should be thread safe.
  * @author agentgt
  * @param <A> the appendable
  * @see Escaper
  */
-public interface Appender<A extends Appendable> {
+public sealed interface Appender<A extends Appendable> permits Escaper, DefaultAppender, StringAppender {
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence)}.
 	 * @param a appendable to write to. Always non null.
 	 * @param s unlike appendable always non null.
 	 * @throws IOException if an error happens while writting to the appendable
+	 * @apiNote Implementations are required to implement this method.
 	 */
 	public void append(A a, CharSequence s) throws IOException;
 
@@ -32,6 +58,7 @@ public interface Appender<A extends Appendable> {
 	 * @param start start inclusive
 	 * @param end end exclusive
 	 * @throws IOException if an error happens while writting to the appendable
+	 * @apiNote Implementations are required to implement this method.
 	 */
 	public void append(A a, CharSequence csq, int start, int end) throws IOException;
 
@@ -40,6 +67,7 @@ public interface Appender<A extends Appendable> {
 	 * @param a appendable to write to. Never null.
 	 * @param c character
 	 * @throws IOException if an error happens while writting to the appendable
+	 * @apiNote Implementations are required to implement this method.
 	 */
 	public void append(A a, char c) throws IOException;
 
@@ -126,7 +154,7 @@ public interface Appender<A extends Appendable> {
 	/**
 	 * An appender that will directly call StringBuilder methods for native types.
 	 * <p>
-	 * This is a low level utility appenrer for where performance matters.
+	 * This is a low level utility appender for where performance matters.
 	 * @return an appender specifically for {@link StringBuilder}
 	 */
 	public static Appender<StringBuilder> stringAppender() {
@@ -183,7 +211,7 @@ enum StringAppender implements Appender<StringBuilder> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void append(StringBuilder a, CharSequence s) throws IOException {
+	public void append(StringBuilder a, CharSequence s) {
 		a.append(s);
 	}
 
@@ -191,7 +219,7 @@ enum StringAppender implements Appender<StringBuilder> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void append(StringBuilder a, CharSequence csq, int start, int end) throws IOException {
+	public void append(StringBuilder a, CharSequence csq, int start, int end) {
 		a.append(csq, start, end);
 	}
 
@@ -199,7 +227,7 @@ enum StringAppender implements Appender<StringBuilder> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void append(StringBuilder a, char c) throws IOException {
+	public void append(StringBuilder a, char c) {
 		a.append(c);
 	}
 
@@ -207,35 +235,35 @@ enum StringAppender implements Appender<StringBuilder> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void append(StringBuilder a, short s) throws IOException {
+	public void append(StringBuilder a, short s) {
 		a.append(s);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void append(StringBuilder a, int i) throws IOException {
+	public void append(StringBuilder a, int i) {
 		a.append(i);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void append(StringBuilder a, long l) throws IOException {
+	public void append(StringBuilder a, long l) {
 		a.append(l);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void append(StringBuilder a, double d) throws IOException {
+	public void append(StringBuilder a, double d) {
 		a.append(d);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void append(StringBuilder a, boolean b) throws IOException {
+	public void append(StringBuilder a, boolean b) {
 		a.append(b);
 	}
 
