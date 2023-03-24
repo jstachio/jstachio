@@ -39,7 +39,7 @@ import io.jstach.jstachio.spi.JStachioFactory;
  * either extend {@link AbstractJStachio} or use {@link JStachioFactory#builder()}. If you
  * want your custom {@link JStachio} to be set as the default such that the static render
  * methods on this class call it you can do that with
- * {@link #setStaticJStachio(Supplier)}.
+ * {@link #setStatic(Supplier)}.
  *
  * @apiNote The static <strong><code>render</code></strong> methods are convenience
  * methods that will by default use the ServiceLoader based JStachio which loads all
@@ -119,9 +119,9 @@ public interface JStachio extends Renderer<Object> {
 
 	/**
 	 * Gets the static singleton jstachio.
-	 * @return the jstachio from {@link #setStaticJStachio(Supplier)}
+	 * @return the jstachio from {@link #setStatic(Supplier)}
 	 * @throws NullPointerException if jstachio is not found
-	 * @see #setStaticJStachio(Supplier)
+	 * @see #setStatic(Supplier)
 	 */
 	public static JStachio of() {
 		JStachio jstachio = JStachioHolder.get();
@@ -147,7 +147,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @apiNote the provider will be called on every call of {@link #of()} and thus to
 	 * avoid constant recreation it is recommend the supplier be memoized/cached.
 	 */
-	public static void setStaticJStachio(Supplier<JStachio> jstachioProvider) {
+	public static void setStatic(Supplier<JStachio> jstachioProvider) {
 		if (jstachioProvider == null) {
 			throw new NullPointerException("JStachio provider cannot be null");
 		}

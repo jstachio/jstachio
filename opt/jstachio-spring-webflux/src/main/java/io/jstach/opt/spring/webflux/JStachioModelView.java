@@ -65,7 +65,7 @@ public interface JStachioModelView extends View {
 	/**
 	 * Returns the jstachio singleton by default.
 	 * @return stachio singleton by default.
-	 * @see JStachio#setStaticJStachio(java.util.function.Supplier)
+	 * @see JStachio#setStatic(java.util.function.Supplier)
 	 */
 	default JStachio jstachio() {
 		return JStachio.of();
