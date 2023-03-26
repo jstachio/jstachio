@@ -46,13 +46,27 @@ import java.util.ServiceLoader;
  * whatever custom types are allowed.
  * <p>
  * For example let us say we want to add a custom formatter that is aware of
- * <code>LocalDate</code> we would add: <pre class="language-java">
+ * <code>LocalDate</code> we would add:
+ *
+ * <pre class="language-java">
  * <code>
  * &#64;JStacheFormatter
  * &#64;JStacheFormatterTypes(types={LocalDate.class})
  * public class MyFormatter {
  *   //required factory method
  *   public static Formatter provider() { ... }
+ * }
+ * </code></pre>
+ *
+ * Or for zero dependency:
+ *
+ * <pre class="language-java">
+ * <code>
+ * &#64;JStacheFormatter
+ * &#64;JStacheFormatterTypes(types={LocalDate.class})
+ * public class MyFormatter {
+ *   //required factory method
+ *   public static Function&lt;Object,String&gt; provider() { ... }
  * }
  * </code></pre>
  *

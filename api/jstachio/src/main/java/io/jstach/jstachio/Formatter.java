@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheFormatter;
 import io.jstach.jstache.JStacheFormatterTypes;
 
@@ -23,6 +24,17 @@ import io.jstach.jstache.JStacheFormatterTypes;
  * An alternative to implementing this complicated interface is to simply make a
  * {@code Function<@Nullable Object, String>} and call {@link #of(Function)} to create a
  * formatter.
+ * <p>
+ * To implement a custom formatter:
+ *
+ * <ol>
+ * <li>Implement this interface or use {@link #of(Function)}.</li>
+ * <li>Register the custom formatter with {@link JStacheFormatter}.</li>
+ * <li>Add additional allowed types with {@link JStacheFormatterTypes} on to the class
+ * that is annotated with {@link JStacheFormatter}</li>
+ * <li>Set {@link JStacheConfig#formatter()} to the class that has the
+ * {@link JStacheFormatter}.</li>
+ * </ol>
  *
  * @apiNote Although the formatter has access to the raw {@link Appendable} the formatter
  * should never use it directly and simply pass it on to the downstream appender.

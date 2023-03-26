@@ -47,6 +47,19 @@ is designed around with the cross cutting feature of
     <a href="https://openjdk.org/jeps/430">JEP 430 aka stringtemplates (still in preview)</a></li>
 </ol>
 
+<h2 id="requirements">Requirements</h2>
+
+<ol>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/">Java 17 or greater</a></li>
+  <li>A build system that supports running the Java compiler annotation processor</li>
+</ol>
+
+The only module needed during runtime is  
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/module-summary.html">
+  <code>java.base</code>
+</a>
+(ignoring extensions and depending on configuration JStachio itself). 
+
 <h2 id="mustache">Mustache Syntax</h2>
 
 The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
@@ -320,6 +333,18 @@ dependencies {
 
 {@link io.jstach.jstache.JStache} and {@link io.jstach.jstache.JStacheConfig} 
 are heavily documented on configuration of JStachio via annotations.
+
+JStachio allows you to configure:
+
+<ol>
+  <li>Where external templates are stored and referred.</li>
+  <li>How code is generated including what interfaces or classes are extended</li>
+  <li>What types are allowed to be outputted without compiler error</li>
+  <li>How types are formatted</li>
+  <li>Escaping</li>
+  <li>... and much more</li>
+</ol>
+
 <p>
 The most notable configuration is that you can configure whether or not zero dependency
 code is generated via {@link io.jstach.jstache.JStacheConfig#type()} as well as 
@@ -400,6 +425,31 @@ There is an example modularized {@link io.jstach.opt.spring.webflux.example/ Spr
 While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
 it might be easier to look 
 <strong><a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">directly on github (link to project).</a></strong> 
+
+<h2>Addendum</h2>
+
+<h3>Project Information</h3>
+
+<dl>
+  <dt>Source Control</dt>
+  <dd><a href="https://github.com/jstachio/jstachio">https://github.com/jstachio/jstachio</a></dd>
+  <dt>Issues</dt>
+  <dd><a href="https://github.com/jstachio/jstachio/issues">https://github.com/jstachio/jstachio/issues</a></dd>
+  <dt>Community</dt>
+  <dd><a href="https://github.com/jstachio/jstachio/discussions">https://github.com/jstachio/jstachio/discussions</a></dd>
+  <dt>Documentation</dt>
+  <dd>https://jstach.io/jstachio/</dd>
+</dl>
+
+The project follows <a href="https://semver.org/">semantic versioning</a>.
+
+<h3 id="FAQ">FAQ</h3>
+
+<h4>I don't use Spring but some other Dependency Injection library how do I integrate?</h4> 
+
+See {@link io.jstach.jstache.JStacheInterfaces} and {@link io.jstach.jstachio.spi}.
+
+TODO
 
 </div>
 </body>
