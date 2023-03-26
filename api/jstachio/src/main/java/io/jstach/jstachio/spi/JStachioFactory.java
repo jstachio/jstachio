@@ -2,9 +2,7 @@ package io.jstach.jstachio.spi;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
@@ -76,8 +74,6 @@ public final class JStachioFactory {
 		private List<JStachioExtension> extensions = new ArrayList<>();
 
 		private List<TemplateInfo> templates = new ArrayList<>();
-
-		private Map<String, String> properties = new LinkedHashMap<>();
 
 		/**
 		 * Constructor is hidden for now.
