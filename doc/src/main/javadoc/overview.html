@@ -430,7 +430,7 @@ it might be easier to look
 
 <h3 id="project_information">Project Information</h3>
 
-<dl>
+<dl class="resources">
   <dt>Source Control</dt>
   <dd><a href="https://github.com/jstachio/jstachio">https://github.com/jstachio/jstachio</a></dd>
   <dt>Issues</dt>
@@ -445,11 +445,107 @@ The project follows <a href="https://semver.org/">semantic versioning</a>.
 
 <h3 id="FAQ">FAQ</h3>
 
-<h4>I don't use Spring but some other Dependency Injection library how do I integrate?</h4> 
+<h4 id="faq_hard_behavior">How do I do XYZ complicated logic in my template?</h4>
+
+Mustache is inherently simple and is called logicless for a reason.
+If you need complicated behavior then it is recommended to put that behavior in
+either a lambda or method call.
+<p>
+Because JStachio always requires an annotated class that serves as the model it can be argued 
+that the model associated with the template is more of a view model
+then a domain model (or DTO). Therefore it is recommended that you take advantage of that
+top level class and add methods specifical needed to help render.
+</p>
+If you have common logic you can use normal Java practices to share the logic such as interfaces
+(default methods) or abstract classes and have the model implement or extend (respectively).
+You can even enforce that models always implement an interface with 
+{@link io.jstach.jstache.JStacheInterfaces}. 
+
+<h4 id="faq_hot_reload">I want to change templates without restarting my app. How do I do that?</h4> 
+
+See the <a href="#jmustache">JMustache Extension</a> that uses reflection. In the future JStachio
+will have its own reflection based runtime for template development but for now we are leveraging the
+fact that JMustache is almost equivalent to JStachio once configured correctly.
+
+<h4 id="faq_di">I don't use Spring but some other Dependency Injection library how do I integrate?</h4> 
 
 See {@link io.jstach.jstache.JStacheInterfaces} and {@link io.jstach.jstachio.spi}.
 
-TODO
+First start by looking at the Spring implementation: {@link io.jstach.opt.spring}.
+
+Most dependency injection frameworks have a way to discover all classes of some type or have some annotation.
+{@link io.jstach.jstache.JStacheInterfaces} allows you to generate Templates/Renderers that will have annotations
+or implement an interface that you can use to discover the generated code. 
+<p>
+Once that is done you can then add the list of found templates by implementing your own JStachio by
+implementing a {@link io.jstach.jstachio.spi.JStachioTemplateFinder} and then 
+extending {@link io.jstach.jstachio.spi.AbstractJStachio} or using {@link io.jstach.jstachio.spi.JStachioFactory#builder()}.
+</p>
+
+
+<h4 id="faq_i18n">How do I do I18N and Localization?</h4>
+
+There are a lot of techniques to handle internationalization (I18N).
+JStachio currently does not ship with an opinionated way to handle it.
+If you would like JStachio with one please comment or thumbup: 
+
+<a href="https://github.com/jstachio/jstachio/issues/104">#104</a>.
+
+<p>
+Regardless there are three major techniques all with various pros and cons as well as can be mixed:
+</p>
+
+<ol>
+  <li>Load the model with already translated messages</li>
+  <li>Use JStachio Lambdas: {@link io.jstach.jstache.JStacheLambda}</li>
+  <li>Use a partial for each locale</li>
+</ol>
+
+<p>
+The first technique is one of the easiest and safest. Because JStachio always requires an annotated
+class that serves as the model it can be argued that the model associated with the template is more of a view model
+then a domain model (or DTO). Therefore view oriented helper methods can be added that can do the translation.
+</p>
+
+<p>
+An alternative is to use Lambdas. There is an unsupported example of doing that in JStachio's test code here:
+<a href="https://github.com/jstachio/jstachio/tree/main/test/examples/src/main/java/io/jstach/examples/i18n">
+  https://github.com/jstachio/jstachio/tree/main/test/examples/src/main/java/io/jstach/examples/i18n
+</a>
+</p>
+
+<h4 id="faq_decorate_model">How can I add cross cutting model attributes like CSRF?</h4>
+
+A common problem in web development is needing model attributes that are pseudo global or request based.
+
+In traditional MVC style web applications the model is usually a mutable <code>Map&lt;String,String&gt;</code> so 
+attributes like CSRF are added after the controller has filled the model but before rendering.
+
+However this presents a problem to JStachio as JStachio prefers you do not use <code>Map&lt;String,String&gt;</code>
+as models (you can but not as a root model and you loose type safety).
+
+There are two general strategies:
+
+<ol>
+  <li>Make the model mutable for those attributes and set the attributes by intercepting before rendering happens. (the push way)</li>
+  <li>Use a Service Locator / Thread Local like pattern with an interface with pull method that all models get. (the pull way)</li>
+</ol>
+
+<p>
+The Spring integration provides some guidance on doing the first strategy via 
+{@link io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer}.
+</p>
+
+<p>
+The second technique is to make request information available through the callstack by usually using ThreadLocals
+and then having an interface with a method that pulls the info from the ThreadLocal variable.
+This is a more advance technique but does allow keeping your models immutable (e.g. using record).
+</p>
+
+<h4 id="faq_nocode">Can I make JStachio only check mustache and not generate code?</h4> 
+
+Currently no. But if you would like that please comment or thumbup:
+<a href="https://github.com/jstachio/jstachio/issues/103">#103</a>
 
 </div>
 </body>

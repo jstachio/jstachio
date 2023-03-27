@@ -7,6 +7,7 @@ import java.io.UncheckedIOException;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**
  * An abstract jstachio that just needs a {@link JStachioExtensions} container.
@@ -28,7 +29,35 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@Override
 	public void execute(Object model, Appendable appendable) throws IOException {
 		TemplateInfo template = template(model.getClass());
-		extensions().getFilter().filter(template).process(model, appendable);
+		var filter = loadFilter(model, template);
+		filter.process(model, appendable);
+
+	}
+
+	/**
+	 * Loads the filter and checks if it can process the model and template.
+	 * @param model to render
+	 * @param template loaded by {@link #template(Class)}
+	 * @return filter chain that can process model
+	 * @throws IOException if the filter cannot process the model
+	 */
+	protected FilterChain loadFilter(Object model, TemplateInfo template) throws IOException {
+		var filter = extensions().getFilter().filter(template);
+		if (filter.isBroken(model)) {
+			boolean isReflectiveTemplate = Templates.isReflectionTemplate(template);
+			final String ind = "\n\t";
+			String reason = "";
+			if (isReflectiveTemplate) {
+				reason = " This is usually because the template "
+						+ "has not been compiled and reflection based rendering is not available.";
+			}
+			throw new BrokenFilterException( //
+					"Filter chain unable to process template/model." + reason //
+							+ ind + "template: \"" + template.description() + "\"" //
+							+ ind + "model type: \"" + model.getClass() + "\"" //
+							+ ind + "reflection used: \"" + isReflectiveTemplate + "\"");
+		}
+		return filter;
 	}
 
 	@Override
@@ -53,6 +82,11 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		return extensions().getTemplateFinder().supportsType(modelType);
 	}
 
+	/**
+	 * Finds the template by model class
+	 * @param modelType the class of the model.
+	 * @return found template never <code>null</code>.
+	 */
 	protected TemplateInfo template(Class<?> modelType) {
 		try {
 			return extensions().getTemplateFinder().findTemplate(modelType);

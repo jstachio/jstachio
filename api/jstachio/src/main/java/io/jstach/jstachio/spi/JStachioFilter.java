@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
@@ -132,13 +134,33 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 
 }
 
+/**
+ * Thrown if process is called on a broken filter. Currently this is a private API.
+ *
+ * @author agentgt
+ */
+class BrokenFilterException extends IOException {
+
+	private static final long serialVersionUID = -1206760388422768739L;
+
+	/**
+	 * Invoked if filter is brken
+	 * @param s message
+	 */
+	public BrokenFilterException(String s) {
+		super(s);
+	}
+
+}
+
 enum BrokenFilter implements io.jstach.jstachio.spi.JStachioFilter.FilterChain {
 
 	INSTANCE;
 
 	@Override
 	public void process(Object model, Appendable appendable) throws IOException {
-		throw new IllegalStateException();
+		throw new BrokenFilterException("Unable to process model: " + model.getClass().getName()
+				+ " probably because a template could not be found.");
 	}
 
 	@Override

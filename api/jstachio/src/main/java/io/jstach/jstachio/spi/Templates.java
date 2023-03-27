@@ -36,6 +36,7 @@ import io.jstach.jstachio.escapers.Html;
 import io.jstach.jstachio.escapers.PlainText;
 import io.jstach.jstachio.formatters.DefaultFormatter;
 import io.jstach.jstachio.formatters.SpecFormatter;
+import io.jstach.jstachio.spi.Templates.TemplateInfos.SimpleTemplateInfo;
 
 /**
  *
@@ -145,7 +146,7 @@ public final class Templates {
 	 * @return the template never <code>null</code>.
 	 * @throws NoSuchElementException if the template is not found
 	 * @throws Exception if the template is not found or any reflective access errors
-	 * 
+	 *
 	 */
 	public static <T> Template<T> getTemplate(Class<T> modelType, Iterable<TemplateLoadStrategy> strategies,
 			Iterable<ClassLoader> classLoaders, System.Logger logger) throws Exception {
@@ -167,6 +168,13 @@ public final class Templates {
 			}
 		}
 		throw new TemplateNotFoundException(modelType);
+	}
+
+	static boolean isReflectionTemplate(TemplateInfo template) {
+		if (template instanceof SimpleTemplateInfo si) {
+			return true;
+		}
+		return false;
 	}
 
 	private static final Set<TemplateLoadStrategy> ALL_STRATEGIES = EnumSet.allOf(TemplateLoadStrategy.class);

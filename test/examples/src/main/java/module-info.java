@@ -12,6 +12,7 @@ module io.jstach.examples {
 
 	opens io.jstach.examples to com.samskivert.jmustache, io.jstach.jstachio;
 	opens io.jstach.examples.reflect to io.jstach.jstachio;
+	opens io.jstach.examples.i18n to io.jstach.jstachio;
 
 	exports io.jstach.examples to org.mapstruct;
 
