@@ -207,6 +207,13 @@ import java.util.Optional;
  * error will happen) where as many Mustache implementations sometimes allow this and will
  * just not output anything.
  *
+ * <em> n.b. This doc and various other docs often appears to use the term "variable" and
+ * "binding" interchangeable. "variable" however is generally a subset of "binding" and is
+ * the leaf nodes of the model tree that are to be outputted like String
+ * interpolation.</em> In mustache spec parlance it is the last key (all the way to the
+ * right) of a dotted name. Also in some cases this doc calls dotted names "path".
+ *
+ *
  * <h4 id="_context_java_types">Interpretation of Java-types and values</h4> When some
  * value is null nothing is rendered if it is used as a section. If some value is null and
  * it is used as a variable a null pointer exception will be thrown by default. This is
@@ -336,8 +343,8 @@ import java.util.Optional;
  *
  * <h2 id="_formatting">Formatting variables</h2>
  *
- * JStachio has strict control on what happens when you output a variable like
- * <code>{{variable}}</code> or <code>{{{variable}}}</code>.
+ * JStachio has strict control on what happens when you output a variable (a binding that
+ * is not an iterable) like <code>{{variable}}</code> or <code>{{{variable}}}</code>.
  *
  * <h3 id="_allowed_types">Allowed formatting types</h3> <strong>
  * &#64;{@link io.jstach.jstache.JStacheFormatterTypes}</strong>
@@ -356,12 +363,12 @@ import java.util.Optional;
  * <p>
  * If you are using the JStachio runtime (io.jstach.jstachio) and have
  * {@link JStacheConfig#type()} set to {@link JStacheType#JSTACHIO} (or UNSPECIFIED aka
- * default) the default formatter will be used (see
- * <code class="externalLink">io.jstach.jstachio.formatters.DefaultFormatter</code>). The
- * default formatter is slightly different than the mustache spec in that it does not
- * allow formatting nulls. If you would like to follow the spec rules where
- * <code>null</code> should be an empty string use
- * <code class="externalLink">io.jstach.jstachio.formatters.SpecFormatter</code>.
+ * default) the default formatter will be used (see <code class=
+ * "externalLink">io.jstach.jstachio.formatters.DefaultFormatter</code>). The default
+ * formatter is slightly different than the mustache spec in that it does not allow
+ * formatting nulls. If you would like to follow the spec rules where <code>null</code>
+ * should be an empty string use <code class=
+ * "externalLink">io.jstach.jstachio.formatters.SpecFormatter</code>.
  *
  * <h2 id="_escaping">Escaping and Content Type</h2>
  * <strong>&#64;{@link io.jstach.jstache.JStacheContentType}, and
@@ -439,7 +446,8 @@ import java.util.Optional;
  *
  * Example configuration with Gradle:
  *
- * <pre><code class="language-kotlin">
+ * <pre>
+ * <code class="language-kotlin">
  * compileJava {
  *     options.compilerArgs += [
  *     '-Ajstache.resourcesPath=src/main/resources'

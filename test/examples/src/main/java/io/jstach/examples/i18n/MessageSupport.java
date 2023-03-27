@@ -16,18 +16,15 @@ public interface MessageSupport {
 	}
 
 	/**
-	 * We use the newline to delimit i18n MessageFormat parameters.
-	 * The first parameter is assumed to be the "key".
-	 * If there are additional lines with non blank text they will be used
-	 * as parameters.
-	 * <strong>
-	 * There is a special case where if no parameters other than the key are passed
-	 * but the message format expects one parameter the context will be used.
-	 * </strong>
-	 * 
+	 * We use the newline to delimit i18n MessageFormat parameters. The first parameter is
+	 * assumed to be the "key". If there are additional lines with non blank text they
+	 * will be used as parameters. <strong> There is a special case where if no parameters
+	 * other than the key are passed but the message format expects one parameter the
+	 * context will be used. </strong>
 	 * @param body parameters delmited by newline.
 	 * @return the formatted message
-	 * @throws IllegalArgumentException if there is no parameters are passed (lambda body is empty).
+	 * @throws IllegalArgumentException if there is no parameters are passed (lambda body
+	 * is empty).
 	 */
 	@JStacheLambda
 	@JStacheLambda.Raw

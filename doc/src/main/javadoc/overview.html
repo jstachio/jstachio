@@ -47,7 +47,28 @@ is designed around with the cross cutting feature of
     <a href="https://openjdk.org/jeps/430">JEP 430 aka stringtemplates (still in preview)</a></li>
 </ol>
 
-<h2 id="requirements">Requirements</h2>
+<h2 id="project_information">Project Information</h2>
+
+<dl class="notes">
+  <dt>Source Control</dt>
+  <dd><a href="https://github.com/jstachio/jstachio">https://github.com/jstachio/jstachio</a></dd>
+  <dt>Issues</dt>
+  <dd><a href="https://github.com/jstachio/jstachio/issues">https://github.com/jstachio/jstachio/issues</a></dd>
+  <dt>Community</dt>
+  <dd><a href="https://github.com/jstachio/jstachio/discussions">https://github.com/jstachio/jstachio/discussions</a></dd>
+  <dt>User Guide</dt>
+  <dd>
+    <a href="index.html">This document</a>
+  </dd>
+  <dt>Javadoc</dt>
+  <dd>
+    <a href="#all-modules-table">This document (modules listing at bottom)</a>
+  </dd>
+</dl>
+
+The project follows <a href="https://semver.org/">semantic versioning</a>.
+
+<h3 id="requirements">Requirements</h3>
 
 <ol>
   <li><a href="https://docs.oracle.com/en/java/javase/17/">Java 17 or greater</a></li>
@@ -58,7 +79,8 @@ The only module needed during runtime is
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/module-summary.html">
   <code>java.base</code>
 </a>
-(ignoring extensions and depending on configuration JStachio itself). 
+
+<em>(ignoring extensions)</em>. 
 
 <h2 id="mustache">Mustache Syntax</h2>
 
@@ -87,7 +109,6 @@ checked last even if it is a directly on the top of the context stack.
 <strong>Most of the documentation of what mustache spec options are implemented and how
 are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 </p>
-
 
 <h2 id="java_code">Java Code</h2>
 
@@ -211,7 +232,7 @@ Maven configuration has two choices. <code>annotationProcessorPaths</code> or cl
 <pre class="language-xml">
 {@code
 <properties>
-    <io.jstach.version>VERSION</io.jstach.version>
+    <io.jstach.version>_VERSION_</io.jstach.version>
 </properties>
 ...
 <dependencies>
@@ -307,9 +328,9 @@ you can instead rely on only one compile time dependency (replace dependencies s
 <pre><code class="language-kotlin">
 dependencies {
     
-    implementation 'io.jstach:jstachio:VERSION'
+    implementation 'io.jstach:jstachio:_VERSION_'
  
-    annotationProcessor 'io.jstach:jstachio-apt:VERSION'
+    annotationProcessor 'io.jstach:jstachio-apt:_VERSION_'
 }
 </code>
 </pre>
@@ -322,9 +343,9 @@ you can instead configure Gradle like:
 <pre><code class="language-kotlin">
 dependencies {
     
-    compileOnly 'io.jstach:jstachio-annotation:VERSION'
+    compileOnly 'io.jstach:jstachio-annotation:_VERSION_'
  
-    annotationProcessor 'io.jstach:jstachio-apt:VERSION'
+    annotationProcessor 'io.jstach:jstachio-apt:_VERSION_'
 }
 </code>
 </pre>
@@ -426,26 +447,10 @@ While the code is Javadoc and the source is linked (if you click on the classes 
 it might be easier to look 
 <strong><a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-example">directly on github (link to project).</a></strong> 
 
-<h2 id="addendum">Addendum</h2>
 
-<h3 id="project_information">Project Information</h3>
+<h2 id="FAQ">FAQ</h2>
 
-<dl class="resources">
-  <dt>Source Control</dt>
-  <dd><a href="https://github.com/jstachio/jstachio">https://github.com/jstachio/jstachio</a></dd>
-  <dt>Issues</dt>
-  <dd><a href="https://github.com/jstachio/jstachio/issues">https://github.com/jstachio/jstachio/issues</a></dd>
-  <dt>Community</dt>
-  <dd><a href="https://github.com/jstachio/jstachio/discussions">https://github.com/jstachio/jstachio/discussions</a></dd>
-  <dt>Documentation</dt>
-  <dd>https://jstach.io/jstachio/</dd>
-</dl>
-
-The project follows <a href="https://semver.org/">semantic versioning</a>.
-
-<h3 id="FAQ">FAQ</h3>
-
-<h4 id="faq_hard_behavior">How do I do XYZ complicated logic in my template?</h4>
+<h3 id="faq_hard_behavior">How do I do XYZ complicated logic in my template?</h3>
 
 Mustache is inherently simple and is called logicless for a reason.
 If you need complicated behavior then it is recommended to put that behavior in
@@ -454,20 +459,20 @@ either a lambda or method call.
 Because JStachio always requires an annotated class that serves as the model it can be argued 
 that the model associated with the template is more of a view model
 then a domain model (or DTO). Therefore it is recommended that you take advantage of that
-top level class and add methods specifical needed to help render.
+top level class and add methods needed to help render.
 </p>
 If you have common logic you can use normal Java practices to share the logic such as interfaces
 (default methods) or abstract classes and have the model implement or extend (respectively).
 You can even enforce that models always implement an interface with 
 {@link io.jstach.jstache.JStacheInterfaces}. 
 
-<h4 id="faq_hot_reload">I want to change templates without restarting my app. How do I do that?</h4> 
+<h3 id="faq_hot_reload">I want to change templates without restarting my app. How do I do that?</h3> 
 
 See the <a href="#jmustache">JMustache Extension</a> that uses reflection. In the future JStachio
 will have its own reflection based runtime for template development but for now we are leveraging the
 fact that JMustache is almost equivalent to JStachio once configured correctly.
 
-<h4 id="faq_di">I don't use Spring but some other Dependency Injection library how do I integrate?</h4> 
+<h3 id="faq_di">I don't use Spring but some other Dependency Injection library how do I integrate?</h3> 
 
 See {@link io.jstach.jstache.JStacheInterfaces} and {@link io.jstach.jstachio.spi}.
 
@@ -483,7 +488,7 @@ extending {@link io.jstach.jstachio.spi.AbstractJStachio} or using {@link io.jst
 </p>
 
 
-<h4 id="faq_i18n">How do I do I18N and Localization?</h4>
+<h3 id="faq_i18n">How do I do I18N and Localization?</h3>
 
 There are a lot of techniques to handle internationalization (I18N).
 JStachio currently does not ship with an opinionated way to handle it.
@@ -508,20 +513,29 @@ then a domain model (or DTO). Therefore view oriented helper methods can be adde
 </p>
 
 <p>
-An alternative is to use Lambdas. There is an unsupported example of doing that in JStachio's test code here:
+The second alternative is to use Lambdas. There is an unsupported example of doing that in JStachio's test code here:
 <a href="https://github.com/jstachio/jstachio/tree/main/test/examples/src/main/java/io/jstach/examples/i18n">
   https://github.com/jstachio/jstachio/tree/main/test/examples/src/main/java/io/jstach/examples/i18n
 </a>
 </p>
 
-<h4 id="faq_decorate_model">How can I add cross cutting model attributes like CSRF?</h4>
+<p>
+The last technique works wells for dynamic mustache implementations like JMustache and mustache.java but not so well for
+JStachio. To have a partial for each locale in JStachio would require writting section conditions
+to determine the correct partial to load. This is because JStachio cannot dynamically load a template and
+needs to analyze it at compile time. Even then every locale's template would need to be compiled. 
+In the future JStachio may add better support for this but it is unlikely because it is still generally 
+not recommended to handle i18n this way.
+</p>
+
+<h3 id="faq_decorate_model">How can I add cross cutting model attributes like CSRF?</h3>
 
 A common problem in web development is needing model attributes that are pseudo global or request based.
 
-In traditional MVC style web applications the model is usually a mutable <code>Map&lt;String,String&gt;</code> so 
+In traditional MVC style web applications the model is usually a mutable <code>Map&lt;String,Object&gt;</code> so 
 attributes like CSRF are added after the controller has filled the model but before rendering.
 
-However this presents a problem to JStachio as JStachio prefers you do not use <code>Map&lt;String,String&gt;</code>
+However this presents a problem to JStachio as JStachio prefers you do not use <code>Map&lt;String,Object&gt;</code>
 as models (you can but not as a root model and you loose type safety).
 
 There are two general strategies:
@@ -542,11 +556,27 @@ and then having an interface with a method that pulls the info from the ThreadLo
 This is a more advance technique but does allow keeping your models immutable (e.g. using record).
 </p>
 
-<h4 id="faq_nocode">Can I make JStachio only check mustache and not generate code?</h4> 
+<h3 id="faq_nocode">Can I make JStachio only check mustache and not generate code?</h3> 
 
-Currently no. But if you would like that please comment or thumbup:
+Currently no. But if you would like that please comment or thumbs-up:
 <a href="https://github.com/jstachio/jstachio/issues/103">#103</a>
 
+<h3 id="faq_editdoc">There is a typo in this documentation how can I fix it?</h3>
+
+If you would like to make corrections please
+file an issue or even better fork, edit, PR this file: 
+<pre><a href="https://github.com/jstachio/jstachio/blob/main/doc/src/main/javadoc/overview.html">doc/src/main/javadoc/overview.html</a></pre>
+
+<h3 id="faq_javadoc">Where is the Javadoc?</h3>
+
+<em>Shockingly this document is the Javadoc!</em> To be precise it is the aggregate javadoc 
+<code>overview.html</code>. 
+
+The modules javadocs should be at the bottom of this document and the search bar at the top can be
+used to find documented classes.
+
+<br/>
 </div>
+
 </body>
 </html>
