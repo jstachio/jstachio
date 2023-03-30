@@ -389,6 +389,9 @@ the ServiceLoader automatically (unless disabled or using DI framework).
 The most notable extension is the {@link io.jstach.opt.jmustache/ JMustache extension} as it 
 allows you to change templates without recompiling the application.
 </p>
+One major caveat is that JMustache currently does not support template inheritance 
+(aka parents and blocks) so if your jstachio templates use template inheritance JMustache 
+will probably not work.
 
 <h3 id="springframework">Spring Framework</h3>
 <strong>See {@link io.jstach.opt.spring/ }</strong>

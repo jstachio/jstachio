@@ -157,19 +157,25 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	void processInsideLambdaToken(List<ProcessToken> tokens) throws ProcessingException {
 		String lambdaName = context.currentEnclosedContextName();
+		boolean finished = false;
 		for (var t : tokens) {
 			var mt = t.token().innerToken();
 			if (mt instanceof TagToken tt && tt.tagKind() == MustacheTagKind.END_SECTION
 					&& lambdaName.equals(tt.name())) {
+				finished = true;
 				super._processToken(t.token());
 			}
 			else if (mt.isEOF()) {
-				throw new ProcessingException(position,
-						"EOF reached before lambda closing tag found. lambda = " + lambdaName);
+				if (!finished) {
+					throw new ProcessingException(position,
+							"EOF reached before lambda closing tag found. lambda = \"" + lambdaName + "\"");
+				}
 			}
 			else {
 				mt.appendEscapedJava(currentUnescaped);
-				mt.appendRawText(rawLambdaContent);
+				if (!finished) {
+					mt.appendRawText(rawLambdaContent);
+				}
 			}
 		}
 	}

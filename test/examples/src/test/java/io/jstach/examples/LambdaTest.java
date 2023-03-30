@@ -1,6 +1,6 @@
 package io.jstach.examples;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +9,11 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheFlags.Flag;
 import io.jstach.jstache.JStacheLambda;
+import io.jstach.jstache.JStachePartial;
+import io.jstach.jstache.JStachePartials;
 import io.jstach.jstachio.JStachio;
 
 public class LambdaTest {
@@ -71,6 +75,36 @@ public class LambdaTest {
 	public void testName() throws Exception {
 		String expected = "5 is odd";
 		String actual = JStachio.render(new Items(List.of(5)));
+		assertEquals(expected, actual);
+	}
+
+	public record Person(String name) {
+	}
+
+	@JStache(template = """
+			{{<parent}}
+				{{$block}}sprinklers{{/block}}
+			{{/parent}}""")
+	@JStacheFlags(flags = Flag.DEBUG)
+	@JStachePartials(@JStachePartial(name = "parent", template = """
+			{{#lambda}}
+			Use the {{$block}}force{{/block}}, {{name}}.
+			{{/lambda}}"""))
+	public record PersonPage(String name) {
+
+		@JStacheLambda
+		public Person lambda(Object ignore) {
+			return new Person("darling");
+		}
+	}
+
+	@Test
+	public void testParentLambda() throws Exception {
+		String expected = """
+				Use the sprinklers, darling.
+				""";
+		String actual = JStachio.render(new PersonPage("Luke"));
+
 		assertEquals(expected, actual);
 	}
 
