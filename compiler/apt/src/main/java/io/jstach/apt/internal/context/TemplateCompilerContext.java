@@ -216,7 +216,7 @@ public class TemplateCompilerContext {
 		JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
 		RenderingContext field = generator.createRenderingContext(ContextType.SECTION, javaExpression, context);
 
-		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, ContextType.ROOT);
+		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, ContextType.SECTION);
 	}
 
 	public TemplateCompilerContext getChild(String path, ContextType childType) throws ContextException {
