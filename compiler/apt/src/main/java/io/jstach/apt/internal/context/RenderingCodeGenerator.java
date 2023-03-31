@@ -77,7 +77,7 @@ public class RenderingCodeGenerator {
 
 	private final KnownTypes knownTypes;
 
-	private final JavaLanguageModel javaModel;
+	protected final JavaLanguageModel javaModel;
 
 	private final FormatterTypes formatterTypes;
 

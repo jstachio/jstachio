@@ -43,6 +43,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -52,6 +53,7 @@ import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.ContextException.FieldNotFoundContextException;
 import io.jstach.apt.internal.context.Lambda.Lambdas;
+import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
@@ -138,7 +140,13 @@ public class TemplateCompilerContext {
 					else {
 						throw new IllegalStateException("Expected declaredType");
 					}
-					TemplateCompilerContext context = createForLambda(lm.name(), modelType);
+					TemplateCompilerContext context;
+					try {
+						context = createForLambda(lm.name(), modelType);
+					}
+					catch (TypeException e) {
+						throw new ContextException.TypeNotAllowedContextException(e.getMessage(), e);
+					}
 					String variableName = context.context.currentExpression().text();
 					String variableType = "var";
 
@@ -191,10 +199,24 @@ public class TemplateCompilerContext {
 				ContextType.PARTIAL);
 	}
 
-	TemplateCompilerContext createForLambda(String lambdaName, DeclaredType model) throws AnnotatedException {
+	TemplateCompilerContext createForLambda(String lambdaName, DeclaredType model)
+			throws AnnotatedException, TypeException {
 		String modelVariableName = variables.introduceNewNameLike(lambdaName);
 		var templateStack = this.templateStack.ofLambda(lambdaName);
-		return generator.createTemplateCompilerContext(templateStack, model, modelVariableName, variables);
+		/*
+		 * else { rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression,
+		 * element, root); } return new TemplateCompilerContext(templateStack, lambdas,
+		 * this, variables, rootRenderingContext, ContextType.ROOT);
+		 */
+		// return generator.createTemplateCompilerContext(templateStack, model,
+		// modelVariableName, variables);
+		var javaModel = generator.javaModel;
+		TypeElement element = javaModel.asElement(model);
+		String expression = modelVariableName;
+		JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
+		RenderingContext field = generator.createRenderingContext(ContextType.SECTION, javaExpression, context);
+
+		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, ContextType.ROOT);
 	}
 
 	public TemplateCompilerContext getChild(String path, ContextType childType) throws ContextException {
