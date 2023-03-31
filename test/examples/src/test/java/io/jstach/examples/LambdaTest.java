@@ -108,4 +108,37 @@ public class LambdaTest {
 		assertEquals(expected, actual);
 	}
 
+	@JStache(template = """
+			{{#decorate}}
+			{{lastName}}. {{name}}
+			{{/decorate}}
+			{{#decorate}}
+			{{lastName}}. {{name}}
+			{{/decorate}}
+			""")
+	record FullContext(String name) {
+
+		@JStacheLambda
+		public Decorated decorate(FullContext ctx) {
+			String[] s = ctx.name().split(" ", 2);
+			String firstName = s[0];
+			String lastName = s.length > 1 ? s[1] : "";
+			return new Decorated(firstName, lastName);
+		}
+	}
+
+	record Decorated(String firstName, String lastName) {
+
+	}
+
+	@Test
+	public void testFullContext() {
+		String expected = """
+				Bond. James Bond
+				""";
+		String actual = JStachio.render(new FullContext("James Bond"));
+
+		assertEquals(expected, actual);
+	}
+
 }
