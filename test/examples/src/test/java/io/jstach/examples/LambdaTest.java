@@ -85,7 +85,6 @@ public class LambdaTest {
 			{{<parent}}
 				{{$block}}sprinklers{{/block}}
 			{{/parent}}""")
-	@JStacheFlags(flags = Flag.DEBUG)
 	@JStachePartials(@JStachePartial(name = "parent", template = """
 			{{#lambda}}
 			Use the {{$block}}force{{/block}}, {{name}}.
@@ -116,6 +115,7 @@ public class LambdaTest {
 			{{lastName}}. {{name}}
 			{{/decorate}}
 			""")
+	@JStacheFlags(flags = Flag.DEBUG)
 	record FullContext(String name) {
 
 		@JStacheLambda
@@ -134,6 +134,7 @@ public class LambdaTest {
 	@Test
 	public void testFullContext() {
 		String expected = """
+				Bond. James Bond
 				Bond. James Bond
 				""";
 		String actual = JStachio.render(new FullContext("James Bond"));
