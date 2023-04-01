@@ -65,6 +65,10 @@ public sealed interface MustacheToken {
 			return tagKind().isSection();
 		}
 
+		public boolean isSectionEndToken(String name) {
+			return tagKind().isEndSection() && name().equals(name);
+		}
+
 		public boolean isStandaloneToken() {
 			return isSectionToken() || tagKind == MustacheTagKind.PARTIAL;
 		}
@@ -207,6 +211,10 @@ public sealed interface MustacheToken {
 	}
 
 	default boolean isSectionToken() {
+		return false;
+	}
+
+	default boolean isSectionEndToken(String name) {
 		return false;
 	}
 

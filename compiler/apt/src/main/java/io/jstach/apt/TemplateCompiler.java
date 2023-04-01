@@ -158,10 +158,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	void processInsideLambdaToken(List<ProcessToken> tokens) throws ProcessingException {
 		String lambdaName = context.currentEnclosedContextName();
 		boolean finished = false;
+
 		for (var t : tokens) {
 			var mt = t.token().innerToken();
-			if (mt instanceof TagToken tt && tt.tagKind() == MustacheTagKind.END_SECTION
-					&& lambdaName.equals(tt.name())) {
+			if (mt.isSectionEndToken(lambdaName)) {
 				finished = true;
 				super._processToken(t.token());
 			}
@@ -172,9 +172,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 				}
 			}
 			else {
-				mt.appendEscapedJava(currentUnescaped);
 				if (!finished) {
 					mt.appendRawText(rawLambdaContent);
+					mt.appendEscapedJava(currentUnescaped);
+				}
+				else {
+					mt.appendEscapedJava(currentUnescaped);
 				}
 			}
 		}
