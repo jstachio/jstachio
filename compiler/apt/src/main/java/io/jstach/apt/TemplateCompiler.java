@@ -38,6 +38,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.PartialParameterProcessor.Block;
+import io.jstach.apt.WhitespaceTokenProcessor.ProcessToken.ProcessHint;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
@@ -159,6 +160,14 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		String lambdaName = context.currentEnclosedContextName();
 		boolean finished = false;
 
+		boolean standaloneEnd = !tokens.stream()
+				.filter(t -> !(t.token().innerToken().isSectionEndToken(lambdaName) || t.hint() != ProcessHint.NORMAL))
+				.findAny().isPresent();
+
+		if (isDebug()) {
+			debug("lambda = " + lambdaName + " standaloneEnd = " + standaloneEnd);
+		}
+
 		for (var t : tokens) {
 			var mt = t.token().innerToken();
 			if (mt.isSectionEndToken(lambdaName)) {
@@ -171,14 +180,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 							"EOF reached before lambda closing tag found. lambda = \"" + lambdaName + "\"");
 				}
 			}
-			else {
-				if (!finished) {
-					mt.appendRawText(rawLambdaContent);
-					mt.appendEscapedJava(currentUnescaped);
-				}
-				else {
-					mt.appendEscapedJava(currentUnescaped);
-				}
+			else if (!standaloneEnd && !finished) {
+				mt.appendRawText(rawLambdaContent);
+				mt.appendEscapedJava(currentUnescaped);
+			}
+			else if (finished) {
+				debug("finished token: ", t);
 			}
 		}
 	}

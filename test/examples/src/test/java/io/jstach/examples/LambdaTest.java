@@ -36,12 +36,10 @@ public class LambdaTest {
 				Color : Red
 				Food : Pizza
 				Speed : Fast
-
 				Key: Color, Value: Red
 				Key: Food, Value: Pizza
 				Key: Speed, Value: Fast
-
-				                """;
+				""";
 		assertEquals(expected, actual);
 	}
 
