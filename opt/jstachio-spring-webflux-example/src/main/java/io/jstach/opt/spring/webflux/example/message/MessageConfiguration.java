@@ -16,6 +16,12 @@ import io.jstach.opt.spring.webflux.JStachioModelViewConfigurer;
 public class MessageConfiguration {
 
 	/**
+	 * Called by Spring
+	 */
+	public MessageConfiguration() {
+	}
+
+	/**
 	 * Creates the configurer for Spring
 	 * @return configuer specific to Message
 	 */

@@ -16,4 +16,10 @@ public class MessagePage {
 	 */
 	public String message;
 
+	/**
+	 * Creates a mutable MessagePage
+	 */
+	public MessagePage() {
+	}
+
 }

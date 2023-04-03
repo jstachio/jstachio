@@ -16,6 +16,12 @@ import io.jstach.opt.spring.webflux.JStachioModelView;
 public class MessageController {
 
 	/**
+	 * Called by Spring
+	 */
+	public MessageController() {
+	}
+
+	/**
 	 * Here we use the global configurer to inject state into the {@link View}.
 	 * @return reactive jstachio view
 	 */
