@@ -140,4 +140,26 @@ public class LambdaTest {
 		assertEquals(expected, actual);
 	}
 
+	@JStache(template = """
+			{{#length}}
+			123
+			{{/length}}
+			""")
+	@JStacheFlags(flags = Flag.DEBUG)
+	record SectionLength(String name) {
+
+		@JStacheLambda
+		@JStacheLambda.Raw
+		public String length(@JStacheLambda.Raw String section) {
+			return "" + section.length();
+		}
+	}
+
+	@Test
+	public void testSectionLength() {
+		String expected = "4";
+		String actual = JStachio.render(new SectionLength("12345"));
+		assertEquals(expected, actual);
+	}
+
 }
