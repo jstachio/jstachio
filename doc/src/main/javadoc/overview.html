@@ -19,7 +19,7 @@ Templates are compiled into readable Java source code and value bindings are sta
 
 <div class="js-toc-content">
 
-<h2 id="quickstart">Quick Start</h2>
+<h2 id="gettingstarted">Getting Started</h2>
 
 Follow these steps:
 
@@ -80,7 +80,44 @@ The only module needed during runtime is
   <code>java.base</code>
 </a>
 
-<em>(ignoring extensions)</em>. 
+<h3 id="limitations">Limitations</h3>
+
+<h4 id="limitations_dynamic_templates">Dynamic Templates</h4>
+
+<p>
+Because mustache templates need to be analyzed at compile time JStachio does not
+support dynamic templates. Dynamic meaning that the template content cannot be changed
+at runtime without calling the Java compiler (which would generally be a bad idea for hosted platforms). 
+<em>
+Consequently JStachio is generally (ignoring extensions) not a good fit for user
+created templates (e.g. templates coming from a database).
+</em>
+</p>
+<p>
+However a custom lambda could be made to dynamically render using a reflection based
+mustach engine such as <a href="https://github.com/samskivert/jmustache">JMustache</a>
+for the places where that is needed.
+
+<h4 id="limitations_reactive">Not Reactive</h4>
+
+<p>
+JStachio does not generate reactive code nor can handle reactive data types. 
+Instead it generates code that writes to an {@link java.lang.Appendable}.
+</p>
+
+<p>
+The current best workaround is <a href="#faq_reactive">to buffer as discussed in the FAQ</a>.
+</p>
+
+<p>
+Its important to understand that "reactive" does not guarantee better performance
+particularly in regards to template engines. There are only handful of templating
+engines that handle backpressure as well as reactive data types and from benchmarking
+they appear to be slower than JStachio writing to a buffer.
+Furthermore if the model does not have reactive datatypes for its iterables
+(e.g. {@link java.util.concurrent.Flow.Publisher}) it is unlikely to perform better
+as the model is already in memory.
+</p>
 
 <h2 id="mustache">Mustache Syntax</h2>
 
@@ -491,7 +528,7 @@ it might be easier to look
 
 Mustache is inherently simple and is called logicless for a reason.
 If you need complicated behavior then it is recommended to put that behavior in
-either a lambda or method call.
+either a {@link io.jstach.jstache.JStacheLambda lambda} or method call.
 <p>
 Because JStachio always requires an annotated class that serves as the model it can be argued 
 that the model associated with the template is more of a view model
@@ -529,7 +566,7 @@ extending {@link io.jstach.jstachio.spi.AbstractJStachio} or using {@link io.jst
 
 There are a lot of techniques to handle internationalization (I18N).
 JStachio currently does not ship with an opinionated way to handle it.
-If you would like JStachio with one please comment or thumbup: 
+If you would like JStachio with one please comment or thumbs-up: 
 
 <a href="https://github.com/jstachio/jstachio/issues/104">#104</a>.
 
@@ -592,6 +629,32 @@ The second technique is to make request information available through the callst
 and then having an interface with a method that pulls the info from the ThreadLocal variable.
 This is a more advance technique but does allow keeping your models immutable (e.g. using record).
 </p>
+
+<h3 id="faq_reactive">How do I integrate with reactive frameworks such as Reactor?</h3>
+
+As noted in the limitations JStachio does not generate reactive code.
+The short answer is to handle the backpressure by simply buffering.
+
+<p>
+For example a simple workaround it just to buffer the entire output and hand the output
+as a String or ByteBuffer off to the reactive framework. The idea being that
+memory is cheap and the model has to be fully loaded anyway since JStachio does
+not support iterating over reactive data types.
+</p>
+
+<p>
+Another workaround if the output can be large is to render in parts
+and to compose those parts with reactive operators such as <code>flatMap</code> 
+and <code>map</code>.
+
+For example lets say we are generating a page with a list of rows. We would
+first render a header as String and then reactively iterate over the rows rendering them to
+String and then finally render a footer.
+</p>
+
+The <a href="#spring-webflux-example">Spring webflux example project</a> shows an example of 
+using the buffering technique.
+
 
 <h3 id="faq_nocode">Can I make JStachio only check mustache and not generate code?</h3> 
 
