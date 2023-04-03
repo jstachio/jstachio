@@ -86,6 +86,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	int depth = 0;
 
+	private final String codeTab = "    ";
+
+	protected String baseCodeTab = codeTab + codeTab;
+
 	/*
 	 * This buffer contains the raw uninterpolated unescaped markup as escaped java string
 	 * literals.
@@ -372,8 +376,9 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	}
 
 	private void printIndent() {
-		for (int i = 0; i <= depth + 1; i++) {
-			currentWriter().print("    ");
+		currentWriter().print(baseCodeTab);
+		for (int i = 0; i < depth; i++) {
+			currentWriter().print(codeTab);
 		}
 	}
 
@@ -450,6 +455,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 					NamedReader namedReader = new NamedReader(reader, name, "INLINE");
 					StringCodeAppendable codeAppendable = new StringCodeAppendable();
 					try (var c = new TemplateCompiler(namedReader, self, rootContext) {
+						{
+							this.baseCodeTab = "";
+						}
+
 						@Override
 						public TemplateCompilerType getCompilerType() {
 							return TemplateCompilerType.LAMBDA;
