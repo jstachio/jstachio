@@ -218,12 +218,6 @@ public class RenderingCodeGenerator {
 				ContextType.ROOT);
 	}
 
-	public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, DeclaredType type,
-			String expression, VariableContext variables) throws AnnotatedException {
-		TypeElement element = javaModel.asElement(type);
-		return createTemplateCompilerContext(templateStack, element, expression, variables);
-	}
-
 	private boolean USE_LIST_CONTEXT = Boolean.getBoolean("USE_LIST_CONTEXT");
 
 	RenderingContext createRenderingContext(ContextType childType, JavaExpression expression,
