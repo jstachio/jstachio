@@ -109,6 +109,40 @@ checked last even if it is a directly on the top of the context stack.
 <strong>Most of the documentation of what mustache spec options are implemented and how
 are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 </p>
+<h3 id="mustache_ws">Whitespace handling</h3>
+<p>
+One of the most important characteristics and spec compliance of modern Mustache (v1.3) 
+is whitespace handling which unfortunately is not discussed much even in the current manual.
+JStachio aims to follow the whitespace handling of the Mustache spec.
+</p>
+<p>
+A general rule of this whitespace handling is a concept called "standalone" section-like tags.
+When a single tag (a tag being everything but a variable and raw content) is on a line with only whitespace 
+and a following newline when rendering the whitespace, tag, and newline are removed.
+</p>
+
+For the following example let us assue <code>sections</code> is a boolean that is <code>true</code>:
+
+<pre><code class="language-hbs">
+    {{#sections}}
+    1
+    {{/sections}}
+    {{#sections}}
+    2
+    {{/sections}}
+</code></pre>
+
+The result will be: 
+
+<pre><code>
+    1
+    2
+</code></pre>
+
+<p>
+Furthermore if a parent or partial tag(s) are standalone the amount of whitespace (other than newline) preceding
+them is used as indentation for the included template.
+</p>
 
 <h2 id="java_code">Java Code</h2>
 
@@ -563,6 +597,17 @@ This is a more advance technique but does allow keeping your models immutable (e
 
 Currently no. But if you would like that please comment or thumbs-up:
 <a href="https://github.com/jstachio/jstachio/issues/103">#103</a>
+
+
+<h3 id="faq_whitespace">Can I make whitespace explicit instead of "standalone" rules?</h3> 
+
+<p>
+Currently no. <a href="#mustache_ws">JStachio follows the spec whitespace rules.</a> 
+However in theory it is always possible to achieve all the same output that no whitespace handling does.
+</p>
+
+If you would like an option to disable JStachio whitespace handling like some mustache implementations
+offer please file an issue.
 
 <h3 id="faq_editdoc">There is a typo in this documentation how can I fix it?</h3>
 
