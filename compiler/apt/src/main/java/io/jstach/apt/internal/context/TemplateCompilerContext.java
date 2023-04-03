@@ -33,15 +33,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.text.MessageFormat;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators.AbstractSpliterator;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -53,7 +46,6 @@ import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.ContextException.FieldNotFoundContextException;
 import io.jstach.apt.internal.context.Lambda.Lambdas;
-import io.jstach.apt.internal.context.TemplateCompilerContext.ContextType;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
@@ -203,13 +195,6 @@ public class TemplateCompilerContext {
 			throws AnnotatedException, TypeException {
 		String modelVariableName = variables.introduceNewNameLike(lambdaName);
 		var templateStack = this.templateStack.ofLambda(lambdaName);
-		/*
-		 * else { rootRenderingContext = new DeclaredTypeRenderingContext(javaExpression,
-		 * element, root); } return new TemplateCompilerContext(templateStack, lambdas,
-		 * this, variables, rootRenderingContext, ContextType.ROOT);
-		 */
-		// return generator.createTemplateCompilerContext(templateStack, model,
-		// modelVariableName, variables);
 		var javaModel = generator.javaModel;
 		TypeElement element = javaModel.asElement(model);
 		String expression = modelVariableName;
