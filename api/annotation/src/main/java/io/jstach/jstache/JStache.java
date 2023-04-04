@@ -19,7 +19,7 @@ import java.util.Optional;
  * <h2 id="_example">Example Usage</h2>
  *
  * <pre class="code">
- * <code>
+ * <code class="language-java">
  * &#64;JStache(template = &quot;&quot;&quot;
  *     {{#people}}
  *     {{message}} {{name}}! You are {{#ageInfo}}{{age}}{{/ageInfo}} years old!

@@ -37,7 +37,11 @@
               </doctitle>
               <windowtitle>jstachio API ${project.version}</windowtitle>
               <header>
-                &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.highlightAll();&lt;/script&gt;
+                <![CDATA[
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/handlebars.min.js"></script>
+                <script>hljs.highlightAll();</script>
+                ]]>
               </header>
               <bottom>
                 <![CDATA[

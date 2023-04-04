@@ -9,13 +9,13 @@ import java.lang.annotation.Target;
 /**
  * Tag a method to be used as a mustache lambda section.
  *
- * Lambda sections look something like: <pre>
+ * Lambda sections look something like: <pre><code class="language-hbs">
  * {{#context}}
  * {{#lambda}}body{{/lambda}}
  * {{/context}}
- * </pre> Where in the above example a lambda is named "lambda" and optionally has access
- * to the object called "context" and the raw body passed to the lambda is "body". A
- * nonexhaustive example of the above lambda in Java assuming the context type is
+ * </code></pre> Where in the above example a lambda is named "lambda" and optionally has
+ * access to the object called "context" and the raw body passed to the lambda is "body".
+ * A nonexhaustive example of the above lambda in Java assuming the context type is
  * <code>SomeType</code> <em>might</em> look like:
  *
  * <pre><code class="language-java">
