@@ -64,6 +64,10 @@ is designed around with the cross cutting feature of
   <dd>
     <a href="#all-modules-table">This document (modules listing at bottom)</a>
   </dd>
+  <dt>Mustache Spec</dt>
+  <dd><a href="https://github.com/mustache/spec/tree/v1.3.0">v1.3.0</a></dd>
+  <dt>Mustache Manual</dt>
+  <dd><a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">https://github.com/mustache/spec/tree/v1.3.0</a></dd>
 </dl>
 
 The project follows <a href="https://semver.org/">semantic versioning</a>.
@@ -540,11 +544,101 @@ If you have common logic you can use normal Java practices to share the logic su
 You can even enforce that models always implement an interface with 
 {@link io.jstach.jstache.JStacheInterfaces}. 
 
+
+<h3 id="faq_layout">How do I do layout?</h3>
+
+Modern Mustache has the concept of 
+<a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html#Parents">parent partials</a>
+and <a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html#Blocks">blocks</a> that
+is often called template inheritance. JStachio supports this.
+
+<p>
+Below is an example:
+</p>
+
+<code>layout.mustache</code>
+
+<pre>
+<code class="language-hbs">
+{{! layout.mustache }}
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;{{$title}}My site{{/title}}&lt;/title&gt;{
+  &lt;/head&gt;
+  &lt;body&gt;
+  {{$body}}Replace Me{{/body}}
+  &lt;/body&gt;
+&lt;/html&gt;
+</code>
+</pre>
+
+<code>page.mustache</code>
+
+<pre>
+<code class="language-handlebars">
+{{! page.mustache }}
+{{&lt; layout}}
+  {{$title}}My Page!{{/title}}
+  {{$body}}
+  This is a page
+  {{/body}}
+{{/layout}}
+</code>
+</pre>
+
+
 <h3 id="faq_hot_reload">I want to change templates without restarting my app. How do I do that?</h3> 
 
 See the <a href="#jmustache">JMustache Extension</a> that uses reflection. In the future JStachio
 will have its own reflection based runtime for template development but for now we are leveraging the
 fact that JMustache is almost equivalent to JStachio once configured correctly.
+
+
+<h3 id="faq_map">My MVC library uses Map&lt;String,Object&gt; for models what should I do?</h3>
+
+<p>
+As mentioned throughout this doc JStachio is not ideal for <code>Map&lt;String,Object&gt;</code>.
+</p>
+
+<p>
+If this is a greenfield project (ie starting from scratch) it is recommend that you have your controllers
+return the model objects that are annotated with <code>&#64;{@link io.jstach.jstache.JStache}</code>
+and wherever the framework does return type conversion or request body conversion you call
+{@link io.jstach.jstachio.JStachio} render/execute functions. 
+The {@link io.jstach.opt.spring/ spring integration} shows an example of this technique.
+</p>
+
+<p>
+If your library only allows <code>Map&lt;String,Object&gt;</code> (or similar analog aka request attributes) 
+or you have existing code you can make a special entry in the <code>Map&lt;String,Object&gt;</code> with
+the model and then wherever normal template engines are executed you pull the entry out and call
+{@link io.jstach.jstachio.JStachio} render/execute functions.
+</p>
+
+<p>
+As for existing request attributes or entries in <code>Map&lt;String,Object&gt;</code> that you depend on you 
+can simply have that as a field or method on your model object. When accessing those attributes it is
+best to use dotted path notation.
+</p>
+
+<pre>
+<code class="language-java">
+&#64;JStache(template = "{{attributes.something}}")
+public record Page(Map&lt;String, Object&gt; attributes){}
+
+public Page someController(Map&lt;String,Object&gt; requestAttributes) {
+  return new Page(requestAttributes);
+}
+
+</code>
+</pre>
+
+If you do not want repeatedly add the request attributes see 
+<a href="#faq_decorate_model">FAQ on decorating model</a>. 
+
+<p>
+If you are still having trouble integrating <a href="#project_information">please file an issue</a>.
+</p>
 
 <h3 id="faq_di">I don't use Spring but some other Dependency Injection library how do I integrate?</h3> 
 
