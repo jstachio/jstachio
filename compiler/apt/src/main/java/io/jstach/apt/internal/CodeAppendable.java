@@ -22,7 +22,7 @@ public interface CodeAppendable extends Appendable {
 	}
 
 	default void println() {
-		print(System.lineSeparator());
+		print("\n");
 	}
 
 	public boolean suppressesOutput();
