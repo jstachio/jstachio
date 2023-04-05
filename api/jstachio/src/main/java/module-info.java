@@ -8,7 +8,7 @@
  * code in your code base as well as applies runtime logic like filtering.
  * <p>
  * This module also provides runtime extension points via the {@link java.util.ServiceLoader} and
- * the SPI of {@link io.jstach.jstachio.spi.JStachioExtension}
+ * the SPI of {@link io.jstach.jstachio.spi.JStachioExtension}.
  * <p>
  * By {@link io.jstach.jstache.JStacheType#JSTACHIO default JStachio generates code} that needs this module however libraries that
  * use models (classes annotated with {@link io.jstach.jstache.JStache}) 
