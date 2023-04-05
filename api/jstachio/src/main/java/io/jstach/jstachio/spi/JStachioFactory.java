@@ -101,7 +101,7 @@ public final class JStachioFactory {
 		 * @param extensions not null
 		 * @return this
 		 */
-		public Builder add(Iterable<JStachioExtension> extensions) {
+		public Builder add(Iterable<? extends JStachioExtension> extensions) {
 			extensions.forEach(this.extensions::add);
 			return this;
 		}
