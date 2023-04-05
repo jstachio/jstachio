@@ -31,7 +31,7 @@
     <jstachio.javadoc>${jstachio.website.doc}/apidocs</jstachio.javadoc>
 
     <jstachio.doc.message>&lt;span class="jstachio-warn" &gt;&#x26A0; WARNING! This is the jar javadoc. The aggregated javadoc has better usability:&lt;/span&gt;</jstachio.doc.message>
-    <jstachio.doc.ahref>&lt;a href="${jstachio.javadoc}" &gt;${jstachio.javadoc}&lt;/a&gt;</jstachio.doc.ahref>
+    <jstachio.doc.ahref>&lt;a target="_blank" href="${jstachio.javadoc}" &gt;${jstachio.javadoc}&lt;/a&gt;</jstachio.doc.ahref>
 
     <jstachio.tag>&lt;div class="jstachio-version"&gt; ${jstachio.doc.message} &lt;br/&gt; ${jstachio.doc.ahref}&lt;/div&gt;</jstachio.tag>
     
