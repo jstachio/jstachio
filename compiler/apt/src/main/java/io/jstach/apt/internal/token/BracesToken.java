@@ -32,66 +32,70 @@ package io.jstach.apt.internal.token;
 /**
  * @author Victor Nazarov
  */
-public abstract class BracesToken {
+public sealed interface BracesToken {
 
-	public static BracesToken twoOpenBraces() {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.twoOpenBraces();
-			}
+	public enum TokenType {
+		TWO_OPEN,
+		TWO_CLOSING,
+		THREE_OPEN,
+		THREE_CLOSE,
+		CHARACTER,
+		EOF
+	}
+	
+	public record BToken(TokenType type) implements BracesToken {
+		@Override
+		public <R, E extends Exception> R accept(
+				Visitor<R, E> visitor)
+				throws E {
+			return switch(type()) {
+				case TWO_OPEN -> visitor.twoOpenBraces();
+				case TWO_CLOSING -> visitor.twoClosingBraces();
+				case THREE_OPEN -> visitor.threeOpenBraces();
+				case THREE_CLOSE -> visitor.threeClosingBraces();
+				case CHARACTER -> throw new UnsupportedOperationException("Unimplemented case: " + type());
+				case EOF -> throw new UnsupportedOperationException("Unimplemented case: " + type());
+			};
+		}
+	}
+	public record CToken(char character) implements BracesToken {
+		public <R, E extends Exception> R accept(BracesToken.Visitor<R,E> visitor) throws E {
+			return visitor.character(character);
+		}
+	}
+	
+	public record EOFToken() implements BracesToken {
+		public <R, E extends Exception> R accept(BracesToken.Visitor<R,E> visitor) throws E {
+			return visitor.endOfFile();
 		};
+	}
+	
+	public static BracesToken twoOpenBraces() {
+		return new BToken(TokenType.TWO_OPEN);
 	}
 
 	public static BracesToken twoClosingBraces() {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.twoClosingBraces();
-			}
-		};
+		return new BToken(TokenType.TWO_CLOSING);
 	}
 
 	public static BracesToken threeOpenBraces() {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.threeOpenBraces();
-			}
-		};
+		return new BToken(TokenType.THREE_OPEN);
 	}
 
 	public static BracesToken threeClosingBraces() {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.threeClosingBraces();
-			}
-		};
+		return new BToken(TokenType.THREE_CLOSE);
 	}
 
 	public static BracesToken character(final char s) {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.character(s);
-			}
-		};
+		return new CToken(s);
 	}
 
 	public static BracesToken endOfFile() {
-		return new BracesToken() {
-			@Override
-			public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
-				return visitor.endOfFile();
-			}
-		};
+		return new EOFToken();
 	}
 
 	public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
 
-	private BracesToken() {
-	}
 
 	public interface Visitor<R, E extends Exception> {
 
