@@ -35,22 +35,17 @@ package io.jstach.apt.internal.token;
 public sealed interface BracesToken {
 
 	public enum TokenType {
-		TWO_OPEN,
-		TWO_CLOSING,
-		THREE_OPEN,
-		THREE_CLOSE,
-		CHARACTER,
-		EOF
+
+		TWO_OPEN, TWO_CLOSE, THREE_OPEN, THREE_CLOSE, CHARACTER, EOF
+
 	}
-	
+
 	public record BToken(TokenType type) implements BracesToken {
 		@Override
-		public <R, E extends Exception> R accept(
-				Visitor<R, E> visitor)
-				throws E {
-			return switch(type()) {
+		public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+			return switch (type()) {
 				case TWO_OPEN -> visitor.twoOpenBraces();
-				case TWO_CLOSING -> visitor.twoClosingBraces();
+				case TWO_CLOSE -> visitor.twoClosingBraces();
 				case THREE_OPEN -> visitor.threeOpenBraces();
 				case THREE_CLOSE -> visitor.threeClosingBraces();
 				case CHARACTER -> throw new UnsupportedOperationException("Unimplemented case: " + type());
@@ -58,24 +53,25 @@ public sealed interface BracesToken {
 			};
 		}
 	}
+
 	public record CToken(char character) implements BracesToken {
-		public <R, E extends Exception> R accept(BracesToken.Visitor<R,E> visitor) throws E {
+		public <R, E extends Exception> R accept(BracesToken.Visitor<R, E> visitor) throws E {
 			return visitor.character(character);
 		}
 	}
-	
+
 	public record EOFToken() implements BracesToken {
-		public <R, E extends Exception> R accept(BracesToken.Visitor<R,E> visitor) throws E {
+		public <R, E extends Exception> R accept(BracesToken.Visitor<R, E> visitor) throws E {
 			return visitor.endOfFile();
 		};
 	}
-	
+
 	public static BracesToken twoOpenBraces() {
 		return new BToken(TokenType.TWO_OPEN);
 	}
 
 	public static BracesToken twoClosingBraces() {
-		return new BToken(TokenType.TWO_CLOSING);
+		return new BToken(TokenType.TWO_CLOSE);
 	}
 
 	public static BracesToken threeOpenBraces() {
@@ -95,7 +91,6 @@ public sealed interface BracesToken {
 	}
 
 	public abstract <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E;
-
 
 	public interface Visitor<R, E extends Exception> {
 
