@@ -32,7 +32,12 @@ public class WhitespaceTokenProcessorTest {
 
 		assertTrue(template.endsWith("\n"));
 		var w = new WhitespaceLogger();
-		w.run(NamedReader.ofString(template));
+		try {
+			w.run(NamedReader.ofString(template));
+		}
+		catch (ProcessingException e) {
+			throw new IOException(e.getMessage() + " " + e.position(), e);
+		}
 
 	}
 
