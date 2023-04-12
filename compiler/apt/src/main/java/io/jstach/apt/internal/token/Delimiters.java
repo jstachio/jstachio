@@ -11,6 +11,14 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 
 	public static final char NO_CHAR = Character.MIN_VALUE;
 
+	/*
+	 * This delimiter parsing code was inspired and taken from
+	 * JMustache.
+	 * https://github.com/samskivert/jmustache
+	 * 
+	 * Normally we would implement our own parsing w/o taking
+	 * from other code bases but we want compatibility with JMustache 
+	 */
 	public static Delimiters of(String content) throws DelimiterParsingException {
 		String[] delims = content.split(" ");
 		if (delims.length != 2)
