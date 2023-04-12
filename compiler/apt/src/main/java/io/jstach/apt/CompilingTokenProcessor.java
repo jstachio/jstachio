@@ -4,6 +4,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.token.Delimiters;
 import io.jstach.apt.internal.MustacheToken.NewlineChar;
 import io.jstach.apt.internal.MustacheToken.SpecialChar;
 
@@ -82,6 +83,11 @@ class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, P
 	@Override
 	public @Nullable Void endOfFile() throws ProcessingException {
 		templateCompiler._endOfFile();
+		return null;
+	}
+
+	@Override
+	public @Nullable Void delimiters(Delimiters delimiters) throws ProcessingException {
 		return null;
 	}
 

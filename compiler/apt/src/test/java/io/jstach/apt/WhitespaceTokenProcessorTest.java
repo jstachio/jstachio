@@ -63,10 +63,11 @@ public class WhitespaceTokenProcessorTest {
 		String actual = printTokens(w.tokens);
 
 		String expected = """
-				NORMAL TagToken[tagKind=VARIABLE, name=hello]
+				NORMAL TagToken[{{hello}}]
 				NORMAL NewlineToken[newlineChar=LF]
-				NORMAL NewlineToken[newlineChar=LF]
-				NORMAL TagToken[tagKind=VARIABLE, name=hello]
+				NORMAL DelimitersToken[delimiters=Delimiters[start1={, start2={, end1=}, end2=}], nextDelimiters=Delimiters[start1=<, start2=%, end1=%, end2=>]]
+				IGNORE NewlineToken[newlineChar=LF]
+				NORMAL TagToken[<%hello%>]
 				NORMAL NewlineToken[newlineChar=LF]""";
 		assertEquals(expected, actual);
 

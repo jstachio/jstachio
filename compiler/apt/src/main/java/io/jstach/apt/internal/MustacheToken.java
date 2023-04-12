@@ -32,6 +32,7 @@ package io.jstach.apt.internal;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+import io.jstach.apt.internal.token.Delimiters;
 import io.jstach.apt.internal.token.MustacheTagKind;
 
 /**
@@ -40,7 +41,7 @@ import io.jstach.apt.internal.token.MustacheTagKind;
  */
 public sealed interface MustacheToken {
 
-	public record TagToken(MustacheTagKind tagKind, String name) implements MustacheToken {
+	public record TagToken(MustacheTagKind tagKind, String name, Delimiters delimiters) implements MustacheToken {
 		@Override
 		public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
 			return switch (tagKind()) {
@@ -77,21 +78,76 @@ public sealed interface MustacheToken {
 			return tagKind == MustacheTagKind.PARTIAL || tagKind == MustacheTagKind.BEGIN_PARENT_SECTION;
 		}
 
+		private char sigil() {
+			return switch (tagKind()) {
+				case BEGIN_SECTION -> '#';
+				case BEGIN_BLOCK_SECTION -> '$';
+				case BEGIN_INVERTED_SECTION -> '^';
+				case BEGIN_PARENT_SECTION -> '<';
+				case END_SECTION -> '/';
+				case PARTIAL -> '>';
+				case UNESCAPED_VARIABLE_TWO_BRACES -> '&';
+				case UNESCAPED_VARIABLE_THREE_BRACES, VARIABLE ->
+					throw new UnsupportedOperationException("does not have a sigil: " + tagKind());
+			};
+		}
+
 		public void appendRawText(Appendable a) throws IOException {
-			// TODO hmm probably need to fix this for change delimeter support
 			switch (tagKind()) {
-				case BEGIN_SECTION -> a.append("{{").append("#").append(name).append("}}");
-				case BEGIN_BLOCK_SECTION -> a.append("{{").append("$").append(name).append("}}");
-				case BEGIN_INVERTED_SECTION -> a.append("{{").append("^").append(name).append("}}");
-				case BEGIN_PARENT_SECTION -> a.append("{{").append("<").append(name).append("}}");
-				case END_SECTION -> a.append("{{").append("/").append(name).append("}}");
-				case UNESCAPED_VARIABLE_THREE_BRACES -> a.append("{{{").append(name).append("}}}");
-				case UNESCAPED_VARIABLE_TWO_BRACES -> a.append("{{&").append(name).append("}}");
-				case VARIABLE -> a.append("{{").append(name).append("}}");
-				case PARTIAL -> a.append("{{").append(">").append(name).append("}}");
+				case //
+						BEGIN_SECTION, //
+						BEGIN_BLOCK_SECTION, //
+						BEGIN_INVERTED_SECTION, //
+						BEGIN_PARENT_SECTION, //
+						END_SECTION, //
+						UNESCAPED_VARIABLE_TWO_BRACES, //
+						PARTIAL -> {
+					delimiters.appendStart(a).append(sigil()).append(name);
+					delimiters.appendEnd(a);
+				}
+				case UNESCAPED_VARIABLE_THREE_BRACES -> {
+					delimiters.appendStartEscape(a).append(name);
+					delimiters.appendEndEscape(a);
+				}
+				case VARIABLE -> {
+					delimiters.appendStart(a).append(name);
+					delimiters.appendEnd(a);
+				}
 			}
 			;
 		}
+
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("TagToken[");
+			appendRawText(sb);
+			sb.append("]");
+			return sb.toString();
+		}
+	}
+
+	public record DelimitersToken(Delimiters delimiters, Delimiters nextDelimiters) implements MustacheToken {
+
+		@Override
+		public void appendRawText(Appendable a) throws IOException {
+			delimiters.appendStart(a);
+			a.append("=");
+			nextDelimiters.appendStart(a);
+			a.append(" ");
+			nextDelimiters.appendEnd(a);
+			a.append("=");
+			delimiters.appendEnd(a);
+		}
+
+		@Override
+		public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+			return visitor.delimiters(nextDelimiters);
+		}
+
+		public boolean isStandaloneToken() {
+			return true;
+		}
+
 	}
 
 	public record TextToken(String text) implements MustacheToken {
@@ -282,6 +338,8 @@ public sealed interface MustacheToken {
 		R variable(String name) throws E;
 
 		R unescapedVariable(String name) throws E;
+
+		R delimiters(Delimiters delimiters) throws E;
 
 		R specialCharacter(SpecialChar specialChar) throws E;
 

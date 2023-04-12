@@ -2,6 +2,7 @@ package io.jstach.apt.internal.token;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.token.Delimiters.DelimiterParsingException;
 
@@ -10,6 +11,8 @@ class DelimiterMustacheTokenizerState implements MustacheTokenizerState {
 	private final MustacheTokenizer tokenizer;
 
 	private StringBuilder delimiterContent = new StringBuilder();
+
+	private @Nullable Delimiters previousDelimiters = null;
 
 	private State state = State.OPEN;
 
@@ -33,8 +36,9 @@ class DelimiterMustacheTokenizerState implements MustacheTokenizerState {
 	@Override
 	public @Nullable Void twoClosingBraces() throws ProcessingException {
 		try {
+			previousDelimiters = tokenizer.getDelimiters();
 			var delims = Delimiters.of(delimiterContent.toString());
-			tokenizer.getDelimitersPublisher().setDelimiters(delims);
+			tokenizer.setDelimiters(delims);
 			tokenizer.setState(new OutsideMustacheTokenizerState(tokenizer));
 			return null;
 		}
@@ -92,8 +96,11 @@ class DelimiterMustacheTokenizerState implements MustacheTokenizerState {
 	@Override
 	public void beforeStateChange() throws ProcessingException {
 		// TODO we need to emit a token so that white space cleanup happens
-		// String nameString = name.toString();
-		// tokenizer.emitToken(new MustacheToken.TagToken(kind, nameString));
+		var prev = previousDelimiters;
+		if (prev == null) {
+			throw new IllegalStateException("bug previousDelimiters");
+		}
+		tokenizer.emitToken(new MustacheToken.DelimitersToken(prev, tokenizer.getDelimiters()));
 
 	}
 
