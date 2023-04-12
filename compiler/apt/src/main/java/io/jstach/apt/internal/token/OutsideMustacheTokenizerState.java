@@ -29,6 +29,9 @@
  */
 package io.jstach.apt.internal.token;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.MustacheToken;
@@ -66,13 +69,23 @@ class OutsideMustacheTokenizerState implements MustacheTokenizerState {
 
 	@Override
 	public @Nullable Void threeClosingBraces() throws ProcessingException {
-		text.append("}}}");
+		try {
+			tokenizer.getDelimiters().appendEndEscape(text);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 		return null;
 	}
 
 	@Override
 	public @Nullable Void twoClosingBraces() throws ProcessingException {
-		text.append("}}");
+		try {
+			tokenizer.getDelimiters().appendEnd(text);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 		return null;
 	}
 
