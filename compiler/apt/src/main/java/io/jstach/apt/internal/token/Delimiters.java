@@ -12,12 +12,11 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 	public static final char NO_CHAR = Character.MIN_VALUE;
 
 	/*
-	 * This delimiter parsing code was inspired and taken from
-	 * JMustache.
+	 * This delimiter parsing code was inspired and taken from JMustache.
 	 * https://github.com/samskivert/jmustache
-	 * 
-	 * Normally we would implement our own parsing w/o taking
-	 * from other code bases but we want compatibility with JMustache 
+	 *
+	 * Normally we would implement our own parsing w/o taking from other code bases but we
+	 * want compatibility with JMustache
 	 */
 	public static Delimiters of(String content) throws DelimiterParsingException {
 		String[] delims = content.split(" ");
@@ -27,29 +26,27 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 		char start1, start2, end1, end2;
 
 		switch (delims[0].length()) {
-			case 1:
+			case 1 -> {
 				start1 = delims[0].charAt(0);
 				start2 = NO_CHAR;
-				break;
-			case 2:
+			}
+			case 2 -> {
 				start1 = delims[0].charAt(0);
 				start2 = delims[0].charAt(1);
-				break;
-			default:
-				throw new DelimiterParsingException(content);
+			}
+			default -> throw new DelimiterParsingException(content);
 		}
 
 		switch (delims[1].length()) {
-			case 1:
+			case 1 -> {
 				end1 = delims[1].charAt(0);
 				end2 = NO_CHAR;
-				break;
-			case 2:
+			}
+			case 2 -> {
 				end1 = delims[1].charAt(0);
 				end2 = delims[1].charAt(1);
-				break;
-			default:
-				throw new DelimiterParsingException(content);
+			}
+			default -> throw new DelimiterParsingException(content);
 		}
 		return new Delimiters(start1, start2, end1, end2);
 	}

@@ -99,6 +99,9 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 	@Override
 	public void processToken(@Nullable Character token) throws ProcessingException {
 
+		/*
+		 * null is EOF
+		 */
 		if (token == null) {
 			switch (state) {
 				case NONE -> {
@@ -120,8 +123,12 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 			downstream.processToken(BracesToken.endOfFile());
 			return;
 		}
-		char c = token;
-
+		/*
+		 * What we do here for single delimiters that do not require
+		 * a second delimiter than we go ahead and make
+		 * them TWICE OPEN/CLOSE state.
+		 */
+		final char c = token;
 		final State s;
 		switch (state) {
 			case NONE -> {
@@ -206,78 +213,6 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 			default -> throw new IllegalStateException();
 		}
 		state = s;
-		// if (token == null) {
-		// if (state == State.WAS_OPEN) {
-		// downstream.processToken(BracesToken.character('{'));
-		// }
-		// else if (state == State.WAS_OPEN_TWICE) {
-		// downstream.processToken(BracesToken.twoOpenBraces());
-		// }
-		// else if (state == State.WAS_CLOSE) {
-		// downstream.processToken(BracesToken.character('}'));
-		// }
-		// else if (state == State.WAS_CLOSE_TWICE) {
-		// downstream.processToken(BracesToken.twoClosingBraces());
-		// }
-		// downstream.processToken(BracesToken.endOfFile());
-		// state = State.NONE;
-		// }
-		// else if (token == '{') {
-		// if (state == State.WAS_OPEN) {
-		// state = State.WAS_OPEN_TWICE;
-		// }
-		// else if (state == State.WAS_OPEN_TWICE) {
-		// downstream.processToken(BracesToken.threeOpenBraces());
-		// state = State.NONE;
-		// }
-		// else if (state == State.WAS_CLOSE) {
-		// downstream.processToken(BracesToken.character('}'));
-		// state = State.WAS_OPEN;
-		// }
-		// else if (state == State.WAS_CLOSE_TWICE) {
-		// downstream.processToken(BracesToken.twoClosingBraces());
-		// state = State.WAS_OPEN;
-		// }
-		// else {
-		// state = State.WAS_OPEN;
-		// }
-		// }
-		// else if (token == '}') {
-		// if (state == State.WAS_CLOSE) {
-		// state = State.WAS_CLOSE_TWICE;
-		// }
-		// else if (state == State.WAS_CLOSE_TWICE) {
-		// downstream.processToken(BracesToken.threeClosingBraces());
-		// state = State.NONE;
-		// }
-		// else if (state == State.WAS_OPEN) {
-		// downstream.processToken(BracesToken.character('{'));
-		// state = State.WAS_CLOSE;
-		// }
-		// else if (state == State.WAS_OPEN_TWICE) {
-		// downstream.processToken(BracesToken.twoOpenBraces());
-		// state = State.WAS_CLOSE;
-		// }
-		// else {
-		// state = State.WAS_CLOSE;
-		// }
-		// }
-		// else {
-		// if (state == State.WAS_OPEN) {
-		// downstream.processToken(BracesToken.character('{'));
-		// }
-		// else if (state == State.WAS_OPEN_TWICE) {
-		// downstream.processToken(BracesToken.twoOpenBraces());
-		// }
-		// else if (state == State.WAS_CLOSE) {
-		// downstream.processToken(BracesToken.character('}'));
-		// }
-		// else if (state == State.WAS_CLOSE_TWICE) {
-		// downstream.processToken(BracesToken.twoClosingBraces());
-		// }
-		// downstream.processToken(BracesToken.character(token));
-		// state = State.NONE;
-		// }
 	}
 
 	private enum State {
