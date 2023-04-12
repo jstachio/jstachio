@@ -176,6 +176,16 @@ import java.util.Optional;
  * section content. In this way you can implement filters or caching.</td>
  * </tr>
  * <tr>
+ * <td>Delimiters</td>
+ * <td style="color:blue;">YES</td>
+ * <td>Set Delimiter tags are used to change the tag delimiters for all content following
+ * the tag in the current compilation unit. The tag's content MUST be any two
+ * non-whitespace sequences (separated by whitespace) EXCEPT an equals sign ('=') followed
+ * by the current closing delimiter. Set Delimiter tags SHOULD be treated as standalone
+ * when appropriate. <em>(this feature is non-optional in current mustache but some
+ * mustaches implemenations treat it as optional)</em></td>
+ * </tr>
+ * <tr>
  * <td>Dynamic Names</td>
  * <td style="color:red;">NO</td>
  * <td>Partials can be loaded dynamically at runtime using Dynamic Names; an optional part
