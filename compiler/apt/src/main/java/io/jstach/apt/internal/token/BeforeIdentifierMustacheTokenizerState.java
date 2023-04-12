@@ -61,6 +61,9 @@ class BeforeIdentifierMustacheTokenizerState implements MustacheTokenizerState {
 
 	@Override
 	public @Nullable Void character(char c) throws ProcessingException {
+		/*
+		 * Should probably not allow new line
+		 */
 		if (Character.isWhitespace(c)) {
 		}
 		else {
