@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023, Adam Gent
  * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
@@ -41,21 +42,24 @@ import io.jstach.apt.internal.token.Delimiters;
 /**
  * @author Victor Nazarov
  */
-public class BracesTokenizer implements TokenProcessor<@Nullable Character> {
+public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Delimiters.Subscriber {
 
-	static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator() {
+	static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator(Delimiters.Publisher publisher) {
 		return new TokenProcessorDecorator<@Nullable Character, BracesToken>() {
 			@Override
 			public TokenProcessor<@Nullable Character> decorateTokenProcessor(TokenProcessor<BracesToken> downstream) {
-				return new BracesTokenizer(downstream);
+				var bt = new BracesTokenizer(downstream);
+				publisher.subscribe(bt);
+				return bt;
 			}
 		};
 	}
 
 	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
-			TokenProcessor<PositionedToken<BracesToken>> downstream) {
+			TokenProcessor<PositionedToken<BracesToken>> downstream, Delimiters.Publisher publisher) {
 		TokenProcessor<PositionedToken<@Nullable Character>> paransisTokenizer = PositionedTransformer
-				.decorateTokenProcessor(BracesTokenizer.decorator(), downstream);
+				.decorateTokenProcessor(BracesTokenizer.decorator(publisher), downstream);
+
 		return new PositionAnnotator(fileName, paransisTokenizer);
 	}
 
@@ -63,10 +67,17 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character> {
 
 	private State state = State.NONE;
 
-	private Delimiters delim = Delimiters.defaults();
+	private Delimiters delim = Delimiters.of();
 
 	public BracesTokenizer(TokenProcessor<BracesToken> downstream) {
 		this.downstream = downstream;
+	}
+
+	@Override
+	public void setDelimters(Delimiters delimiters) {
+		// TODO some validation of state here.
+		this.delim = delimiters;
+
 	}
 
 	private void t(TokenType type) throws ProcessingException {

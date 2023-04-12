@@ -86,6 +86,7 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
 			case '&' -> tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(
 					MustacheTagKind.UNESCAPED_VARIABLE_TWO_BRACES, tokenizer));
 			case '!' -> tokenizer.setState(new CommentMustacheTokenizerState(tokenizer));
+			case '=' -> tokenizer.setState(new DelimiterMustacheTokenizerState(tokenizer));
 			default -> {
 				if (Character.isWhitespace(c))
 					tokenizer.setState(new BeforeIdentifierMustacheTokenizerState(MustacheTagKind.VARIABLE, tokenizer));
