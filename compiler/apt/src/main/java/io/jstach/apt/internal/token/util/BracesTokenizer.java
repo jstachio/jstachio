@@ -96,6 +96,8 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 		downstream.processToken(BracesToken.character(t));
 	}
 
+	char lastChar;
+
 	@Override
 	public void processToken(@Nullable Character token) throws ProcessingException {
 
@@ -111,6 +113,8 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 				}
 				case WAS_OPEN_TWICE -> {
 					t(TokenType.TWO_OPEN);
+				}
+				case WAS_INSIDE -> {
 				}
 				case WAS_CLOSE -> {
 					c(delim.end1());
@@ -128,28 +132,35 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 		 * go ahead and make them TWICE_OPEN|CLOSE state when we see them.
 		 */
 		final char c = token;
-		final State s;
+		final State s = //
+		//@formatter:off
 		switch (state) {
 			case NONE -> {
-				if (delim.end1() == c) {
-					if (delim.requiresEnd2()) {
-						s = State.WAS_CLOSE;
-					}
-					else {
-						s = State.WAS_CLOSE_TWICE;
-					}
-				}
-				else if (delim.start1() == c) {
+				if (delim.start1() == c) {
 					if (delim.requiresStart2()) {
-						s = State.WAS_OPEN;
+						yield State.WAS_OPEN;
 					}
 					else {
-						s = State.WAS_OPEN_TWICE;
+						yield State.WAS_OPEN_TWICE;
 					}
 				}
 				else {
 					c(c);
-					s = State.NONE;
+					yield State.NONE;
+				}
+			}
+			case WAS_INSIDE -> {
+				if (delim.end1() == c) {
+					if (delim.requiresStart2()) {
+						yield State.WAS_CLOSE;
+					}
+					else {
+						yield State.WAS_CLOSE_TWICE;
+					}
+				}
+				else {
+					c(c);
+					yield State.WAS_INSIDE;
 				}
 			}
 			case WAS_OPEN -> {
@@ -157,23 +168,23 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 					throw new IllegalStateException();
 				}
 				else if (delim.start2() == c) {
-					s = State.WAS_OPEN_TWICE;
+					yield State.WAS_OPEN_TWICE;
 				}
 				else {
 					c(delim.start1());
 					c(c);
-					s = State.NONE;
+					yield State.NONE;
 				}
 			}
 			case WAS_OPEN_TWICE -> {
 				if (delim.start3() == c) {
 					t(TokenType.THREE_OPEN);
-					s = State.NONE;
+					yield State.WAS_INSIDE;
 				}
 				else {
 					t(TokenType.TWO_OPEN);
 					c(c);
-					s = State.NONE;
+					yield State.WAS_INSIDE;
 				}
 			}
 			case WAS_CLOSE -> {
@@ -181,36 +192,37 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 					throw new IllegalStateException();
 				}
 				else if (delim.end2() == c) {
-					s = State.WAS_CLOSE_TWICE;
+					yield State.WAS_CLOSE_TWICE;
 				}
 				else {
 					c(delim.end1());
 					c(c);
-					s = State.NONE;
+					yield State.NONE;
 				}
 			}
 			case WAS_CLOSE_TWICE -> {
 				if (delim.end3() == c) {
 					t(TokenType.THREE_CLOSE);
-					s = State.NONE;
+					yield State.NONE;
 				}
 				else if (delim.start1() == c) {
 					t(TokenType.TWO_CLOSE);
 					if (delim.requiresStart2()) {
-						s = State.WAS_OPEN;
+						yield State.WAS_OPEN;
 					}
 					else {
-						s = State.WAS_OPEN_TWICE;
+						yield State.WAS_OPEN_TWICE;
 					}
 				}
 				else {
 					t(TokenType.TWO_CLOSE);
 					c(c);
-					s = State.NONE;
+					yield State.NONE;
 				}
 			}
-			default -> throw new IllegalStateException();
-		}
+		};
+		//@formatter:on
+		lastChar = c;
 		state = s;
 	}
 
@@ -218,6 +230,7 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 
 		WAS_OPEN, //
 		WAS_OPEN_TWICE, //
+		WAS_INSIDE, //
 		WAS_CLOSE, //
 		WAS_CLOSE_TWICE, //
 		NONE

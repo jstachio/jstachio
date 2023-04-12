@@ -121,6 +121,8 @@ public sealed interface MustacheToken {
 			StringBuilder sb = new StringBuilder();
 			sb.append("TagToken[");
 			appendRawText(sb);
+			sb.append(", ");
+			sb.append(tagKind());
 			sb.append("]");
 			return sb.toString();
 		}
