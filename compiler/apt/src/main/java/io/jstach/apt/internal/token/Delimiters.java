@@ -1,12 +1,15 @@
 package io.jstach.apt.internal.token;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public record Delimiters(char start1, char start2, char end1, char end2) {
 
+	private static final Delimiters defaultDelimiters = new Delimiters('{', '{', '}', '}');
+
 	public static Delimiters of() {
-		return new Delimiters('{', '{', '}', '}');
+		return defaultDelimiters;
 	}
 
 	public static final char NO_CHAR = Character.MIN_VALUE;
@@ -51,6 +54,10 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 		return new Delimiters(start1, start2, end1, end2);
 	}
 
+	public boolean isDefault() {
+		return defaultDelimiters.equals(this);
+	}
+
 	static class DelimiterParsingException extends Exception {
 
 		private static final long serialVersionUID = -6891726165744713522L;
@@ -59,6 +66,34 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 			super("Cannot parse delimiters from '" + content + "'");
 		}
 
+	}
+
+	public Appendable appendStart(Appendable a) throws IOException {
+		a.append(start1);
+		if (requiresStart2()) {
+			a.append(start2);
+		}
+		return a;
+	}
+
+	public Appendable appendStartEscape(Appendable a) throws IOException {
+		appendStart(a);
+		a.append(start3());
+		return a;
+	}
+
+	public Appendable appendEndEscape(Appendable a) throws IOException {
+		appendEnd(a);
+		a.append(end3());
+		return a;
+	}
+
+	public Appendable appendEnd(Appendable a) throws IOException {
+		a.append(end1);
+		if (requiresEnd2()) {
+			a.append(end2);
+		}
+		return a;
 	}
 
 	public boolean requiresStart2() {

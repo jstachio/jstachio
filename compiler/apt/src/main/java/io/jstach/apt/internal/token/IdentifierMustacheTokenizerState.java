@@ -102,7 +102,7 @@ class IdentifierMustacheTokenizerState implements MustacheTokenizerState {
 	@Override
 	public void beforeStateChange() throws ProcessingException {
 		String nameString = name.toString();
-		tokenizer.emitToken(new MustacheToken.TagToken(kind, nameString));
+		tokenizer.emitToken(new MustacheToken.TagToken(kind, nameString, tokenizer.getDelimiters()));
 	}
 
 }

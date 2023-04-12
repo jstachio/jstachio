@@ -124,9 +124,8 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 			return;
 		}
 		/*
-		 * What we do here for single delimiters that do not require
-		 * a second delimiter than we go ahead and make
-		 * them TWICE OPEN/CLOSE state.
+		 * What we do here for single delimiters that do not require a second delimiter we
+		 * go ahead and make them TWICE_OPEN|CLOSE state when we see them.
 		 */
 		final char c = token;
 		final State s;

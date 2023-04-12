@@ -84,6 +84,14 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 		return delimitersPublisher;
 	}
 
+	public Delimiters getDelimiters() {
+		return delimitersPublisher.getDelimiters();
+	}
+
+	public void setDelimiters(Delimiters delimiters) {
+		delimitersPublisher.setDelimiters(delimiters);
+	}
+
 	void setState(MustacheTokenizerState newState) throws ProcessingException {
 		state.beforeStateChange();
 		state = newState;
