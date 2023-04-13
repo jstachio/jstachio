@@ -148,10 +148,10 @@ public class SpecGenerator {
 
 	enum SpecGroup {
 
-		interpolation, sections, inheritance() {
+		delimiters, interpolation, sections, inheritance() {
 			@Override
-			String fileName() {
-				return "~inheritance.yml";
+			boolean isOptional() {
+				return true;
 			}
 
 			@Override
@@ -180,8 +180,12 @@ public class SpecGenerator {
 			return true;
 		}
 
+		boolean isOptional() {
+			return false;
+		}
+
 		String fileName() {
-			return name() + ".yml";
+			return (isOptional() ? "~" : "") + name() + ".yml";
 		}
 
 		Set<String> ignores() {
@@ -200,6 +204,7 @@ public class SpecGenerator {
 		generate(SpecGroup.inheritance);
 		generate(SpecGroup.inverted);
 		generate(SpecGroup.partials);
+		generate(SpecGroup.delimiters);
 
 	}
 
