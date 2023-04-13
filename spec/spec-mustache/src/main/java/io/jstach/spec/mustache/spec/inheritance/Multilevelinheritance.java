@@ -1,9 +1,9 @@
 package io.jstach.spec.mustache.spec.inheritance;
 
-import io.jstach.jstache.JStache;
-import io.jstach.jstache.JStachePartial;
-import io.jstach.jstache.JStachePartials;
 import io.jstach.spec.generator.SpecModel;
+import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStachePartials;
+import io.jstach.jstache.JStachePartial;
 
 @JStache(path = "inheritance/Multilevelinheritance.mustache")
 @JStachePartials({ @JStachePartial(name = "parent", template = "{{<older}}{{$a}}p{{/a}}{{/older}}"),
