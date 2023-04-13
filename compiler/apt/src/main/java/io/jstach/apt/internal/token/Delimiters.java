@@ -19,10 +19,14 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 	 * https://github.com/samskivert/jmustache
 	 *
 	 * Normally we would implement our own parsing w/o taking from other code bases but we
-	 * want compatibility with JMustache
+	 * want compatibility with JMustache.
+	 * 
+	 * EDIT because of spec considerations the JMustache like code below has been altered.
+	 * 
+	 * The real solution is to put ina PR to JMustache to fix it.
 	 */
 	public static Delimiters of(String content) throws DelimiterParsingException {
-		String[] delims = content.split(" ");
+		String[] delims = content.trim().split("\\s+");
 		if (delims.length != 2)
 			throw new DelimiterParsingException(content);
 

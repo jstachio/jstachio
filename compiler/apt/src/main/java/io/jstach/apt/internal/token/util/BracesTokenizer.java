@@ -96,10 +96,19 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 		downstream.processToken(BracesToken.character(t));
 	}
 
+	/*
+	 * This is mainly for debugging purposes
+	 */
 	char lastChar;
 
 	@Override
 	public void processToken(@Nullable Character token) throws ProcessingException {
+
+		/*
+		 * We copy the delimiters as they can change during this method call. We then
+		 * check to see if it has changed.
+		 */
+		Delimiters delim = this.delim;
 
 		/*
 		 * null is EOF
@@ -205,17 +214,21 @@ public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Del
 					t(TokenType.THREE_CLOSE);
 					yield State.NONE;
 				}
-				else if (delim.start1() == c) {
-					t(TokenType.TWO_CLOSE);
-					if (delim.requiresStart2()) {
-						yield State.WAS_OPEN;
-					}
-					else {
-						yield State.WAS_OPEN_TWICE;
-					}
-				}
 				else {
 					t(TokenType.TWO_CLOSE);
+					/*
+					 * Here we update delimiter because it possible changed by the above
+					 * two close token push.
+					 */
+					delim = this.delim;
+					if (delim.start1() == c) {
+						if (delim.requiresStart2()) {
+							yield State.WAS_OPEN;
+						}
+						else {
+							yield State.WAS_OPEN_TWICE;
+						}
+					}
 					c(c);
 					yield State.NONE;
 				}
