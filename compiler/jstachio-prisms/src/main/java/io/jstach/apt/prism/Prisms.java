@@ -102,6 +102,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String GENERATED_TEMPLATE_PROVIDER_CLASS = "io.jstach.jstachio.spi.TemplateProvider.GeneratedTemplateProvider";
+
+	/**
+	 * Generated
+	 */
 	public static final String APPENDER_CLASS = "io.jstach.jstachio.Appender";
 
 	/**
@@ -173,6 +178,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_CATALOG_CLASS = "io.jstach.jstache.JStacheCatalog";
+
+	/**
+	 * Generated
+	 */
 	public static final String JSTACHE_CONFIG_CLASS = "io.jstach.jstache.JStacheConfig";
 
 	/**
@@ -235,6 +245,7 @@ public interface Prisms {
 	 */
 	public static final List<String> ANNOTATIONS = List.of( //
 			JSTACHE_CLASS, //
+			JSTACHE_CATALOG_CLASS, //
 			JSTACHE_CONFIG_CLASS, //
 			JSTACHE_NAME_CLASS, //
 			JSTACHE_PATH_CLASS, //
