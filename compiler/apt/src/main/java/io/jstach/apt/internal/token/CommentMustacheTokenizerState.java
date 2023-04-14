@@ -31,11 +31,14 @@ package io.jstach.apt.internal.token;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.ProcessingException;
 
 class CommentMustacheTokenizerState implements MustacheTokenizerState {
 
 	private final MustacheTokenizer tokenizer;
+
+	private final StringBuilder comment = new StringBuilder();
 
 	CommentMustacheTokenizerState(MustacheTokenizer tokenizer) {
 		this.tokenizer = tokenizer;
@@ -43,6 +46,7 @@ class CommentMustacheTokenizerState implements MustacheTokenizerState {
 
 	@Override
 	public void beforeStateChange() throws ProcessingException {
+		tokenizer.emitToken(new MustacheToken.CommentToken(comment.toString(), tokenizer.getDelimiters()));
 	}
 
 	@Override
@@ -69,6 +73,7 @@ class CommentMustacheTokenizerState implements MustacheTokenizerState {
 
 	@Override
 	public @Nullable Void character(char c) throws ProcessingException {
+		comment.append(c);
 		return null;
 	}
 

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2023, Adam Gent
  * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
  * All rights reserved.
  *
@@ -144,6 +145,27 @@ public sealed interface MustacheToken {
 		@Override
 		public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
 			return visitor.delimiters(nextDelimiters);
+		}
+
+		public boolean isStandaloneToken() {
+			return true;
+		}
+
+	}
+
+	public record CommentToken(String comment, Delimiters delimiters) implements MustacheToken {
+
+		@Override
+		public <R, E extends Exception> R accept(Visitor<R, E> visitor) throws E {
+			return visitor.comment(comment);
+		}
+
+		@Override
+		public void appendRawText(Appendable a) throws IOException {
+			delimiters.appendStart(a);
+			a.append("!");
+			a.append(comment);
+			delimiters.appendEnd(a);
 		}
 
 		public boolean isStandaloneToken() {
@@ -342,6 +364,8 @@ public sealed interface MustacheToken {
 		R unescapedVariable(String name) throws E;
 
 		R delimiters(Delimiters delimiters) throws E;
+
+		R comment(String comment) throws E;
 
 		R specialCharacter(SpecialChar specialChar) throws E;
 
