@@ -91,4 +91,9 @@ class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, P
 		return null;
 	}
 
+	@Override
+	public @Nullable Void comment(String comment) throws ProcessingException {
+		return null;
+	}
+
 }
