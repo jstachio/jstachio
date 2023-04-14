@@ -111,6 +111,10 @@ public class ClassRef {
 		return simpleName;
 	}
 
+	public boolean isSamePackage(ClassRef other) {
+		return this.getPackageName().equals(other.getPackageName());
+	}
+
 	public String getBinaryNameMinusPackage() {
 		if (packageName.isEmpty()) {
 			return binaryName;
