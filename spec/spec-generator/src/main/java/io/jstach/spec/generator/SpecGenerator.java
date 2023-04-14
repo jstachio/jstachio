@@ -148,7 +148,7 @@ public class SpecGenerator {
 
 	enum SpecGroup {
 
-		delimiters, interpolation, sections, inheritance() {
+		delimiters, comments, interpolation, sections, inheritance() {
 			@Override
 			boolean isOptional() {
 				return true;
@@ -205,7 +205,7 @@ public class SpecGenerator {
 		generate(SpecGroup.inverted);
 		generate(SpecGroup.partials);
 		generate(SpecGroup.delimiters);
-
+		generate(SpecGroup.comments);
 	}
 
 	protected void generate(SpecGroup group) throws IOException {
