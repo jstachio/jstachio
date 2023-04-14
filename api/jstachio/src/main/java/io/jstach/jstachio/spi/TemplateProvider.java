@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateConfig;
+import io.jstach.jstachio.TemplateInfo;
 
 /**
  * A {@link java.util.ServiceLoader} interface for finding {@link Template}s.
@@ -34,6 +35,22 @@ public interface TemplateProvider {
 	 */
 	default List<Template<?>> provideTemplates() {
 		return provideTemplates(TemplateConfig.empty());
+	}
+
+	/**
+	 * Generated template providers implement this interface to support easier
+	 * ServiceLoader registration for modular libraries/applications. <strong>It is mainly
+	 * a implementation detail and not recommended for manual usage.</strong>
+	 *
+	 * @author agentgt
+	 */
+	public interface GeneratedTemplateProvider extends TemplateProvider, JStachioTemplateFinder.SimpleTemplateFinder {
+
+		@Override
+		default Iterable<? extends TemplateInfo> templates() {
+			return provideTemplates();
+		}
+
 	}
 
 }

@@ -3,6 +3,7 @@
  */
 @io.jstach.prism.GeneratePrisms({ //
 		@GeneratePrism(value = io.jstach.jstache.JStache.class, publicAccess = true), //
+		@GeneratePrism(value = io.jstach.jstache.JStacheCatalog.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.jstache.JStacheConfig.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.jstache.JStacheContentType.class, publicAccess = true), //
 		@GeneratePrism(value = io.jstach.jstache.JStachePath.class, publicAccess = true), //

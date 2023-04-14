@@ -194,6 +194,7 @@ public class PrismsTest {
 				Renderer.class, //
 				Template.class, //
 				TemplateProvider.class, //
+				TemplateProvider.GeneratedTemplateProvider.class, //
 				Appender.class, //
 				Escaper.class, //
 				Formatter.class, //
@@ -214,6 +215,7 @@ public class PrismsTest {
 	private static List<Class<?>> allAnnotations() {
 		return List.of(//
 				io.jstach.jstache.JStache.class, //
+				io.jstach.jstache.JStacheCatalog.class, //
 				io.jstach.jstache.JStacheConfig.class, //
 				io.jstach.jstache.JStacheName.class, //
 				io.jstach.jstache.JStachePath.class, //
@@ -238,6 +240,8 @@ public class PrismsTest {
 					sb.append("_");
 				}
 				for (int i = start; i < end; i++) {
+					// char c = Character.toUpperCase(cs.charAt(i));
+
 					sb.append(Character.toUpperCase(cs.charAt(i)));
 				}
 
