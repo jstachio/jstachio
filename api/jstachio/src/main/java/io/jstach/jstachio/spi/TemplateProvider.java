@@ -40,7 +40,7 @@ public interface TemplateProvider {
 	/**
 	 * Generated template providers implement this interface to support easier
 	 * ServiceLoader registration for modular libraries/applications. <strong>It is mainly
-	 * a implementation detail and not recommended for manual usage.</strong>
+	 * an implementation detail and not recommended for manual usage.</strong>
 	 *
 	 * @author agentgt
 	 */

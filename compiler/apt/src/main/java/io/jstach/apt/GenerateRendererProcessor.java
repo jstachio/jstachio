@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,6 +63,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -87,6 +89,7 @@ import io.jstach.apt.internal.meta.ElementMessage;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.Throwables;
 import io.jstach.apt.internal.util.Throwables.SneakyFunction;
+import io.jstach.apt.prism.JStacheCatalogPrism;
 import io.jstach.apt.prism.JStacheConfigPrism;
 import io.jstach.apt.prism.JStacheConfigPrism.JStacheName;
 import io.jstach.apt.prism.JStacheContentTypePrism;
@@ -123,7 +126,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return SourceVersion.latest();
 	}
 
-	Set<ClassRef> rendererClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	Set<JStacheRef> rendererClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+	Set<ClassRef> catalogClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+	boolean catalogGenerated = false;
 
 	private static String formatErrorMessage(Position position, @Nullable String message) {
 		message = message == null ? "" : message;
@@ -177,20 +184,60 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 			ClassRef serviceClass = ClassRef.ofBinaryName(TEMPLATE_PROVIDER_CLASS);
 			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
-					rendererClasses);
+					rendererClasses.stream().filter(jr -> jr.jstachio() && jr.pub()).map(jr -> jr.classRef()).toList());
+			if (!catalogGenerated) {
+				/*
+				 * We try to avoid generate the catalog on the last round however it can
+				 * happen.
+				 */
+				generateCatalog();
+			}
 			return false;
 		}
 		else {
+			boolean found = false;
+			TypeElement jstacheCatalogElement = processingEnv.getElementUtils().getTypeElement(JSTACHE_CATALOG_CLASS);
+			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheCatalogElement)) {
+				PackageElement packageElement = (PackageElement) element;
+				JStacheCatalogPrism jstacheCatalog = JStacheCatalogPrism.getInstanceOn(packageElement);
+				String catalogName = jstacheCatalog.name();
+				catalogClasses.add(ClassRef.of(packageElement, catalogName));
+				found = true;
+			}
+
 			TypeElement jstacheElement = processingEnv.getElementUtils().getTypeElement(JSTACHE_CLASS);
 			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheElement)) {
 				TypeElement classElement = (TypeElement) element;
 				JStachePrism jstache = JStachePrism.getInstanceOn(classElement);
-				ClassRef ref = writeRenderableAdapterClass(classElement, jstache, options);
+				@Nullable
+				JStacheRef ref = writeRenderableAdapterClass(classElement, jstache, options);
 				if (ref != null) {
 					rendererClasses.add(ref);
 				}
+				found = true;
 			}
+
+			if (!found) {
+				/*
+				 * Nothing was found on this round so we generate the catalog
+				 */
+				generateCatalog();
+			}
+
 			return true;
+		}
+	}
+
+	private void generateCatalog() {
+		if (catalogGenerated)
+			return;
+		catalogGenerated = true;
+		for (var cc : catalogClasses) {
+			CatalogClassWriter cw = new CatalogClassWriter(cc.getPackageName(), cc.getSimpleName());
+			cw.addAll(rendererClasses.stream()
+					.filter(js -> js.jstachio() && (js.pub() || js.classRef().isSamePackage(cc)))
+					.map(js -> js.classRef()).toList());
+			cw.write(processingEnv.getFiler(), processingEnv.getMessager());
 		}
 	}
 
@@ -695,7 +742,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return adapterClassSimpleName;
 	}
 
-	private @Nullable ClassRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache,
+	private @Nullable JStacheRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache,
 			Map<String, String> options) throws AnnotatedException {
 
 		try {
@@ -734,7 +781,13 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
 				}
 			}
-			return model.rendererClassRef();
+			boolean pub = element.getModifiers().contains(Modifier.PUBLIC);
+			boolean jstachio = switch (model.formatCallType()) {
+				case JSTACHIO -> true;
+				case STACHE -> false;
+			};
+
+			return new JStacheRef(model.rendererClassRef(), pub, jstachio);
 		}
 		catch (ProcessingException ex) {
 			String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
@@ -750,6 +803,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			errors.add(ElementMessage.of(element, Throwables.render(ex)));
 		}
 		return null;
+	}
+
+	record JStacheRef(ClassRef classRef, boolean pub, boolean jstachio) {
 	}
 
 }

@@ -26,8 +26,9 @@ public @interface JStacheCatalog {
 
 	/**
 	 * Name of the generated class.
-	 * @return name of the class to be generated and not empty.
+	 * @return name of the class to be generated. The default is
+	 * <code>TemplateCatalog</code>.
 	 */
-	public String name();
+	public String name() default "TemplateCatalog";
 
 }
