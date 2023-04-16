@@ -188,21 +188,6 @@ public final class Templates {
 	public enum TemplateLoadStrategy {
 
 		/**
-		 * Strategy that will try no-arg constructor
-		 */
-		CONSTRUCTOR() {
-			@Override
-			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
-				return templateByConstructor(clazz, classLoader);
-			}
-
-			@Override
-			protected final boolean isEnabled(JStachioConfig config) {
-				return !config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE);
-			}
-
-		},
-		/**
 		 * Strategy that will try the {@link ServiceLoader} with the SPI of
 		 * {@link TemplateProvider}.
 		 */
@@ -216,6 +201,21 @@ public final class Templates {
 			protected final boolean isEnabled(JStachioConfig config) {
 				return !config.getBoolean(JStachioConfig.SERVICELOADER_TEMPLATE_DISABLE);
 			}
+		},
+		/**
+		 * Strategy that will try no-arg constructor
+		 */
+		CONSTRUCTOR() {
+			@Override
+			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
+				return templateByConstructor(clazz, classLoader);
+			}
+
+			@Override
+			protected final boolean isEnabled(JStachioConfig config) {
+				return !config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE);
+			}
+
 		};
 
 		protected abstract <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception;

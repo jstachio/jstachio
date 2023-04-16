@@ -1,6 +1,7 @@
 import javax.annotation.processing.Processor;
 
 import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioExtensionProvider;
 import io.jstach.jstachio.spi.TemplateProvider;
 module io.jstach.examples {
 	requires transitive io.jstach.jstachio;
