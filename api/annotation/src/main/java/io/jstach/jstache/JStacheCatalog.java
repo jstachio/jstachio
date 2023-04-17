@@ -20,23 +20,24 @@ import java.util.ServiceLoader;
  *
  * <ol>
  * <li>Modular applications that use <code>module-info.java</code> instead of
- * <code>META-INF/services</code> for service loader regitration.</li>
+ * <code>META-INF/services</code> for service loader registration.</li>
  * <li>Application wishing to avoid reflection altogether but still wanting to use
  * JStachio runtime particularly the model to template loookup.</li>
  * <li>Allow access and rendering of package protected models from other parts of the
  * application.</li>
  * </ol>
  *
- * <h2>Modular applications</h2> modular applications that do not want to allow reflective
- * access (<code> open ... to </code>) to the JStachio runtime can instead register the
- * generated template provider in the <code>module-info.java</code> as a service provider
- * like:
+ * <h2>Modular applications</h2>
+ *
+ * Modular applications that do not want to allow reflective access
+ * (<code> open ... to </code>) to the JStachio runtime can instead register the generated
+ * template provider in the <code>module-info.java</code> as a service provider like:
  *
  * <pre><code class="language-java">
  * provides io.jstach.jstachio.spi.TemplateProvider with annotatedpackage.TemplateCatalog;
  * </code> </pre>
  *
- * or as <code>JStachioTemplateFinder</code>:
+ * or as a <code>JStachioTemplateFinder</code>:
  *
  * <pre><code class="language-java">
  * provides io.jstach.jstachio.spi.JStachioTemplateFinder with annotatedpackage.TemplateCatalog;
