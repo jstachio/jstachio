@@ -49,7 +49,6 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -128,7 +127,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	Set<JStacheRef> rendererClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	Set<ClassRef> catalogClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	Set<CatalogRef> catalogClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	boolean catalogGenerated = false;
 
@@ -183,8 +182,24 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error.message(), element);
 			}
 			ClassRef serviceClass = ClassRef.ofBinaryName(TEMPLATE_PROVIDER_CLASS);
+			Stream<ClassRef> renderers = rendererClasses.stream().filter(jr -> jr.jstachio() && jr.pub())
+					.map(jr -> jr.classRef());
+			Stream<ClassRef> catalogs = catalogClasses.stream()
+					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_PROVIDER_META_INF_SERVICE))
+					.map(c -> c.classRef());
+
 			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
-					rendererClasses.stream().filter(jr -> jr.jstachio() && jr.pub()).map(jr -> jr.classRef()).toList());
+					Stream.concat(catalogs, renderers).toList());
+
+			ClassRef extensionClass = ClassRef.ofBinaryName(JSTACHIO_EXTENSION_CLASS);
+
+			var finders = catalogClasses.stream()
+					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_FINDER_META_INF_SERVICE))
+					.map(c -> c.classRef()).toList();
+
+			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), extensionClass,
+					finders);
+
 			if (!catalogGenerated) {
 				/*
 				 * We try to avoid generate the catalog on the last round however it can
@@ -201,7 +216,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				PackageElement packageElement = (PackageElement) element;
 				JStacheCatalogPrism jstacheCatalog = JStacheCatalogPrism.getInstanceOn(packageElement);
 				String catalogName = jstacheCatalog.name();
-				catalogClasses.add(ClassRef.of(packageElement, catalogName));
+				var classRef = ClassRef.of(packageElement, catalogName);
+				catalogClasses.add(new CatalogRef(jstacheCatalog, classRef));
 				found = true;
 			}
 
@@ -232,7 +248,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		if (catalogGenerated)
 			return;
 		catalogGenerated = true;
-		for (var cc : catalogClasses) {
+		for (var cat : catalogClasses) {
+			var cc = cat.classRef();
 			CatalogClassWriter cw = new CatalogClassWriter(cc.getPackageName(), cc.getSimpleName());
 			cw.addAll(rendererClasses.stream()
 					.filter(js -> js.jstachio() && (js.pub() || js.classRef().isSamePackage(cc)))
@@ -806,6 +823,15 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	record JStacheRef(ClassRef classRef, boolean pub, boolean jstachio) {
+	}
+
+	record CatalogRef(JStacheCatalogPrism prism, ClassRef classRef) {
+
+		EnumSet<CatalogFlag> flags() {
+			var flags = EnumSet.noneOf(CatalogFlag.class);
+			flags.addAll(prism.flags().stream().map(f -> CatalogFlag.valueOf(f)).toList());
+			return flags;
+		}
 	}
 
 }

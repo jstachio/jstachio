@@ -83,6 +83,23 @@ public interface Prisms {
 
 	}
 
+	/**
+	 * Generated
+	 */
+	@NonNullByDefault
+	public enum CatalogFlag {
+
+		/**
+		 * Generated
+		 */
+		GENERATE_PROVIDER_META_INF_SERVICE, //
+		/**
+		 * Generated
+		 */
+		GENERATE_FINDER_META_INF_SERVICE, //
+
+	}
+
 	/* API classes */
 	/**
 	 * Generated

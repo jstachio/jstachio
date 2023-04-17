@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.samskivert.mustache.Mustache;
 
+import io.jstach.jstache.JStacheCatalog;
 import io.jstach.jstache.JStacheContentType.UnspecifiedContentType;
 import io.jstach.jstache.JStacheFlags;
 import io.jstach.jstache.JStacheFormatter.UnspecifiedFormatter;
@@ -42,6 +43,10 @@ public class PrismsTest {
 		JStacheType[] types() {
 			return JStacheType.values();
 
+		}
+
+		JStacheCatalog.CatalogFlag[] catalogFlags() {
+			return JStacheCatalog.CatalogFlag.values();
 		}
 
 		List<Constant> constants() {
@@ -142,6 +147,21 @@ public class PrismsTest {
 						 */
 						{{.}}, //
 					{{/types}}
+
+					}
+
+					/**
+					 * Generated
+					 */
+					@NonNullByDefault
+					public enum CatalogFlag {
+
+					{{#catalogFlags}}
+						/**
+						 * Generated
+						 */
+						{{.}}, //
+					{{/catalogFlags}}
 
 					}
 
