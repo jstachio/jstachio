@@ -61,7 +61,9 @@ import java.util.ServiceLoader;
  * generated catalog.
  *
  * <pre><code class="language-java">
- * JStachio j = JStachioFactory.builder().add(new annotatedpackage.TemplateCatalog()).build();
+ * JStachio j = JStachioFactory.builder()
+ *     .add(new annotatedpackage.TemplateCatalog())
+ *     .build();
  * </code> </pre>
  *
  * <h2>Package protected models</h2>
