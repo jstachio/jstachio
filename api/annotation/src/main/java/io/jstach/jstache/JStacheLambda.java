@@ -129,16 +129,23 @@ public @interface JStacheLambda {
 	 * <pre><code class="language-hbs">
 	 * {{! template call lambda }}
 	 * {{#context}}
-	 * {{#lambda}}{{name}}{{/lambda}} {{! "name" will come from the returned model }}
+	 * {{#lambda}}Use the force {{name}}{{/lambda}} {{! "name" will come from the returned model }}
 	 * {{/context}}
 	 * </code> </pre>
 	 *
 	 * <pre><code class="language-java">
 	 * record Model(String name){}
 	 *
-	 * &#64;JStacheLambda(template="Use the force {{>@section}}")
-	 * public List&lt;Model&gt; lambda(SomeType context) {
-	 *     return List.of(new Model("Luke"), new Model("Leia"), new Model("Anakin"));
+	 * public record LambdaModel(List&lt;Model&gt; list) {
+	 * }
+	 *
+	 * &#64;JStacheLambda(template="""
+	 *      {{#list}}
+	 *         {{>@section}}
+	 *      {{/list}}
+	 *      """)
+	 * public LambdaModel lambda(SomeType context) {
+	 *     return new LambdaModel(List.of(new Model("Luke"), new Model("Leia"), new Model("Anakin")));
 	 * }
 	 * </code> </pre>
 	 *
