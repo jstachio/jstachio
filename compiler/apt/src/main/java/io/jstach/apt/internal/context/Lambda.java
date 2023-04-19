@@ -67,10 +67,10 @@ public sealed interface Lambda {
 	}
 
 	public record Method(JavaExpression expression, String name, ExecutableElement methodElement, ReturnType returnType,
-			List<Param> params) {
+			List<Param> params, String template) {
 
-		public static Method of(JavaExpression expression, ExecutableElement method, @Nullable String name)
-				throws AnnotatedException {
+		public static Method of(JavaExpression expression, ExecutableElement method, @Nullable String name,
+				String template) throws AnnotatedException {
 			if (name == null || name.isBlank()) {
 				name = method.getSimpleName().toString();
 			}
@@ -118,7 +118,7 @@ public sealed interface Lambda {
 				throw new UnsupportedOperationException(
 						"Currently only raw String and model Class return types are supported.");
 			}
-			return new Method(expression, name, method, returnType, params);
+			return new Method(expression, name, method, returnType, params, template);
 		}
 	}
 
@@ -142,12 +142,13 @@ public sealed interface Lambda {
 	}
 
 	public static Lambda of( //
-			JavaExpression expression, ExecutableElement method, @Nullable String name) throws AnnotatedException {
+			JavaExpression expression, ExecutableElement method, @Nullable String name, String template)
+			throws AnnotatedException {
 		if (name == null || name.isBlank()) {
 			name = method.getSimpleName().toString();
 		}
 
-		Method m = Method.of(expression, method, name);
+		Method m = Method.of(expression, method, name, template);
 		return new SimpleLambda(m);
 	}
 

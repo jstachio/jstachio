@@ -171,10 +171,10 @@ public class RenderingCodeGenerator {
 		for (ExecutableElement lm : lambdaMethods) {
 			JStacheLambdaPrism p = JStacheLambdaPrism.getInstanceOn(lm);
 			String name = p.name();
-			// String path = p.path();
+			String template = p.template();
 			Lambda lambda;
 			try {
-				lambda = Lambda.of(root, lm, name);
+				lambda = Lambda.of(root, lm, name, template);
 			}
 			catch (Exception e1) {
 				throw new AnnotatedException(e1.getMessage(), lm);

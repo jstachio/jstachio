@@ -38,6 +38,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_LAMBDA_SECTION_PARTIAL_NAME = "@section";
+
+	/**
+	 * Generated
+	 */
 	public static final String JSTACHE_FLAGS_DEBUG = "jstache.debug";
 
 	/**

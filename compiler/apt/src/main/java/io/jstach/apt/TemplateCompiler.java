@@ -31,8 +31,10 @@ package io.jstach.apt;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -450,7 +452,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			var self = this;
 			LambdaCompiler lambdaCompiler = new LambdaCompiler() {
 				@Override
-				public String run(TemplateCompilerContext rootContext, Reader reader)
+				public String run(TemplateCompilerContext rootContext, Reader reader, Map<String, String> partials)
 						throws IOException, ProcessingException {
 					NamedReader namedReader = new NamedReader(reader, name, "INLINE");
 					StringCodeAppendable codeAppendable = new StringCodeAppendable();
@@ -466,6 +468,23 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 						public CodeAppendable getWriter() {
 							return codeAppendable;
+						}
+
+						public TemplateLoader getTemplateLoader() {
+							var rootLoader = super.getTemplateLoader();
+							if (partials.isEmpty()) {
+								return rootLoader;
+							}
+							return new TemplateLoader() {
+								@Override
+								public NamedReader open(String name) throws IOException {
+									String t = partials.get(name);
+									if (t != null) {
+										return new NamedReader(new StringReader(t), name, "INLINE");
+									}
+									return rootLoader.open(name);
+								}
+							};
 						}
 					}) {
 						c.run();

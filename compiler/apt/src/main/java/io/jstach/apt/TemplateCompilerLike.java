@@ -1,19 +1,15 @@
 package io.jstach.apt;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.util.ClassRef;
-import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
-import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.prism.Prisms.Flag;
 
 interface TemplateCompilerLike extends AutoCloseable {

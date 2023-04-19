@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.lang.model.element.TypeElement;
@@ -46,6 +47,7 @@ import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.ContextException.FieldNotFoundContextException;
 import io.jstach.apt.internal.context.Lambda.Lambdas;
+import io.jstach.apt.prism.Prisms;
 import io.jstach.apt.prism.Prisms.Flag;
 
 /**
@@ -110,6 +112,7 @@ public class TemplateCompilerContext {
 			throws ContextException, IOException, AnnotatedException, ProcessingException {
 		if (context instanceof LambdaRenderingContext lc) {
 			Lambda lm = lc.getLambda();
+			String template = lm.method().template();
 			LambdaContext ctx = new LambdaContext(lc);
 			JavaExpression entry;
 			try {
@@ -143,10 +146,23 @@ public class TemplateCompilerContext {
 					String variableType = "var";
 
 					StringReader sr = new StringReader(rawBody);
+					Map<String, String> partials;
+					/*
+					 * Here we determine if we are going to use a template provided by the
+					 * lambda itself and not the lambda section body
+					 */
+					if (template.isEmpty()) {
+						sr = new StringReader(rawBody);
+						partials = Map.of();
+					}
+					else {
+						sr = new StringReader(template);
+						partials = Map.of(Prisms.JSTACHE_LAMBDA_SECTION_PARTIAL_NAME, rawBody);
+					}
 					StringBuilder lambdaCode = new StringBuilder();
 					lambdaCode.append(variableType).append(" ").append(variableName).append(" = ").append(entry.text())
 							.append(";");
-					lambdaCode.append(compiler.run(context, sr));
+					lambdaCode.append(compiler.run(context, sr, partials));
 					yield lambdaCode.toString();
 				}
 			};
@@ -162,7 +178,8 @@ public class TemplateCompilerContext {
 	 */
 	public interface LambdaCompiler {
 
-		public String run(TemplateCompilerContext rootContext, Reader reader) throws IOException, ProcessingException;
+		public String run(TemplateCompilerContext rootContext, Reader reader, Map<String, String> partials)
+				throws IOException, ProcessingException;
 
 	}
 

@@ -33,7 +33,10 @@ import java.lang.annotation.Target;
  * {{#context}}
  * {{#lambda}}{{message}}{{/lambda}}
  * {{/context}}
- * </code> </pre> <pre><code class="language-java">
+ * </code> </pre>
+ *
+ *
+ * <pre><code class="language-java">
  * record Model(String message){}
  *
  * &#64;JStacheLambda
@@ -75,15 +78,25 @@ import java.lang.annotation.Target;
  * Regardless of parameter and return annotations the method must always be annotated with
  * this annotation to be discovered.
  * <p>
- * Due to the static nature of JStachio, JStachio does not support returning dynamic
- * templates which is the optional lambda spec default if a {@link String} is returned.
+ * Due to the static nature of JStachio, JStachio does not support returning
+ * <strong>truly</strong> dynamic templates which is the optional lambda spec default if a
+ * {@link String} is returned. That is you cannot construct a string as a template at
+ * runtime.
  * <p>
- * JStachio is very similar to the
+ * That being said the lambda can ostensibly return a template (and a model that the
+ * template uses) that then references the section body as a partial by using
+ * {@link #template()} and then referencing the section body with the partial named
+ * {@value #SECTION_PARTIAL_NAME}. This allows repeating or wrapping the passed in section
+ * body. In some other mustache implementations this accomplished with a render callback
+ * but because templates are compiled statically this is a powerful declaritive
+ * workaround.
+ * <p>
+ * For those that are coming from other Mustache implementations the JStachio's lambda
+ * model is very similar to the
  * <a href="https://github.com/samskivert/jmustache">JMustache</a> model and does not have
- * an analog in <a href="https://github.com/spullara/mustache.java">mustache.java</a>.
- * JStachio currently does not support returning closures of
- * {@code Function<String,String> } like mustache.java but models can be like
- * {@code Supplier<String>} for that use case.
+ * a direct analog to
+ * <a href="https://github.com/spullara/mustache.java">mustache.java</a> of returning
+ * {@code Function<String,String> } where the function will automatically be called.
  *
  * @see Raw
  * @see JStacheInterfaces
@@ -96,10 +109,50 @@ import java.lang.annotation.Target;
 public @interface JStacheLambda {
 
 	/**
+	 * Name of the partial to render the section body of a lambda call.
+	 * @see #template()
+	 */
+	public static String SECTION_PARTIAL_NAME = "@section";
+
+	/**
 	 * The logical name of the lambda. If blank the method name will be used.
 	 * @return lambda name
 	 */
 	String name() default "";
+
+	/**
+	 * An inline template used for rendering the returned model that has access to the
+	 * lambda section body as a partial. The section body contents can be accessed as a
+	 * partial with the name <code>&#64;section</code>. <strong>This effectively allows
+	 * you render the section body and wrap or repeat it.</strong> Below is an example:
+	 *
+	 * <pre><code class="language-hbs">
+	 * {{! template call lambda }}
+	 * {{#context}}
+	 * {{#lambda}}{{name}}{{/lambda}} {{! "name" will come from the returned model }}
+	 * {{/context}}
+	 * </code> </pre>
+	 *
+	 * <pre><code class="language-java">
+	 * record Model(String name){}
+	 *
+	 * &#64;JStacheLambda(template="Use the force {{>@section}}")
+	 * public List&lt;Model&gt; lambda(SomeType context) {
+	 *     return List.of(new Model("Luke"), new Model("Leia"), new Model("Anakin"));
+	 * }
+	 * </code> </pre>
+	 *
+	 * Output:
+	 *
+	 * <pre>
+	 * Use the force Luke
+	 * Use the force Leia
+	 * Use the force Anakin
+	 * </pre>
+	 * @return the inline template and if empty is ignored. By default it is empty and
+	 * ignored.
+	 */
+	String template() default "";
 
 	/**
 	 * Tag a method return type of String or parameter of String to be used as a raw
