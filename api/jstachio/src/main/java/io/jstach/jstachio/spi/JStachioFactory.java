@@ -35,7 +35,7 @@ public final class JStachioFactory {
 	 *
 	 * <pre><code class="language-java">
 	 * &#47;&#47; module-info.java
-	 * open packagewith.jstachemodels to io.jstach.jstachio;
+	 * opens packagewith.jstachemodels to io.jstach.jstachio;
 	 * </code> </pre>
 	 *
 	 * Or you can generate a catalog of all templates and register them. See

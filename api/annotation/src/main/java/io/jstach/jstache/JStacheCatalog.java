@@ -30,8 +30,9 @@ import java.util.ServiceLoader;
  * <h2>Modular applications</h2>
  *
  * Modular applications that do not want to allow reflective access
- * (<code> open ... to </code>) to the JStachio runtime can instead register the generated
- * template provider in the <code>module-info.java</code> as a service provider like:
+ * (<code> opens ... to io.jstach.jstachio;</code>) to the JStachio runtime can instead
+ * register the generated template provider in the <code>module-info.java</code> as a
+ * service provider like:
  *
  * <pre><code class="language-java">
  * provides io.jstach.jstachio.spi.TemplateProvider with annotatedpackage.TemplateCatalog;
@@ -55,13 +56,13 @@ import java.util.ServiceLoader;
  * <code>module-info.java</code> therefore a general recommendation is to extend the
  * generated class and reference the class doing the extending in the
  * <code>module-info.java</code>.</em> Below is an example:
- * 
+ *
  * <pre><code class="language-java">
  * &#47;&#47; extend the generated class
  * package annotatedpackage;
  * public class MyTemplateCatalog extends TemplateCatalog {}
  * </code> </pre>
- * 
+ *
  * <pre><code class="language-java">
  * &#47;&#47; register the extended class
  * provides io.jstach.jstachio.spi.TemplateProvider with annotatedpackage.MyTemplateCatalog;
