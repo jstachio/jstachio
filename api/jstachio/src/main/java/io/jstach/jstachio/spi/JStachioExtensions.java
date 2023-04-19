@@ -38,7 +38,8 @@ public interface JStachioExtensions {
 
 	/**
 	 * Resolve from an iterable of extensions that usually come from some discovery
-	 * mechanism like the {@link ServiceLoader} or a DI framework.
+	 * mechanism like the {@link ServiceLoader} or a DI framework. <em>The order of the
+	 * extensions is important and primacy order takes precedence!</em>
 	 * @param extensions found extensions.
 	 * @return bean like container of services.
 	 */
@@ -47,25 +48,29 @@ public interface JStachioExtensions {
 	}
 
 	/**
-	 * Composite Config
+	 * Composite Config where the first config that returns a nonnull for
+	 * {@link JStachioConfig#getProperty(String)} is used.
 	 * @return config
 	 */
 	JStachioConfig getConfig();
 
 	/**
-	 * Composite Filter
+	 * Composite Filter where the ordering of the filter is based on a combination of
+	 * {@link JStachioFilter#order()} first and then the order in the iterable passed to
+	 * {@link #of(Iterable)}.
 	 * @return filter
 	 */
 	JStachioFilter getFilter();
 
 	/**
-	 * Composite Template finder
+	 * Composite Template finder where the first template finder that finds a template is
+	 * used.
 	 * @return template finder
 	 */
 	JStachioTemplateFinder getTemplateFinder();
 
 	/**
-	 * Services
+	 * The orignal contained extensions excluding the composites.
 	 * @return found services
 	 */
 	List<JStachioExtension> getExtensions();

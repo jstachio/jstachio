@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
+import io.jstach.jstache.JStacheCatalog;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.TemplateInfo;
 
@@ -13,7 +14,8 @@ import io.jstach.jstachio.TemplateInfo;
  * Creates JStachios mainly with the {@link ServiceLoader} or a {@link Builder}.
  *
  * @author agentgt
- *
+ * @see JStacheCatalog
+ * @see JStachioExtensions
  */
 public final class JStachioFactory {
 
@@ -25,7 +27,19 @@ public final class JStachioFactory {
 	}
 
 	/**
-	 * Provides a singleton JStachio resolved by the {@link ServiceLoader}
+	 * Provides a singleton JStachio resolved by the {@link ServiceLoader}.
+	 * <p>
+	 * Because of differences to how the {@link ServiceLoader} works with modular
+	 * applications registration of generated templates is different. For modular
+	 * applications you can either allow reflective access to JStachio:
+	 *
+	 * <pre><code class="language-java">
+	 * &#47;&#47; module-info.java
+	 * open packagewith.jstachemodels to io.jstach.jstachio;
+	 * </code> </pre>
+	 *
+	 * Or you can generate a catalog of all templates and register them. See
+	 * {@link JStacheCatalog} for details.
 	 * @return service loader based jstachio.
 	 */
 	public static JStachio defaultJStachio() {
@@ -34,7 +48,9 @@ public final class JStachioFactory {
 
 	/**
 	 * A <em>mutable</em> builder to create {@link JStachio} from
-	 * {@link JStachioExtension}s.
+	 * {@link JStachioExtension}s. Once {@link Builder#build()} is called the returned
+	 * JStachio will be immutable. If no extensions are added the returned JStachio will
+	 * be resolved in a simlar manner to the {@link #defaultJStachio() default JStachio}.
 	 * @return empty builder
 	 */
 	public static Builder builder() {
@@ -64,10 +80,27 @@ public final class JStachioFactory {
 	}
 
 	/**
-	 * Builder for creating jstachios.
+	 * Builder for creating a custom JStachio.
 	 *
-	 * @author agent
+	 * <pre><code class="language-java">
+	 * JStachio jstachio = JStachioFactory.builder()
+	 *     .add(extension1)
+	 *     .add(extension2)
+	 *     .build();
+	 * </code></pre>
 	 *
+	 * <em> The order of adding extensions is important such that primacy order takes
+	 * precedence as composite extensions such as config will be created if multiple of
+	 * the same extension type are added. </em> If you would like to share the JStachio in
+	 * a service locator style you may want to set it as the default via
+	 * {@link JStachio#setStatic(java.util.function.Supplier)} which will make all calls
+	 * of {@link JStachio#of()} use the custom one.
+	 *
+	 * @author agentgt
+	 * @see JStacheCatalog
+	 * @see JStachioTemplateFinder
+	 * @see JStachioConfig
+	 * @see JStachio#setStatic(java.util.function.Supplier)
 	 */
 	public static class Builder {
 

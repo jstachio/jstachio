@@ -40,6 +40,7 @@ import java.util.ServiceLoader;
  * or as a <code>JStachioTemplateFinder</code>:
  *
  * <pre><code class="language-java">
+ * &#47;&#47; module-info.java
  * provides io.jstach.jstachio.spi.JStachioTemplateFinder with annotatedpackage.TemplateCatalog;
  * </code> </pre>
  *
@@ -49,11 +50,22 @@ import java.util.ServiceLoader;
  * the generated code does not implement caching so if going the
  * <code>JStachioTemplateFinder</code> route caching will be the implementers
  * responsibility.
- *
- * <strong>Tip:</strong><em>Some tools do not like generated classes being referenced in
+ * <p>
+ * <strong>Tip:</strong><em> Some tools do not like generated classes being referenced in
  * <code>module-info.java</code> therefore a general recommendation is to extend the
  * generated class and reference the class doing the extending in the
- * <code>module-info.java</code>.</em>
+ * <code>module-info.java</code>.</em> Below is an example:
+ * 
+ * <pre><code class="language-java">
+ * &#47;&#47; extend the generated class
+ * package annotatedpackage;
+ * public class MyTemplateCatalog extends TemplateCatalog {}
+ * </code> </pre>
+ * 
+ * <pre><code class="language-java">
+ * &#47;&#47; register the extended class
+ * provides io.jstach.jstachio.spi.TemplateProvider with annotatedpackage.MyTemplateCatalog;
+ * </code> </pre>
  *
  * <h2>Avoiding reflection</h2>
  *

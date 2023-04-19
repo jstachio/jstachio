@@ -255,7 +255,14 @@ public void testPerson() throws Exception {
 JStachio is fully modularized consequently it is has many jars. The <a href="#all-modules-table">listing
   of modules</a> at the end of the guide explain what each module does as well as its 
 <a href="https://maven.apache.org/pom.html#maven-coordinates">Maven GAV</a>. 
-
+<p>
+If your application or library is modularized (<code>module-info.java</code>)
+and you would like to use the runtime module or extensions
+there are some additional steps that maybe needed due to encapsulation requirements.
+In some cases the easiest solution is to allow the jstachio runtime module reflective
+access to the packages containing JStache models. Other solutions are discussed
+on the {@link io.jstach.jstache.JStacheCatalog} annotation.
+</p>
   
 <h3 id="code_generation_mode">Code Generation Modes</h3>
 
@@ -427,10 +434,12 @@ dependencies {
 
 <h2 id="configuration">Configuration</h2>
 
-{@link io.jstach.jstache.JStache} and {@link io.jstach.jstache.JStacheConfig} 
-are heavily documented on configuration of JStachio via annotations.
+<h3 id="compile_config">Compile time Configuration</h3>
 
-JStachio allows you to configure:
+{@link io.jstach.jstache.JStache} and {@link io.jstach.jstache.JStacheConfig} 
+are heavily documented on static configuration of JStachio via annotations.
+
+JStachio static config allows you to configure:
 
 <ol>
   <li>Where external templates are stored and referred.</li>
@@ -447,6 +456,13 @@ code is generated via {@link io.jstach.jstache.JStacheConfig#type()} as well as
 location paths of template files via {@link io.jstach.jstache.JStachePath} 
 and what interfaces generated code extends via {@link io.jstach.jstache.JStacheInterfaces}. 
 </p>
+
+<h3 id="runtime_config">Runtime Configuration</h3>
+
+Certain configuration such as logging and whether or not to use
+reflection is only avaiable during runtime when using the
+JStachio runtime module and the default JStachio. 
+This is documented in {@link io.jstach.jstachio.spi.JStachioConfig}.
 
 <h2 id="integration">Extensions and Integrations</h2>
 
@@ -528,6 +544,42 @@ it might be easier to look
 
 <h2 id="FAQ">FAQ</h2>
 
+<h3 id="faq_template_not_found">Why can't JStachio find my templates?</h3>
+
+There are many problems that can happen but usually it boils down to three issues:
+
+<ol>
+  <li>The annotation processor did not run.</li>
+  <li>The annotation processor did run but cannot find external template resources.</li>
+  <li>The runtime cannot reflectively find a template for a model.</li>
+</ol>
+
+<p>
+The first thing to check is to make sure the template classes are being generated.
+Usually the generated classes after build will reside in 
+<code>target/generated-sources/annotations</code>.
+</p>
+<p>
+If compilation is failing because the annotation processor cannot find your templates
+make sure that the external templates (mustache files) are put in 
+<code>src/main/resources</code>. It is not recommended and generally will not work
+if you put template resources in <code>src/main/java</code>.
+The above can be disregarded if the template is inlined (e.g. a string).
+</p>
+<p>
+If the templates are generated but <code>JStachio.render</code> is not working
+a reflection exception will be thrown. This may happen if the generated
+class is not available because of incremental compiling and particularly
+a problem with Maven. Try a full rebuild (e.g. mvn clean package).
+</p>
+<p>
+If your application is a modular application (<code>module-info.java</code>)
+then you will need to either allow reflective access to JStachio 
+(e.g <code> open somepackage to io.jstach.jstachio</code>) or 
+register a Service Located TemplateProvider. 
+The solution is discussed in {@link io.jstach.jstache.JStacheCatalog} annotation.
+</p>
+
 <h3 id="faq_hard_behavior">How do I do XYZ complicated logic in my template?</h3>
 
 Mustache is inherently simple and is called logicless for a reason.
@@ -593,6 +645,15 @@ See the <a href="#jmustache">JMustache Extension</a> that uses reflection. In th
 will have its own reflection based runtime for template development but for now we are leveraging the
 fact that JMustache is almost equivalent to JStachio once configured correctly.
 
+
+<h3 id="faq_no_reflection">How do I make the JStachio runtime use zero reflection?</h3>
+
+The JStachio runtime mainly provides a way to find a template based on a model. 
+To do this it will try the ServiceLoader first and then regular reflection.
+Thus to avoid this a list of model to templates needs to be registered.
+<p>
+<strong>See {@link io.jstach.jstache.JStacheCatalog}.</strong>
+</p>
 
 <h3 id="faq_map">My MVC library uses Map&lt;String,Object&gt; for models what should I do?</h3>
 

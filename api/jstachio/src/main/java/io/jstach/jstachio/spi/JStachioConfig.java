@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStacheConfig;
+
 /**
  * Runtime Config Service.
  * <p>
@@ -16,6 +18,16 @@ import org.eclipse.jdt.annotation.Nullable;
  * <p>
  * The default resolved config uses System properties but can be replaced by implementing
  * this extension.
+ * <p>
+ * Core runtime configuration properties for the {@link JStachioFactory#defaultJStachio()
+ * default JStachio} are:
+ * <ul id="_jstachio_config_properties">
+ * <li>{@link #REFLECTION_TEMPLATE_DISABLE}</li>
+ * <li>{@link #SERVICELOADER_TEMPLATE_DISABLE}</li>
+ * <li>{@link #LOGGING_DISABLE}</li>
+ * </ul>
+ * <strong>This configuration is for runtime only and {@link JStacheConfig not static
+ * configuration} needed for code generation.</strong>
  *
  * @see JStachioExtension
  * @author agentgt
@@ -23,19 +35,30 @@ import org.eclipse.jdt.annotation.Nullable;
 public non-sealed interface JStachioConfig extends JStachioExtension {
 
 	/**
-	 * Config key to disable reflection based lookup of templates for other fallback
-	 * mechanisms
+	 * Config key to disable non service loader reflection based lookup of templates. If a
+	 * custom JStachio is being used this configuration property maybe irrelevant.
+	 * <p>
+	 * Valid values are <code>true</code> or <code>false</code>. The default is
+	 * <code>false</code>.
 	 */
 	public static String REFLECTION_TEMPLATE_DISABLE = "jstachio.reflection.template.disable";
 
 	/**
-	 * Config key to disable service loader based lookup of templates for other fallback
-	 * mechanisms
+	 * Config key to disable service loader based lookup of templates. If a custom
+	 * JStachio is being used this configuration property maybe irrelevant.
+	 * <p>
+	 * Valid values are <code>true</code> or <code>false</code>. The default is
+	 * <code>false</code>.
 	 */
 	public static String SERVICELOADER_TEMPLATE_DISABLE = "jstachio.serviceloader.template.disable";
 
 	/**
-	 * Config key to disable if logging. By default logging is enabled.
+	 * Config key to disable logging. By default logging is enabled and will use the
+	 * {@link System.Logger}. If a custom {@link JStachioConfig} is being used this
+	 * configuration property maybe irrelevant.
+	 * <p>
+	 * Valid values are <code>true</code> or <code>false</code>. The default is
+	 * <code>false</code>.
 	 */
 	public static String LOGGING_DISABLE = "jstachio.logging.disable";
 
@@ -115,12 +138,13 @@ public non-sealed interface JStachioConfig extends JStachioExtension {
 	 * facilities</em>. The NOOP logger is always disabled at every level and will not
 	 * produce any output.
 	 * <p>
-	 * Extensions might find this useful to set a nonnull Logger field like: <pre>
+	 * Extensions might find this useful to set a nonnull Logger field like:
+	 * <pre><code class="language-java">
 	 * private Logger logger = JStacheConfig.noopLogger();
 	 * public void init(JStacheConfig config) {
 	 *     logger = config.getLogger(getClass().getName());
 	 * }
-	 * </pre>
+	 * </code> </pre>
 	 * @return singleton instance of noop logger
 	 */
 	public static Logger noopLogger() {
