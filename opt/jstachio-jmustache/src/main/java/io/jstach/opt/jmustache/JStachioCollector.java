@@ -17,11 +17,19 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.samskivert.mustache.BasicCollector;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.VariableFetcher;
+import com.samskivert.mustache.Template;
 import com.samskivert.mustache.Template.Fragment;
 
 import io.jstach.jstache.JStacheLambda;
 
 class JStachioCollector extends BasicCollector {
+
+	private final CompilerAdapter compilerAdapter;
+
+	public JStachioCollector(CompilerAdapter compilerAdapter) {
+		super();
+		this.compilerAdapter = compilerAdapter;
+	}
 
 	@Override
 	public Mustache.@Nullable VariableFetcher createFetcher(Object ctx, String name) {
@@ -50,7 +58,7 @@ class JStachioCollector extends BasicCollector {
 		return null;
 	}
 
-	private static class MethodFetcher implements VariableFetcher {
+	private class MethodFetcher implements VariableFetcher {
 
 		private final Method method;
 
@@ -61,7 +69,7 @@ class JStachioCollector extends BasicCollector {
 
 		@Override
 		public Object get(Object ctx, String name) throws Exception {
-			var lambda = maybeLambda(method, ctx);
+			var lambda = maybeLambda(method, ctx, compilerAdapter);
 			if (lambda != null) {
 				return lambda;
 			}
@@ -86,7 +94,7 @@ class JStachioCollector extends BasicCollector {
 
 	}
 
-	static Mustache.@Nullable Lambda maybeLambda(Method method, Object lambdaOwner) {
+	static Mustache.@Nullable Lambda maybeLambda(Method method, Object lambdaOwner, CompilerAdapter compiler) {
 		var annotation = method.getAnnotation(JStacheLambda.class);
 		if (annotation == null) {
 			return null;
@@ -97,23 +105,28 @@ class JStachioCollector extends BasicCollector {
 			public void execute(Fragment frag, Writer out) throws IOException {
 				var parameters = method.getParameters();
 				var context = frag.context();
-				String template = frag.decompile();
+				String sectionBody = frag.decompile();
 				List<Object> args = new ArrayList<>();
 
 				for (var p : parameters) {
 					boolean raw = p.getAnnotation(JStacheLambda.Raw.class) != null;
 					if (raw) {
-						args.add(template);
+						args.add(sectionBody);
 					}
 					else {
 						args.add(context);
 					}
 				}
 				boolean raw = method.getAnnotation(JStacheLambda.Raw.class) != null;
+				String template = annotation.template();
 				try {
 					Object result = method.invoke(lambdaOwner, args.toArray());
 					if (raw) {
 						out.append((String) result);
+					}
+					else if (!template.isEmpty()) {
+						Template t = compiler.compileForLambda(template, sectionBody);
+						t.execute(result, out);
 					}
 					else {
 						frag.execute(result, out);

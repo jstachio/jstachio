@@ -1,20 +1,14 @@
 package io.jstach.opt.jmustache;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
-import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
 import io.jstach.jstache.JStacheLambda;
@@ -153,13 +147,9 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	}
 
-	protected Mustache.Compiler createCompiler(TemplateInfo template) {
-		var compiler = Mustache.compiler() //
-				.standardsMode(false) //
-				.withEscaper(template.templateEscaper()::apply) //
-				.withFormatter(template.templateFormatter()::apply) //
-				.withCollector(new JStachioCollector());
-		return compiler;
+	protected CompilerAdapter createCompiler(TemplateInfo template, Class<?> modelClass) {
+		Loader loader = new Loader(logger, sourcePath, initTime);
+		return new CompilerAdapter(template, modelClass, loader);
 	}
 
 	@Override
@@ -168,60 +158,23 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 			return false;
 		}
 
-		switch (template.templateSource()) {
-			case STRING -> {
-				Template t = createCompiler(template).compile(template.templateString());
-				String results = t.execute(context);
-				if (prefix != null) {
-					a.append(prefix);
-				}
-				a.append(results);
-				return true;
+		Loader loader = new Loader(logger, sourcePath, initTime);
+
+		Reader reader = loader.open(template, broken);
+
+		if (reader != null) {
+			Template t = createCompiler(template, context.getClass()).compile(reader);
+			String result = t.execute(context);
+			if (prefix != null) {
+				a.append(prefix);
 			}
-			case RESOURCE -> {
-				String templatePath = template.normalizePath();
-				var path = Path.of(sourcePath, templatePath);
-				InputStream stream;
-				boolean _broken = template.lastLoaded() > 0 || broken;
-				if ((_broken && path.toFile().isFile()) || path.toFile().lastModified() > initTime) {
-					stream = openFile(path);
-				}
-				else if (broken) {
-					stream = openResource(templatePath);
-				}
-				else {
-					return false;
-				}
-				try (InputStream is = stream;
-						BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-					Template t = createCompiler(template).compile(br);
-					String results = t.execute(context);
-					a.append(results);
-					return true;
-				}
+			a.append(result);
+			if (suffix != null) {
+				a.append(suffix);
 			}
+			return true;
 		}
 		return false;
-	}
-
-	protected InputStream openFile(Path path) throws IOException {
-		InputStream is = Files.newInputStream(path);
-		if (logger.isLoggable(Level.INFO)) {
-			logger.log(Level.INFO, "Using JMustache. template:" + "file " + path);
-		}
-		return is;
-	}
-
-	protected InputStream openResource(String templatePath) throws IOException {
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		InputStream is = loader.getResourceAsStream(templatePath);
-		if (is == null) {
-			throw new IOException("template not found. template: " + templatePath);
-		}
-		if (logger.isLoggable(Level.INFO)) {
-			logger.log(Level.INFO, "Using JMustache. template:" + "classpath " + templatePath);
-		}
-		return is;
 	}
 
 }
