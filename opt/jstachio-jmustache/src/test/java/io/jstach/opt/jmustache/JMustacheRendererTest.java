@@ -1,6 +1,7 @@
-package io.jstach.jmustache;
+package io.jstach.opt.jmustache;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,6 @@ import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.spi.JStachioExtensions;
 import io.jstach.jstachio.spi.JStachioFactory;
-import io.jstach.opt.jmustache.JMustacheRenderer;
 
 public class JMustacheRendererTest {
 
@@ -62,13 +62,70 @@ public class JMustacheRendererTest {
 				                """;
 		assertEquals(expected, actual);
 		String prefix = "JMUSTACHE ";
-		// This is kind of a hack
-		if (JStachioFactory.defaultJStachio() instanceof JStachioExtensions.Provider je) {
-			je.extensions().findExtension(JMustacheRenderer.class).orElseThrow().prefix(prefix).use(true);
-		}
+		jmustache().use(true).prefix(prefix);
 		actual = JStachio.render(new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry)));
 		assertEquals(prefix + expected, actual);
 
+	}
+
+	@JStache(template = """
+			{{#lambda}}
+			Use the force {{name}}!
+			{{/lambda}}
+			""")
+	public record LambdaSectionPartialModel(String message) {
+
+		public record Model(String name) {
+		}
+
+		public record LambdaModel(List<Model> list) {
+		}
+
+		@JStacheLambda(template = """
+				{{#list}}
+				{{>@section}}
+				{{#-last}}
+				To defeat Darth Sideous.
+				{{/-last}}
+				{{/list}}
+				""")
+		public LambdaModel lambda(Object o) {
+			return new LambdaModel(List.of(new Model("Luke"), new Model("Leia")));
+		}
+	}
+
+	@Test
+	public void testSectionPartial() throws Exception {
+		LambdaSectionPartialModel m = new LambdaSectionPartialModel("hello");
+		JMustacheRenderer jmustacheExt = jmustache();
+		jmustacheExt.use(false);
+		String expected = """
+				Use the force Luke!
+				Use the force Leia!
+				To defeat Darth Sideous.
+								""";
+		String actual = JStachio.render(m);
+		assertEquals(expected, actual);
+		jmustacheExt.use(true);
+		actual = JStachio.render(m);
+		/*
+		 * jmustache has a bug with sections in that they are not standalone
+		 */
+		actual = actual.replace("\n", "");
+		expected = expected.replace("\n", "");
+		assertEquals(expected, actual);
+	}
+
+	private JMustacheRenderer jmustache() {
+		JMustacheRenderer jmustacheExt;
+		if (JStachioFactory.defaultJStachio() instanceof JStachioExtensions.Provider je) {
+			jmustacheExt = je.extensions().findExtension(JMustacheRenderer.class).orElseThrow();
+		}
+		else {
+			fail();
+			throw new IllegalStateException();
+		}
+		return jmustacheExt;
 	}
 
 }

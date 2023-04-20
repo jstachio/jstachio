@@ -192,6 +192,7 @@ public final class Templates {
 		 * {@link TemplateProvider}.
 		 */
 		SERVICE_LOADER() {
+			@SuppressWarnings("unchecked")
 			@Override
 			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
 				return (Template<T>) templateByServiceLoader(clazz, classLoader);
@@ -326,6 +327,21 @@ public final class Templates {
 		throw (E) x;
 	}
 
+	/**
+	 * Resolve path lookup information reflectively from a model class by doing config
+	 * resolution at runtime.
+	 * @param model a class annotated with JStache
+	 * @return the resolved path annotation
+	 * @apiNote This method is an implementation detail for reflection rendering engines
+	 * such as JMustache and JStachio's future reflection based engine. It is recommended
+	 * you do not rely on it as it is subject to change in the future.
+	 */
+	public static @Nullable JStachePath resolvePath(Class<?> model) {
+		// TODO perhaps this information should be on TemplateInfo?
+		return annotationElements(model).map(TemplateInfos::resolvePathOnElement).filter(p -> p != null).findFirst()
+				.orElse(null);
+	}
+
 	static class TemplateInfos {
 
 		public static TemplateInfo templateOf(Class<?> model) throws Exception {
@@ -377,11 +393,6 @@ public final class Templates {
 					lastLoaded, //
 					model);
 
-		}
-
-		private static JStachePath resolvePath(Class<?> model) {
-			return annotationElements(model).map(TemplateInfos::resolvePathOnElement).filter(p -> p != null).findFirst()
-					.orElse(null);
 		}
 
 		private static @Nullable JStachePath resolvePathOnElement(AnnotatedElement a) {
