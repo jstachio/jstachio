@@ -257,7 +257,7 @@ public class RenderingCodeGenerator {
 			ListRenderingContext list = new ListRenderingContext(expression, indexVariableName, variables);
 			return createRenderingContext(childType, list.componentExpession(), list);
 		}
-		else if (javaModel.isType(expression.type(), knownTypes._Iterable)) {
+		else if (javaModel.isType(expression.type(), knownTypes._Iterable) && childType == ContextType.SECTION) {
 			return createIterableContext(childType, expression, enclosing);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._Map)) {
@@ -275,8 +275,9 @@ public class RenderingCodeGenerator {
 			DeclaredType declaredType = (DeclaredType) expression.type();
 			RenderingContext parent = switch (childType) {
 				case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
-				case PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
-				case ROOT -> throw new UnsupportedOperationException("Unimplemented case: " + childType);
+				case ROOT, PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
+				// case ROOT -> throw new UnsupportedOperationException("Unimplemented
+				// case: " + childType);
 				default -> throw new IllegalArgumentException("Unexpected value: " + childType);
 
 			};
