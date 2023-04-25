@@ -213,12 +213,13 @@ public class TemplateCompilerContext {
 		String modelVariableName = variables.introduceNewNameLike(lambdaName);
 		var templateStack = this.templateStack.ofLambda(lambdaName);
 		var javaModel = generator.javaModel;
-		TypeElement element = javaModel.asElement(model);
+		// TypeElement element = javaModel.asElement(model);
 		String expression = modelVariableName;
-		JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
-		RenderingContext field = generator.createRenderingContext(ContextType.SECTION, javaExpression, context);
+		JavaExpression javaExpression = javaModel.expression(expression, model);
+		ContextType contextType = ContextType.ROOT;
+		RenderingContext field = generator.createRenderingContext(contextType, javaExpression, context);
 
-		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, ContextType.SECTION);
+		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, contextType);
 	}
 
 	public TemplateCompilerContext getChild(String path, ContextType childType) throws ContextException {
