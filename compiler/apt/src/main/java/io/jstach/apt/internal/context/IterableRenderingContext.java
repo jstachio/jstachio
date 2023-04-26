@@ -216,4 +216,15 @@ class IterableRenderingContext implements RenderingContext {
 		return parent;
 	}
 
+	@Override
+	public String description() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " [\n\t\texpression=" + expression + ",\n\t\telementVariableName="
+				+ elementVariableName + "]";
+	}
+
 }

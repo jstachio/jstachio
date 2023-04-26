@@ -57,4 +57,9 @@ class LambdaRenderingContext implements RenderingContext {
 		return parent;
 	}
 
+	@Override
+	public String description() {
+		return getClass().getSimpleName() + "[lambda=" + lambda.description() + "]";
+	}
+
 }
