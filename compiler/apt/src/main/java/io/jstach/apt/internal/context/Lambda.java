@@ -22,6 +22,12 @@ public sealed interface Lambda {
 
 	public Method method();
 
+	default String description() {
+		return "Lambda[name='" + name() + "'" //
+				+ ", returnType=" + method().methodElement().getReturnType() //
+				+ ", method='" + method() + "]";
+	}
+
 	default JavaExpression callExpression(String literalBlock, LambdaContext context) throws TypeException {
 		JavaLanguageModel model = method().expression().model();
 		var currentContextExpression = context.get();
@@ -51,7 +57,7 @@ public sealed interface Lambda {
 		return method().expression().methodCall(method().methodElement(), args.toArray(new JavaExpression[] {}));
 	}
 
-	public enum ReturnType {
+	public enum ReturnKind {
 
 		RAW_STRING, MODEL
 
@@ -66,7 +72,7 @@ public sealed interface Lambda {
 	public record Param(String name, ParamType paramType, TypeMirror type) {
 	}
 
-	public record Method(JavaExpression expression, String name, ExecutableElement methodElement, ReturnType returnType,
+	public record Method(JavaExpression expression, String name, ExecutableElement methodElement, ReturnKind returnKind,
 			List<Param> params, String template) {
 
 		public static Method of(JavaExpression expression, ExecutableElement method, @Nullable String name,
@@ -103,16 +109,16 @@ public sealed interface Lambda {
 				params.add(new Param(name, ParamType.CURRENT_CONTEXT, p.asType()));
 			}
 
-			ReturnType returnType;
+			ReturnKind returnType;
 			raw = RawPrism.getInstanceOn(method) != null;
 			if (raw && model.isType(method.getReturnType(), model.knownTypes()._String)) {
-				returnType = ReturnType.RAW_STRING;
+				returnType = ReturnKind.RAW_STRING;
 			}
 			else if (raw) {
 				throw new AnnotatedException(method, "Only String return types can be annotated with Raw");
 			}
 			else if (method.getReturnType() instanceof DeclaredType dt) {
-				returnType = ReturnType.MODEL;
+				returnType = ReturnKind.MODEL;
 			}
 			else {
 				throw new UnsupportedOperationException(
@@ -139,6 +145,7 @@ public sealed interface Lambda {
 	// }
 
 	record SimpleLambda(Method method) implements Lambda {
+
 	}
 
 	public static Lambda of( //

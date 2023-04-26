@@ -233,8 +233,7 @@ public class RenderingCodeGenerator {
 				}
 			};
 		}
-		else if (expression.type() instanceof WildcardType) {
-			WildcardType wildcardType = (WildcardType) expression.type();
+		else if (expression.type() instanceof WildcardType wildcardType) {
 			var extendsBound = wildcardType.getExtendsBound();
 			return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
 		}
@@ -276,10 +275,7 @@ public class RenderingCodeGenerator {
 			RenderingContext parent = switch (childType) {
 				case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
 				case ROOT, PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
-				// case ROOT -> throw new UnsupportedOperationException("Unimplemented
-				// case: " + childType);
 				default -> throw new IllegalArgumentException("Unexpected value: " + childType);
-
 			};
 			return createDeclaredContext(expression, declaredType, parent);
 		}

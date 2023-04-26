@@ -70,4 +70,9 @@ class VariablesRenderingContext implements RenderingContext {
 		return this.parent;
 	}
 
+	@Override
+	public String description() {
+		return getClass().getSimpleName() + "[expression=" + currentExpression() + "]";
+	}
+
 }

@@ -762,9 +762,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	private @Nullable JStacheRef writeRenderableAdapterClass(TypeElement element, JStachePrism jstache,
 			Map<String, String> options) throws AnnotatedException {
 
+		@Nullable
+		ProcessingConfig config = null;
 		try {
 			var model = model(element, jstache, options);
-			ProcessingConfig config = model;
+			config = model;
 			StringWriter stringWriter = new StringWriter();
 			try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)) {
 				TextFileObject templateResource = new TextFileObject(config, Objects.requireNonNull(processingEnv));
@@ -807,6 +809,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			return new JStacheRef(model.rendererClassRef(), pub, jstachio);
 		}
 		catch (ProcessingException ex) {
+			if (config != null && config.isDebug()) {
+				ex.printStackTrace();
+			}
 			String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
 			errors.add(ElementMessage.of(element, errorMessage));
 		}

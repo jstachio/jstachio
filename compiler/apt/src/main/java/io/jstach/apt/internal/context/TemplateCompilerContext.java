@@ -35,9 +35,9 @@ import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -121,7 +121,7 @@ public class TemplateCompilerContext {
 			catch (TypeException e) {
 				throw new ContextException.TypeNotAllowedContextException(e.getMessage(), e);
 			}
-			return switch (lm.method().returnType()) {
+			return switch (lm.method().returnKind()) {
 				case RAW_STRING -> {
 					// TODO use formatter for non string types
 					// return generator.generateRenderingCode(entry, variables, path);
@@ -160,6 +160,7 @@ public class TemplateCompilerContext {
 						partials = Map.of(Prisms.JSTACHE_LAMBDA_SECTION_PARTIAL_NAME, rawBody);
 					}
 					StringBuilder lambdaCode = new StringBuilder();
+					lambdaCode.append("/* ").append(context.context).append("*/\n");
 					lambdaCode.append(variableType).append(" ").append(variableName).append(" = ").append(entry.text())
 							.append(";");
 					lambdaCode.append(compiler.run(context, sr, partials));
@@ -213,13 +214,12 @@ public class TemplateCompilerContext {
 		String modelVariableName = variables.introduceNewNameLike(lambdaName);
 		var templateStack = this.templateStack.ofLambda(lambdaName);
 		var javaModel = generator.javaModel;
-		// TypeElement element = javaModel.asElement(model);
 		String expression = modelVariableName;
 		JavaExpression javaExpression = javaModel.expression(expression, model);
 		ContextType contextType = ContextType.ROOT;
 		RenderingContext field = generator.createRenderingContext(contextType, javaExpression, context);
-
 		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, contextType);
+
 	}
 
 	public TemplateCompilerContext getChild(String path, ContextType childType) throws ContextException {
@@ -411,12 +411,20 @@ public class TemplateCompilerContext {
 		return Optional.ofNullable(enclosedRelation);
 	}
 
+	protected EnclosedRelation requireEnclosed() {
+		var e = enclosedRelation;
+		if (e == null) {
+			throw new NoSuchElementException("Template Context is not enclosed. context=" + context.description());
+		}
+		return e;
+	}
+
 	public String currentEnclosedContextName() {
-		return enclosed().orElseThrow().name();
+		return requireEnclosed().name();
 	}
 
 	public TemplateCompilerContext parentContext() {
-		return enclosed().orElseThrow().parentContext();
+		return requireEnclosed().parentContext();
 	}
 
 	public String unescapedWriterExpression() {
