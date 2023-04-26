@@ -8,12 +8,9 @@ import io.jstach.jstache.JStacheFlags.Flag;
 import io.jstach.jstache.JStacheLambda;
 
 @JStache(template = """
-		{{#.}}
-		{{message}}
-		{{/.}}
 		{{#names}}
 		{{#.}}
-		Hello!
+		{{message}} {{.}}!
 		{{/.}}
 		{{/names}}
 		""")
