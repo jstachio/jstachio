@@ -46,6 +46,7 @@ import io.jstach.apt.internal.NamedTemplate.FileTemplate;
 import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
 import io.jstach.apt.internal.ProcessingConfig;
 import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.context.RenderingCodeGenerator;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.TemplateStack;
@@ -80,6 +81,10 @@ class CodeWriter {
 		ClassRef modelClass = ClassRef.of(element);
 		return codeGenerator.createTemplateCompilerContext(TemplateStack.ofRoot(modelClass, template, flags), element,
 				rootExpression, variableContext);
+	}
+
+	void setFormatCallType(FormatCallType formatCallType) {
+		codeGenerator.setFormatCallType(formatCallType);
 	}
 
 	void println(String s) {

@@ -82,13 +82,21 @@ public class RenderingCodeGenerator {
 
 	private final FormatterTypes formatterTypes;
 
-	private final FormatCallType formatCallType;
+	private FormatCallType formatCallType;
 
 	private RenderingCodeGenerator(KnownTypes types, JavaLanguageModel javaModel, FormatterTypes formatterTypes,
 			FormatCallType formatCallType) {
 		this.knownTypes = types;
 		this.javaModel = javaModel;
 		this.formatterTypes = formatterTypes;
+		this.formatCallType = formatCallType;
+	}
+
+	public FormatCallType getFormatCallType() {
+		return formatCallType;
+	}
+
+	public void setFormatCallType(FormatCallType formatCallType) {
 		this.formatCallType = formatCallType;
 	}
 
@@ -125,14 +133,14 @@ public class RenderingCodeGenerator {
 
 	private String renderFormatCall(VariableContext variables, String path, String text, String cname) {
 		return switch (formatCallType) {
-			case JSTACHIO -> renderFormatCallJStache(variables, path, text, cname);
+			case JSTACHIO, JSTACHIO_BYTE -> renderFormatCallJStache(variables, path, text, cname);
 			case STACHE -> renderFormatCallStache(variables, text);
 		};
 	}
 
 	private String renderFormatCall(VariableContext variables, String path, String text) {
 		return switch (formatCallType) {
-			case JSTACHIO -> renderFormatCallJStache(variables, path, text);
+			case JSTACHIO, JSTACHIO_BYTE -> renderFormatCallJStache(variables, path, text);
 			case STACHE -> renderFormatCallStache(variables, text);
 		};
 	}
