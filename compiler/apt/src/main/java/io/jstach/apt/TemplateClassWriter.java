@@ -10,8 +10,10 @@ import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -550,6 +552,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("");
 		writeExtendsConstructors(extendsElement, rendererClassSimpleName);
 		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
+		writeRendererDefinitionMethodStream(TemplateCompilerType.SIMPLE, model);
 		println("}");
 	}
 
@@ -636,11 +639,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		boolean jstachio = formatCallType == FormatCallType.JSTACHIO;
 
 		var element = model.element();
-		NullChecking nullChecking = model.flags().contains(Flag.NO_NULL_CHECKING) ? NullChecking.ANNOTATED
-				: NullChecking.ALWAYS;
-		if (isDebug() && !nullChecking.isDefault()) {
-			debug("NullChecking = ", nullChecking);
-		}
+		NullChecking nullChecking = nullChecking(model);
 
 		VariableContext variables = VariableContext.createDefaultContext(nullChecking);
 		String dataName = variables.introduceNewNameLike("data");
@@ -691,6 +690,59 @@ class TemplateClassWriter implements LoggingSupplier {
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
 		println("");
 		println("    }");
+	}
+
+	private NullChecking nullChecking(RendererModel model) {
+		NullChecking nullChecking = model.flags().contains(Flag.NO_NULL_CHECKING) ? NullChecking.ANNOTATED
+				: NullChecking.ALWAYS;
+		if (isDebug() && !nullChecking.isDefault()) {
+			debug("NullChecking = ", nullChecking);
+		}
+		return nullChecking;
+	}
+
+	private void writeRendererDefinitionMethodStream(TemplateCompilerType templateCompilerType, RendererModel model)
+			throws IOException, ProcessingException, AnnotatedException {
+
+		if (formatCallType != FormatCallType.JSTACHIO) {
+			return;
+		}
+		codeWriter.setFormatCallType(FormatCallType.JSTACHIO_BYTE);
+
+		var element = model.element();
+		NullChecking nullChecking = nullChecking(model);
+
+		VariableContext variables = VariableContext.createDefaultContext(nullChecking);
+		String dataName = variables.introduceNewNameLike("data");
+		String className = element.getQualifiedName().toString();
+		String _Appender = APPENDER_CLASS;
+
+		String _Escaper = ESCAPER_CLASS;
+		String _Formatter = FORMATTER_CLASS;
+
+		String _OutputStream = OutputStream.class.getName();
+
+		println("    public static  void render(" //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + _OutputStream + " " + "outputStream" + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Escaper + " " + variables.escaper() + "," //
+				+ idt + _Appender + " " + variables.appender() + ") throws java.io.IOException {");
+		println("        var " + variables.unescapedWriter() + " = " + _Output + "." + "of(outputStream, "
+				+ StandardCharsets.class.getCanonicalName() + ".UTF_8" + ");");
+		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
+				variables, model.flags());
+		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
+		println("");
+		println("    }");
+		var textVariables = variables.textVariables();
+		String charSet = StandardCharsets.class.getCanonicalName() + ".UTF_8";
+		for (var entry : textVariables) {
+			println("    private static final byte[] " + entry.getKey() + " = (" + entry.getValue() + ").getBytes("
+					+ charSet + ");");
+		}
+
+		codeWriter.setFormatCallType(formatCallType);
 
 	}
 

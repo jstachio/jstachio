@@ -92,7 +92,7 @@ public interface FormatterTypes {
 
 	public enum FormatCallType {
 
-		STACHE, JSTACHIO
+		STACHE, JSTACHIO, JSTACHIO_BYTE
 
 	}
 

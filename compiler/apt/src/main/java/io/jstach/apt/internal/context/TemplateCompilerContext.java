@@ -101,6 +101,20 @@ public class TemplateCompilerContext {
 		}
 	}
 
+	String addTextCode(String textCode) {
+		return variables.addTextCode(textCode);
+	}
+
+	public String renderUnescapedOutputCode(String code) {
+		return switch (generator.getFormatCallType()) {
+			case JSTACHIO, STACHE -> unescapedWriterExpression() + ".append(" + code + ");";
+			case JSTACHIO_BYTE -> {
+				String byteVar = variables.addTextCode(code);
+				yield "outputStream.write(" + byteVar + ");";
+			}
+		};
+	}
+
 	public String renderingCode() throws ContextException {
 		return beginSectionRenderingCode() + sectionBodyRenderingCode(variables) + endSectionRenderingCode();
 	}

@@ -361,7 +361,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			return;
 		String code = CodeAppendable.stringLiteralConcat(s);
 		println();
-		print(context.unescapedWriterExpression() + ".append(" + code + "); ");
+		print(context.renderUnescapedOutputCode(code));
 		println();
 	}
 

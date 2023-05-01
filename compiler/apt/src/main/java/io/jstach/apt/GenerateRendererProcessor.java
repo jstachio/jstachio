@@ -804,6 +804,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			boolean jstachio = switch (model.formatCallType()) {
 				case JSTACHIO -> true;
 				case STACHE -> false;
+				case JSTACHIO_BYTE -> throw new IllegalStateException();
 			};
 
 			return new JStacheRef(model.rendererClassRef(), pub, jstachio);

@@ -29,7 +29,10 @@
  */
 package io.jstach.apt.internal.context;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,13 +50,17 @@ public class VariableContext {
 
 	public static String FORMATTER = "formatter";
 
+	public static String TEXT = "TEXT";
+
 	public static VariableContext createDefaultContext(NullChecking nullChecking) {
 		TreeMap<String, Integer> variables = new TreeMap<String, Integer>();
 		variables.put(ESCAPER, 1);
 		variables.put(APPENDER, 1);
 		variables.put(APPENDABLE, 1);
 		variables.put(FORMATTER, 1);
-		return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables, null, true, nullChecking);
+		// return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables,
+		// null, true, nullChecking);
+		return new RootVariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables, nullChecking);
 	}
 
 	private final String appender;
@@ -104,6 +111,45 @@ public class VariableContext {
 		this.parent = parent;
 		this.escaped = escaped;
 		this.nullChecking = nullChecking;
+	}
+
+	private static class RootVariableContext extends VariableContext {
+
+		private List<String> textCodes = new ArrayList<>();
+
+		RootVariableContext(String appender, String escaper, String unescapedWriter, String formatter,
+				Map<String, Integer> variables, NullChecking nullChecking) {
+			super(appender, escaper, unescapedWriter, formatter, variables, null, true, nullChecking);
+		}
+
+	}
+
+	public List<String> textCodes() {
+		var p = this;
+		while (p != null) {
+			if (p instanceof RootVariableContext r) {
+				return r.textCodes;
+			}
+			p = p.parent;
+		}
+		throw new IllegalStateException("bug");
+	}
+
+	public List<Entry<String, String>> textVariables() {
+		var codes = textCodes();
+		List<Entry<String, String>> results = new ArrayList<>();
+		int i = 0;
+		for (var code : codes) {
+			results.add(Map.entry(TEXT + "_" + i++, code));
+		}
+		return results;
+	}
+
+	public String addTextCode(String textCode) {
+		var codes = textCodes();
+		int i = codes.size();
+		codes.add(textCode);
+		return TEXT + "_" + i;
 	}
 
 	public String escaper() {

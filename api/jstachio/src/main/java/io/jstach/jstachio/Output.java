@@ -2,6 +2,10 @@ package io.jstach.jstachio;
 
 import java.io.DataOutput;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Analogous to {@link Appendable} and {@link DataOutput}.
@@ -10,6 +14,15 @@ import java.io.IOException;
  * @param <E> the exception type that can happen on output
  */
 public interface Output<E extends Exception> {
+
+	/**
+	 * Write raw bytes
+	 * @param b raw bytes no encoding will happen
+	 * @throws E if an error happens
+	 */
+	default void append(byte[] b) throws E {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence)}.
@@ -93,6 +106,16 @@ public interface Output<E extends Exception> {
 	 */
 	default void append(boolean b) throws E {
 		append(String.valueOf(b));
+	}
+
+	/**
+	 * Adapts an {@link Appendable} as an {@link Output}.
+	 * @param a the appendable to be wrapped.
+	 * @param charset the encoding to use
+	 * @return outputstream output
+	 */
+	public static Output<IOException> of(OutputStream a, Charset charset) {
+		return new OutputStreamOutput(a, charset);
 	}
 
 	/**
@@ -215,6 +238,40 @@ class AppendableOutput implements Output<IOException> {
 	public void append(char c) throws IOException {
 		appendable.append(c);
 
+	}
+
+}
+
+class OutputStreamOutput implements Output<IOException> {
+
+	private final OutputStream outputStream;
+
+	private final Charset charset;
+
+	public OutputStreamOutput(OutputStream outputStream, Charset charset) {
+		super();
+		this.outputStream = outputStream;
+		this.charset = charset;
+	}
+
+	@Override
+	public void append(byte[] b) throws IOException {
+		outputStream.write(b);
+	}
+
+	@Override
+	public void append(char c) throws IOException {
+		append(("" + c).getBytes(this.charset));
+	}
+
+	@Override
+	public void append(@Nullable CharSequence csq) throws @Nullable IOException {
+		append(csq.toString().getBytes(this.charset));
+	}
+
+	@Override
+	public void append(@Nullable CharSequence csq, int start, int end) throws IOException {
+		append(csq.subSequence(start, end).toString().getBytes(this.charset));
 	}
 
 }
