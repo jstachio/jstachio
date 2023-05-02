@@ -386,6 +386,7 @@ public final class Templates {
 			return new SimpleTemplateInfo( //
 					templateName, //
 					templatePath, //
+					"UTF-8", //
 					templateString, //
 					templateContentType, //
 					templateEscaper, //
@@ -554,6 +555,7 @@ public final class Templates {
 		record SimpleTemplateInfo( //
 				String templateName, //
 				String templatePath, //
+				String templateCharset, //
 				String templateString, //
 				Class<?> templateContentType, //
 				Function<String, String> templateEscaper, //

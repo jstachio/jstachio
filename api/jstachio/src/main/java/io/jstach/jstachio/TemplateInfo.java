@@ -1,5 +1,7 @@
 package io.jstach.jstachio;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +70,13 @@ public interface TemplateInfo {
 	 * @return the template content type.
 	 */
 	Class<?> templateContentType();
+
+	/**
+	 * The template {@link Charset} which is the original format of the template file. IF
+	 * the template is inline this will always be {@link StandardCharsets#UTF_8}.
+	 * @return the template Charset.
+	 */
+	String templateCharset();
 
 	/**
 	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.
