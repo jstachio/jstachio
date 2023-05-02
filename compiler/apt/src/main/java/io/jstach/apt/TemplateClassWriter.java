@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -202,6 +204,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		String templateName = (packageName.isEmpty() ? "" : packageName + ".") + rendererClassSimpleName;
 		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
 		String templateString = namedTemplate.template();
+		String templateCharset = model.charset().name();
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);
 
@@ -239,6 +242,12 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("     * @hidden");
 		println("     */");
 		println("    public static final String TEMPLATE_NAME = \"" + templateName + "\";");
+		println("");
+		println("    /**");
+		println("     * Template charset.");
+		println("     * @hidden");
+		println("     */");
+		println("    public static final String TEMPLATE_CHARSET = \"" + templateCharset + "\";");
 		println("");
 		println("    /**");
 		println("     * The models class. Use {@link #modelClass()} instead.");
@@ -445,6 +454,18 @@ class TemplateClassWriter implements LoggingSupplier {
 		}
 		println("    public String " + "templateName() {");
 		println("        return TEMPLATE_NAME;");
+		println("    }");
+
+		if (jstachio)
+			println("    @Override");
+		else {
+			println("    /**");
+			println("     * Template charset name.");
+			println("     * @return charset name of template");
+			println("     */");
+		}
+		println("    public String " + "templateCharset() {");
+		println("        return TEMPLATE_CHARSET;");
 		println("    }");
 
 		if (jstachio)
@@ -730,13 +751,14 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Appender + " " + variables.appender() + ") throws java.io.IOException {");
 		println("        var " + variables.unescapedWriter() + " = " + _Output + "." + "of(outputStream, "
 				+ StandardCharsets.class.getCanonicalName() + ".UTF_8" + ");");
+
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
 		println("");
 		println("    }");
 		var textVariables = variables.textVariables();
-		String charSet = StandardCharsets.class.getCanonicalName() + ".UTF_8";
+		String charSet = resolveCharsetCode(model.charset());
 		for (var entry : textVariables) {
 			println("    private static final byte[] " + entry.getKey() + " = (" + entry.getValue() + ").getBytes("
 					+ charSet + ");");
@@ -744,6 +766,25 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		codeWriter.setFormatCallType(formatCallType);
 
+	}
+
+	private static final Map<Charset, String> STANDARD_CHARSETS = Map.of( //
+			StandardCharsets.UTF_8, StandardCharsets.class.getName() + "." + "UTF_8", //
+			StandardCharsets.ISO_8859_1, StandardCharsets.class.getName() + "." + "ISO_8859_1", //
+			StandardCharsets.US_ASCII, StandardCharsets.class.getName() + "." + "US_ASCII", //
+			StandardCharsets.UTF_16, StandardCharsets.class.getName() + "." + "UTF_16", //
+			StandardCharsets.UTF_16BE, StandardCharsets.class.getName() + "." + "UTF_16BE", //
+			StandardCharsets.UTF_16LE, StandardCharsets.class.getName() + "." + "UTF_16LE" //
+	);
+
+	static String resolveCharsetCode(Charset charset) {
+		String ref = STANDARD_CHARSETS.get(charset);
+		if (ref != null) {
+			return ref;
+		}
+		else {
+			return "\"" + charset.name() + "\"";
+		}
 	}
 
 }
