@@ -75,10 +75,20 @@ public @interface JStacheContentType {
 	String providesMethod() default "provider";
 
 	/**
-	 * Media Type of the template to help in renderer lookup.
+	 * Media Type of the template to help in renderer lookup. The media type information
+	 * should not include the charset parameter if {@link #charsets()} is set also for
+	 * some media types the charset is inherent (e.g. application/json is inherently
+	 * UTF-8) and should not be included.
 	 * @return media type of the template or empty string no media type
 	 */
 	String mediaType() default "";
+
+	/**
+	 * The charsets supported by the escaper. If the template is encoded with a different
+	 * charset a <strong>warning</strong> will be ommited by the compiler.
+	 * @return supported charsets.
+	 */
+	String[] charsets() default {};
 
 	/**
 	 * A sentinel null object content type marker to auto resolve the content type based

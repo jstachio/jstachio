@@ -4,6 +4,7 @@ import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
 import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
 import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
 import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
+import static io.jstach.apt.prism.Prisms.RENDERER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
@@ -71,6 +72,8 @@ class TemplateClassWriter implements LoggingSupplier {
 	final String _Appendable = Appendable.class.getName();
 
 	final String _Output = "io.jstach.jstachio.Output";
+
+	final String _OutputStream = OutputStream.class.getName();
 
 	TemplateClassWriter(CodeWriter compilerManager, TextFileObject templateLoader, FormatCallType formatCallType) {
 		this.codeWriter = compilerManager;
@@ -405,7 +408,18 @@ class TemplateClassWriter implements LoggingSupplier {
 		}
 		println("    }");
 
-		println("");
+		if (jstachio) {
+			println("    @Override");
+			println("    public void write(" //
+					+ idt + className + " model, " //
+					+ idt + _OutputStream + " outputStream, " //
+					+ idt + _Formatter + " formatter" + "," //
+					+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
+			println("        render(model, outputStream, formatter, escaper, templateAppender());");
+			println("    }");
+			println("");
+		}
+
 		if (jstachio)
 			println("    @Override");
 		else {
@@ -742,6 +756,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		String _Formatter = FORMATTER_CLASS;
 
 		String _OutputStream = OutputStream.class.getName();
+		String charsetCode = resolveCharsetCode(model.charset());
 
 		println("    public static  void render(" //
 				+ idt + className + " " + dataName + ", " //
@@ -749,8 +764,8 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Formatter + " " + variables.formatter() + "," //
 				+ idt + _Escaper + " " + variables.escaper() + "," //
 				+ idt + _Appender + " " + variables.appender() + ") throws java.io.IOException {");
-		println("        var " + variables.unescapedWriter() + " = " + _Output + "." + "of(outputStream, "
-				+ StandardCharsets.class.getCanonicalName() + ".UTF_8" + ");");
+		println("        var " + variables.unescapedWriter() + " = " + _Output + "." + "of(outputStream, " + charsetCode
+				+ ");");
 
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
@@ -758,10 +773,9 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("");
 		println("    }");
 		var textVariables = variables.textVariables();
-		String charSet = resolveCharsetCode(model.charset());
 		for (var entry : textVariables) {
 			println("    private static final byte[] " + entry.getKey() + " = (" + entry.getValue() + ").getBytes("
-					+ charSet + ");");
+					+ charsetCode + ");");
 		}
 
 		codeWriter.setFormatCallType(formatCallType);

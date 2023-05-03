@@ -5,6 +5,8 @@ import java.lang.System.Logger.Level;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -259,7 +261,16 @@ public final class Templates {
 		return fqn;
 	}
 
-	private static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
+	private static Charset resolveCharset(Class<?> c) {
+		String charset = findAnnotations(c, JStacheConfig.class).map(config -> config.charset())
+				.filter(cs -> !cs.isEmpty()).findFirst().orElse(null);
+		if (charset == null) {
+			return StandardCharsets.UTF_8;
+		}
+		return Charset.forName(charset);
+	}
+
+	static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
 		var s = annotationElements(c);
 		return s.filter(p -> p != null).map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
 	}
@@ -382,11 +393,13 @@ public final class Templates {
 			Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE
 					.providesFromModelType(model, stache).getValue();
 
+			String templateCharset = resolveCharset(model).name();
+
 			long lastLoaded = System.currentTimeMillis();
 			return new SimpleTemplateInfo( //
 					templateName, //
 					templatePath, //
-					"UTF-8", //
+					templateCharset, //
 					templateString, //
 					templateContentType, //
 					templateEscaper, //
