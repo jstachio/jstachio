@@ -4,8 +4,10 @@ import static io.jstach.jstachio.spi.Templates.sneakyThrow;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.NoSuchElementException;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
@@ -32,6 +34,20 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		var filter = loadFilter(model, template);
 		filter.process(model, appendable);
 
+	}
+
+	@Override
+	public Template<?> findTemplate(Class<?> modelClass) throws Exception {
+		var template = extensions().getTemplateFinder().findTemplate(modelClass);
+		if (template instanceof Template<?> t) {
+			return t;
+		}
+		final String ind = "\n\t";
+		String reason = " This is usually because the template has not been compiled yet.";
+		throw new NoSuchElementException( //
+				"Unable to find compiled template." + reason //
+						+ ind + "template: \"" + template.description() + "\"" //
+						+ ind + "model type: \"" + modelClass + "\"");
 	}
 
 	/**

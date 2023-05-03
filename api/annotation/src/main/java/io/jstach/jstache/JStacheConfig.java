@@ -129,7 +129,8 @@ public @interface JStacheConfig {
 	 * class/package/module</a>.
 	 * <p>
 	 * The content type provider class needs a {@link JStacheContentType} annotation on
-	 * the type.
+	 * the type. If {@link #type()} is resolved to {@link JStacheType#JSTACHIO} a spec
+	 * based HTML content type will be used.
 	 * @return by default an <a href="#_unspecified">UNSPECIFIED</a> content type.
 	 * @see JStacheContentType
 	 */
@@ -140,7 +141,8 @@ public @interface JStacheConfig {
 	 * the <a href="#_config_resolution">annotated class/package/module</a> .
 	 * <p>
 	 * The formatter provider class needs a {@link JStacheFormatter} annotation on the
-	 * type.
+	 * type. If {@link #type()} is resolved to {@link JStacheType#JSTACHIO} a default
+	 * formatter that does not allow null will be used.
 	 * @return by default an <a href="#_unspecified">UNSPECIFIED</a> formatter.
 	 * @see JStacheFormatter
 	 */

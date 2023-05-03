@@ -72,9 +72,17 @@ public interface TemplateInfo {
 	Class<?> templateContentType();
 
 	/**
-	 * The template {@link Charset} which is the original format of the template file. IF
-	 * the template is inline this will always be {@link StandardCharsets#UTF_8}.
+	 * The template {@link Charset} which is the original format of the template file and
+	 * should ideally be used when encoding an HTTP response or similar. Furthermore
+	 * ideally the template charset matches the chosen {@link #templateContentType()}
+	 * {@link JStacheContentType#charsets()} otherwise the escaper may not appropriately
+	 * escape.
+	 * <p>
+	 * IF the template is inline or charset was not set this will usually be
+	 * {@link StandardCharsets#UTF_8}.
 	 * @return the template Charset.
+	 * @see JStacheContentType#charsets()
+	 * @see JStacheConfig#charset()
 	 */
 	String templateCharset();
 
@@ -146,8 +154,8 @@ public interface TemplateInfo {
 	 * @return description of the template.
 	 */
 	default String description() {
-		return String.format("TemplateInfo[name=%s, path=%s, contentType=%s]", templateName(), templatePath(),
-				templateContentType());
+		return String.format("TemplateInfo[name=%s, path=%s, contentType=%s, charset=%s]", templateName(),
+				templatePath(), templateContentType(), templateCharset());
 	}
 
 }

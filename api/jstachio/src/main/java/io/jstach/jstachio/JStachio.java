@@ -1,6 +1,8 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
@@ -11,8 +13,8 @@ import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.jstachio.spi.JStachioFactory;
 
 /**
- * Render models by using reflection to lookup generated templates as well as apply
- * filtering and fallback mechanisms.
+ * Render models by using reflection or static catalog to lookup generated templates as
+ * well as apply filtering and fallback mechanisms.
  * <h2>Example Usage</h2> <pre><code class="language-java">
  * &#64;JStache(template = "Hello {{name}}!")
  * public record HelloWorld(String name) {}
@@ -56,6 +58,24 @@ public interface JStachio extends Renderer<Object> {
 	 * {@inheritDoc}
 	 */
 	void execute(Object model, Appendable appendable) throws IOException;
+
+	/**
+	 * Finds a compiled template by class. This is useful if you want to have the template
+	 * write directly to an {@link OutputStream} via
+	 * {@link Template#write(Object, OutputStream)} which will bypass filtering and
+	 * leverage pre-encoding.
+	 * <p>
+	 * It is also useful for needed metadata such as charset and media type for HTTP
+	 * output which would normally not be needed for an {@link Appendable} but is for
+	 * directly writing to an {@link OutputStream}.
+	 * @param modelClass the models class
+	 * @return a compiled template
+	 * @throws NoSuchElementException if a template is not found and no other lookup
+	 * errors happen.
+	 * @throws Exception if template cannot be found for unexpected reasons such as
+	 * reflection errors.
+	 */
+	Template<?> findTemplate(Class<?> modelClass) throws Exception;
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering
