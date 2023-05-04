@@ -98,6 +98,10 @@ interface RenderingContext {
 	JavaExpression currentExpression();
 
 	VariableContext createEnclosedVariableContext();
+	
+	default VariableContext variableContext() {
+		return getParent().variableContext();
+	}
 
 	@Nullable
 	RenderingContext getParent();
