@@ -41,10 +41,12 @@ import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.JavaLanguageModel;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.VariableContext;
+import io.jstach.apt.internal.context.VariableContext.NullChecking;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
+import io.jstach.apt.prism.Prisms.Flag;
 
 class TemplateClassWriter {
 
@@ -611,8 +613,9 @@ class TemplateClassWriter {
 		boolean jstachio = formatCallType == FormatCallType.JSTACHIO;
 
 		var element = model.element();
+		NullChecking nullChecking = model.flags().contains(Flag.NO_NULL_CHECKING) ? NullChecking.ANNOTATED : NullChecking.ALWAYS;
 
-		VariableContext variables = VariableContext.createDefaultContext();
+		VariableContext variables = VariableContext.createDefaultContext(nullChecking);
 		String dataName = variables.introduceNewNameLike("data");
 		String className = element.getQualifiedName().toString();
 		String _Appender = APPENDER_CLASS;

@@ -69,7 +69,13 @@ public @interface JStacheFlags {
 		 * bugs. To not allow what the spec calls "dotted broken chains" you can use this
 		 * flag.
 		 */
-		NO_INVERTED_BROKEN_CHAIN
+		NO_INVERTED_BROKEN_CHAIN,
+		
+		/**
+		 * Normally falsey is either empty list, boolean false, or <code>null</code>.
+		 * This flag disables <code>null</code> as a falsey check.
+		 */
+		NO_NULL_CHECKING;
 
 	}
 

@@ -53,6 +53,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_FLAGS_NO_NULL_CHECKING = "jstache.no_null_checking";
+
+	/**
+	 * Generated
+	 */
 	@NonNullByDefault
 	public enum Flag {
 
@@ -64,6 +69,10 @@ public interface Prisms {
 		 * Generated
 		 */
 		NO_INVERTED_BROKEN_CHAIN, //
+		/**
+		 * Generated
+		 */
+		NO_NULL_CHECKING, //
 
 	}
 
