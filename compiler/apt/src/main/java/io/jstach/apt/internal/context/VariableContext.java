@@ -69,23 +69,33 @@ public class VariableContext {
 	private final @Nullable VariableContext parent;
 
 	private final boolean escaped;
-	
+
 	private final NullChecking nullChecking;
-	
+
 	public enum NullChecking {
-		ALWAYS,
-		ANNOTATED;
-		
+
+		ALWAYS, ANNOTATED;
+
 		public boolean isNullable(JavaExpression expression) {
-			return switch(this) {
+			return switch (this) {
 				case ALWAYS -> true;
 				case ANNOTATED -> expression.isNullable();
 			};
 		}
+
+		public static NullChecking defaults() {
+			return NullChecking.ALWAYS;
+		}
+
+		public boolean isDefault() {
+			return NullChecking.ALWAYS == this;
+		}
+
 	}
 
 	VariableContext(String appender, String escaper, String unescapedWriter, String formatter,
-			Map<String, Integer> variables, @Nullable VariableContext parent, boolean escaped, NullChecking nullChecking) {
+			Map<String, Integer> variables, @Nullable VariableContext parent, boolean escaped,
+			NullChecking nullChecking) {
 		this.appender = appender;
 		this.escaper = escaper;
 		this.unescapedWriter = unescapedWriter;
@@ -115,13 +125,14 @@ public class VariableContext {
 	public boolean isEscaped() {
 		return escaped;
 	}
-	
+
 	public NullChecking nullChecking() {
 		return nullChecking;
 	}
 
 	VariableContext unescaped() {
-		return new VariableContext(appender, appender, unescapedWriter, formatter, variables, parent, false, nullChecking);
+		return new VariableContext(appender, appender, unescapedWriter, formatter, variables, parent, false,
+				nullChecking);
 	}
 
 	private @Nullable Integer lookupVariable(String baseName) {

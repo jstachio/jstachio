@@ -35,7 +35,9 @@ import io.jstach.apt.GenerateRendererProcessor.RendererModel;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
+import io.jstach.apt.internal.LoggingSupport.LoggingSupplier;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.context.JavaLanguageModel;
@@ -48,7 +50,7 @@ import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
 import io.jstach.apt.prism.Prisms.Flag;
 
-class TemplateClassWriter {
+class TemplateClassWriter implements LoggingSupplier {
 
 	private final CodeWriter codeWriter;
 
@@ -68,6 +70,11 @@ class TemplateClassWriter {
 		this.codeWriter = compilerManager;
 		this.templateLoader = templateLoader;
 		this.formatCallType = formatCallType;
+	}
+
+	@Override
+	public LoggingSupport logging() {
+		return codeWriter.getConfig();
 	}
 
 	void println(String s) {
@@ -613,7 +620,11 @@ class TemplateClassWriter {
 		boolean jstachio = formatCallType == FormatCallType.JSTACHIO;
 
 		var element = model.element();
-		NullChecking nullChecking = model.flags().contains(Flag.NO_NULL_CHECKING) ? NullChecking.ANNOTATED : NullChecking.ALWAYS;
+		NullChecking nullChecking = model.flags().contains(Flag.NO_NULL_CHECKING) ? NullChecking.ANNOTATED
+				: NullChecking.ALWAYS;
+		if (isDebug() && !nullChecking.isDefault()) {
+			debug("NullChecking = ", nullChecking);
+		}
 
 		VariableContext variables = VariableContext.createDefaultContext(nullChecking);
 		String dataName = variables.introduceNewNameLike("data");

@@ -70,10 +70,10 @@ public @interface JStacheFlags {
 		 * flag.
 		 */
 		NO_INVERTED_BROKEN_CHAIN,
-		
+
 		/**
-		 * Normally falsey is either empty list, boolean false, or <code>null</code>.
-		 * This flag disables <code>null</code> as a falsey check.
+		 * Normally falsey is either empty list, boolean false, or <code>null</code>. This
+		 * flag disables <code>null</code> as a falsey check.
 		 */
 		NO_NULL_CHECKING;
 

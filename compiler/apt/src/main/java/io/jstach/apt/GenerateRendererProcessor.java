@@ -111,7 +111,7 @@ import io.jstach.apt.prism.Prisms;
 @MetaInfServices(value = Processor.class)
 @SupportedAnnotationTypes("*")
 @SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, Prisms.JSTACHE_FLAGS_DEBUG,
-		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN })
+		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN, Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING })
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
 	/**

@@ -11,7 +11,7 @@ import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.prism.Prisms.Flag;
 
-public sealed interface TemplateStack extends LoggingSupport {
+public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
 
 	public String getTemplateName();
 
@@ -100,6 +100,11 @@ public sealed interface TemplateStack extends LoggingSupport {
 
 	default boolean isDebug() {
 		return flags().contains(Flag.DEBUG);
+	}
+
+	@Override
+	default LoggingSupport logging() {
+		return this;
 	}
 
 	record SimpleTemplateStack(String templateName, TemplateStack caller, TemplateType type) implements TemplateStack {

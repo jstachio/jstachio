@@ -75,4 +75,8 @@ public class Position {
 		return new Position("", 0, "", 0);
 	}
 
+	public String description() {
+		return fileName + "[" + row + ":" + col + "]";
+	}
+
 }

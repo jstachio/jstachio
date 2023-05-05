@@ -30,7 +30,7 @@ public interface DefaultFormatter extends Formatter {
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			Class<?> c, @Nullable Object o) throws IOException {
 		if (o == null) {
-			throw new NullPointerException("null at: " + path);
+			throw new NullPointerException("null at: '" + path + "'");
 		}
 		else if (o instanceof ContextNode m) {
 			downstream.append(a, m.renderString());
@@ -47,7 +47,7 @@ public interface DefaultFormatter extends Formatter {
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			String s) throws IOException {
 		if (s == null) {
-			throw new NullPointerException("null at: " + path);
+			throw new NullPointerException("null at: '" + path + "'");
 		}
 		downstream.append(a, s);
 	}

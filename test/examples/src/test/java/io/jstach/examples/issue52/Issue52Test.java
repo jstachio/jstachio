@@ -18,7 +18,7 @@ public class Issue52Test {
 		}
 		catch (NullPointerException e) {
 			String message = e.getMessage();
-			assertEquals("null at: someString", message);
+			assertEquals("null at: 'someString'", message);
 		}
 	}
 
