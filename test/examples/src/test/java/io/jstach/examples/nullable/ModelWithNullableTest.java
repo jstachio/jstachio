@@ -108,7 +108,16 @@ public class ModelWithNullableTest {
 		NullCheckAlwaysModel m = new NullCheckAlwaysModel(namesNullable);
 		String actual = NullCheckAlwaysModelRenderer.of().execute(m);
 		String expected = """
-
+				---------
+				Eric
+				Index: 0
+				---------
+				Missing for index: 1
+				Index: 1
+				---------
+				Stan
+				Index: 2
+				---------
 				""";
 		assertEquals(expected, actual);
 	}
