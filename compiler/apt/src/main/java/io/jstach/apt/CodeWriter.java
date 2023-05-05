@@ -135,4 +135,8 @@ class CodeWriter {
 		}
 	}
 
+	public ProcessingConfig getConfig() {
+		return config;
+	}
+
 }

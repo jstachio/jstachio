@@ -273,9 +273,10 @@ public class RenderingCodeGenerator {
 		else if (expression.type().getKind() == TypeKind.DECLARED) {
 			DeclaredType declaredType = (DeclaredType) expression.type();
 			RenderingContext parent = switch (childType) {
-				case ESCAPED_VAR, UNESCAPED_VAR -> enclosing;
+				case ESCAPED_VAR, UNESCAPED_VAR, SECTION_VAR -> enclosing;
 				case ROOT, PATH, INVERTED, PARENT_PARTIAL, SECTION -> nullableRenderingContext(expression, enclosing);
-				default -> throw new IllegalArgumentException("Unexpected value: " + childType);
+				case BLOCK, LAMBDA, PARTIAL ->
+					throw new UnsupportedOperationException("Unimplemented case: " + childType);
 			};
 			return createDeclaredContext(expression, declaredType, parent);
 		}
@@ -335,7 +336,7 @@ public class RenderingCodeGenerator {
 		if (expression.model().isType(expression.type(), knownTypes._ContextNode)) {
 			return createMapNodeContext(iterable.elementExpession(), iterable);
 		}
-		return createRenderingContext(childType, iterable.elementExpession(), iterable);
+		return createRenderingContext(ContextType.SECTION_VAR, iterable.elementExpession(), iterable);
 	}
 
 	RenderingContext createInvertedRenderingContext(JavaExpression expression, RenderingContext enclosing)

@@ -228,7 +228,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 */
 	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
 			String s) throws IOException {
-		downstream.append(a, s);
+		format(downstream, a, path, String.class, s);
 	}
 
 	/**

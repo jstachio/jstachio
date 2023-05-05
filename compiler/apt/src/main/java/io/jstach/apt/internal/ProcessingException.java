@@ -96,9 +96,13 @@ public class ProcessingException extends Exception {
 				String message) {
 			var templateStack = context.getTemplateStack();
 
-			String m = message + "\n          var: \'" + name + "'" //
+			String m = message //
+					+ "\n          var: \'" + name + "'" //
+					+ "\n     position: \'" + position.description() + "'" //
 					+ "\n     template: " + templateStack.describeTemplateStack() //
-					+ "\ncontext stack: " + context.printStack() + "\n";
+					+ "\n       reason: " + ex.getMessage() //
+					+ "\ncontext stack: " + context.printStack() //
+					+ "\n";
 
 			return new VariableProcessingException(position, ex, m);
 		}

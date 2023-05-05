@@ -73,7 +73,7 @@ class RootRenderingContext implements RenderingContext {
 	public VariableContext createEnclosedVariableContext() {
 		return variables.createEnclosedContext();
 	}
-	
+
 	@Override
 	public VariableContext variableContext() {
 		return this.variables;

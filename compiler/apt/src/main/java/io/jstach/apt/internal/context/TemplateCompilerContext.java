@@ -233,6 +233,7 @@ public class TemplateCompilerContext {
 	public enum ContextType {
 
 		ROOT, ESCAPED_VAR, UNESCAPED_VAR, SECTION, // #
+		SECTION_VAR, //
 		LAMBDA, // #
 		INVERTED { // ^
 			@Override
@@ -344,8 +345,9 @@ public class TemplateCompilerContext {
 		if (name.equals(".")) {
 			return switch (childType) {
 				case ESCAPED_VAR, UNESCAPED_VAR, PATH -> enclosing;
-				case SECTION -> generator.createRenderingContext(childType, enclosing.currentExpression(), enclosing);
-				case INVERTED -> throw new ContextException("Current section can't be inverted");
+				case SECTION, SECTION_VAR ->
+					generator.createRenderingContext(childType, enclosing.currentExpression(), enclosing);
+				case INVERTED -> generator.createInvertedRenderingContext(enclosing.currentExpression(), enclosing);
 				case PARENT_PARTIAL, ROOT -> throw new ContextException("Current section can't be parent");
 				case PARTIAL -> throw new ContextException("Current section can't be partial");
 				case LAMBDA -> throw new ContextException("Current section can't be lambda");
@@ -359,7 +361,7 @@ public class TemplateCompilerContext {
 			return enclosing;
 		}
 		if (name.contains(".")) {
-			throw new IllegalStateException("dotted path not allowed here");
+			throw new IllegalStateException("(bug) dotted path not allowed here");
 		}
 		if (childType == ContextType.BLOCK) {
 			return enclosing;
@@ -388,10 +390,10 @@ public class TemplateCompilerContext {
 		}
 		RenderingContext enclosedField;
 		enclosedField = switch (childType) {
-			case ESCAPED_VAR, UNESCAPED_VAR, SECTION, PATH ->
+			case ESCAPED_VAR, UNESCAPED_VAR, SECTION, SECTION_VAR, PATH ->
 				generator.createRenderingContext(childType, entry, enclosing);
 			case INVERTED -> {
-				templateStack.debug("Invert entry: " + entry);
+				templateStack.debug("Invert entry: ", entry);
 				yield new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing), direct);
 			}
 			case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
