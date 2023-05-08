@@ -47,11 +47,11 @@ public non-sealed interface Escaper extends Appender, Function<String, String> {
 
 	/**
 	 * Escapes a String by using StringBuilder and calling
-	 * {@link #append(Appendable, CharSequence)}.
+	 * {@link #append(Output, CharSequence)}.
 	 * <p>
-	 * This method is to make Escaper implementations compatible {@link JStacheType#STACHE
-	 * zero dependency generated code} that expects Escapers to be
-	 * {@code Function<String,String>}.
+	 * This method is to make Escaper implementations compatible with
+	 * {@link JStacheType#STACHE zero dependency generated code} that expects Escapers to
+	 * be {@code Function<String,String>}.
 	 * @param t String to ge escaped.
 	 * @return escaped content
 	 * @throws UncheckedIOException if the appender or appendable throw an
@@ -64,21 +64,70 @@ public non-sealed interface Escaper extends Appender, Function<String, String> {
 		return out.toString();
 	}
 
-	// /**
-	// * Escapes the characters if it needs it. {@inheritDoc}
-	// */
-	// public void append(Appendable a, CharSequence s) throws IOException;
-	//
-	// /**
-	// * Escapes the characters if it needs it. {@inheritDoc}
-	// */
-	// public void append(Appendable a, CharSequence csq, int start, int end) throws
-	// IOException;
-	//
-	// /**
-	// * Escapes the character if it needs escaping. {@inheritDoc}
-	// */
-	// public void append(Appendable a, char c) throws IOException;
+	/**
+	 * Escapes the characters if it needs it. {@inheritDoc}
+	 */
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E;
+
+	/**
+	 * Escapes the characters if it needs it. {@inheritDoc}
+	 */
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E;
+
+	/**
+	 * Escapes the character if it needs escaping. {@inheritDoc}
+	 */
+	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E;
+
+	/**
+	 * Escapes the character if it needs escaping. The default implementation will
+	 * {@link String#valueOf(short)} and call {@link #append(Output, CharSequence)}.
+	 * {@inheritDoc}
+	 */
+	@Override
+	default <A extends Output<E>, E extends Exception> void append(A a, short s) throws E {
+		append(a, String.valueOf(s));
+	}
+
+	/**
+	 * Escapes the character if it needs escaping. The default implementation will
+	 * {@link String#valueOf(int)} and call {@link #append(Output, CharSequence)}.
+	 * {@inheritDoc}
+	 */
+	@Override
+	default <A extends Output<E>, E extends Exception> void append(A a, int i) throws E {
+		append(a, String.valueOf(i));
+	}
+
+	/**
+	 * Escapes the character if it needs escaping. The default implementation will
+	 * {@link String#valueOf(long)} and call {@link #append(Output, CharSequence)}.
+	 * {@inheritDoc}
+	 */
+	@Override
+	default <A extends Output<E>, E extends Exception> void append(A a, long l) throws E {
+		append(a, String.valueOf(l));
+	}
+
+	/**
+	 * Escapes the character if it needs escaping. The default implementation will
+	 * {@link String#valueOf(double)} and call {@link #append(Output, CharSequence)}.
+	 * {@inheritDoc}
+	 */
+	@Override
+	default <A extends Output<E>, E extends Exception> void append(A a, double d) throws E {
+		append(a, String.valueOf(d));
+	}
+
+	/**
+	 * Escapes the character if it needs escaping. The default implementation will
+	 * {@link String#valueOf(boolean)} and call {@link #append(Output, CharSequence)}.
+	 * {@inheritDoc}
+	 */
+	@Override
+	default <A extends Output<E>, E extends Exception> void append(A a, boolean b) throws E {
+		append(a, String.valueOf(b));
+	}
 
 	/**
 	 * Adapts a function to an Escaper.
