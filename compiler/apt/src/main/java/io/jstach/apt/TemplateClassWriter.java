@@ -66,6 +66,8 @@ class TemplateClassWriter implements LoggingSupplier {
 
 	final String _Appendable = Appendable.class.getName();
 
+	final String _Output = "io.jstach.jstachio.Output";
+
 	TemplateClassWriter(CodeWriter compilerManager, TextFileObject templateLoader, FormatCallType formatCallType) {
 		this.codeWriter = compilerManager;
 		this.templateLoader = templateLoader;
@@ -201,7 +203,7 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);
 
-		String _Appender = APPENDER_CLASS + "<" + _Appendable + ">";
+		String _Appender = APPENDER_CLASS;
 
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 		String _Escaper = jstachio ? ESCAPER_CLASS : _F_Escaper;
@@ -371,7 +373,7 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Formatter + " formatter" + "," //
 				+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
 		if (jstachio) {
-			println("        render(model, a, formatter, escaper, templateAppender());");
+			println("        render(model, " + _Output + ".of(a), formatter, escaper, templateAppender());");
 		}
 		else {
 			println("        render(model, a, formatter, escaper);");
@@ -631,10 +633,10 @@ class TemplateClassWriter implements LoggingSupplier {
 		String className = element.getQualifiedName().toString();
 		String _Appender = APPENDER_CLASS;
 
-		String _Escaper = jstachio ? _Appender + "<? super A>" : _F_Escaper;
+		String _Escaper = jstachio ? _Appender : _F_Escaper;
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 
-		String _A = "<A extends " + _Appendable + ">";
+		String _A = "<A extends " + _Output + "<E>, E extends Exception>";
 
 		println("    /**");
 		println("     * Renders the passed in model.");
@@ -654,7 +656,7 @@ class TemplateClassWriter implements LoggingSupplier {
 					+ idt + "A" + " " + variables.unescapedWriter() + "," //
 					+ idt + _Formatter + " " + variables.formatter() + "," //
 					+ idt + _Escaper + " " + variables.escaper() + "," //
-					+ idt + _Appender + "<A> " + variables.appender() + ") throws java.io.IOException {");
+					+ idt + _Appender + " " + variables.appender() + ") throws E {");
 		}
 		else {
 			println("    public static  void render(" //

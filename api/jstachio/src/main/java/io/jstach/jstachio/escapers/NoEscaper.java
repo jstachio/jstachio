@@ -1,25 +1,24 @@
 package io.jstach.jstachio.escapers;
 
-import java.io.IOException;
-
 import io.jstach.jstachio.Escaper;
+import io.jstach.jstachio.Output;
 
 enum NoEscaper implements Escaper {
 
 	PlainText;
 
 	@Override
-	public void append(Appendable a, CharSequence s) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
 		a.append(s);
 	}
 
 	@Override
-	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E {
 		a.append(csq, start, end);
 	}
 
 	@Override
-	public void append(Appendable a, char c) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E {
 		a.append(c);
 	}
 
