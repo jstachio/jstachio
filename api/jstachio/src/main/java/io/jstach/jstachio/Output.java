@@ -1,12 +1,18 @@
 package io.jstach.jstachio;
 
+import java.io.DataOutput;
 import java.io.IOException;
 
+/**
+ * Analogous to {@link Appendable} and {@link DataOutput}.
+ *
+ * @author agentgt
+ * @param <E> the exception type that can happen on output
+ */
 public interface Output<E extends Exception> {
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence)}.
-	 * @param a appendable to write to. Always non null.
 	 * @param s unlike appendable always non null.
 	 * @throws E if an error happens while writting to the appendable
 	 * @apiNote Implementations are required to implement this method.
@@ -15,7 +21,6 @@ public interface Output<E extends Exception> {
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence, int, int)}.
-	 * @param a appendable to write to. Never null.
 	 * @param csq Unlike appendable never null.
 	 * @param start start inclusive
 	 * @param end end exclusive
@@ -26,18 +31,17 @@ public interface Output<E extends Exception> {
 
 	/**
 	 * Appends a character to an appendable.
-	 * @param a appendable to write to. Never null.
 	 * @param c character
-	 * @throws IOException if an error happens while writting to the appendable
+	 * @throws E if an error happens while writting to the appendable
 	 * @apiNote Implementations are required to implement this method.
 	 */
+
 	public void append(char c) throws E;
 
 	/**
 	 * Write a short by using {@link String#valueOf(int)}
-	 * @param a appendable to write to. Never null.
 	 * @param s short
-	 * @throws IOException if an error happens while writting to the appendable
+	 * @throws E if an error happens while writting to the appendable
 	 */
 	default void append(short s) throws E {
 		append(String.valueOf(s));
@@ -48,7 +52,6 @@ public interface Output<E extends Exception> {
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
-	 * @param a appendable to write to. Never null.
 	 * @param i int
 	 * @throws E if an error happens while writting to the appendable
 	 */
@@ -61,7 +64,6 @@ public interface Output<E extends Exception> {
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
-	 * @param a appendable to write to. Never null.
 	 * @param l long
 	 * @throws E if an error happens while writting to the appendable
 	 */
@@ -74,7 +76,6 @@ public interface Output<E extends Exception> {
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
-	 * @param a appendable to write to. Never null.
 	 * @param d double
 	 * @throws E if an error happens while writting to the appendable
 	 */
@@ -87,7 +88,6 @@ public interface Output<E extends Exception> {
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
-	 * @param a appendable to write to. Never null.
 	 * @param b boolean
 	 * @throws E if an error happens while writting to the appendable
 	 */
@@ -95,14 +95,38 @@ public interface Output<E extends Exception> {
 		append(String.valueOf(b));
 	}
 
+	/**
+	 * Adapts an {@link Appendable} as an {@link Output}.
+	 * @param a the appendable to be wrapped.
+	 * @return string based output
+	 */
 	public static Output<IOException> of(Appendable a) {
 		return new AppendableOutput(a);
 	}
 
+	/**
+	 * Adapts a {@link StringBuilder} as an {@link Output}.
+	 * @param a the appendable to be wrapped.
+	 * @return string based output
+	 */
+	public static StringOutput of(StringBuilder a) {
+		return new StringOutput(a);
+	}
+
+	/**
+	 * String Builder based output.
+	 *
+	 * @author agentgt
+	 *
+	 */
 	public class StringOutput implements Output<RuntimeException> {
 
 		private final StringBuilder buffer;
 
+		/**
+		 * Create using supplied StringBuilder.
+		 * @param buffer never null.
+		 */
 		public StringOutput(StringBuilder buffer) {
 			super();
 			this.buffer = buffer;
@@ -128,6 +152,39 @@ public interface Output<E extends Exception> {
 		@Override
 		public String toString() {
 			return buffer.toString();
+		}
+
+		@Override
+		public void append(boolean b) throws RuntimeException {
+			buffer.append(b);
+		}
+
+		@Override
+		public void append(double d) throws RuntimeException {
+			buffer.append(d);
+		}
+
+		@Override
+		public void append(int i) throws RuntimeException {
+			buffer.append(i);
+		}
+
+		@Override
+		public void append(long l) throws RuntimeException {
+			buffer.append(l);
+		}
+
+		@Override
+		public void append(short s) throws RuntimeException {
+			buffer.append(s);
+		}
+
+		/**
+		 * The buffer that has been wrapped.
+		 * @return the wrapped builder
+		 */
+		StringBuilder getBuffer() {
+			return buffer;
 		}
 
 	}

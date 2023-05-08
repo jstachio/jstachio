@@ -22,4 +22,29 @@ enum NoEscaper implements Escaper {
 		a.append(c);
 	}
 
+	@Override
+	public <A extends Output<E>, E extends Exception> void append(A a, short s) throws E {
+		a.append(s);
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> void append(A a, int i) throws E {
+		a.append(i);
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> void append(A a, long l) throws E {
+		a.append(l);
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> void append(A a, double d) throws E {
+		a.append(d);
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> void append(A a, boolean b) throws E {
+		a.append(b);
+	}
+
 }
