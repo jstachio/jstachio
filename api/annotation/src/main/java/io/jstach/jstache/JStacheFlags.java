@@ -72,8 +72,55 @@ public @interface JStacheFlags {
 		NO_INVERTED_BROKEN_CHAIN,
 
 		/**
-		 * Normally falsey is either empty list, boolean false, or <code>null</code>. This
-		 * flag disables <code>null</code> as a falsey check.
+		 * <strong>EXPERIMENTAL:</strong> Normally falsey is either empty list, boolean
+		 * false, or <code>null</code>. This flag disables <code>null</code> as a falsey
+		 * check.
+		 *
+		 * For example when opening a section like: <pre><code class="language-hbs">
+		 * {{#myNonNull}}
+		 * Hi!
+		 * {{/myNonNull}}
+		 * </code> </pre>
+		 *
+		 * JStachio would produce code that checks if <code>myNonNull</code> is null as
+		 * well as iterate if it is a list or check if true if it is a boolean.
+		 *
+		 * <p>
+		 * However null checking will still be done if JStachio can find a
+		 * {@link ElementType#TYPE_USE} annotation with the {@link Class#getSimpleName()}
+		 * of <code>Nullable</code> on the type that is being accessed as a section. This
+		 * follows <a href="https://github.com/jspecify/jspecify">JSpecify rules</a> but
+		 * not other nullable annotations like
+		 * <a href="https://spotbugs.github.io/">SpotBugs</a> that are not
+		 * {@link ElementType#TYPE_USE}.
+		 *
+		 * <h4>Benefits</h4>
+		 *
+		 * The advantages of disabling null checking are:
+		 * <ul>
+		 * <li>Failing fast instead of just not rendering something which may make finding
+		 * bugs easier.</li>
+		 * <li>Less generated code which maybe easier to read</li>
+		 * <li>Avoid warnings of superfluous null checking by static analysis tools</li>
+		 * <li>Possible slight improvement of performance</li>
+		 * </ul>
+		 *
+		 * <h4>Caveats</h4>
+		 *
+		 * <h5>JDK Bug</h5> Because of JDK bug:
+		 * <a href="https://bugs.openjdk.org/browse/JDK-8225377">JDK-8225377</a> this
+		 * <em>nullable detection will only work if the type that is being checked is
+		 * currently within the same compile boundary as the JStache model being
+		 * analyzed!</em>
+		 *
+		 * <h5>Manually checking for null</h5> If JStachio cannot detect that the type is
+		 * nullable because it is not annotated or because of the aforementioned JDK bug
+		 * then it will conclude that it can never be null and thus you will be unable to
+		 * use section like conditions to check if is null. One workaround is to use a
+		 * custom {@link JStacheLambda} to check for null.
+		 *
+		 * @apiNote This is currently experimental and a flag because of the JDK bug. In
+		 * the future more comprehensive support will be put in {@link JStacheConfig}.
 		 */
 		NO_NULL_CHECKING;
 
