@@ -43,7 +43,7 @@ import io.jstach.jstache.JStacheType;
  * @see JStacheContentType
  * @author agentgt
  */
-public non-sealed interface Escaper extends Appender<Appendable>, Function<String, String> {
+public non-sealed interface Escaper extends Appender, Function<String, String> {
 
 	/**
 	 * Escapes a String by using StringBuilder and calling
@@ -59,30 +59,26 @@ public non-sealed interface Escaper extends Appender<Appendable>, Function<Strin
 	 */
 	@Override
 	default String apply(String t) throws UncheckedIOException {
-		StringBuilder sb = new StringBuilder();
-		try {
-			append(sb, t);
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		return sb.toString();
+		var out = new Output.StringOutput(new StringBuilder());
+		append(out, t);
+		return out.toString();
 	}
 
-	/**
-	 * Escapes the characters if it needs it. {@inheritDoc}
-	 */
-	public void append(Appendable a, CharSequence s) throws IOException;
-
-	/**
-	 * Escapes the characters if it needs it. {@inheritDoc}
-	 */
-	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException;
-
-	/**
-	 * Escapes the character if it needs escaping. {@inheritDoc}
-	 */
-	public void append(Appendable a, char c) throws IOException;
+	// /**
+	// * Escapes the characters if it needs it. {@inheritDoc}
+	// */
+	// public void append(Appendable a, CharSequence s) throws IOException;
+	//
+	// /**
+	// * Escapes the characters if it needs it. {@inheritDoc}
+	// */
+	// public void append(Appendable a, CharSequence csq, int start, int end) throws
+	// IOException;
+	//
+	// /**
+	// * Escapes the character if it needs escaping. {@inheritDoc}
+	// */
+	// public void append(Appendable a, char c) throws IOException;
 
 	/**
 	 * Adapts a function to an Escaper.
@@ -114,12 +110,13 @@ class FunctionEscaper implements Escaper {
 	}
 
 	@Override
-	public void append(Appendable a, CharSequence s) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
 		a.append(function.apply(s.toString()));
 	}
 
 	@Override
-	public void append(Appendable a, @Nullable CharSequence csq, int start, int end) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, @Nullable CharSequence csq, int start, int end)
+			throws E {
 		if (csq == null) {
 			a.append(function.apply("null"));
 			return;
@@ -128,7 +125,7 @@ class FunctionEscaper implements Escaper {
 	}
 
 	@Override
-	public void append(Appendable a, char c) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E {
 		append(a, String.valueOf(c));
 	}
 

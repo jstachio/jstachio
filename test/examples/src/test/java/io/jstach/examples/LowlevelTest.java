@@ -8,6 +8,7 @@ import io.jstach.jstache.JStache;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Escaper;
 import io.jstach.jstachio.Formatter;
+import io.jstach.jstachio.Output.StringOutput;
 import io.jstach.jstachio.formatters.DefaultFormatter;
 
 public class LowlevelTest {
@@ -32,10 +33,11 @@ public class LowlevelTest {
 	public void testRawCall() throws Exception {
 		Natives data = new Natives("s", 0, 0, 0.0d, true);
 
-		StringBuilder unescapedWriter = new StringBuilder();
+		StringOutput unescapedWriter = new StringOutput(new StringBuilder());
+
 		Formatter formatter = DefaultFormatter.provider();
-		var escaper = Appender.stringAppender();
-		Appender<StringBuilder> appender = Appender.stringAppender();
+		var escaper = Appender.defaultAppender();
+		var appender = Appender.defaultAppender();
 
 		NativesRenderer.render(data, unescapedWriter, formatter, escaper, appender);
 
@@ -63,10 +65,11 @@ public class LowlevelTest {
 	public void testRawCallWithEscaper() throws Exception {
 		Natives data = new Natives("s", 0, 0, 0.0d, true);
 
-		StringBuilder unescapedWriter = new StringBuilder();
+		StringOutput unescapedWriter = new StringOutput(new StringBuilder());
+
 		Formatter formatter = DefaultFormatter.provider();
 		Escaper escaper = Escaper.of(s -> "escaped: " + s);
-		Appender<StringBuilder> appender = Appender.stringAppender();
+		var appender = Appender.defaultAppender();
 
 		NativesRenderer.render(data, unescapedWriter, formatter, escaper, appender);
 

@@ -1,7 +1,6 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,13 +52,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 */
 	@Override
 	default String apply(@Nullable Object t) {
-		StringBuilder sb = new StringBuilder();
-		try {
-			format(StringAppender.INSTANCE, sb, "", Object.class, t);
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		var sb = new Output.StringOutput(new StringBuilder());
+		format(Appender.defaultAppender(), sb, "", Object.class, t);
 		return sb.toString();
 	}
 
@@ -81,8 +75,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param o the object which maybe null
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	<A extends Appendable, APPENDER extends Appender<A>> //
-	void format(APPENDER downstream, A a, String path, Class<?> c, @Nullable Object o) throws IOException;
+	<A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, Class<?> c,
+			@Nullable Object o) throws E;
 
 	/**
 	 * Formats the object and then sends the results to the downstream appender. The
@@ -92,7 +86,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -100,8 +94,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param c character
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			char c) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, char c)
+			throws E {
 		downstream.append(a, c);
 	}
 
@@ -113,7 +107,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -121,8 +115,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param s short
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			short s) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, short s)
+			throws E {
 		downstream.append(a, s);
 	}
 
@@ -134,7 +128,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -142,8 +136,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param i integer
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			int i) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, int i)
+			throws E {
 		downstream.append(a, i);
 	}
 
@@ -155,7 +149,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -163,8 +157,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param l long
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			long l) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, long l)
+			throws E {
 		downstream.append(a, l);
 	}
 
@@ -176,7 +170,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -184,8 +178,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param d double
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			double d) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, double d)
+			throws E {
 		downstream.append(a, d);
 	}
 
@@ -197,7 +191,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -205,8 +199,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param b boolean
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			boolean b) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, boolean b)
+			throws E {
 		downstream.append(a, b);
 	}
 
@@ -218,7 +212,7 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * formatter should never use it directly and simply pass it on to the downstream
 	 * appender.
 	 * @param <A> the appendable type
-	 * @param <APPENDER> the downstream appender type
+	 * @param <Appender> the downstream appender type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
@@ -226,8 +220,8 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 * @param s String
 	 * @throws IOException if the appender or appendable throws an exception
 	 */
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			String s) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, String s)
+			throws E {
 		format(downstream, a, path, String.class, s);
 	}
 
@@ -259,8 +253,8 @@ class ObjectFunctionFormatter implements Formatter {
 	}
 
 	@Override
-	public <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			Class<?> c, @Nullable Object o) throws IOException {
+	public <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, Class<?> c,
+			@Nullable Object o) throws E {
 		String result = function.apply(o);
 		downstream.append(a, result);
 	}

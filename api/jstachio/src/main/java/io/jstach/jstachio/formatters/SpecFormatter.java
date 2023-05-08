@@ -1,6 +1,5 @@
 package io.jstach.jstachio.formatters;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
@@ -10,6 +9,7 @@ import io.jstach.jstache.JStacheFormatter;
 import io.jstach.jstache.JStacheFormatterTypes;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Formatter;
+import io.jstach.jstachio.Output;
 import io.jstach.jstachio.context.ContextNode;
 
 /**
@@ -24,8 +24,8 @@ public interface SpecFormatter extends Formatter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			Class<?> c, @Nullable Object o) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, Class<?> c,
+			@Nullable Object o) throws E {
 		if (o instanceof ContextNode m) {
 			downstream.append(a, m.renderString());
 		}
@@ -39,8 +39,8 @@ public interface SpecFormatter extends Formatter {
 	 * if a String is null then nothing will be rendered per the mustache spec. </strong>.
 	 */
 	@Override
-	default <A extends Appendable, APPENDER extends Appender<A>> void format(APPENDER downstream, A a, String path,
-			String s) throws IOException {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, String s)
+			throws E {
 		if (s != null) {
 			downstream.append(a, s);
 		}

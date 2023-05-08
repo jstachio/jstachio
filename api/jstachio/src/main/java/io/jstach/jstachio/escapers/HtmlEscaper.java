@@ -1,8 +1,7 @@
 package io.jstach.jstachio.escapers;
 
-import java.io.IOException;
-
 import io.jstach.jstachio.Escaper;
+import io.jstach.jstachio.Output;
 
 enum HtmlEscaper implements Escaper {
 
@@ -17,13 +16,13 @@ enum HtmlEscaper implements Escaper {
 	private static final String AMP = "&amp;";
 
 	@Override
-	public void append(Appendable a, CharSequence s) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
 		s = s == null ? "null" : s;
 		append(a, s, 0, s.length());
 	}
 
 	@Override
-	public void append(Appendable a, CharSequence csq, int start, int end) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E {
 		csq = csq == null ? "null" : csq;
 		for (int i = start; i < end; i++) {
 			char c = csq.charAt(i);
@@ -58,7 +57,7 @@ enum HtmlEscaper implements Escaper {
 	}
 
 	@Override
-	public void append(Appendable a, char c) throws IOException {
+	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E {
 		switch (c) {
 			case '&' -> {
 				a.append(AMP);
