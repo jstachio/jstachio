@@ -19,6 +19,8 @@ import java.lang.annotation.Target;
  * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
+ * <li>annotation processor compiler arg options (<code>-A</code>). The flags are
+ * lowercased and prefixed with "<code>jstache.</code>"</li>
  * </ol>
  * <em>The flags are NOT combined but rather the first found dictates the flags set or not
  * (including empty)</em>
@@ -35,11 +37,16 @@ public @interface JStacheFlags {
 	/**
 	 * Compiler flags that will be used on for this model.
 	 * @return flags
+	 * @see JStacheFlags
 	 */
 	Flag[] flags();
 
 	/**
-	 * Compiler flags.
+	 * Compiler flags. Besides setting with {@link JStacheFlags} the flags are also
+	 * available as annotation processor options but are prefixed with
+	 * "<code>jstache.</code>" and lowercased
+	 * <p>
+	 * For example {@link Flag#DEBUG} would be: <code>-Ajstache.debug=true/false</code>
 	 *
 	 * @apiNote SUBJECT TO CHANGE!
 	 * @author agentgt

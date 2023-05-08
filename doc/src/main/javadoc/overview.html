@@ -436,10 +436,13 @@ dependencies {
 
 <h3 id="compile_config">Compile time Configuration</h3>
 
-{@link io.jstach.jstache.JStache} and {@link io.jstach.jstache.JStacheConfig} 
-are heavily documented on static configuration of JStachio via annotations.
-
+{@link io.jstach.jstache.JStache}, {@link io.jstach.jstache.JStacheConfig},
+and {@link io.jstach.jstache.JStacheFlags}
+are heavily documented on static configuration of JStachio via annotations
+as well as in some cases compiler command line arguments.
+<p>
 JStachio static config allows you to configure:
+</p>
 
 <ol>
   <li>Where external templates are stored and referred.</li>
@@ -447,6 +450,7 @@ JStachio static config allows you to configure:
   <li>What types are allowed to be outputted without compiler error</li>
   <li>How types are formatted</li>
   <li>Escaping</li>
+  <li>Null checking</li>
   <li>... and much more</li>
 </ol>
 
