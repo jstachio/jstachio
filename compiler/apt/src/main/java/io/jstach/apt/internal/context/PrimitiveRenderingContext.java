@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Victor Nazarov <asviraspossible@gmail.com>
+ * Copyright (c) 2023, Adam Gent
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -32,43 +32,48 @@ package io.jstach.apt.internal.context;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Victor Nazarov
+ * @author agentgt
  */
-public class ContextException extends Exception {
+class PrimitiveRenderingContext implements RenderingContext {
 
-	private static final long serialVersionUID = -1496891677459676774L;
+	private final JavaExpression expression;
 
-	private ContextException(@Nullable String message, TypeException ex) {
-		super(message + ": type error: " + ex.getMessage(), ex);
+	private final RenderingContext parent;
+
+	PrimitiveRenderingContext(JavaExpression expression, RenderingContext parent) {
+		this.expression = expression;
+		this.parent = parent;
 	}
 
-	public ContextException(@Nullable String message) {
-		super(message);
+	@Override
+	public String endSectionRenderingCode() {
+		return parent.endSectionRenderingCode();
 	}
 
-	public static class TypeNotAllowedContextException extends ContextException {
-
-		private static final long serialVersionUID = 3516540102898167374L;
-
-		TypeNotAllowedContextException(@Nullable String message, TypeException ex) {
-			super(message, ex);
-
-		}
-
-		TypeNotAllowedContextException(String message) {
-			super(message);
-		}
-
+	@Override
+	public @Nullable JavaExpression get(String name) throws ContextException {
+		// TODO maybe this should use parent?
+		return null;
 	}
 
-	public static class FieldNotFoundContextException extends ContextException {
+	@Override
+	public JavaExpression currentExpression() {
+		return expression;
+	}
 
-		private static final long serialVersionUID = -4520709629488727676L;
+	@Override
+	public String beginSectionRenderingCode() {
+		return parent.beginSectionRenderingCode();
+	}
 
-		FieldNotFoundContextException(String message) {
-			super(message);
-		}
+	@Override
+	public VariableContext createEnclosedVariableContext() {
+		return parent.createEnclosedVariableContext();
+	}
 
+	@Override
+	public @Nullable RenderingContext getParent() {
+		return parent;
 	}
 
 }
