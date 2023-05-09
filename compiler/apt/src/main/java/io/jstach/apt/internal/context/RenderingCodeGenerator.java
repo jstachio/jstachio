@@ -38,6 +38,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -220,6 +221,7 @@ public class RenderingCodeGenerator {
 
 	private boolean USE_LIST_CONTEXT = Boolean.getBoolean("USE_LIST_CONTEXT");
 
+	// childType here is more like "current type"
 	RenderingContext createRenderingContext(ContextType childType, JavaExpression expression,
 			RenderingContext enclosing) throws TypeException {
 		var contextNode = knownTypes._ContextNode.orElse(null);
@@ -237,10 +239,12 @@ public class RenderingCodeGenerator {
 			var extendsBound = wildcardType.getExtendsBound();
 			return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
 		}
-		else if (javaModel.isType(expression.type(), knownTypes._boolean) && !childType.isVar()) {
+		else if (javaModel.isType(expression.type(), knownTypes._boolean)
+				&& !(childType.isVar() || childType == ContextType.ROOT)) {
 			return new BooleanRenderingContext(expression.text(), enclosing);
 		}
-		else if (javaModel.isType(expression.type(), knownTypes._Boolean) && !childType.isVar()) {
+		else if (javaModel.isType(expression.type(), knownTypes._Boolean)
+				&& !(childType.isVar() || childType == ContextType.ROOT)) {
 			RenderingContext nullableContext = nullableRenderingContext(expression, enclosing);
 			BooleanRenderingContext booleanContext = new BooleanRenderingContext(expression.text(), nullableContext);
 			return booleanContext;
@@ -279,6 +283,9 @@ public class RenderingCodeGenerator {
 					throw new UnsupportedOperationException("Unimplemented case: " + childType);
 			};
 			return createDeclaredContext(expression, declaredType, parent);
+		}
+		else if (expression.type() instanceof PrimitiveType) {
+			return new PrimitiveRenderingContext(expression, enclosing);
 		}
 		else {
 			return new NoDataContext(expression, enclosing);
@@ -395,9 +402,10 @@ public class RenderingCodeGenerator {
 			return new BooleanRenderingContext(
 					"(" + expression.text() + ") == null || (" + expression.text() + ").length == 0", enclosing);
 		}
-		else
+		else {
 			throw new TypeException(MessageFormat.format("Can''t invert {0} expression of {1} type", expression.text(),
 					expression.type()));
+		}
 	}
 
 	private RenderingContext nullableRenderingContext(JavaExpression expression, RenderingContext context) {

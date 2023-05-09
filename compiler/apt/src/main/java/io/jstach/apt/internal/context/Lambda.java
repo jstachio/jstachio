@@ -117,13 +117,16 @@ public sealed interface Lambda {
 			else if (raw) {
 				throw new AnnotatedException(method, "Only String return types can be annotated with Raw");
 			}
-			else if (method.getReturnType() instanceof DeclaredType dt) {
+			else {
 				returnType = ReturnKind.MODEL;
 			}
-			else {
-				throw new UnsupportedOperationException(
-						"Currently only raw String and model Class return types are supported.");
-			}
+			// else if (method.getReturnType() instanceof DeclaredType dt) {
+			// returnType = ReturnKind.MODEL;
+			// }
+			// else {
+			// throw new UnsupportedOperationException(
+			// "Currently only raw String and model Class return types are supported.");
+			// }
 			return new Method(expression, name, method, returnType, params, template);
 		}
 	}

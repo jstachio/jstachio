@@ -35,12 +35,14 @@ import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeMirror;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.AnnotatedException;
@@ -128,21 +130,22 @@ public class TemplateCompilerContext {
 					yield variables.unescapedWriter() + ".append(" + entry.text() + ");";
 				}
 				case MODEL -> {
-					DeclaredType modelType;
-					if (lm.method().methodElement().getReturnType() instanceof @NonNull DeclaredType dt) {
-						modelType = dt;
-					}
-					else {
-						throw new IllegalStateException("Expected declaredType");
+					TypeMirror modelType = lm.method().methodElement().getReturnType();
+					if (!(modelType instanceof DeclaredType || modelType instanceof PrimitiveType)) {
+						throw new ContextException.TypeNotAllowedContextException(
+								"Lambda return type not supported: " + modelType);
 					}
 					TemplateCompilerContext context;
+					String variableName;
 					try {
-						context = createForLambda(lm.name(), modelType);
+						var tuple = createForLambda(lm.name(), modelType);
+						context = tuple.getValue();
+						variableName = tuple.getKey();
 					}
 					catch (TypeException e) {
 						throw new ContextException.TypeNotAllowedContextException(e.getMessage(), e);
 					}
-					String variableName = context.context.currentExpression().text();
+
 					String variableType = "var";
 
 					StringReader sr = new StringReader(rawBody);
@@ -209,7 +212,7 @@ public class TemplateCompilerContext {
 				ContextType.PARTIAL);
 	}
 
-	TemplateCompilerContext createForLambda(String lambdaName, DeclaredType model)
+	Entry<String, TemplateCompilerContext> createForLambda(String lambdaName, TypeMirror model)
 			throws AnnotatedException, TypeException {
 		String modelVariableName = variables.introduceNewNameLike(lambdaName);
 		var templateStack = this.templateStack.ofLambda(lambdaName);
@@ -218,7 +221,8 @@ public class TemplateCompilerContext {
 		JavaExpression javaExpression = javaModel.expression(expression, model);
 		ContextType contextType = ContextType.ROOT;
 		RenderingContext field = generator.createRenderingContext(contextType, javaExpression, context);
-		return new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, contextType);
+		return Map.entry(modelVariableName,
+				new TemplateCompilerContext(templateStack, lambdas, generator, variables, field, contextType));
 
 	}
 

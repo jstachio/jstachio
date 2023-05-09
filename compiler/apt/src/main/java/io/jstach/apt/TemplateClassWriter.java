@@ -355,6 +355,20 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("");
 		}
 
+		/*
+		 * We generate the StringBuilder method for performance reasons because wrapping
+		 * exceptions seems to have a cost according to JMH
+		 */
+		if (jstachio && GeneratedMethod.execute.gen(generatedMethods)) {
+			println("    @Override");
+			println("    public StringBuilder execute(" + className + " model, StringBuilder sb) {");
+			println("        render(model, " + _Output
+					+ ".of(sb), templateFormatter(), templateEscaper(), templateAppender());");
+			println("        return sb;");
+			println("    }");
+			println("");
+		}
+
 		if (jstachio)
 			println("    @Override");
 		else {
