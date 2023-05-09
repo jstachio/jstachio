@@ -60,7 +60,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E;
 
 	/**
-	 * Appends a character to an appendable.
+	 * Appends a character to the output.
 	 * @param <A> output type
 	 * @param <E> exception type
 	 * @param a appendable to write to. Never null.
@@ -71,7 +71,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E;
 
 	/**
-	 * Write a short by using {@link String#valueOf(int)}
+	 * Appends a short to the output.
 	 * @param <A> output type
 	 * @param <E> exception type
 	 * @param a appendable to write to. Never null.
@@ -81,7 +81,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, short s) throws E;
 
 	/**
-	 * Write a int by using {@link String#valueOf(int)}.
+	 * Appends an int to the output.
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
@@ -94,7 +94,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, int i) throws E;
 
 	/**
-	 * Write a long by using {@link String#valueOf(long)}.
+	 * Appends a long to the output.
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
@@ -107,7 +107,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, long l) throws E;
 
 	/**
-	 * Write a long by using {@link String#valueOf(long)}.
+	 * Appends a double to the output.
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
@@ -120,7 +120,7 @@ public sealed interface Appender permits Escaper {
 	public <A extends Output<E>, E extends Exception> void append(A a, double d) throws E;
 
 	/**
-	 * Write a long by using {@link String#valueOf(long)}.
+	 * Appends a boolean to the output.
 	 * <p>
 	 * Implementations should override if they want different behavior or able to support
 	 * appendables that can write the native type.
