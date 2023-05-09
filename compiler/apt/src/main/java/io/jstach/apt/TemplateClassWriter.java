@@ -654,15 +654,22 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		println("    /**");
 		println("     * Renders the passed in model.");
-		if (jstachio)
+		if (jstachio) {
 			println("     * @param <A> appendable type.");
+			println("     * @param <E> error type.");
+		}
 		println("     * @param " + dataName + " model");
 		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
 		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
 		println("     * @param " + variables.escaper() + " used to write escaped variables.");
 		if (jstachio)
 			println("     * @param " + variables.appender() + " used to write unescaped variables.");
-		println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
+		if (jstachio) {
+			println("     * @throws E if an error occurs while writing to the appendable");
+		}
+		else {
+			println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
+		}
 		println("     */");
 		if (jstachio) {
 			println("    public static " + _A + " void render(" //
