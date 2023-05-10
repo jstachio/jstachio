@@ -58,6 +58,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_FLAGS_PRE_ENCODE = "jstache.pre_encode";
+
+	/**
+	 * Generated
+	 */
 	@NonNullByDefault
 	public enum Flag {
 
@@ -73,6 +78,10 @@ public interface Prisms {
 		 * Generated
 		 */
 		NO_NULL_CHECKING, //
+		/**
+		 * Generated
+		 */
+		PRE_ENCODE, //
 
 	}
 
@@ -123,7 +132,17 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String OUTPUT_CLASS = "io.jstach.jstachio.Output";
+
+	/**
+	 * Generated
+	 */
 	public static final String TEMPLATE_CLASS = "io.jstach.jstachio.Template";
+
+	/**
+	 * Generated
+	 */
+	public static final String ENCODED_TEMPLATE_CLASS = "io.jstach.jstachio.Template.EncodedTemplate";
 
 	/**
 	 * Generated

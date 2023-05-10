@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * Analogous to {@link Appendable} and {@link DataOutput}.
  *
@@ -14,15 +12,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <E> the exception type that can happen on output
  */
 public interface Output<E extends Exception> {
-
-	/**
-	 * Write raw bytes
-	 * @param b raw bytes no encoding will happen
-	 * @throws E if an error happens
-	 */
-	default void append(byte[] b) throws E {
-		throw new UnsupportedOperationException();
-	}
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence)}.
@@ -255,23 +244,18 @@ class OutputStreamOutput implements Output<IOException> {
 	}
 
 	@Override
-	public void append(byte[] b) throws IOException {
-		outputStream.write(b);
-	}
-
-	@Override
 	public void append(char c) throws IOException {
-		append(("" + c).getBytes(this.charset));
+		outputStream.write(("" + c).getBytes(this.charset));
 	}
 
 	@Override
-	public void append(@Nullable CharSequence csq) throws @Nullable IOException {
-		append(csq.toString().getBytes(this.charset));
+	public void append(CharSequence csq) throws IOException {
+		outputStream.write(csq.toString().getBytes(this.charset));
 	}
 
 	@Override
-	public void append(@Nullable CharSequence csq, int start, int end) throws IOException {
-		append(csq.subSequence(start, end).toString().getBytes(this.charset));
+	public void append(CharSequence csq, int start, int end) throws IOException {
+		outputStream.write(csq.subSequence(start, end).toString().getBytes(this.charset));
 	}
 
 }
