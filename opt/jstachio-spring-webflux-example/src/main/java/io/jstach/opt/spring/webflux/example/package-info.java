@@ -3,13 +3,14 @@
  * <p>
  * Application has the following:
  * <ul>
- * <li>{@link io.jstach.opt.spring.webflux.example.hello.HelloController Controller}</li>
- * <li>{@link io.jstach.opt.spring.webflux.example.hello.HelloModel Model}</li>
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.hello.HelloController
+ * Controller}</li>
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.hello.HelloModel Model}</li>
  * <li>io.jstach.opt.spring.webflux.example.hello.HelloModelView (jstachio generated
  * renderer)</li>
- * <li>{@link io.jstach.opt.spring.webflux.example.SpringTemplateConfig Bean
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.SpringTemplateConfig Bean
  * configuration}</li>
- * <li>{@link io.jstach.opt.spring.webflux.example.WebConfig Web configuration}</li>
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.WebConfig Web configuration}</li>
  * </ul>
  * <strong> Make sure to take note of the annotations on this module as they define the
  * jstachio config needed to integrate with Spring. </strong> This is because much of

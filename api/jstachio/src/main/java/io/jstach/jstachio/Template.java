@@ -74,7 +74,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * <strong>EXPERIMENTAL</strong> support of pre-encoded templates that have the static
 	 * parts of the template already encoded into bytes. To generate templates that
 	 * support this interface and are pre-encoded add {@link JStacheFlags.Flag#PRE_ENCODE}
-	 * to the {@link JStacheFlags template flags}.
+	 * to the {@linkplain JStacheFlags template flags}.
 	 *
 	 * <p>
 	 * This interface is to support
@@ -100,6 +100,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @apiNote The passed in {@link OutputStream} <em>will only have
 	 * {@link OutputStream#write(byte[])} called</em> and no mutation of the passed in
 	 * byte array should happen downstream.
+	 * @see JStacheFlags.Flag#PRE_ENCODE
 	 */
 	public interface EncodedTemplate<T> extends Template<T> {
 

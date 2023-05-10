@@ -13,7 +13,7 @@ import io.jstach.jstache.JStachePath;
  * <p>
  * Next checkout the projects main package {@link io.jstach.opt.spring.example}.
  * <p>
- * This project uses the {@link io.jstach.opt.jmustache jmustache extension} which will
+ * This project uses the {@linkplain io.jstach.opt.jmustache jmustache extension} which will
  * allow editing of mustache template files while the application is loaded 
  * (e.g. <code>spring-boot:run</code>) without recompiling.
  * <p>

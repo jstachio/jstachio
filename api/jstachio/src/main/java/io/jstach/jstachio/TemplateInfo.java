@@ -27,7 +27,7 @@ public interface TemplateInfo {
 
 	/**
 	 * If the template is a classpath resource file this will return the location that was
-	 * originally resolved via {@link JStacheConfig config resolution}.
+	 * originally resolved via {@linkplain JStacheConfig config resolution}.
 	 * @return the location of the template or empty if the template is inlined.
 	 * @apiNote since the return is the original path resolved by the annotation processor
 	 * it may return a path with a starting "/" and thus it is recommend you call

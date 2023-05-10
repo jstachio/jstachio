@@ -90,15 +90,19 @@ The only module needed during runtime is
 
 <p>
 Because mustache templates need to be analyzed at compile time JStachio does not
-support dynamic templates. Dynamic meaning that the template content cannot be changed
+support dynamic templates. Dynamic meaning that the template markup cannot be changed
+(e.g. concatenating a string to be used as a template)
 at runtime without calling the Java compiler (which would generally be a bad idea for hosted platforms). 
 <em>
-Consequently JStachio is generally (ignoring extensions) not a good fit for user
+Consequently JStachio is generally (ignoring extensions) is not a good fit for user
 created templates (e.g. templates coming from a database).
 </em>
 </p>
 <p>
-However a custom lambda could be made to dynamically render using a reflection based
+However JStachio has very good <strong>{@linkplain io.jstach.jstache.JStacheLambda lambda section}</strong> 
+support that can largely reproduce a lot of dynamic functionality. Furthermore 
+a custom {@linkplain io.jstach.jstache.JStacheLambda lambda}  could be made to render dynamically constructed
+templates using a reflection based
 mustach engine such as <a href="https://github.com/samskivert/jmustache">JMustache</a>
 for the places where that is needed.
 
@@ -446,12 +450,12 @@ JStachio static config allows you to configure:
 </p>
 
 <ol>
-  <li>Where external templates are stored and referred.</li>
-  <li>How code is generated including what interfaces or classes are extended</li>
-  <li>What types are allowed to be outputted without compiler error</li>
-  <li>How types are formatted</li>
-  <li>Escaping</li>
-  <li>Null checking</li>
+  <li>Where {@linkplain io.jstach.jstache.JStacheConfig#pathing() external templates are stored} and referred.</li>
+  <li>How code is generated including what {@linkplain io.jstach.jstache.JStacheInterfaces interfaces or classes are extended}</li>
+  <li>What {@linkplain io.jstach.jstache.JStacheFormatterTypes types are allowed to be outputted without compiler error}</li>
+  <li>How types are {@linkplain io.jstach.jstachio.Formatter formatted}</li>
+  <li>{@linkplain io.jstach.jstachio.Escaper Escaping}</li>
+  <li>{@linkplain io.jstach.jstache.JStacheFlags.Flag#NO_NULL_CHECKING Null checking}</li>
   <li>... and much more</li>
 </ol>
 
@@ -589,7 +593,7 @@ The solution is discussed in {@link io.jstach.jstache.JStacheCatalog} annotation
 
 Mustache is inherently simple and is called logicless for a reason.
 If you need complicated behavior then it is recommended to put that behavior in
-either a {@link io.jstach.jstache.JStacheLambda lambda} or method call.
+either a {@linkplain io.jstach.jstache.JStacheLambda lambda} or method call.
 <p>
 Because JStachio always requires an annotated class that serves as the model it can be argued 
 that the model associated with the template is more of a view model

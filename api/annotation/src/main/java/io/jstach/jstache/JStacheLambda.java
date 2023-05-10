@@ -7,7 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Tag a method to be used as a mustache lambda section.
+ * Tag a method to be used as a mustache lambda section for custom logic.
+ * <p>
+ * Lambda sections look like regular mustache sections but execute code and is one of the
+ * only ways to add custom logic to mustache templates.
  *
  * Lambda sections look something like: <pre><code class="language-hbs">
  * {{#context}}
@@ -44,6 +47,51 @@ import java.lang.annotation.Target;
  *     return new Model("Hello " + context.name() + "!");
  * }
  * </code> </pre>
+ *
+ * <strong>TIP:</strong> A nice feature of mustache when using lambdas is leveraging
+ * dotted path support for reduced syntax noise:
+ *
+ * <pre><code class="language-hbs">
+ * {{#context.lambda}}{{message}}{{/context.lambda}}
+ * </code> </pre>
+ *
+ * Notice how this sort of resembles OOP method calls. We can even pass virtual keys like
+ * <code>-index</code>.
+ *
+ * <pre><code class="language-hbs">
+ * {{#someList}}
+ * {{.}} is {{#-index.isEven}}{{#.}}even{{/.}}{{^.}}odd{{/.}}{{/-index.isEven}}
+ * {{/someList}}
+ * </code> </pre>
+ *
+ * <pre><code class="language-java">
+ * &#64;JStacheLambda
+ * public boolean isEven(int index) {
+ *     return index % 2 == 0;
+ * }
+ * </code> </pre>
+ *
+ * Output of <code>someList = List.of("a", "b", "c")</code>: <pre>
+ * a is odd
+ * b is even
+ * c is odd
+ * </pre>
+ *
+ * If we want to duplicate or wrap the results of the lambda we can use lambda templates:
+ *
+ * <pre><code class="language-java">
+ * &#64;JStacheLambda(template="&lt;span class="{{>@section}}"&gt;{{>@section}}&lt;span&gt;")
+ * public boolean isEven(int index) {
+ *     return index % 2 == 0;
+ * }
+ * </code> </pre>
+ *
+ * Output of <code>someList = List.of("a", "b", "c")</code>: <pre>
+ * a is &lt;span class="odd"&gt;odd&lt;span&gt;
+ * b is &lt;span class="even"&gt;even&lt;span&gt;
+ * c is &lt;span class="odd"&gt;odd&lt;span&gt;
+ * </pre>
+ *
  * <p>
  * JStachio lambdas just like normal method calls do not have to be directly enclosed on
  * the context objects but can be on implemented interfaces or inherited and thus models

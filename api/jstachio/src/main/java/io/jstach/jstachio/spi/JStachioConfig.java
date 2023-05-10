@@ -26,7 +26,7 @@ import io.jstach.jstache.JStacheConfig;
  * <li>{@link #SERVICELOADER_TEMPLATE_DISABLE}</li>
  * <li>{@link #LOGGING_DISABLE}</li>
  * </ul>
- * <strong>This configuration is for runtime only and {@link JStacheConfig not static
+ * <strong>This configuration is for runtime only and NOT {@linkplain JStacheConfig static
  * configuration} needed for code generation.</strong>
  *
  * @see JStachioExtension

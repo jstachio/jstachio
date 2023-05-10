@@ -415,7 +415,7 @@ import java.util.Optional;
  * <li>{@link #RESOURCES_PATH_OPTION}</li>
  * </ul>
  *
- * The previously mentioned {@link JStacheFlags compiler flags} are also available as
+ * The previously mentioned {@linkplain JStacheFlags compiler flags} are also available as
  * annotation options. The flags are prefixed with "<code>jstache.</code>". For example
  * {@link JStacheFlags.Flag#DEBUG} would be:
  * <p>

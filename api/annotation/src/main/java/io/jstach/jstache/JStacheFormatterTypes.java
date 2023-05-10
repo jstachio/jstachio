@@ -22,14 +22,14 @@ import java.net.URL;
  * <li>{@link URL}
  * </ul>
  * <p>
- * {@link JStacheConfig Config lookup and precedence} is as follows:
+ * {@linkplain JStacheConfig Config lookup and precedence} is as follows:
  * <ol>
  * <li>type annotated with JStache and this annotation.
  * <li>enclosing class (of type annotated with JStache) with this annotation with inner to
  * outer order.
  * <li>package annotated with this annotation.
  * <li>module annotated with this annotation.
- * <li><em>the chosen {@link JStacheFormatter formatter} with this annotation.</em>
+ * <li><em>the chosen {@linkplain JStacheFormatter formatter} with this annotation.</em>
  * </ol>
  *
  * However unlike other annotations in this library the found annotation settings are

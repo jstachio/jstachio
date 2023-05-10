@@ -3,8 +3,8 @@
  * <p>
  * Has the following:
  * <ul>
- * <li>{@link MessageController Controller}</li>
- * <li>{@link MessageConfiguration View Configurer}</li>
+ * <li>{@linkplain MessageController Controller}</li>
+ * <li>{@linkplain MessageConfiguration View Configurer}</li>
  * </ul>
  * <strong> Make sure to take note of the {@link io.jstach.opt.spring.example/ annotations
  * on this module as they define the jstachio config} needed to integrate with Spring.

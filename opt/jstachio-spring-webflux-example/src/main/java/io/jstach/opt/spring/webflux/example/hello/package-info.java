@@ -3,8 +3,9 @@
  * <p>
  * Has the following:
  * <ul>
- * <li>{@link io.jstach.opt.spring.webflux.example.hello.HelloController Controller}</li>
- * <li>{@link io.jstach.opt.spring.webflux.example.hello.HelloModel Model}</li>
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.hello.HelloController
+ * Controller}</li>
+ * <li>{@linkplain io.jstach.opt.spring.webflux.example.hello.HelloModel Model}</li>
  * <li>io.jstach.opt.spring.webflux.example.HelloModelView (jstachio generated
  * renderer)</li>
  * </ul>

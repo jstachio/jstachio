@@ -33,7 +33,7 @@ import io.jstach.jstachio.spi.JStachioFactory;
  *
  * The default {@link JStachio} uses the {@link ServiceLoader} to load
  * {@link JStachioExtension}s. You can customize it by adding jars that have provided
- * {@link JStachioExtension}s or by {@link JStachioConfig adjusting config}.
+ * {@link JStachioExtension}s or by {@linkplain JStachioConfig adjusting config}.
  *
  * <p>
  *

@@ -125,12 +125,12 @@ public @interface JStacheConfig {
 	JStacheInterfaces[] interfacing() default {};
 
 	/**
-	 * Optional content type for all models in the <a href="#_config_resolution">annotated
-	 * class/package/module</a>.
+	 * Optional content type which determines what <strong>escaper</strong> to use for all
+	 * models in the <a href="#_config_resolution">annotated class/package/module</a>.
 	 * <p>
-	 * The content type provider class needs a {@link JStacheContentType} annotation on
-	 * the type. If {@link #type()} is resolved to {@link JStacheType#JSTACHIO} a spec
-	 * based HTML content type will be used.
+	 * The contentType class needs a {@link JStacheContentType} annotation on the type. If
+	 * {@link #type()} is resolved to {@link JStacheType#JSTACHIO} a spec based HTML
+	 * content type will be used if unspecified.
 	 * @return by default an <a href="#_unspecified">UNSPECIFIED</a> content type.
 	 * @see JStacheContentType
 	 */

@@ -98,8 +98,8 @@ public interface Output<E extends Exception> {
 	}
 
 	/**
-	 * Adapts an {@link Appendable} as an {@link Output}.
-	 * @param a the appendable to be wrapped.
+	 * Adapts an {@link OutputStream} as an {@link Output}.
+	 * @param a the OutputStream to be wrapped.
 	 * @param charset the encoding to use
 	 * @return outputstream output
 	 */
@@ -118,7 +118,7 @@ public interface Output<E extends Exception> {
 
 	/**
 	 * Adapts a {@link StringBuilder} as an {@link Output}.
-	 * @param a the appendable to be wrapped.
+	 * @param a the StringBuilder to be wrapped.
 	 * @return string based output
 	 */
 	public static StringOutput of(StringBuilder a) {
