@@ -14,7 +14,7 @@ Templates are compiled into readable Java source code and value bindings are sta
 * **[Current released JStachio doc](https://jstach.io/doc/jstachio/current/apidocs)** 
 
 The doc is also on javadoc.io but is not aggregated like the above.
-The javadoc is the preferred documentation and the rest of this readme
+The aggregated javadoc is the preferred documentation and the rest of this readme
 is mainly for ~~propaganda~~ marketing purposes.
 
 For previous releases:
@@ -62,6 +62,22 @@ Where `VERSION` is the version you want.
  * Zero dependencies other than JStachio itself
  * An absolutely zero runtime dependency option is avaialable (as in all the code needed is generated and not even jstachio is needed during runtime). No need to use Maven shade for annotation processors and other zero dep projects. Also useful for Graal VM native projects for as minimal footprint as possible.
  * First class support for Spring Framework (as in the project itself will provide plugins as opposed to an aux project)
+
+## Performance
+
+**It is not a goal of this project to be the fastest java templating engine!**
+
+<sub><sup>(however it is currently the fastest that I know when this readme was last updated)</sup></sub>
+
+Not that peformance matters much with templating languges 
+(it is rarely the bottleneck) but JStachio is very fast:
+
+![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
+
+The one called Manual is as the name implies. Raw Java code.
+The one called `JStachioNoLambda` uses the same template as mustache.java 
+and does not rely on the advance lambda features that JStachio supports.
+
 
 ## Quick Example
 
@@ -290,12 +306,6 @@ target/classes/user.mustache:5: error: Unable to render field: type error: Can't
 See `test/examples` project for more examples.
 
 
-## Current differences from mustache spec
-
- * Delimiter redefinition is not supported
- * Whitespace in block tags is explicit (currently the [spec is ill-defined on this](https://github.com/mustache/spec/pull/131)) 
- * Inheritance block scoping is eager: https://github.com/mustache/spec/pull/129
-   * I hope to fix that soon
 
 ## Java specific extensions
 
@@ -345,18 +355,6 @@ JStachio unlike the spec does not support returning dynamic templates that are t
 However dynamic output can be achieved by the caller changing the contents of the lambda section as the contents of the
 section act as an inline template.
 
-## Performance
-
-*It is not a goal of this project to be the fastest templating engine*.
-
-Not that peformance matters much with templating languges 
-(it is rarely the bottleneck) but JStachio is very fast and is basically equivalent to jte.
-
-![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
-
-The one called Manual is as the name implies. Raw Java code.
-
-JStachio has to do a lot of null checking for falsey and from my testing that is what is just ever so slighly making it slower than the fastest. I hope to add `@Nullable` annotation checking in the future but not really for performance.
 
 Design
 ------
@@ -377,65 +375,6 @@ Static mustache uses Java-objects to define rendering context.
 Binding of template fields is defined and checked at compile-time.
 Missing fields are compile-time error.
  
-
-Interpretation of Java-types and values
----------------------------------------
-
-See [mustache manual (v 1.3)](https://jgonggrijp.gitlab.io/wontache/mustache.5.html) .
-
-When some value is null nothing is rendered if it is used as a section.
-If some value is null and it is used as a variable a null pointer exception will be thrown by default.
-This is configurable via `@JStacheFormatterTypes` and custom `Formatters`.
-
-Boxed and unboxed `boolean` can be used for mustache-sections. Section is only rendered if value is true.
-
-`Optional<?>` empty is treated like an empty list or a boolean false. Optional values are always assumed to be non null.
-
-Arrays and Iterables can be used in mustache-sections and are treated like Javascript-arrays in original mustache.
-
-`Map<String,?>` follow different nesting rules than other types. If you are in a `Map` nested section
-the rest of the context is checked before the `Map`. Once that is done the Map is then checked. 
-
-Any non-null object can be used for mustache-section.
-This object serves like a data-binding context for given section.
-
-Data-binding contexts are nested.
-Names are looked up in innermost context first.
-If name is not found in current context, parent context is inspected.
-This process continues up to root context.
-
-In each rendering context name lookup is performed as following.
-Lookup is performed in Java-class serving as a rendering context.
-
- 1. Method with requested name is looked up.
-    Method should have no arguments and should throw no checked exceptions.
-    If there is such method it is used to fetch actual data to render.
-    Compile-time error is raised if there is method with given name, but
-    it is not accessible, has parameters or throws checked exceptions.
-
- 2. Method with getter-name for requested name is looked up.
-    (For example, if 'age' is requested, 'getAge' method is looked up.)
-    Method should have no arguments and should throw no checked exceptions.
-    If there is such method it is used to fetch actual data to render.
-    Compile-time error is raised if there is method with such name, but
-    it is not accessible, has parameters or throws checked exceptions.
-
- 3. Field with requested name is looked up.
-    Compile-time error is raised if there is field with such name but it's not accessible.
-
- 4. Search continues in parent-context if all of the above failed.
-
-Primitive types and strings can be used in mustache-variables.
-
-Escaping is always performed for mustache-variables.
-
-Unescaped variables are supported as in original mustache.
-
-Any boxed or unboxed primitive type is rendered with toString method.
-Strings are rendered as is.
-
-Rendering of other Java-types as mustache-variable is currently compile-time error.
-
 
 License
 -------
