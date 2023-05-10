@@ -21,6 +21,7 @@ import io.jstach.jstache.JStacheType;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Escaper;
 import io.jstach.jstachio.Formatter;
+import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Renderer;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateConfig;
@@ -212,7 +213,9 @@ public class PrismsTest {
 	private static List<Class<?>> apiClasses() {
 		return List.of( //
 				Renderer.class, //
+				Output.class, //
 				Template.class, //
+				Template.EncodedTemplate.class, //
 				TemplateProvider.class, //
 				TemplateProvider.GeneratedTemplateProvider.class, //
 				Appender.class, //

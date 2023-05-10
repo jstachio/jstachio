@@ -1,10 +1,10 @@
 package io.jstach.apt;
 
 import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
+import static io.jstach.apt.prism.Prisms.ENCODED_TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
 import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
 import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
-import static io.jstach.apt.prism.Prisms.RENDERER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
@@ -40,8 +40,8 @@ import io.jstach.apt.GenerateRendererProcessor.RendererModel;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
-import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
+import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.LoggingSupport.LoggingSupplier;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.ProcessingException;
@@ -53,6 +53,7 @@ import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
+import io.jstach.apt.prism.Prisms;
 import io.jstach.apt.prism.Prisms.Flag;
 
 class TemplateClassWriter implements LoggingSupplier {
@@ -71,7 +72,7 @@ class TemplateClassWriter implements LoggingSupplier {
 
 	final String _Appendable = Appendable.class.getName();
 
-	final String _Output = "io.jstach.jstachio.Output";
+	final String _Output = Prisms.OUTPUT_CLASS;
 
 	final String _OutputStream = OutputStream.class.getName();
 
@@ -169,9 +170,16 @@ class TemplateClassWriter implements LoggingSupplier {
 				.map(JStacheContentTypePrism::getInstanceOn);
 		Optional<JStacheFormatterPrism> formatterPrism = formatterTypeElement.map(JStacheFormatterPrism::getInstanceOn);
 
+		boolean preEncode = model.flags().contains(Prisms.Flag.PRE_ENCODE);
+
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
-			interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
+			if (preEncode) {
+				interfaces.add(ENCODED_TEMPLATE_CLASS + "<" + className + ">");
+			}
+			else {
+				interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
+			}
 			interfaces.add(TEMPLATE_INFO_CLASS);
 			interfaces.add(TEMPLATE_PROVIDER_CLASS);
 			interfaces.add(FILTER_CHAIN_CLASS);
@@ -408,7 +416,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		}
 		println("    }");
 
-		if (jstachio) {
+		if (jstachio && preEncode) {
 			println("    @Override");
 			println("    public void write(" //
 					+ idt + className + " model, " //
@@ -740,6 +748,9 @@ class TemplateClassWriter implements LoggingSupplier {
 			throws IOException, ProcessingException, AnnotatedException {
 
 		if (formatCallType != FormatCallType.JSTACHIO) {
+			return;
+		}
+		if (!model.flags().contains(Prisms.Flag.PRE_ENCODE)) {
 			return;
 		}
 		codeWriter.setFormatCallType(FormatCallType.JSTACHIO_BYTE);
