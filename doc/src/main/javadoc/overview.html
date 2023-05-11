@@ -607,14 +607,16 @@ You can even enforce that models always implement an interface with
 
 <h3 id="faq_escaping">How do I disable escaping?</h3>
 
-Set {@link io.jstach.jstache.JStacheConfig#contentType()} to <code>PlainText.class</code>.
+Set {@link io.jstach.jstache.JStacheConfig#contentType()} to {@link io.jstach.jstachio.escapers.PlainText}.
 
 <pre><code class="language-java">
 //package-info.java
-&64;JStacheConfig(contentType=PlainText.class)
+&#64;JStacheConfig(contentType=io.jstache.jstachio.escapers.PlainText.class)
 package com.mycompany;
 </code>
 </pre>
+
+If you are setup for zero dependency mode escaping is disabled by default as escaping would require a dependency.
 
 <h3 id="faq_layout">How do I do layout?</h3>
 
