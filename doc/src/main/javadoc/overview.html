@@ -605,6 +605,16 @@ If you have common logic you can use normal Java practices to share the logic su
 You can even enforce that models always implement an interface with 
 {@link io.jstach.jstache.JStacheInterfaces}. 
 
+<h3 id="faq_escaping">How do I disable escaping?</h3>
+
+Set {@link io.jstach.jstache.JStacheConfig#contentType()} to <code>PlainText.class</code>.
+
+<pre><code class="language-java">
+//package-info.java
+&64;JStacheConfig(contentType=PlainText.class)
+package com.mycompany;
+</code>
+</pre>
 
 <h3 id="faq_layout">How do I do layout?</h3>
 
