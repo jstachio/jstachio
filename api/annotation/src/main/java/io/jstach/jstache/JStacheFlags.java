@@ -8,10 +8,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Compiler flags that are subject to change. Use at your own risk.
+ * Compiler feature flags that are subject to change. Use at your own risk!
  * <p>
  * <strong>Flags maybe added without a major version change unlike the rest of the
- * API.</strong>
+ * API.</strong> If a flag becomes popular enough it will eventually make its way to
+ * {@link JStacheConfig} so please file an issue if you depend on flag and would like it
+ * to remain in the library.
  * <p>
  * Order of flag lookup and precedence is as follows:
  * <ol>

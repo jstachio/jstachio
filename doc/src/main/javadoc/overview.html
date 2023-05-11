@@ -450,10 +450,10 @@ JStachio static config allows you to configure:
 </p>
 
 <ol>
-  <li>Where {@linkplain io.jstach.jstache.JStacheConfig#pathing() external templates are stored} and referred.</li>
-  <li>How code is generated including what {@linkplain io.jstach.jstache.JStacheInterfaces interfaces or classes are extended}</li>
-  <li>What {@linkplain io.jstach.jstache.JStacheFormatterTypes types are allowed to be outputted without compiler error}</li>
-  <li>How types are {@linkplain io.jstach.jstachio.Formatter formatted}</li>
+  <li>{@linkplain io.jstach.jstache.JStacheConfig#pathing() Where external templates are stored and referred.}</li>
+  <li>{@linkplain io.jstach.jstache.JStacheInterfaces How code is generated including what interfaces or classes are extended}</li>
+  <li>{@linkplain io.jstach.jstache.JStacheFormatterTypes What types are allowed to be outputted without compiler error}</li>
+  <li>{@linkplain io.jstach.jstachio.Formatter How types are formatted}</li>
   <li>{@linkplain io.jstach.jstachio.Escaper Escaping}</li>
   <li>{@linkplain io.jstach.jstache.JStacheFlags.Flag#NO_NULL_CHECKING Null checking}</li>
   <li>... and much more</li>
@@ -465,6 +465,36 @@ code is generated via {@link io.jstach.jstache.JStacheConfig#type()} as well as
 location paths of template files via {@link io.jstach.jstache.JStachePath} 
 and what interfaces generated code extends via {@link io.jstach.jstache.JStacheInterfaces}. 
 </p>
+
+<h4 id="compile_config_example">Compile time Configuration Example</h4>
+
+<pre><code class="language-java">
+&#64;JStacheConfig(
+  using = MyGlobalConfig.class,                                            // 1
+  naming = &#64;JStacheName(suffix = "Template"),                              // 2
+  pathing = &#64;JStachePath(prefix = "templates/", suffix = ".mustache"),     // 3
+  contentType = Html.class,                                                // 4
+  formatter = SpecFormatter.class,                                         // 5
+  interfacing = &#64;JStacheInterfaces(                                        // 6
+      templateAnnotations=Component.class,                                 // 7
+      templateImplements=MyTemplateMixin.class),                           // 8
+  charset = "UTF-8"                                                        // 9
+  )
+// class, or package-info.java or module-info.java                         // 10
+</code></pre>
+
+<ol>
+  <li>Import config from another class that has JStacheConfig annotation</li>
+  <li>Set generated classes to have the suffix of "Template" instead of the default of "Renderer"</li>
+  <li>Template references will be expanded such that a template referred to as "Me" will be expanded to <code>templates/Me.mustache</code></li>
+  <li>Use HTML escaping and set our media type to text/html </li>
+  <li>Use the SpecFormatter which makes <code>null</code> an empty string</li>
+  <li>Use JStacheInterfaces to decorate generated code</li>
+  <li>Generated templates will have the third party "&#64;Component" annotation put on the type</li>
+  <li>Generated templates will implement <code>MyTemplateMixin</code></li>
+  <li>The charsets of the templates is UTF-8</li>
+  <li>The configuration can be placed on enclosing types of class, package, and module where the inner enclosed takes precedence.</li>
+</ol>
 
 <h3 id="runtime_config">Runtime Configuration</h3>
 
