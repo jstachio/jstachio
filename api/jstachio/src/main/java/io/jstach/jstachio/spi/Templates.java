@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.Spliterators.AbstractSpliterator;
@@ -159,7 +160,7 @@ public final class Templates {
 			}
 			for (ClassLoader classLoader : classLoaders) {
 				try {
-					Template<T> template = s.load(modelType, classLoader);
+					Template<T> template = s.load(modelType, classLoader, logger);
 					if (template != null) {
 						return template;
 					}
@@ -196,8 +197,9 @@ public final class Templates {
 		SERVICE_LOADER() {
 			@SuppressWarnings("unchecked")
 			@Override
-			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
-				return (Template<T>) templateByServiceLoader(clazz, classLoader);
+			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader, System.Logger logger)
+					throws Exception {
+				return (Template<T>) templateByServiceLoader(clazz, classLoader, logger);
 			}
 
 			@Override
@@ -210,7 +212,8 @@ public final class Templates {
 		 */
 		CONSTRUCTOR() {
 			@Override
-			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception {
+			protected <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader, System.Logger logger)
+					throws Exception {
 				return templateByConstructor(clazz, classLoader);
 			}
 
@@ -221,7 +224,8 @@ public final class Templates {
 
 		};
 
-		protected abstract <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader) throws Exception;
+		protected abstract <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader, System.Logger logger)
+				throws Exception;
 
 		protected abstract boolean isEnabled(JStachioConfig config);
 
@@ -316,13 +320,21 @@ public final class Templates {
 		return StreamSupport.stream(split, false);
 	}
 
-	private static <T> @Nullable Template<?> templateByServiceLoader(Class<T> clazz, ClassLoader classLoader) {
+	private static <T> @Nullable Template<?> templateByServiceLoader(Class<T> clazz, ClassLoader classLoader,
+			System.Logger logger) {
 		ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, classLoader);
-		for (TemplateProvider rp : loader) {
-			for (var t : rp.provideTemplates()) {
-				if (t.supportsType(clazz)) {
-					return t;
+		var it = loader.iterator();
+		while (it.hasNext()) {
+			try {
+				var templateProvider = it.next();
+				for (var t : templateProvider.provideTemplates()) {
+					if (t.supportsType(clazz)) {
+						return t;
+					}
 				}
+			}
+			catch (ServiceConfigurationError e) {
+				logger.log(Level.ERROR, "Template provider failed to load. Skipping it.", e);
 			}
 		}
 		return null;
