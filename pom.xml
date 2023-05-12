@@ -35,7 +35,7 @@
 
     <jstachio.tag>&lt;div class="jstachio-version"&gt; ${jstachio.doc.message} &lt;br/&gt; ${jstachio.doc.ahref}&lt;/div&gt;</jstachio.tag>
     
-    <spring.version>6.0.8</spring.version>
+    <spring.version>6.0.9</spring.version>
     
   </properties>
   <modules>
