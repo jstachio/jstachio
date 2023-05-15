@@ -1,7 +1,10 @@
 package io.jstach.jstachio;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,6 +64,25 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 			Function<@Nullable Object, String> formatter, //
 			Function<String, String> escaper) throws IOException {
 		execute(model, a, Formatter.of(formatter), Escaper.of(escaper));
+	}
+	
+	/**
+	 * Renders the passed in model directly to a binary stream using the 
+	 * {@link #templateCharset()} for encoding. If the template is 
+	 * {@linkplain JStacheFlags.Flag#PRE_ENCODE pre-encoded} the pre-encoded
+	 * parts of the template will be written to the stream for performance
+	 * otherwise an unbuffered {@link OutputStreamWriter} will be used.
+	 * 
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param outputStream to write to.
+	 * @throws IOException if an error occurs while writing to the outputStream
+	 * @apiNote The stream will not be closed or flushed by this call.
+	 * @see EncodedTemplate
+	 */
+	default void write(T model, //
+			OutputStream outputStream) throws IOException {
+		OutputStreamWriter ow = new OutputStreamWriter(outputStream, Charset.forName(templateCharset()));
+		execute(model, ow);
 	}
 
 	/**
