@@ -1,6 +1,5 @@
 package io.jstach.jstachio;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -65,14 +64,13 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 			Function<String, String> escaper) throws IOException {
 		execute(model, a, Formatter.of(formatter), Escaper.of(escaper));
 	}
-	
+
 	/**
-	 * Renders the passed in model directly to a binary stream using the 
-	 * {@link #templateCharset()} for encoding. If the template is 
-	 * {@linkplain JStacheFlags.Flag#PRE_ENCODE pre-encoded} the pre-encoded
-	 * parts of the template will be written to the stream for performance
-	 * otherwise an unbuffered {@link OutputStreamWriter} will be used.
-	 * 
+	 * Renders the passed in model directly to a binary stream using the
+	 * {@link #templateCharset()} for encoding. If the template is
+	 * {@linkplain JStacheFlags.Flag#PRE_ENCODE pre-encoded} the pre-encoded parts of the
+	 * template will be written to the stream for performance otherwise an unbuffered
+	 * {@link OutputStreamWriter} will be used.
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param outputStream to write to.
 	 * @throws IOException if an error occurs while writing to the outputStream
@@ -84,13 +82,6 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 		OutputStreamWriter ow = new OutputStreamWriter(outputStream, Charset.forName(templateCharset()));
 		execute(model, ow);
 	}
-
-	/**
-	 * Return the model class (root context class annotated with JStache) that generated
-	 * this template.
-	 * @return model class
-	 */
-	public Class<?> modelClass();
 
 	/**
 	 * <strong>EXPERIMENTAL</strong> support of pre-encoded templates that have the static

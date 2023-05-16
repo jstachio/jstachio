@@ -60,24 +60,22 @@ public interface JStachio extends Renderer<Object> {
 	void execute(Object model, Appendable appendable) throws IOException;
 
 	/**
-	 * Finds a compiled template by class. This is useful if you want to have the template
-	 * write directly to an {@link OutputStream} via
-	 * {@link Template.EncodedTemplate#write(Object, OutputStream)} which will bypass
-	 * filtering and leverage pre-encoding.
+	 * Finds a template by class. This is useful if you want to have the template write
+	 * directly to an {@link OutputStream} via
+	 * {@link Template#write(Object, OutputStream)} which will possibly leverage
+	 * pre-encoding.
 	 * <p>
 	 * It is also useful for needed metadata such as charset and media type for HTTP
 	 * output which would normally not be needed for an {@link Appendable} but is for
 	 * directly writing to an {@link OutputStream}.
-	 * @param modelClass the models class
-	 * @return a compiled template
+	 * @param model the model
+	 * @return a filtered template
 	 * @throws NoSuchElementException if a template is not found and no other lookup
 	 * errors happen.
 	 * @throws Exception if template cannot be found for unexpected reasons such as
 	 * reflection errors.
-	 * @apiNote An <code>instanceof</code> can be used to detect if it is a
-	 * {@link Template.EncodedTemplate}.
 	 */
-	Template<?> findTemplate(Class<?> modelClass) throws Exception;
+	Template<?> findTemplate(Object model) throws Exception;
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering

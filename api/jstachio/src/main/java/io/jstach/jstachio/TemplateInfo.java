@@ -113,6 +113,13 @@ public interface TemplateInfo {
 	public boolean supportsType(Class<?> type);
 
 	/**
+	 * Return the model class (root context class annotated with JStache) that generated
+	 * this template.
+	 * @return model class
+	 */
+	public Class<?> modelClass();
+
+	/**
 	 * Where the template contents were retrieved from.
 	 * @return an enum never null.
 	 */

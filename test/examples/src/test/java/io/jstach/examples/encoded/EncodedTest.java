@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import io.jstach.examples.encoded.Encoded.EncodedUtf8;
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.Template.EncodedTemplate;
+import io.jstach.jstachio.Template;
 
 public class EncodedTest {
 
@@ -18,7 +18,7 @@ public class EncodedTest {
 	@Test
 	public void test() throws Exception {
 		EncodedUtf8 e = new EncodedUtf8("Hello", List.of("Earl", "Randy"));
-		EncodedTemplate t = (EncodedTemplate) JStachio.of().findTemplate(e.getClass());
+		Template t = JStachio.of().findTemplate(e);
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		t.write(e, os);
 		String binResult = os.toString(StandardCharsets.UTF_8);

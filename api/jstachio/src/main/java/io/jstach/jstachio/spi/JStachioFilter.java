@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstachio.Escaper;
+import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
@@ -67,6 +70,66 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 		 */
 		default boolean isBroken(Object model) {
 			return false;
+		}
+
+		/**
+		 * Converts the filter chain into a template if it is not already one.
+		 * @param templateInfo template info to use if the filter chain is not a template.
+		 * @return chain as a template
+		 */
+		default Template<?> toTemplate(TemplateInfo templateInfo) {
+			if (this instanceof Template<?> template) {
+				return template;
+			}
+			return new Template<Object>() {
+
+				@Override
+				public String templateName() {
+					return templateInfo.templateName();
+				}
+
+				@Override
+				public String templatePath() {
+					return templateInfo.templatePath();
+				}
+
+				@Override
+				public Class<?> templateContentType() {
+					return templateInfo.templateContentType();
+				}
+
+				@Override
+				public String templateCharset() {
+					return templateInfo.templateCharset();
+				}
+
+				@Override
+				public Function<String, String> templateEscaper() {
+					return templateInfo.templateEscaper();
+				}
+
+				@Override
+				public Function<@Nullable Object, String> templateFormatter() {
+					return templateInfo.templateFormatter();
+				}
+
+				@Override
+				public boolean supportsType(Class<?> type) {
+					return templateInfo.supportsType(type);
+				}
+
+				@Override
+				public void execute(Object model, Appendable a, Formatter formatter, Escaper escaper)
+						throws IOException {
+					process(model, a);
+				}
+
+				@Override
+				public Class<?> modelClass() {
+					return templateInfo.modelClass();
+				}
+
+			};
 		}
 
 	}
