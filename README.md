@@ -23,6 +23,10 @@ For previous releases:
 
 Where `VERSION` is the version you want.
 
+## Why choose JStachio
+
+Covered in [why_jstachio_is_better.md](why_jstachio_is_better.md).
+
 ## Features
 
  * Logicless [Mustache (v 1.3)](https://github.com/mustache/spec) syntax.

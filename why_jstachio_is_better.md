@@ -22,39 +22,55 @@ The following are also type safe:
 
 JStachio does not use reflection and checks that all methods and fields exist at compile time.
 JStachio treats the *"template as a contract"* and thus there is always root model class that is associated with
-every template.
+every template (ignoring partials).
+
+Furthermore JStachio unlike the other compiled type safe engines does not automatically `toString` variables.
+At *compile time* JStachio checks to see if the type is allowed to be "formatted". If it is not a compiler error
+will happen.
+
 
 Here is an example:
 
 ```java
 @JStache(template = "{{foo}}") // the template can also be a file
-public record Model(String foo){}
+public record Model(String foo, Object bar){}
 ```
 
-If you mispell "foo" it would be a compiler error.
+If you mispell "foo" it would be a compiler error. If our template was `{{bar}}` a compiler
+error would happen as `Object` is not allowed to be formatted (by default but is configurable).
+
+Its unclear what if any safe guards JSP, JTE or Rocker have in preventing accidental `toString`.
+
+Furthermore JStachio has an experimental feature do null checking only if the type is annotated
+with `@Nullable` following JSpecify rules.
 
 
-
-JStachio does this with the Java annotation processor which is built into the JDK.
+JStachio does its type checking and code generation with the Java annotation processor which is built into the JDK.
 JTE and Rocker require pre-compiling with a build plugin. Thus you cannot precompile
-easily if your build system is not supported.
+easily if your build system is not supported. JTE, Rocker, and JSP do not actually read the symbolic tree of 
+the Java models but rather just translate the code to Java. 
 
 ## Fast
 
 JStachio is fast at regular String output as well as UTF-8 byte output.
 
-![UTF-8 encode](https://github.com/agentgt/template-benchmark/blob/utf8/results-utf8.png?raw=true)
-
-It is currently the fastest Java templating language I know of 
-(and I spent time trying to tune the others particularly for UTF-8 extended which is what TechEmpower benchmarks test for).
-
-https://github.com/agentgt/template-benchmark
-
-
 The following is also fast:
 
 * JTE
 * Rocker
+
+Below is UTF-8 byte output benchmarking:
+
+![UTF-8 encode](https://github.com/agentgt/template-benchmark/blob/utf8/results-utf8.png?raw=true)
+
+More explanation of the benchmarking is here:
+https://github.com/agentgt/template-benchmark
+
+JStachio is currently the fastest Java templating language I know of 
+and I spent time trying to tune the others particularly for UTF-8 extended which is what
+[TechEmpower benchmarks](https://www.techempower.com/benchmarks/) and not just plain latin1
+which is what most template benchmarks test but is unrealistic because a single emoji anywhere in the output 
+will slow String.getBytes().
 
 ## Language Specification 
 
