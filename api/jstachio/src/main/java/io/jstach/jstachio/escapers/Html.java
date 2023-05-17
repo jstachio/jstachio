@@ -45,4 +45,12 @@ public final class Html {
 		return HtmlEscaper.Html;
 	}
 
+	/**
+	 * Provides the escaper.
+	 * @return HTML escaper.
+	 */
+	public static Escaper of() {
+		return HtmlEscaper.Html;
+	}
+
 }

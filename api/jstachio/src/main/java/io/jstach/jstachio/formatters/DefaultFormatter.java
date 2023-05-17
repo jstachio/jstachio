@@ -60,6 +60,14 @@ public interface DefaultFormatter extends Formatter {
 		return DefaultFormatterSingleton.DefaultFormatter;
 	}
 
+	/**
+	 * Provides the default formatter for static lookup.
+	 * @return the default formatter singleton
+	 */
+	public static Formatter of() {
+		return DefaultFormatterSingleton.DefaultFormatter;
+	}
+
 }
 
 enum DefaultFormatterSingleton implements DefaultFormatter {
