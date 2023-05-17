@@ -12,8 +12,8 @@ import io.jstach.jstachio.spi.JStachioExtensionProvider;
 import io.jstach.jstachio.spi.JStachioTemplateFinder;
 
 /**
- * JStachio services based on Spring notably the {@link #provideConfig() config} and
- * {@link #provideTemplateFinder() template finding}.
+ * JStachio services based on Spring notably the {@linkplain #provideConfig() config} and
+ * {@linkplain #provideTemplateFinder() template finding}.
  *
  * @apiNote Although this is an extension it is not designed to be loaded by the
  * {@link ServiceLoader}.

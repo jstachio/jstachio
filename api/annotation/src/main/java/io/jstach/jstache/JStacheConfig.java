@@ -24,9 +24,9 @@ import java.nio.charset.StandardCharsets;
  * to <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Class annotated with JStache and this annotation <em>NOT</em> set to
  * <a href="#_unspecified">UNSPECIFIED</a>.</li>
- * <li>{@link Class#getEnclosingClass() Enclosing classes} enclosing the class annotated
- * with JStache with inner to outer order annotated with this annotation <em>NOT</em> set
- * to <a href="#_unspecified">UNSPECIFIED</a>.</li>
+ * <li>{@linkplain Class#getEnclosingClass() Enclosing classes} enclosing the class
+ * annotated with JStache with inner to outer order annotated with this annotation
+ * <em>NOT</em> set to <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Package annotated with this annotation <em>NOT</em> set to
  * <a href="#_unspecified">UNSPECIFIED</a>.</li>
  * <li>Module annotated with this annotation <em>NOT</em> set to

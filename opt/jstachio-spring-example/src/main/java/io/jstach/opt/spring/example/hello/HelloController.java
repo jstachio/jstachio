@@ -72,8 +72,8 @@ public class HelloController {
 	}
 
 	/**
-	 * Here we use the {@link #view wired renderer} that does not have filtering and thus
-	 * cannot use JMustache for dynamic editing of templates.
+	 * Here we use the {@linkplain #view wired renderer} that does not have filtering and
+	 * thus cannot use JMustache for dynamic editing of templates.
 	 * @param writer spring will inject the servlet output
 	 * @throws IOException an error while writing to the output
 	 */
