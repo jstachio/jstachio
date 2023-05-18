@@ -76,6 +76,8 @@ class TemplateClassWriter implements LoggingSupplier {
 
 	final String _OutputStream = OutputStream.class.getName();
 
+	final String _Charset = Charset.class.getName();
+
 	TemplateClassWriter(CodeWriter compilerManager, TextFileObject templateLoader, FormatCallType formatCallType) {
 		this.codeWriter = compilerManager;
 		this.templateLoader = templateLoader;
@@ -170,7 +172,7 @@ class TemplateClassWriter implements LoggingSupplier {
 				.map(JStacheContentTypePrism::getInstanceOn);
 		Optional<JStacheFormatterPrism> formatterPrism = formatterTypeElement.map(JStacheFormatterPrism::getInstanceOn);
 
-		boolean preEncode = true; // model.flags().contains(Prisms.Flag.PRE_ENCODE);
+		boolean preEncode = !model.flags().contains(Prisms.Flag.PRE_ENCODE_DISABLE);
 
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
@@ -215,7 +217,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		String templateName = (packageName.isEmpty() ? "" : packageName + ".") + rendererClassSimpleName;
 		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
 		String templateString = namedTemplate.template();
-		String templateCharset = model.charset().name();
+		String templateCharsetCode = resolveCharsetCode(model.charset());
 
 		String templateStringJava = CodeAppendable.stringConcat(templateString);
 
@@ -223,6 +225,8 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 		String _Escaper = jstachio ? ESCAPER_CLASS : _F_Escaper;
+
+		String _EncodedOutput = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
 
 		println("package " + packageName + ";");
 		println("");
@@ -258,7 +262,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("     * Template charset.");
 		println("     * @hidden");
 		println("     */");
-		println("    public static final String TEMPLATE_CHARSET = \"" + templateCharset + "\";");
+		println("    public static final " + _Charset + " TEMPLATE_CHARSET = " + templateCharsetCode + ";");
 		println("");
 		println("    /**");
 		println("     * The models class. Use {@link #modelClass()} instead.");
@@ -411,14 +415,15 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("        render(model, a, formatter, escaper);");
 		}
 		println("    }");
+		println("");
 
 		if (jstachio && preEncode) {
 			println("    @Override");
-			println("    public void write(" //
+			println("    public " + _EncodedOutput + "void write(" //
 					+ idt + className + " model, " //
-					+ idt + _OutputStream + " outputStream" //
-					+ ") throws java.io.IOException {");
-			println("        render(model, outputStream, templateFormatter(), templateEscaper(), templateAppender());");
+					+ idt + "A" + " outputStream" //
+					+ ") throws E {");
+			println("        encode(model, outputStream, templateFormatter(), templateEscaper(), templateAppender());");
 			println("    }");
 			println("");
 		}
@@ -481,7 +486,7 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("     * @return charset name of template");
 			println("     */");
 		}
-		println("    public String " + "templateCharset() {");
+		println("    public " + _Charset + " templateCharset() {");
 		println("        return TEMPLATE_CHARSET;");
 		println("    }");
 
@@ -760,29 +765,26 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
+		String _OutputStream = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
 
-		String _OutputStream = OutputStream.class.getName();
-		String charsetCode = resolveCharsetCode(model.charset());
-
-		String _A = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
-
+		println("");
 		println("    /**");
 		println("     * Renders to an OutputStream use pre-encoded parts of the template.");
+		println("     * @param <A> output type.");
+		println("     * @param <E> error type.");
 		println("     * @param " + dataName + " model");
-		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.unescapedWriter() + " stream to write to.");
 		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
 		println("     * @param " + variables.escaper() + " used to write escaped variables.");
 		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     * @throws E if an error occurs while writing to the appendable");
 		println("     */");
-		println("    protected static void render(" //
+		println("    protected static " + _OutputStream + " void encode(" //
 				+ idt + className + " " + dataName + ", " //
-				+ idt + _OutputStream + " " + "outputStream" + "," //
+				+ idt + "A" + " " + variables.unescapedWriter() + "," //
 				+ idt + _Formatter + " " + variables.formatter() + "," //
 				+ idt + _Escaper + " " + variables.escaper() + "," //
-				+ idt + _Appender + " " + variables.appender() + ") throws java.io.IOException {");
-		println("        var " + variables.unescapedWriter() + " = " + _Output + "." + "of(outputStream, " + charsetCode
-				+ ");");
-
+				+ idt + _Appender + " " + variables.appender() + ") throws E {");
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
@@ -790,8 +792,8 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("    }");
 		var textVariables = variables.textVariables();
 		for (var entry : textVariables) {
-			println("    private static final byte[] " + entry.getKey() + " = (" + entry.getValue() + ").getBytes("
-					+ charsetCode + ");");
+			println("    private static final byte[] " + entry.getKey() + " = (" + entry.getValue()
+					+ ").getBytes(TEMPLATE_CHARSET);");
 		}
 
 		codeWriter.setFormatCallType(formatCallType);
@@ -813,7 +815,7 @@ class TemplateClassWriter implements LoggingSupplier {
 			return ref;
 		}
 		else {
-			return "\"" + charset.name() + "\"";
+			return Charset.class.getName() + ".forName(\"" + charset.name() + "\")";
 		}
 	}
 

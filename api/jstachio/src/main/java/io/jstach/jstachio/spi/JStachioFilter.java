@@ -1,6 +1,7 @@
 package io.jstach.jstachio.spi;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -97,7 +98,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 				}
 
 				@Override
-				public String templateCharset() {
+				public Charset templateCharset() {
 					return templateInfo.templateCharset();
 				}
 

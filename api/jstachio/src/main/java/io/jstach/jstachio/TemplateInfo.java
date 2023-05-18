@@ -84,7 +84,7 @@ public interface TemplateInfo {
 	 * @see JStacheContentType#charsets()
 	 * @see JStacheConfig#charset()
 	 */
-	String templateCharset();
+	Charset templateCharset();
 
 	/**
 	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.

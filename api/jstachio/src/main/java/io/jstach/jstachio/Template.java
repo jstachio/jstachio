@@ -3,10 +3,10 @@ package io.jstach.jstachio;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheType;
 
 /**
  * A JStachio Template is a renderer that has template meta data.
@@ -25,10 +25,9 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 
 	/**
 	 * Renders the passed in model directly to a binary stream using the
-	 * {@link #templateCharset()} for encoding. If the template is
-	 * {@linkplain JStacheFlags.Flag#PRE_ENCODE pre-encoded} the pre-encoded parts of the
-	 * template will be written to the stream for performance otherwise an unbuffered
-	 * {@link OutputStreamWriter} will be used.
+	 * {@link #templateCharset()} for encoding. If the template is pre-encoded the
+	 * pre-encoded parts of the template will be written to the stream for performance
+	 * otherwise an unbuffered {@link OutputStreamWriter} will be used.
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param outputStream to write to.
 	 * @throws IOException if an error occurs while writing to the outputStream
@@ -37,16 +36,15 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 */
 	default void write(T model, //
 			OutputStream outputStream) throws IOException {
-		OutputStreamWriter ow = new OutputStreamWriter(outputStream, Charset.forName(templateCharset()));
+		OutputStreamWriter ow = new OutputStreamWriter(outputStream, templateCharset());
 		execute(model, ow);
 	}
 
 	/**
 	 * <strong>EXPERIMENTAL</strong> support of pre-encoded templates that have the static
-	 * parts of the template already encoded into bytes. To generate templates that
-	 * support this interface and are pre-encoded add {@link JStacheFlags.Flag#PRE_ENCODE}
-	 * to the {@linkplain JStacheFlags template flags}.
-	 *
+	 * parts of the template already encoded into bytes. By default all
+	 * {@link JStacheType#JSTACHIO} templates that are generated are of this type. To
+	 * disable see {@link JStacheFlags.Flag#PRE_ENCODE_DISABLE}.
 	 * <p>
 	 * This interface is to support
 	 * <a href="https://github.com/fizzed/rocker#near-zero-copy-rendering"> Rocker style
@@ -71,7 +69,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @apiNote The passed in {@link OutputStream} <em>will only have
 	 * {@link OutputStream#write(byte[])} called</em> and no mutation of the passed in
 	 * byte array should happen downstream.
-	 * @see JStacheFlags.Flag#PRE_ENCODE
+	 * @see JStacheFlags.Flag#PRE_ENCODE_DISABLE
 	 */
 	public interface EncodedTemplate<T> extends Template<T> {
 
@@ -87,8 +85,26 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 		 * @apiNote The stream will not be closed or flushed by this call.
 		 */
 		@Override
-		public void write(T model, //
-				OutputStream outputStream) throws IOException;
+		default void write(T model, //
+				OutputStream outputStream) throws IOException {
+			write(model, Output.of(outputStream, templateCharset()));
+		}
+
+		/**
+		 * Renders the passed in model directly to a binary stream leveraging pre-encoded
+		 * parts of the template. This <em>may</em> improve performance when rendering
+		 * UTF-8 to an OutputStream as some of the encoding is done in advance. Because
+		 * the encoding is done statically you cannot pass the charset in. The chosen
+		 * charset comes from {@link JStacheConfig#charset()}.
+		 * @param <A> output type
+		 * @param <E> error type
+		 * @param model a model assumed never to be <code>null</code>.
+		 * @param output to write to.
+		 * @throws E if an error occurs while writing to output
+		 */
+		public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> void write( //
+				T model, //
+				A output) throws E;
 
 	}
 

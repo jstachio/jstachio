@@ -1,6 +1,5 @@
 package io.jstach.jstache;
 
-import java.io.OutputStream;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -135,13 +134,12 @@ public @interface JStacheFlags {
 		NO_NULL_CHECKING,
 
 		/**
-		 * <strong>EXPERIMENTAL:</strong> If set the templates will have pre-encoded bytes
-		 * of the static parts of the template and the generated
-		 * {@link JStacheType#JSTACHIO} code will implement
-		 * <code>io.jstach.jstachio.Template.EncodedTemplate</code> which will allow
-		 * writing binary to an {@link OutputStream}.
+		 * If set the templates will <strong>NOT</strong> have pre-encoded bytes of the
+		 * static parts of the template and the generated {@link JStacheType#JSTACHIO}
+		 * code will not implement
+		 * <code>io.jstach.jstachio.Template.EncodedTemplate</code>.
 		 */
-		PRE_ENCODE;
+		PRE_ENCODE_DISABLE;
 
 	}
 

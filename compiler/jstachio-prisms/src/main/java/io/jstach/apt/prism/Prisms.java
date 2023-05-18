@@ -58,7 +58,7 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	public static final String JSTACHE_FLAGS_PRE_ENCODE = "jstache.pre_encode";
+	public static final String JSTACHE_FLAGS_PRE_ENCODE_DISABLE = "jstache.pre_encode_disable";
 
 	/**
 	 * Generated
@@ -81,7 +81,7 @@ public interface Prisms {
 		/**
 		 * Generated
 		 */
-		PRE_ENCODE, //
+		PRE_ENCODE_DISABLE, //
 
 	}
 

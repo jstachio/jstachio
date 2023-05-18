@@ -110,7 +110,7 @@ public class TemplateCompilerContext {
 			case JSTACHIO, STACHE -> unescapedWriterExpression() + ".append(" + code + ");";
 			case JSTACHIO_BYTE -> {
 				String byteVar = variables.addTextCode(code);
-				yield "outputStream.write(" + byteVar + ");";
+				yield unescapedWriterExpression() + ".write(" + byteVar + ");";
 			}
 		};
 	}

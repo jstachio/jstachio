@@ -405,7 +405,7 @@ public final class Templates {
 			Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE
 					.providesFromModelType(model, stache).getValue();
 
-			String templateCharset = resolveCharset(model).name();
+			Charset templateCharset = resolveCharset(model);
 
 			long lastLoaded = System.currentTimeMillis();
 			return new SimpleTemplateInfo( //
@@ -580,7 +580,7 @@ public final class Templates {
 		record SimpleTemplateInfo( //
 				String templateName, //
 				String templatePath, //
-				String templateCharset, //
+				Charset templateCharset, //
 				String templateString, //
 				Class<?> templateContentType, //
 				Function<String, String> templateEscaper, //
