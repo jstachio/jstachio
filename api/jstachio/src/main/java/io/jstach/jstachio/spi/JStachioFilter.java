@@ -8,8 +8,6 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import io.jstach.jstachio.Escaper;
-import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
@@ -119,8 +117,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 				}
 
 				@Override
-				public void execute(Object model, Appendable a, Formatter formatter, Escaper escaper)
-						throws IOException {
+				public void execute(Object model, Appendable a) throws IOException {
 					process(model, a);
 				}
 

@@ -24,7 +24,6 @@ public abstract class AbstractSome<T> implements Template<T> {
 	}
 
 	public void execute(T model, Appendable a) throws IOException {
-		execute(model, a, templateFormatter(), templateEscaper());
 	}
 
 }

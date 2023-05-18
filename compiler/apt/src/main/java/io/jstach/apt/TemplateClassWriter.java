@@ -170,7 +170,7 @@ class TemplateClassWriter implements LoggingSupplier {
 				.map(JStacheContentTypePrism::getInstanceOn);
 		Optional<JStacheFormatterPrism> formatterPrism = formatterTypeElement.map(JStacheFormatterPrism::getInstanceOn);
 
-		boolean preEncode = model.flags().contains(Prisms.Flag.PRE_ENCODE);
+		boolean preEncode = true; // model.flags().contains(Prisms.Flag.PRE_ENCODE);
 
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
@@ -391,19 +391,15 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("");
 		}
 
-		if (jstachio)
-			println("    @Override");
-		else {
-			println("    /**");
-			println("     * Renders the passed in model.");
-			println("     * @param model a model assumed never to be <code>null</code>.");
-			println("     * @param a appendable to write to.");
-			println("     * @param formatter formats variables before they are passed to the escaper");
-			println("     * @param escaper used to write escaped variables");
-			println("     * @throws IOException if an error occurs while writing to the appendable");
-			println("     */");
-		}
-		println("    public void execute(" //
+		println("    /**");
+		println("     * Renders the passed in model.");
+		println("     * @param model a model assumed never to be <code>null</code>.");
+		println("     * @param a appendable to write to.");
+		println("     * @param formatter formats variables before they are passed to the escaper");
+		println("     * @param escaper used to write escaped variables");
+		println("     * @throws IOException if an error occurs while writing to the appendable");
+		println("     */");
+		println("    protected void execute(" //
 				+ idt + className + " model, " //
 				+ idt + _Appendable + " a, " //
 				+ idt + _Formatter + " formatter" + "," //
@@ -420,10 +416,9 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("    @Override");
 			println("    public void write(" //
 					+ idt + className + " model, " //
-					+ idt + _OutputStream + " outputStream, " //
-					+ idt + _Formatter + " formatter" + "," //
-					+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
-			println("        render(model, outputStream, formatter, escaper, templateAppender());");
+					+ idt + _OutputStream + " outputStream" //
+					+ ") throws java.io.IOException {");
+			println("        render(model, outputStream, templateFormatter(), templateEscaper(), templateAppender());");
 			println("    }");
 			println("");
 		}
@@ -595,7 +590,9 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("");
 		writeExtendsConstructors(extendsElement, rendererClassSimpleName);
 		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
-		writeRendererDefinitionMethodStream(TemplateCompilerType.SIMPLE, model);
+		if (preEncode) {
+			writeRendererDefinitionMethodStream(TemplateCompilerType.SIMPLE, model);
+		}
 		println("}");
 	}
 
@@ -750,9 +747,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		if (formatCallType != FormatCallType.JSTACHIO) {
 			return;
 		}
-		if (!model.flags().contains(Prisms.Flag.PRE_ENCODE)) {
-			return;
-		}
+
 		codeWriter.setFormatCallType(FormatCallType.JSTACHIO_BYTE);
 
 		var element = model.element();
@@ -769,7 +764,17 @@ class TemplateClassWriter implements LoggingSupplier {
 		String _OutputStream = OutputStream.class.getName();
 		String charsetCode = resolveCharsetCode(model.charset());
 
-		println("    public static  void render(" //
+		String _A = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
+
+		println("    /**");
+		println("     * Renders to an OutputStream use pre-encoded parts of the template.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     */");
+		println("    protected static void render(" //
 				+ idt + className + " " + dataName + ", " //
 				+ idt + _OutputStream + " " + "outputStream" + "," //
 				+ idt + _Formatter + " " + variables.formatter() + "," //

@@ -214,6 +214,7 @@ public class PrismsTest {
 		return List.of( //
 				Renderer.class, //
 				Output.class, //
+				Output.EncodedOutput.class, //
 				Template.class, //
 				Template.EncodedTemplate.class, //
 				TemplateProvider.class, //

@@ -137,6 +137,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String ENCODED_OUTPUT_CLASS = "io.jstach.jstachio.Output.EncodedOutput";
+
+	/**
+	 * Generated
+	 */
 	public static final String TEMPLATE_CLASS = "io.jstach.jstachio.Template";
 
 	/**

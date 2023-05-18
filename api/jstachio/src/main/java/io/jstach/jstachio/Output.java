@@ -6,7 +6,8 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
- * Analogous to {@link Appendable} and {@link DataOutput}.
+ * A low level abstraction and implementation detail analogous to {@link Appendable} and
+ * {@link DataOutput}.
  *
  * @author agentgt
  * @param <E> the exception type that can happen on output
@@ -103,7 +104,7 @@ public interface Output<E extends Exception> {
 	 * @param charset the encoding to use
 	 * @return outputstream output
 	 */
-	public static Output<IOException> of(OutputStream a, Charset charset) {
+	public static EncodedOutput<IOException> of(OutputStream a, Charset charset) {
 		return new OutputStreamOutput(a, charset);
 	}
 
@@ -123,6 +124,35 @@ public interface Output<E extends Exception> {
 	 */
 	public static StringOutput of(StringBuilder a) {
 		return new StringOutput(a);
+	}
+
+	/**
+	 * A specialized Output designed for pre-encoded templates that have already encoded
+	 * byte arrays to write directly.
+	 *
+	 * @author agentgt
+	 * @param <E> the exception type
+	 */
+	public interface EncodedOutput<E extends Exception> extends Output<E> {
+
+		/**
+		 * Analogous to {@link OutputStream#write(byte[])}.
+		 * @param bytes already encoded bytes
+		 * @throws E if an error happens
+		 */
+		public void write(byte bytes[]) throws E;
+
+		/**
+		 * Analogous to {@link OutputStream#write(byte[], int, int)}. Generated templates
+		 * usually do not call this method as great care as to be taken to preserve the
+		 * encoding. It is only provided in the case of future found optimizations.
+		 * @param bytes already encoded bytes
+		 * @param off offset
+		 * @param len length to copy
+		 * @throws E if an error happens
+		 */
+		public void write(byte[] bytes, int off, int len) throws E;
+
 	}
 
 	/**
@@ -231,7 +261,7 @@ class AppendableOutput implements Output<IOException> {
 
 }
 
-class OutputStreamOutput implements Output<IOException> {
+class OutputStreamOutput implements Output.EncodedOutput<IOException> {
 
 	private final OutputStream outputStream;
 
@@ -241,6 +271,16 @@ class OutputStreamOutput implements Output<IOException> {
 		super();
 		this.outputStream = outputStream;
 		this.charset = charset;
+	}
+
+	@Override
+	public void write(byte[] b) throws IOException {
+		outputStream.write(b);
+	}
+
+	@Override
+	public void write(byte[] bytes, int off, int len) throws IOException {
+		outputStream.write(bytes, off, len);
 	}
 
 	@Override

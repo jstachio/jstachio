@@ -76,4 +76,14 @@ class PrimitiveRenderingContext implements RenderingContext {
 		return parent;
 	}
 
+	@Override
+	public String description() {
+		return getClass().getSimpleName() + " [expression=" + expression + "]";
+	}
+
+	@Override
+	public String toString() {
+		return description();
+	}
+
 }
