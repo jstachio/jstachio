@@ -31,13 +31,14 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param outputStream to write to.
 	 * @throws IOException if an error occurs while writing to the outputStream
-	 * @apiNote The stream will not be closed or flushed by this call.
+	 * @apiNote The stream will not be closed but might be flushed by this call.
 	 * @see EncodedTemplate
 	 */
 	default void write(T model, //
 			OutputStream outputStream) throws IOException {
 		OutputStreamWriter ow = new OutputStreamWriter(outputStream, templateCharset());
 		execute(model, ow);
+		ow.flush();
 	}
 
 	/**
