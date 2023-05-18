@@ -264,6 +264,15 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("     */");
 		println("    public static final " + _Charset + " TEMPLATE_CHARSET = " + templateCharsetCode + ";");
 		println("");
+		if (jstachio) {
+			String templateMediaType = contentTypePrism.orElseThrow().mediaType();
+			println("    /**");
+			println("     * Template mediaType.");
+			println("     * @hidden");
+			println("     */");
+			println("    public static final String TEMPLATE_MEDIA_TYPE = \"" + templateMediaType + "\";");
+			println("");
+		}
 		println("    /**");
 		println("     * The models class. Use {@link #modelClass()} instead.");
 		println("     * @hidden");
@@ -489,6 +498,13 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("    public " + _Charset + " templateCharset() {");
 		println("        return TEMPLATE_CHARSET;");
 		println("    }");
+
+		if (jstachio) {
+			println("    @Override");
+			println("    public String templateMediaType() {");
+			println("        return TEMPLATE_MEDIA_TYPE;");
+			println("    }");
+		}
 
 		if (jstachio)
 			println("    @Override");

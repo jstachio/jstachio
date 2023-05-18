@@ -87,6 +87,12 @@ public interface TemplateInfo {
 	Charset templateCharset();
 
 	/**
+	 * The template media-type from the {@link JStacheContentType}.
+	 * @return media type maybe an empty string.
+	 */
+	String templateMediaType();
+
+	/**
 	 * The escaper to be used on the template. See {@link Escaper#of(Function)}.
 	 * @apiNote While the return signature is {@link Function} the function is often an
 	 * {@link Escaper} but does not have to be.

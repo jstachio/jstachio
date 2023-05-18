@@ -60,24 +60,6 @@ public interface JStachio extends Renderer<Object> {
 	void execute(Object model, Appendable appendable) throws IOException;
 
 	/**
-	 * Finds a template by class. This is useful if you want to have the template write
-	 * directly to an {@link OutputStream} via
-	 * {@link Template#write(Object, OutputStream)} which will possibly leverage
-	 * pre-encoding.
-	 * <p>
-	 * It is also useful for needed metadata such as charset and media type for HTTP
-	 * output which would normally not be needed for an {@link Appendable} but is for
-	 * directly writing to an {@link OutputStream}.
-	 * @param model the model
-	 * @return a filtered template
-	 * @throws NoSuchElementException if a template is not found and no other lookup
-	 * errors happen.
-	 * @throws Exception if template cannot be found for unexpected reasons such as
-	 * reflection errors.
-	 */
-	Template<?> findTemplate(Object model) throws Exception;
-
-	/**
 	 * Finds a template by using the models class if possible and then applies filtering
 	 * and then finally render the model by writing to the {@link StringBuilder}.
 	 * <p>
@@ -92,6 +74,24 @@ public interface JStachio extends Renderer<Object> {
 	 * {@inheritDoc}
 	 */
 	String execute(Object model);
+
+	/**
+	 * Finds a template by class. This is useful if you want to have the template write
+	 * directly to an {@link OutputStream} via
+	 * {@link Template#write(Object, OutputStream)} which will possibly leverage
+	 * pre-encoding and need metadata before writing such as charset and media type for
+	 * HTTP output.
+	 * <p>
+	 * The returned template is decorated if filtering is on and a filter that is not the
+	 * template is applied.
+	 * @param model the model
+	 * @return a filtered template
+	 * @throws NoSuchElementException if a template is not found and no other lookup
+	 * errors happen.
+	 * @throws Exception if template cannot be found for unexpected reasons such as
+	 * reflection errors.
+	 */
+	Template<?> findTemplate(Object model) throws Exception;
 
 	/**
 	 * Determines if this jstachio can render the model type (the class annotated by

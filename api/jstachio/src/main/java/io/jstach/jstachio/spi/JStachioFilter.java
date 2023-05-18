@@ -103,6 +103,11 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 				}
 
 				@Override
+				public String templateMediaType() {
+					return templateInfo.templateMediaType();
+				}
+
+				@Override
 				public Function<String, String> templateEscaper() {
 					return templateInfo.templateEscaper();
 				}

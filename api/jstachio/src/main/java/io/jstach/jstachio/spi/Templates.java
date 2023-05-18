@@ -401,7 +401,11 @@ public final class Templates {
 			var ee = EscaperProvider.INSTANCE.providesFromModelType(model, stache);
 			Function<String, String> templateEscaper = ee.getValue();
 			Class<?> templateContentType = ee.getKey();
-
+			String templateMediaType = "";
+			var jstacheContentType = templateContentType.getAnnotation(JStacheContentType.class);
+			if (jstacheContentType != null) {
+				templateMediaType = jstacheContentType.mediaType();
+			}
 			Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE
 					.providesFromModelType(model, stache).getValue();
 
@@ -412,6 +416,7 @@ public final class Templates {
 					templateName, //
 					templatePath, //
 					templateCharset, //
+					templateMediaType, //
 					templateString, //
 					templateContentType, //
 					templateEscaper, //
@@ -581,6 +586,7 @@ public final class Templates {
 				String templateName, //
 				String templatePath, //
 				Charset templateCharset, //
+				String templateMediaType, //
 				String templateString, //
 				Class<?> templateContentType, //
 				Function<String, String> templateEscaper, //
