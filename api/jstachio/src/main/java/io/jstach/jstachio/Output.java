@@ -128,7 +128,7 @@ public interface Output<E extends Exception> {
 
 	/**
 	 * A specialized Output designed for pre-encoded templates that have already encoded
-	 * byte arrays to write directly.
+	 * byte arrays to be used directly.
 	 *
 	 * @author agentgt
 	 * @param <E> the exception type
@@ -152,6 +152,37 @@ public interface Output<E extends Exception> {
 		 * @throws E if an error happens
 		 */
 		public void write(byte[] bytes, int off, int len) throws E;
+
+		@Override
+		default void append(char c) throws E {
+			write(("" + c).getBytes(charset()));
+		}
+
+		@Override
+		default void append(CharSequence csq) throws E {
+			write(csq.toString().getBytes(charset()));
+		}
+
+		@Override
+		default void append(CharSequence csq, int start, int end) throws E {
+			write(csq.subSequence(start, end).toString().getBytes(charset()));
+		}
+
+		/**
+		 * The charset that the encoded output <em>should</em> be.
+		 * @return expected charset
+		 */
+		Charset charset();
+
+		/**
+		 * Adapts an {@link OutputStream} as an {@link EncodedOutput}.
+		 * @param a the OutputStream to be wrapped.
+		 * @param charset the encoding to use
+		 * @return outputstream output
+		 */
+		public static EncodedOutput<IOException> of(OutputStream a, Charset charset) {
+			return new OutputStreamOutput(a, charset);
+		}
 
 	}
 
@@ -296,6 +327,11 @@ class OutputStreamOutput implements Output.EncodedOutput<IOException> {
 	@Override
 	public void append(CharSequence csq, int start, int end) throws IOException {
 		outputStream.write(csq.subSequence(start, end).toString().getBytes(this.charset));
+	}
+
+	@Override
+	public Charset charset() {
+		return charset;
 	}
 
 }

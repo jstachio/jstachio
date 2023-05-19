@@ -14,10 +14,14 @@ import java.util.stream.Stream;
 public class JavadocJavascript {
 
 	static PrintStream out = System.out;
+	static String version = "_VERSION_";
 
 	public static void main(
 			String[] args) {
 		try {
+			if (args.length > 0) {
+				version = args[0];
+			}
 			findFiles();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -59,8 +63,14 @@ public class JavadocJavascript {
 				processed.add(scriptTag("https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js"));
 				processed.add(scriptTag("https://cdn.jsdelivr.net/npm/anchor-js/anchor.min.js"));
 				processed.add(scriptTag(resourcesPath + "/" + "jstachio.js"));
+				processed.add(line);
 			}
-			processed.add(line);
+			else if (line.contains("_VERSION_")) {
+				processed.add(line.replace("_VERSION_", version));
+			}
+			else {
+				processed.add(line);
+			}
 		}
 		if (found) {
 			Files.write(htmlPath, processed, StandardOpenOption.WRITE);

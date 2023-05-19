@@ -95,6 +95,7 @@
               <workingDirectory>../bin</workingDirectory>
               <arguments>
                 <argument>src/main/java/io/jstach/script/JavadocJavascript.java</argument>
+                <argument>${project.version}</argument>
               </arguments>
             </configuration>
           </plugin>

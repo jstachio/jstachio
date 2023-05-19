@@ -8,7 +8,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
+import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstache.JStacheType;
+import io.jstach.jstachio.escapers.Html;
+import io.jstach.jstachio.escapers.PlainText;
 
 /**
  * An Escaper is an {@link Appender} used to escape content such as HTML. A
@@ -23,9 +26,18 @@ import io.jstach.jstache.JStacheType;
  * </pre>
  *
  * Escapers are also a {@code Function<String,String>} to allow compatibility with
- * {@link JStacheType#STACHE zero dependency generated code} that expects Escapers to be
- * of type {@code Function<String,String>}.
+ * {@linkplain JStacheType#STACHE zero dependency generated code} that expects Escapers to
+ * be of type {@code Function<String,String>}.
  * <p>
+ * If escaping is not needed one can use {@link PlainText#of()} which will just pass the
+ * strings and primitives downstream without altering them. The default escaper unless in
+ * zero dependency mode is provided by {@link Html#of()}.
+ * <p>
+ * For context specific escaping like for example XML attributes consider using a
+ * {@link JStacheLambda} as the escaper is not passed information where in the template
+ * escaping is requested.
+ *
+ * <h2>Implementing</h2>
  *
  * If performance is not a concern an easier way to create an implementation is to adapt a
  * function by using {@link #of(Function)}.
@@ -41,6 +53,8 @@ import io.jstach.jstache.JStacheType;
  *
  * @apiNote Implementations should be threadsafe and expect reuse!
  * @see JStacheContentType
+ * @see PlainText#of()
+ * @see Html#of()
  * @author agentgt
  */
 public non-sealed interface Escaper extends Appender, Function<String, String> {

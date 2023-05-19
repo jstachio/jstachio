@@ -263,9 +263,9 @@ import java.util.Optional;
  * field with such name but it's not accessible.</li>
  * </ol>
  *
- * <h4 id="_enums">Enum matching Support Extension</h4> Basically enums have boolean keys
- * that are the enums name ({@code Enum.name()}) that can be used as conditional sections.
- * Assume {@code light} is an enum like:
+ * <h4 id="_enums">Enum Matching Extension</h4> Basically enums have boolean keys that are
+ * the enums name ({@code Enum.name()}) that can be used as conditional sections. Assume
+ * {@code light} is an enum like:
  *
  * <pre>
  * <code class="language-java">
@@ -291,16 +291,19 @@ import java.util.Optional;
  * {{/light.YELLOW}}
  * </code> </pre>
  *
- * <h4 id="_index_support">Index Support Extension</h4>
+ * <h4 id="_index_support">Index Extension</h4>
  *
- * JStachio is compatible with both handlebars and JMustache index keys for iterable
- * sections.
+ * JStachio is compatible with both handlebars.js (handlebars.java as well) and JMustache
+ * index keys for iterable sections.
  * <ol>
- * <li><code>-first</code> is boolean that is true when you are on the first item
- * <li><code>-last</code> is a boolean that is true when you are on the last item in the
- * iterable
+ * <li><code>-first</code> and <code>&#64;first</code> is boolean that is true when you
+ * are on the first item
+ * <li><code>-last</code> and <code>&#64;last</code> is a boolean that is true when you
+ * are on the last item in the iterable
  * <li><code>-index</code> is a one based index. The first item would be {@code 1} and not
  * {@code 0}
+ * <li><code>&#64;index</code> is zero based index (handlebars). The first item would be
+ * {@code 0}.
  * </ol>
  *
  * <h3 id="_lambdas">Lambda Support</h3>

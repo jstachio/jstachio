@@ -120,7 +120,7 @@ support dynamic templates. Dynamic meaning that the template markup cannot be ch
 (e.g. concatenating a string to be used as a template)
 at runtime without calling the Java compiler (which would generally be a bad idea for hosted platforms). 
 <em>
-Consequently JStachio is generally (ignoring extensions) is not a good fit for user
+Consequently JStachio is generally (ignoring extensions) not a good fit for user
 created templates (e.g. templates coming from a database).
 </em>
 </p>
@@ -131,6 +131,9 @@ a custom {@linkplain io.jstach.jstache.JStacheLambda lambda}  could be made to r
 templates using a reflection based
 mustach engine such as <a href="https://github.com/samskivert/jmustache">JMustache</a>
 for the places where that is needed.
+<p>
+
+In the future a reflection based runtime version of JStachio that follows JStachio strict rules will be available.
 
 <h4 id="limitations_reactive">Not Reactive</h4>
 
@@ -153,33 +156,40 @@ Furthermore if the model does not have reactive datatypes for its iterables
 as the model is already in memory.
 </p>
 
-<h2 id="mustache">Mustache Syntax</h2>
+<h2 id="mustache">Mustache Syntax and Semantics</h2>
 
 The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
-specifically <a href="https://github.com/mustache/spec/tree/v1.3.0">v1.3.0 syntax</a> . The syntax is informally
-explained by the
+specifically <a href="https://github.com/mustache/spec/tree/v1.3.0">v1.3.0 syntax</a> . The syntax and general semantics 
+is informally explained by the
 <strong>
 <a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html"><em>latest</em> mustache manual</a>
 </strong> 
 and
 formally explained by the <a href="https://github.com/mustache/spec">spec</a>. 
 <p>
-<strong>N.B.</strong><em> currently 
+<strong style="font-size:1.2em; color:orangered">&#x26A0; WARNING</strong><em style="font-size:1.1em"> 
 <a href="https://jgonggrijp.gitlab.io/wontache/mustache.5.html">
     "https://jgonggrijp.gitlab.io/wontache/mustache.5.html"
-</a> is the latest manual and <strong>NOT</strong>
-"https://mustache.github.io/mustache.5.html".
-</em>
-</p>
-<p>
-There are some subtle differences in JStachio version of Mustache due to the static nature notably
-how <code>Map&lt;String, ?&gt;</code> is handled. The contents of a <code>Map</code> are 
-checked last even if it is a directly on the top of the context stack.
+</a> is the latest manual</em> and <strong>NOT the top google result:</strong>
+<span style="text-decoration:line-through">"https://mustache.github.io/mustache.5.html"</span>.
+This is important because the newer manual covers newer mustache features that JStachio implements.
 </p>
 <p>
 <strong>Most of the documentation of what mustache spec options are implemented and how
 are discussed in the &#64;{@link io.jstach.jstache.JStache} annotation.</strong>
 </p>
+<h3 id="mustache_map">Map like objects</h3>
+
+Mustache was originally designed for languages like Javascript that have late binding where every object is like
+a <code>Map&lt;String, ?&gt;</code>. JStachio on the otherhand like Java is statically typed and
+even if a field or method is present on the instance of an object does not mean it is available to JStachio.
+<p>
+While JStachio supports <code>Map</code> types it is not possible to go deeper into the map and thus
+the contents of a <code>Map</code> are checked last even if it is a directly on the top of the context stack.
+<p>
+In short JStachio does not support the casting and reflection required to do that however there
+is {@linkplain io.jstach.jstachio.context some additional support to help wth JSON like data}.
+
 <h3 id="mustache_ws">Whitespace handling</h3>
 <p>
 One of the most important characteristics and spec compliance of modern Mustache (v1.3) 
@@ -214,6 +224,25 @@ The result will be:
 Furthermore if a parent or partial tag(s) are standalone the amount of whitespace (other than newline) preceding
 them is used as indentation for the included template.
 </p>
+
+<h3 id="mustache_virtual_keys">Virtual keys for iterable and enum</h3>
+
+One of the biggest limitations in plain Mustache is that it is not easy to do logic on iterables (aka list-like)
+based on index like start and end logic. JStachio adds virtual keys (the keys do not actually exist on the objects)
+that is compatible with both handlebars.js (handlebars.java as well) and JMustache index keys for iterable
+sections.
+
+<ol>
+<li><code>-first</code> and <code>&#64;first</code> is boolean that is true when you are on the first item
+<li><code>-last</code> and <code>&#64;last</code> is a boolean that is true when you are on the last item in the
+iterable
+<li><code>-index</code> is a one based index. The first item would be {@code 1} and not
+{@code 0}
+<li><code>&#64;index</code> is zero based index (handlebars). The first item would be {@code 0}.
+</ol>
+
+JStachio also has virtual keys for enum types where the name is a boolean if it matches.
+An example of that is in the {@linkplain io.jstach.jstache.JStache JStache javadoc}.
 
 <h2 id="java_code">Java Code</h2>
 

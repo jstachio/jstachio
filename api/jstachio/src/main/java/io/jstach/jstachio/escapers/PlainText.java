@@ -52,4 +52,12 @@ public final class PlainText {
 		return NoEscaper.PlainText;
 	}
 
+	/**
+	 * Provides the escaper for static lookup.
+	 * @return noop like escaper singleton
+	 */
+	public static Escaper of() {
+		return NoEscaper.PlainText;
+	}
+
 }
