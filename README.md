@@ -76,12 +76,15 @@ Covered in [why_jstachio_is_better.md](why_jstachio_is_better.md).
 Not that peformance matters much with templating languges 
 (it is rarely the bottleneck) but JStachio is very fast:
 
-![Template Comparison](https://github.com/agentgt/template-benchmark/raw/master/results.png)
+https://github.com/agentgt/template-benchmark
 
-The one called Manual is as the name implies. Raw Java code.
-The one called `JStachioNoLambda` uses the same template as mustache.java 
-and does not rely on the advance lambda features that JStachio supports.
+### String Output
 
+![Template Comparison](https://github.com/agentgt/template-benchmark/raw/utf8/results.png)
+
+### UTF-8 byte Output with extended characters
+
+![Template Comparison](https://github.com/agentgt/template-benchmark/raw/utf8/results-utf8.png)
 
 ## Quick Example
 
