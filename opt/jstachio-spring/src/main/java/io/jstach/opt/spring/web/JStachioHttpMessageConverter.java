@@ -67,7 +67,6 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
-
 		try {
 			Template template = jstachio.findTemplate(t);
 			try (var body = outputMessage.getBody()) {

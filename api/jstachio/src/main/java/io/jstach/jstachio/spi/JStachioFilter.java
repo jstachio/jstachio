@@ -1,6 +1,7 @@
 package io.jstach.jstachio.spi;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 
@@ -128,6 +130,18 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 				}
 
 				@Override
+				public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
+					try {
+						process(model, appendable.toAppendable());
+						return appendable;
+					}
+					catch (IOException e) {
+						Templates.sneakyThrow(e);
+						throw new UncheckedIOException(e);
+					}
+				}
+
+				@Override
 				public Class<?> modelClass() {
 					return templateInfo.modelClass();
 				}
@@ -194,6 +208,9 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 		for (var f : filters) {
 			fs.add(f);
 		}
+		if (fs.isEmpty()) {
+			return NoFilter.NO_FILTER;
+		}
 		fs.sort(Comparator.comparingInt(JStachioFilter::order));
 		return new CompositeFilterChain(List.copyOf(fs));
 	}
@@ -205,7 +222,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
  *
  * @author agentgt
  */
-class BrokenFilterException extends IOException {
+class BrokenFilterException extends RuntimeException {
 
 	private static final long serialVersionUID = -1206760388422768739L;
 
@@ -232,6 +249,17 @@ enum BrokenFilter implements io.jstach.jstachio.spi.JStachioFilter.FilterChain {
 	@Override
 	public boolean isBroken(Object model) {
 		return true;
+	}
+
+}
+
+enum NoFilter implements JStachioFilter {
+
+	NO_FILTER;
+
+	@Override
+	public FilterChain filter(TemplateInfo template, FilterChain previous) {
+		return previous;
 	}
 
 }
