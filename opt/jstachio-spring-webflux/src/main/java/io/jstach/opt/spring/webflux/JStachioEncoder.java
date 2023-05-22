@@ -1,7 +1,5 @@
 package io.jstach.opt.spring.webflux;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -14,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Template;
+import io.jstach.jstachio.Template.EncodedTemplate;
+import io.jstach.jstachio.output.ByteBufferedOutputStream;
 import reactor.core.publisher.Flux;
 
 /**
@@ -27,13 +28,25 @@ public class JStachioEncoder extends AbstractSingleValueEncoder<Object> {
 
 	private final JStachio jstachio;
 
+	private final int allocateBufferSize;
+
 	/**
 	 * Create the encoder from a JStachio
 	 * @param jstachio not <code>null</code>.
 	 */
 	public JStachioEncoder(JStachio jstachio) {
+		this(jstachio, 4 * 1024);
+	}
+
+	/**
+	 * Create the encoder from a JStachio
+	 * @param jstachio not <code>null</code>.
+	 * @param allocateBufferSize how much to initially allocate from the buffer factory
+	 */
+	public JStachioEncoder(JStachio jstachio, int allocateBufferSize) {
 		super(MediaType.TEXT_HTML);
 		this.jstachio = jstachio;
+		this.allocateBufferSize = allocateBufferSize;
 	}
 
 	@Override
@@ -56,8 +69,26 @@ public class JStachioEncoder extends AbstractSingleValueEncoder<Object> {
 			logger.debug(logPrefix + "Writing [" + event + "]");
 		}
 
-		Charset charset = StandardCharsets.UTF_8;
-		return bufferFactory.wrap(jstachio.execute(event).getBytes(charset));
+		try {
+			@SuppressWarnings("rawtypes")
+			Template template = jstachio.findTemplate(event);
+			if (template instanceof @SuppressWarnings("rawtypes") EncodedTemplate et) {
+				DataBufferOutput output = new DataBufferOutput(bufferFactory.allocateBuffer(allocateBufferSize),
+						template.templateCharset());
+				et.write(event, output);
+				return output.getBuffer();
+			}
+			else {
+				ByteBufferedOutputStream stream = new ByteBufferedOutputStream(allocateBufferSize);
+				template.write(event, stream);
+				return bufferFactory.wrap(stream.toBuffer());
+			}
+
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 }

@@ -34,6 +34,7 @@ module io.jstach.jstachio {
 	exports io.jstach.jstachio.context;
 	exports io.jstach.jstachio.escapers;
 	exports io.jstach.jstachio.formatters;
+	exports io.jstach.jstachio.output;
 
 
 	requires transitive io.jstach.jstache;

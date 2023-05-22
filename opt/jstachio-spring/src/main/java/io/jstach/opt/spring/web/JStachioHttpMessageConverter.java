@@ -1,10 +1,6 @@
 package io.jstach.opt.spring.web;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpInputMessage;
@@ -16,6 +12,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Template;
 
 /**
  * Typesafe way to use JStachio in Spring Web.
@@ -70,12 +67,18 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
-		Charset charset = getDefaultCharset();
-		if (charset == null) {
-			charset = StandardCharsets.UTF_8;
+
+		try {
+			Template template = jstachio.findTemplate(t);
+			try (var body = outputMessage.getBody()) {
+				template.write(t, body);
+			}
 		}
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), charset))) {
-			jstachio.execute(t, writer);
+		catch (IOException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new HttpMessageNotWritableException("JStachio loading failed", e);
 		}
 	}
 

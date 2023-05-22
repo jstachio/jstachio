@@ -43,10 +43,17 @@ public class ByteBufferedOutputStream extends OutputStream {
 	/** The number of valid bytes in the buffer. */
 	protected int count;
 
+	/**
+	 * Creates buffered stream of given size
+	 * @param bufferSize initial size.
+	 */
 	public ByteBufferedOutputStream(int bufferSize) {
 		this.buf = new byte[bufferSize];
 	}
 
+	/**
+	 * Creates buffered stream of buffer initial size: {@value #BUFFER_SIZE}.
+	 */
 	public ByteBufferedOutputStream() {
 		this(BUFFER_SIZE);
 	}
@@ -75,6 +82,10 @@ public class ByteBufferedOutputStream extends OutputStream {
 		count += len;
 	}
 
+	/**
+	 * How many bytes have been written so far.
+	 * @return 0 if empty, otherwise how many bytes so far
+	 */
 	public int size() {
 		return count;
 	}
