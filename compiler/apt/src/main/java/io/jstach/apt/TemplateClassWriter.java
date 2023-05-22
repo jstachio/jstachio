@@ -227,6 +227,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		String _Escaper = jstachio ? ESCAPER_CLASS : _F_Escaper;
 
 		String _EncodedOutput = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
+		String _A = "<A extends " + _Output + "<E>, E extends Exception>";
 
 		println("package " + packageName + ";");
 		println("");
@@ -349,18 +350,14 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("        this(null, null);");
 		println("    }");
 		println("");
-		if (jstachio && GeneratedMethod.execute.gen(generatedMethods)) {
-			println("    @Override");
-		}
-		else if (GeneratedMethod.execute.gen(generatedMethods)) {
+
+		if (!jstachio && GeneratedMethod.execute.gen(generatedMethods)) {
 			println("    /**");
 			println("     * Renders the passed in model.");
 			println("     * @param model a model assumed never to be <code>null</code>.");
 			println("     * @param appendable the appendable to write to.");
 			println("     * @throws IOException if there is an error writing to the appendable");
 			println("     */");
-		}
-		if (GeneratedMethod.execute.gen(generatedMethods)) {
 			println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
 			println("        execute(model, a, templateFormatter(), templateEscaper());");
 			println("    }");
@@ -404,35 +401,61 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("");
 		}
 
-		println("    /**");
-		println("     * Renders the passed in model.");
-		println("     * @param model a model assumed never to be <code>null</code>.");
-		println("     * @param a appendable to write to.");
-		println("     * @param formatter formats variables before they are passed to the escaper");
-		println("     * @param escaper used to write escaped variables");
-		println("     * @throws IOException if an error occurs while writing to the appendable");
-		println("     */");
-		println("    protected void execute(" //
-				+ idt + className + " model, " //
-				+ idt + _Appendable + " a, " //
-				+ idt + _Formatter + " formatter" + "," //
-				+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
 		if (jstachio) {
-			println("        render(model, " + _Output + ".of(a), formatter, escaper, templateAppender());");
+			println("    @Override");
+			println("    public " + _A + " A execute(" //
+					+ idt + className + " model, " //
+					+ idt + "A" + " a) throws E {");
+			println("        render(model, a, formatter, escaper, templateAppender());");
+			println("        return a;");
+			println("    }");
+			println("");
+			println("    /**");
+			println("     * Renders the passed in model.");
+			println("     * @param <A> appendable type.");
+			println("     * @param <E> error type.");
+			println("     * @param model a model assumed never to be <code>null</code>.");
+			println("     * @param a appendable to write to.");
+			println("     * @param formatter formats variables before they are passed to the escaper");
+			println("     * @param escaper used to write escaped variables");
+			println("     * @throws E if an error occurs while writing to the appendable");
+			println("     */");
+			println("    protected " + _A + " void execute(" //
+					+ idt + className + " model, " //
+					+ idt + "A" + " a, " //
+					+ idt + _Formatter + " formatter" + "," //
+					+ idt + _Escaper + " escaper" + ") throws E {");
+			println("        render(model, a, formatter, escaper, templateAppender());");
+			println("    }");
+			println("");
 		}
 		else {
+			println("    /**");
+			println("     * Renders the passed in model.");
+			println("     * @param model a model assumed never to be <code>null</code>.");
+			println("     * @param a appendable to write to.");
+			println("     * @param formatter formats variables before they are passed to the escaper");
+			println("     * @param escaper used to write escaped variables");
+			println("     * @throws IOException if an error occurs while writing to the appendable");
+			println("     */");
+			println("    protected void execute(" //
+					+ idt + className + " model, " //
+					+ idt + _Appendable + " a, " //
+					+ idt + _Formatter + " formatter" + "," //
+					+ idt + _Escaper + " escaper" + ") throws java.io.IOException {");
 			println("        render(model, a, formatter, escaper);");
+			println("    }");
+			println("");
 		}
-		println("    }");
-		println("");
 
 		if (jstachio && preEncode) {
 			println("    @Override");
-			println("    public " + _EncodedOutput + "void write(" //
+			println("    public " + _EncodedOutput + " A write(" //
 					+ idt + className + " model, " //
 					+ idt + "A" + " outputStream" //
 					+ ") throws E {");
 			println("        encode(model, outputStream, templateFormatter(), templateEscaper(), templateAppender());");
+			println("        return outputStream;");
 			println("    }");
 			println("");
 		}

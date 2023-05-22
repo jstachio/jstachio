@@ -1,7 +1,6 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 /**
  * Renders models of type {@code T} by writing to an Appendable. <em>Implementations
@@ -9,8 +8,18 @@ import java.io.UncheckedIOException;
  *
  * @param <T> the model type
  */
-@FunctionalInterface
 public interface Renderer<T> {
+
+	/**
+	 * Renders the passed in model.
+	 * @param <A> output type
+	 * @param <E> error type
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param appendable the output to write to.
+	 * @return the output passed in returned for convenience.
+	 * @throws E if there is an error writing to the output
+	 */
+	public <A extends Output<E>, E extends Exception> A execute(T model, A appendable) throws E;
 
 	/**
 	 * Renders the passed in model.
@@ -18,7 +27,9 @@ public interface Renderer<T> {
 	 * @param appendable the appendable to write to.
 	 * @throws IOException if there is an error writing to the appendable
 	 */
-	public void execute(T model, Appendable appendable) throws IOException;
+	default void execute(T model, Appendable appendable) throws IOException {
+		execute(model, Output.of(appendable));
+	}
 
 	/**
 	 * A convenience method that does not throw {@link IOException} when using
@@ -28,13 +39,7 @@ public interface Renderer<T> {
 	 * @return the passed in {@link StringBuilder}.
 	 */
 	default StringBuilder execute(T model, StringBuilder sb) {
-		try {
-			execute(model, (Appendable) sb);
-			return sb;
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		return execute(model, Output.of(sb)).getBuffer();
 	}
 
 	/**
@@ -44,8 +49,7 @@ public interface Renderer<T> {
 	 */
 	default String execute(T model) {
 		StringBuilder sb = new StringBuilder();
-		execute(model, sb);
-		return sb.toString();
+		return execute(model, sb).toString();
 	}
 
 }

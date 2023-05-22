@@ -2,11 +2,13 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstachio.spi.AbstractJStachio;
 import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioExtension;
@@ -57,7 +59,9 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	void execute(Object model, Appendable appendable) throws IOException;
+	default void execute(Object model, Appendable appendable) throws IOException {
+		Renderer.super.execute(model, appendable);
+	}
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering
@@ -65,7 +69,9 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	StringBuilder execute(Object model, StringBuilder sb);
+	default StringBuilder execute(Object model, StringBuilder sb) {
+		return Renderer.super.execute(model, sb);
+	}
 
 	/**
 	 * Finds a template by using the models class if possible and then applies filtering
@@ -73,7 +79,28 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
-	String execute(Object model);
+	default String execute(Object model) {
+		return Renderer.super.execute(model);
+	}
+
+	/**
+	 * Renders the passed in model directly to a binary stream possibly leveraging
+	 * pre-encoded parts of the template. This <em>may</em> improve performance when
+	 * rendering UTF-8 to an OutputStream as some of the encoding is done in advance.
+	 * Because the encoding is done statically you cannot pass the charset in. The chosen
+	 * charset comes from {@link JStacheConfig#charset()}.
+	 * @param <A> output type
+	 * @param <E> error type
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param output to write to.
+	 * @return the passed in output for convenience
+	 * @throws E if an error occurs while writing to output
+	 * @throws UnsupportedCharsetException if the encoding of the output does not match
+	 * the template.
+	 */
+	public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
+			Object model, //
+			A output) throws E;
 
 	/**
 	 * Finds a template by class. This is useful if you want to have the template write

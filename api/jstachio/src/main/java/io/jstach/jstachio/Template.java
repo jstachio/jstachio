@@ -24,6 +24,32 @@ import io.jstach.jstache.JStacheType;
 public interface Template<T> extends Renderer<T>, TemplateInfo {
 
 	/**
+	 * Renders the passed in model.
+	 * @param <A> output type
+	 * @param <E> error type
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param appendable the appendable to write to.
+	 * @throws E if there is an error writing to the output
+	 */
+	public <A extends Output<E>, E extends Exception> A execute(T model, A appendable) throws E;
+
+	/**
+	 * Renders the passed in model directly to a binary stream possibly leveraging
+	 * pre-encoded parts of the template.
+	 * @param <A> output type
+	 * @param <E> error type
+	 * @param model a model assumed never to be <code>null</code>.
+	 * @param output to write to.
+	 * @return the passed in output for convenience
+	 * @throws E if an error occurs while writing to output
+	 */
+	default <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
+			T model, //
+			A output) throws E {
+		return execute(model, output);
+	}
+
+	/**
 	 * Renders the passed in model directly to a binary stream using the
 	 * {@link #templateCharset()} for encoding. If the template is pre-encoded the
 	 * pre-encoded parts of the template will be written to the stream for performance
@@ -39,6 +65,15 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 		OutputStreamWriter ow = new OutputStreamWriter(outputStream, templateCharset());
 		execute(model, ow);
 		ow.flush();
+	}
+
+	/**
+	 * Creates a template model pair.
+	 * @param model never <code>null</code> model.
+	 * @return executable template model pair.
+	 */
+	default TemplateExecutable executable(T model) {
+		return TemplateExecutable.of(this, model);
 	}
 
 	/**
@@ -101,11 +136,17 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 		 * @param <E> error type
 		 * @param model a model assumed never to be <code>null</code>.
 		 * @param output to write to.
+		 * @return the passed in output for convenience
 		 * @throws E if an error occurs while writing to output
 		 */
-		public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> void write( //
+		public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
 				T model, //
 				A output) throws E;
+
+		@Override
+		default TemplateExecutable executable(T model) {
+			return TemplateExecutable.of(this, model);
+		}
 
 	}
 

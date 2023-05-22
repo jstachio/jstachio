@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A low level abstraction and implementation detail analogous to {@link Appendable} and
  * {@link DataOutput}.
@@ -124,6 +127,17 @@ public interface Output<E extends Exception> {
 	 */
 	public static StringOutput of(StringBuilder a) {
 		return new StringOutput(a);
+	}
+
+	/**
+	 * Converts the output to an appendable unless it already is one.
+	 * @return adapted appendable of this output.
+	 */
+	default Appendable toAppendable() {
+		if (this instanceof Appendable a) {
+			return a;
+		}
+		return new OutputAppendable(this);
 	}
 
 	/**
@@ -256,10 +270,63 @@ public interface Output<E extends Exception> {
 		 * The buffer that has been wrapped.
 		 * @return the wrapped builder
 		 */
-		StringBuilder getBuffer() {
+		public StringBuilder getBuffer() {
 			return buffer;
 		}
 
+	}
+
+}
+
+class OutputAppendable implements Appendable {
+
+	private final Output<?> output;
+
+	public OutputAppendable(Output<?> output) {
+		super();
+		this.output = output;
+	}
+
+	@Override
+	public @NonNull Appendable append(@Nullable CharSequence csq) throws @Nullable IOException {
+		try {
+			output.append(csq);
+			return this;
+		}
+		catch (Exception e) {
+			if (e instanceof IOException ioe) {
+				throw ioe;
+			}
+			throw new IOException(e);
+		}
+	}
+
+	@Override
+	public @NonNull Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
+		try {
+			output.append(csq, start, end);
+			return this;
+		}
+		catch (Exception e) {
+			if (e instanceof IOException ioe) {
+				throw ioe;
+			}
+			throw new IOException(e);
+		}
+	}
+
+	@Override
+	public @NonNull Appendable append(char c) throws IOException {
+		try {
+			output.append(c);
+			return this;
+		}
+		catch (Exception e) {
+			if (e instanceof IOException ioe) {
+				throw ioe;
+			}
+			throw new IOException(e);
+		}
 	}
 
 }

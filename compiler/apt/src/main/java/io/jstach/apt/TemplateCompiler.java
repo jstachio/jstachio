@@ -565,7 +565,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 				flushUnescaped();
 				_endBlockSection(name);
 			}
-			case PATH, ESCAPED_VAR, UNESCAPED_VAR, PARTIAL -> {
+			case PATH, ESCAPED_VAR, UNESCAPED_VAR, SECTION_VAR, PARTIAL -> {
 				throw new IllegalStateException("Context Type is wrong. " + context.getType());
 			}
 			case ROOT, SECTION, INVERTED -> {
