@@ -12,7 +12,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.Template;
+import io.jstach.jstachio.Output;
 
 /**
  * Typesafe way to use JStachio in Spring Web.
@@ -67,18 +67,7 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
-		try {
-			Template template = jstachio.findTemplate(t);
-			try (var body = outputMessage.getBody()) {
-				template.write(t, body);
-			}
-		}
-		catch (IOException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new HttpMessageNotWritableException("JStachio loading failed", e);
-		}
+		jstachio.write(t, Output.of(outputMessage.getBody(), getDefaultCharset()));
 	}
 
 }
