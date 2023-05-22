@@ -22,11 +22,6 @@ package io.jstach.jstache;
  * <td>Executes model</td>
  * </tr>
  * <tr>
- * <td>{@link JStacheType#JSTACHIO}</td>
- * <td>{@code <T extends Model> void execute(T model, Appendable appendable, Formatter formatter, Escaper escaper)}</td>
- * <td>Executes model with supplied formatter and escaper</td>
- * </tr>
- * <tr>
  * <td>{@link JStacheType#JSTACHIO}<br/>
  * {@link JStacheType#STACHE}</td>
  * <td>{@code Class<?> modelClass()}</td>
