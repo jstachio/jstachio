@@ -29,7 +29,7 @@ import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
  * @author agentgt
  *
  */
-public sealed interface TemplateExecutable {
+public sealed interface TemplateModel {
 
 	/**
 	 * Template.
@@ -91,7 +91,7 @@ public sealed interface TemplateExecutable {
 	 * @param model model instance
 	 * @return the template executable designed for encoded templates.
 	 */
-	public static <T> TemplateExecutable of(EncodedTemplate<T> template, T model) {
+	public static <T> TemplateModel of(EncodedTemplate<T> template, T model) {
 		return new EncodedTemplateExecutable<>(template, model);
 	}
 
@@ -102,7 +102,7 @@ public sealed interface TemplateExecutable {
 	 * @param model model instance
 	 * @return the template executable.
 	 */
-	public static <T> TemplateExecutable of(Template<T> template, T model) {
+	public static <T> TemplateModel of(Template<T> template, T model) {
 		if (template instanceof EncodedTemplate<T> et) {
 			return of(et, model);
 		}
@@ -170,8 +170,7 @@ interface TemplateProxy extends Template<Object>, FilterChain {
 
 }
 
-record DefaultTemplateExecutable<T> (Template<T> delegateTemplate,
-		T model) implements TemplateExecutable, TemplateProxy {
+record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) implements TemplateModel, TemplateProxy {
 
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
 		return delegateTemplate.execute(model(), output);
@@ -187,13 +186,13 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate,
 		if (model == this || model == this.model) {
 			return execute(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
+		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
 	}
 
 }
 
 record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
-		T model) implements TemplateExecutable, TemplateProxy {
+		T model) implements TemplateModel, TemplateProxy {
 
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
 		return delegateTemplate.execute(model(), output);
@@ -213,7 +212,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 		if (model == this || model == this.model) {
 			return execute(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
+		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
 	}
 
 	@Override
@@ -221,7 +220,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 		if (model == this || model == this.model) {
 			return write(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
+		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
 	}
 
 }

@@ -70,7 +70,8 @@ public class HelloWorldTest {
 		var world = new HelloWorld("Hello alien", List.of(beth, jerry));
 		// HelloWorldRenderer.of().render(world).execute();
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		HelloWorldRenderer.of().model(world).write(stream);
+		var tm = HelloWorldRenderer.of().model(world);
+		JStachio.of().findTemplate(tm).write(world, stream);
 		String actual = new String(stream.toByteArray(), StandardCharsets.UTF_8);
 		String expected = """
 				Hello alien Beth! You are 35 years old!

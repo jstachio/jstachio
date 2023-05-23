@@ -13,8 +13,6 @@ import org.springframework.util.MimeType;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
-import io.jstach.jstachio.Template.EncodedTemplate;
-import io.jstach.jstachio.output.ByteBufferedOutputStream;
 import reactor.core.publisher.Flux;
 
 /**
