@@ -24,12 +24,15 @@ import io.jstach.jstache.JStacheType;
 public interface Template<T> extends Renderer<T>, TemplateInfo {
 
 	/**
-	 * Renders the passed in model.
+	 * Renders the passed in model to an appendable like output.
 	 * @param <A> output type
 	 * @param <E> error type
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param appendable the appendable to write to.
 	 * @throws E if there is an error writing to the output
+	 * @apiNote if the eventual output is to be bytes use
+	 * {@link #write(Object, io.jstach.jstachio.Output.EncodedOutput)} as it will leverage
+	 * pre-encoding if the template has it.
 	 */
 	public <A extends Output<E>, E extends Exception> A execute(T model, A appendable) throws E;
 
@@ -42,6 +45,8 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @param output to write to.
 	 * @return the passed in output for convenience
 	 * @throws E if an error occurs while writing to output
+	 * @apiNote for performance and code generation reasons templates do not do validation
+	 * that the encoded output has the correct charset.
 	 */
 	default <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
 			T model, //
@@ -53,7 +58,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * Renders the passed in model directly to a binary stream using the
 	 * {@link #templateCharset()} for encoding. If the template is pre-encoded the
 	 * pre-encoded parts of the template will be written to the stream for performance
-	 * otherwise an unbuffered {@link OutputStreamWriter} will be used.
+	 * otherwise an {@link OutputStreamWriter} will wrap the outputstream.
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param outputStream to write to.
 	 * @throws IOException if an error occurs while writing to the outputStream
@@ -72,7 +77,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @param model never <code>null</code> model.
 	 * @return executable template model pair.
 	 */
-	default TemplateExecutable executable(T model) {
+	default TemplateExecutable model(T model) {
 		return TemplateExecutable.of(this, model);
 	}
 
@@ -144,7 +149,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 				A output) throws E;
 
 		@Override
-		default TemplateExecutable executable(T model) {
+		default TemplateExecutable model(T model) {
 			return TemplateExecutable.of(this, model);
 		}
 

@@ -7,6 +7,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import io.jstach.jstache.JStacheFormatter.UnspecifiedFormatter;
 import io.jstach.jstache.JStacheName;
 import io.jstach.jstache.JStachePath;
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.escapers.Html;
@@ -56,6 +58,21 @@ import io.jstach.jstachio.spi.Templates.TemplateInfos.SimpleTemplateInfo;
 public final class Templates {
 
 	private Templates() {
+	}
+
+	/**
+	 * A utility method that will check if the templates encoding matches the outputs
+	 * encoding.
+	 * @param template template charset to check
+	 * @param output an encoded output expecting the template charset to be the same.
+	 * @throws UnsupportedCharsetException if the charsets do not match
+	 */
+	public static void validateEncoding(TemplateInfo template, EncodedOutput<?> output) {
+		if (!template.templateCharset().equals(output.charset())) {
+			throw new UnsupportedCharsetException(
+					"The encoding of the template does not match the output. template charset="
+							+ template.templateCharset() + ", output charset=" + output.charset());
+		}
 	}
 
 	/**

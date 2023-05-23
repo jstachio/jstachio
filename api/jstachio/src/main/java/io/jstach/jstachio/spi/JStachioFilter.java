@@ -31,10 +31,10 @@ import io.jstach.jstachio.TemplateInfo;
  * {@link TemplateInfo} may not be a generated {@link Template}.</li>
  * <li>Loads the composite filter which is all the filters combined in order (see
  * {@link #order()}).</li>
- * <li>Calls {@link #filter(TemplateInfo)} on the loaded template which returns a
- * {@link FilterChain}.</li>
- * <li>Then tells the chain to {@link FilterChain#process(Object, Appendable) process} the
- * rendering.</li>
+ * <li>{@linkplain FilterChain#of(JStachioFilter, TemplateInfo) Creates the filter chain}
+ * with the loaded template.</li>
+ * <li>Then tells the chain to {@linkplain FilterChain#process(Object, Appendable)
+ * process} the rendering.</li>
  * </ol>
  *
  * @apiNote <strong class="warn"> &#x26A0; WARNING! While this extension point is public
@@ -75,11 +75,12 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 
 		/**
 		 * Converts the filter chain into a template if it is not already one.
+		 * @param chain process will be used when the template is executed.
 		 * @param templateInfo template info to use if the filter chain is not a template.
 		 * @return chain as a template
 		 */
-		default Template<?> toTemplate(TemplateInfo templateInfo) {
-			if (this instanceof Template<?> template) {
+		public static Template<?> toTemplate(FilterChain chain, TemplateInfo templateInfo) {
+			if (chain instanceof Template<?> template) {
 				return template;
 			}
 			return new Template<Object>() {
@@ -126,13 +127,13 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 
 				@Override
 				public void execute(Object model, Appendable a) throws IOException {
-					process(model, a);
+					chain.process(model, a);
 				}
 
 				@Override
 				public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
 					try {
-						process(model, appendable.toAppendable());
+						chain.process(model, appendable.toAppendable());
 						return appendable;
 					}
 					catch (IOException e) {
@@ -149,6 +150,36 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 			};
 		}
 
+		/**
+		 * Create the filter chain from the filter and a template by resolving the first
+		 * filter.
+		 * <p>
+		 * The first filter (previous) will be broken unless the parameter template is a
+		 * {@link FilterChain} which generated renderers usually are.
+		 * @param filter usually the composite filter
+		 * @param template info about the template
+		 * @return an advised render function or often the previous render function if no
+		 * advise is needed.
+		 */
+		@SuppressWarnings("unchecked")
+		public static FilterChain of( //
+				JStachioFilter filter, TemplateInfo template) {
+			FilterChain previous = BrokenFilter.INSTANCE;
+			if (template instanceof FilterChain c) {
+				previous = c;
+			}
+			else if (template instanceof @SuppressWarnings("rawtypes") Template t) {
+				/*
+				 * This is sort of abusing that filter chains happen to be a functional
+				 * interface
+				 */
+				previous = (model, appendable) -> {
+					t.execute(model, appendable);
+				};
+			}
+			return filter.filter(template, previous);
+		}
+
 	}
 
 	/**
@@ -161,32 +192,6 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 	FilterChain filter( //
 			TemplateInfo template, //
 			FilterChain previous);
-
-	/**
-	 * Applies filter with previous filter broken unless the parameter template is a
-	 * {@link FilterChain} or is a{@link Template} which generated renderers usually are.
-	 * @param template info about the template
-	 * @return an advised render function or often the previous render function if no
-	 * advise is needed.
-	 */
-	@SuppressWarnings("unchecked")
-	default FilterChain filter( //
-			TemplateInfo template) {
-		FilterChain previous = BrokenFilter.INSTANCE;
-		if (template instanceof FilterChain c) {
-			previous = c;
-		}
-		else if (template instanceof @SuppressWarnings("rawtypes") Template t) {
-			/*
-			 * This is sort of abusing that filter chains happen to be a functional
-			 * interface
-			 */
-			previous = (model, appendable) -> {
-				t.execute(model, appendable);
-			};
-		}
-		return filter(template, previous);
-	}
 
 	/**
 	 * Hint on order of filter chain. The found {@link JStachioFilter}s are sorted

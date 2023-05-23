@@ -3,12 +3,12 @@ package io.jstach.jstachio.spi;
 import static io.jstach.jstachio.spi.Templates.sneakyThrow;
 
 import java.io.IOException;
-import java.nio.charset.UnsupportedCharsetException;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateExecutable;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
@@ -38,11 +38,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
 		var t = _findTemplate(model);
-		if (!t.templateCharset().equals(appendable.charset())) {
-			throw new UnsupportedCharsetException(
-					"The encoding of the template does not match the output. templateCharset=" + t.templateCharset()
-							+ " output.charset=" + appendable.charset());
-		}
+		Templates.validateEncoding(t, appendable);
 		return t.write(model, appendable);
 	}
 
@@ -50,7 +46,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	 * IF YOU want this method to be not final please file a bug.
 	 */
 	@Override
-	public final Template<?> findTemplate(Object model) throws IOException {
+	public final Template<Object> findTemplate(Object model) {
 		return _findTemplate(model);
 	}
 
@@ -59,9 +55,18 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Template<Object> _findTemplate(Object model) {
-		TemplateInfo template = template(model.getClass());
+		TemplateInfo template;
+		if (model instanceof TemplateExecutable te) {
+			/*
+			 * TemplateExecutables can execute on themselves.
+			 */
+			template = te.template();
+		}
+		else {
+			template = template(model.getClass());
+		}
 		var filter = loadFilter(model, template);
-		Template t = filter.toTemplate(template);
+		Template t = FilterChain.toTemplate(filter, template);
 		return t;
 	}
 
@@ -72,8 +77,8 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	 * @return filter chain that can process model
 	 * @throws IOException if the filter cannot process the model
 	 */
-	protected FilterChain loadFilter(Object model, TemplateInfo template) {
-		var filter = extensions().getFilter().filter(template);
+	protected final FilterChain loadFilter(Object model, TemplateInfo template) {
+		var filter = FilterChain.of(extensions().getFilter(), template);
 		if (filter.isBroken(model)) {
 			boolean isReflectiveTemplate = Templates.isReflectionTemplate(template);
 			final String ind = "\n\t";
