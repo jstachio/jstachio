@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateModel;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 
 /**
@@ -53,6 +56,33 @@ public class HelloController {
 	}
 
 	/**
+	 * Here we use the generated code directly and return a {@link TemplateModel} which is
+	 * analogous to {@link ModelAndView}.
+	 *
+	 * @apiNote Notice that the method has to be annotated with
+	 * <code>&#64;ResponseBody</code>.
+	 * @return the template model pair that already has the template found.
+	 * @see JStachioHttpMessageConverter
+	 */
+	@GetMapping(value = "/templateModel")
+	@ResponseBody
+	public TemplateModel templateModel() {
+		return HelloModelView.of().model(new HelloModel("Spring Boot is using JStachio TemplateModel!"));
+	}
+
+	/**
+	 * Here we use a {@link ResponseEntity} which allows use to set status codes with our
+	 * model to be rendered.
+	 * @return a response entity.
+	 * @see JStachioHttpMessageConverter
+	 */
+	@GetMapping(value = "/responseEntity")
+	public ResponseEntity<HelloModel> entity() {
+		return ResponseEntity.badRequest().body(new HelloModel("Spring Boot is using JStachio ResponseEntity. "
+				+ "This is a 400 http error code but is not an actual error!"));
+	}
+
+	/**
 	 * Here we use {@link JStacheInterfaces} to make our model implement a Spring View to
 	 * support the traditional servlet MVC approach. The model will use the static
 	 * jstachio singleton that will be the spring one.
@@ -65,7 +95,6 @@ public class HelloController {
 	 * @return the model that will be used as View
 	 * @see JStachioHttpMessageConverter
 	 */
-	@SuppressWarnings("exports")
 	@GetMapping(value = "/mvc")
 	public View mvc() {
 		return new HelloModel("Spring Boot MVC is now JStachioed!");

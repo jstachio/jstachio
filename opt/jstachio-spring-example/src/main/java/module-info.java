@@ -35,6 +35,7 @@ module io.jstach.opt.spring.example {
 	requires static jakarta.servlet;
 	
 	requires spring.web;
+	requires spring.webmvc;
 	requires spring.beans;
 	requires spring.core;
 	requires spring.context;

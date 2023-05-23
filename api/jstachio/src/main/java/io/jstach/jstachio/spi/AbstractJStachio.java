@@ -1,6 +1,7 @@
 package io.jstach.jstachio.spi;
 
 import static io.jstach.jstachio.spi.Templates.sneakyThrow;
+import static io.jstach.jstachio.spi.Templates.validateEncoding;
 
 import java.io.IOException;
 
@@ -8,7 +9,7 @@ import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
-import io.jstach.jstachio.TemplateExecutable;
+import io.jstach.jstachio.TemplateModel;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
@@ -38,7 +39,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
 		var t = _findTemplate(model);
-		Templates.validateEncoding(t, appendable);
+		validateEncoding(t, appendable);
 		return t.write(model, appendable);
 	}
 
@@ -56,7 +57,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Template<Object> _findTemplate(Object model) {
 		TemplateInfo template;
-		if (model instanceof TemplateExecutable te) {
+		if (model instanceof TemplateModel te) {
 			/*
 			 * TemplateExecutables can execute on themselves.
 			 */
@@ -96,8 +97,14 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		return filter;
 	}
 
+	/*
+	 * IF YOU want this method to be not final please file a bug.
+	 */
 	@Override
-	public boolean supportsType(Class<?> modelType) {
+	public final boolean supportsType(Class<?> modelType) {
+		if (TemplateModel.class.isAssignableFrom(modelType)) {
+			return true;
+		}
 		return extensions().getTemplateFinder().supportsType(modelType);
 	}
 

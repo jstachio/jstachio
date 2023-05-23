@@ -77,8 +77,8 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * @param model never <code>null</code> model.
 	 * @return executable template model pair.
 	 */
-	default TemplateExecutable model(T model) {
-		return TemplateExecutable.of(this, model);
+	default TemplateModel model(T model) {
+		return TemplateModel.of(this, model);
 	}
 
 	/**
@@ -149,8 +149,8 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 				A output) throws E;
 
 		@Override
-		default TemplateExecutable model(T model) {
-			return TemplateExecutable.of(this, model);
+		default TemplateModel model(T model) {
+			return TemplateModel.of(this, model);
 		}
 
 	}

@@ -1,7 +1,6 @@
 package io.jstach.jstachio;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
@@ -103,20 +102,21 @@ public interface JStachio extends Renderer<Object> {
 			A output) throws E;
 
 	/**
-	 * Finds a template by class. This is useful if you want to have the template write
-	 * directly to an {@link OutputStream} via
-	 * {@link Template#write(Object, OutputStream)} which will possibly leverage
-	 * pre-encoding and need metadata before writing such as charset and media type for
-	 * HTTP output.
+	 * Finds a template by model. This is useful if you need metadata before writing such
+	 * as charset and media type for HTTP output which the template has.
 	 * <p>
 	 * The returned template is decorated if filtering is on and a filter that is not the
 	 * template is applied.
-	 * @param model the model
+	 * <p>
+	 * Passing in a {@link TemplateModel} should work as well and the returned template
+	 * will be able to execute the TemplateModel as though it were a regular model.
+	 * @param model the actual model or a {@link TemplateModel} containing the model
 	 * @return a filtered template
 	 * @throws NoSuchElementException if a template is not found and no other lookup
 	 * errors happen.
 	 * @throws Exception if template cannot be found for unexpected reasons such as
 	 * reflection errors.
+	 * @apiNote implementations should handle {@link TemplateModel} passed in.
 	 */
 	Template<Object> findTemplate(Object model) throws Exception;
 
