@@ -1,7 +1,9 @@
 package io.jstach.examples;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -59,6 +61,23 @@ public class HelloWorldTest {
 								""";
 		assertEquals(expected, actual);
 
+	}
+
+	@Test
+	public void testTemplatesExecutable() throws Exception {
+		Person beth = new Person("Beth", LocalDate.now().minusYears(35));
+		Person jerry = new Person("Jerry", LocalDate.now().minusYears(35));
+		var world = new HelloWorld("Hello alien", List.of(beth, jerry));
+		// HelloWorldRenderer.of().render(world).execute();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		HelloWorldRenderer.of().model(world).write(stream);
+		String actual = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+		String expected = """
+				Hello alien Beth! You are 35 years old!
+				Hello alien Jerry! You are 35 years old!
+				That is all for now!
+				""";
+		assertEquals(expected, actual);
 	}
 
 }

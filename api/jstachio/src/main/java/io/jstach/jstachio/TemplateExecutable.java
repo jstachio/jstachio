@@ -2,9 +2,15 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.function.Function;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStacheInterfaces;
+import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template.EncodedTemplate;
+import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**
  * A template and model combined with convenience methods.
@@ -105,21 +111,117 @@ public sealed interface TemplateExecutable {
 
 }
 
-record DefaultTemplateExecutable<T> (Template<T> template, T model) implements TemplateExecutable {
-	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
-		return template.execute(model(), output);
+interface TemplateProxy extends Template<Object>, FilterChain {
+
+	public Template<?> delegateTemplate();
+
+	@Override
+	default String templateName() {
+		return delegateTemplate().templateName();
 	}
+
+	@Override
+	default String templatePath() {
+		return delegateTemplate().templatePath();
+	}
+
+	@Override
+	default Class<?> templateContentType() {
+		return delegateTemplate().templateContentType();
+	}
+
+	@Override
+	default Charset templateCharset() {
+		return delegateTemplate().templateCharset();
+	}
+
+	@Override
+	default String templateMediaType() {
+		return delegateTemplate().templateMediaType();
+	}
+
+	@Override
+	default Function<String, String> templateEscaper() {
+		return delegateTemplate().templateEscaper();
+	}
+
+	@Override
+	default Function<@Nullable Object, String> templateFormatter() {
+		return delegateTemplate().templateFormatter();
+	}
+
+	@Override
+	default Class<?> modelClass() {
+		return delegateTemplate().modelClass();
+	}
+
+	@Override
+	default boolean supportsType(Class<?> type) {
+		if (type.equals(this.getClass())) {
+			return true;
+		}
+		return delegateTemplate().supportsType(type);
+	}
+
+	@Override
+	default void process(Object model, Appendable appendable) throws IOException {
+		execute(model, appendable);
+	}
+
 }
 
-record EncodedTemplateExecutable<T> (EncodedTemplate<T> template, T model) implements TemplateExecutable {
+record DefaultTemplateExecutable<T> (Template<T> delegateTemplate,
+		T model) implements TemplateExecutable, TemplateProxy {
 
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
-		return template.execute(model(), output);
+		return delegateTemplate.execute(model(), output);
 	}
 
-	public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write(A output) throws E {
-		template.write(model, output);
-		return output;
+	@Override
+	public Template<?> template() {
+		return this;
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
+		if (model == this || model == this.model) {
+			return execute(appendable);
+		}
+		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
+	}
+
+}
+
+record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
+		T model) implements TemplateExecutable, TemplateProxy {
+
+	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
+		return delegateTemplate.execute(model(), output);
+	}
+
+	public <A extends EncodedOutput<E>, E extends Exception> A write(A output) throws E {
+		return delegateTemplate.write(model, output);
+	}
+
+	@Override
+	public Template<?> template() {
+		return this;
+	}
+
+	@Override
+	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
+		if (model == this || model == this.model) {
+			return execute(appendable);
+		}
+		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
+	}
+
+	@Override
+	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
+		if (model == this || model == this.model) {
+			return write(appendable);
+		}
+		throw new UnsupportedOperationException("the model passed into this TemplateExecutable is not correct");
 	}
 
 }

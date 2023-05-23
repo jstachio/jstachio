@@ -51,7 +51,6 @@ public class MainTest {
 		InlineExample inline = new InlineExample("Adam");
 		String actual = InlineExampleRenderer.of().execute(inline);
 		assertEquals("Hello Adam!", actual);
-
 	}
 
 }

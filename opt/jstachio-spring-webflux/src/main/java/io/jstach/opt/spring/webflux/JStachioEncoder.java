@@ -69,25 +69,18 @@ public class JStachioEncoder extends AbstractSingleValueEncoder<Object> {
 			logger.debug(logPrefix + "Writing [" + event + "]");
 		}
 
+		Template<Object> template;
 		try {
-			@SuppressWarnings("rawtypes")
-			Template template = jstachio.findTemplate(event);
-			if (template instanceof @SuppressWarnings("rawtypes") EncodedTemplate et) {
-				DataBufferOutput output = new DataBufferOutput(bufferFactory.allocateBuffer(allocateBufferSize),
-						template.templateCharset());
-				et.write(event, output);
-				return output.getBuffer();
-			}
-			else {
-				ByteBufferedOutputStream stream = new ByteBufferedOutputStream(allocateBufferSize);
-				template.write(event, stream);
-				return bufferFactory.wrap(stream.toBuffer());
-			}
-
+			template = jstachio.findTemplate(event);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		DataBufferOutput output = new DataBufferOutput(bufferFactory.allocateBuffer(allocateBufferSize),
+				template.templateCharset());
+
+		return template.write(event, output).getBuffer();
 
 	}
 

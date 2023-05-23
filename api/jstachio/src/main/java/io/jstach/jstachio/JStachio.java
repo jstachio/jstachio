@@ -94,9 +94,9 @@ public interface JStachio extends Renderer<Object> {
 	 * @param model a model assumed never to be <code>null</code>.
 	 * @param output to write to.
 	 * @return the passed in output for convenience
-	 * @throws E if an error occurs while writing to output
 	 * @throws UnsupportedCharsetException if the encoding of the output does not match
 	 * the template.
+	 * @throws E if an error occurs while writing to output
 	 */
 	public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
 			Object model, //
@@ -118,7 +118,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @throws Exception if template cannot be found for unexpected reasons such as
 	 * reflection errors.
 	 */
-	Template<?> findTemplate(Object model) throws Exception;
+	Template<Object> findTemplate(Object model) throws Exception;
 
 	/**
 	 * Determines if this jstachio can render the model type (the class annotated by
