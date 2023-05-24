@@ -16,4 +16,10 @@ public class MessagePage {
 	 */
 	public String message;
 
+	/**
+	 * Default constructor required for javadoc 18+
+	 */
+	public MessagePage() {
+	}
+
 }

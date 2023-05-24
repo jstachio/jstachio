@@ -15,6 +15,12 @@ import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 public class MessageConfiguration {
 
 	/**
+	 * Created by Spring
+	 */
+	public MessageConfiguration() {
+	}
+
+	/**
 	 * Bean to create configurer bean that does cross cutting logic across controllers
 	 * @return configurer
 	 */

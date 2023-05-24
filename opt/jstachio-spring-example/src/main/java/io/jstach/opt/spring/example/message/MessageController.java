@@ -12,8 +12,15 @@ import io.jstach.opt.spring.webmvc.JStachioModelView;
  *
  * @author dsyer
  */
+@SuppressWarnings("exports")
 @Controller
 public class MessageController {
+
+	/**
+	 * Created by Spring
+	 */
+	public MessageController() {
+	}
 
 	/**
 	 * Here we use the global configurer to inject state into the {@link View}.

@@ -7,6 +7,7 @@ import io.jstach.jstache.JStache;
  * expanded via the {@link io.jstach.jstache.JStacheConfig} on the projects module.
  * 
  * @author agentgt
+ * @param message The greeting message
  */
 @JStache(path = "hello")
 public record HelloModel(String message) {
