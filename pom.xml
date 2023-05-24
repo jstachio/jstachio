@@ -25,6 +25,7 @@
     as well as let dependabot check for maven updates. 
     -->
     <maven.core.version>3.9.2</maven.core.version>
+    <jstachio.jdk.release.version>17.0.7</jstachio.jdk.release.version>
     <jstachio.website>https://jstach.io/doc/jstachio</jstachio.website>
     <jstachio.version>${project.version}</jstachio.version>
     <jstachio.website.doc>${jstachio.website}/${jstachio.version}</jstachio.website.doc>
@@ -511,11 +512,13 @@
                   <rules>
                     <requireSnapshotVersion>
                       <message>
+                      
                         Looks like you were trying to re-build a release build because the current version 
                         (${project.version}) is not a SNAPSHOT.
                         
                         To perform a release build use the property "-Ddeploy=release" but do not
                         use the goal "deploy" and instead use "install" / "package".
+                        
                       </message>
                     </requireSnapshotVersion>
                   </rules>
@@ -582,7 +585,7 @@
                 <configuration>
                   <rules>
                      <requireJavaVersion>
-                      <version>17</version>
+                      <version>[${jstachio.jdk.release.version}]</version>
                     </requireJavaVersion>
                     <requireReleaseDeps>
                       <message>No Snapshots Allowed!</message>
