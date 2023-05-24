@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
  * @author agentgt
  * @author dsyer
  */
+@SuppressWarnings("exports")
 public class JStachioEncoder extends AbstractSingleValueEncoder<Object> {
 
 	private final JStachio jstachio;

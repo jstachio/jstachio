@@ -367,6 +367,19 @@
                     <ignore/>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <versionRange>[3.3.0,)</versionRange>
+                    <goals>
+                      <goal>enforce</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -470,6 +483,44 @@
                 <goals>
                   <goal>validate</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>deploy-local</id>
+      <activation>
+        <property>
+          <name>!deploy</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-no-releases</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireSnapshotVersion>
+                      <message>
+                        Looks like you were trying to re-build a release build because the current version 
+                        (${project.version}) is not a SNAPSHOT.
+                        
+                        To perform a release build use the property "-Ddeploy=release" but do not
+                        use the goal "deploy" and instead use "install" / "package".
+                      </message>
+                    </requireSnapshotVersion>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
               </execution>
             </executions>
           </plugin>

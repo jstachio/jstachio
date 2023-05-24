@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
  * automatically applies all {@link JStachioModelViewConfigurer} instances to views before
  * rendering.
  */
+@SuppressWarnings("exports")
 public class ViewSetupBeanPostProcessor implements BeanPostProcessor {
 
 	private final ApplicationContext context;

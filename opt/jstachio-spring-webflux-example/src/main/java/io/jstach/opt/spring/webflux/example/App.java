@@ -3,10 +3,12 @@ package io.jstach.opt.spring.webflux.example;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStachePath;
 
 /**
- * Entry point.
+ * Entry point and class that defines shared jstachio config to be imported in other
+ * places with {@link JStacheConfig#using()}.
  *
  * @author agentgt
  */

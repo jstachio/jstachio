@@ -1,7 +1,5 @@
 package io.jstach.examples.issue61;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import io.jstach.examples.reflect.TemplatesTest;

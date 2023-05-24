@@ -20,6 +20,7 @@ interface Lambdas {
 		return new KeyValues(kvs);
 	}
 
+	@SuppressWarnings("exports")
 	record KeyValues(List<KeyValue> values) {
 
 	}

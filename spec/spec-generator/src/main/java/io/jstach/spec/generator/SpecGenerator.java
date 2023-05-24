@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +35,7 @@ import com.samskivert.mustache.Template;
  */
 public class SpecGenerator {
 
-	static PrintStream out = System.out;
+	static PrintStream out = Objects.requireNonNull(System.out);
 
 	final String projectPath = "../spec-mustache";
 

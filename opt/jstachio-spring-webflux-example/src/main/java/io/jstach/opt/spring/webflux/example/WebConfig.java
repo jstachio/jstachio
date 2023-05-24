@@ -20,6 +20,7 @@ import io.jstach.opt.spring.webflux.ViewSetupBeanPostProcessor;
  * @author agentgt
  * @see JStachioHttpMessageConverter
  */
+@SuppressWarnings("exports")
 @Configuration
 public class WebConfig implements WebFluxConfigurer {
 

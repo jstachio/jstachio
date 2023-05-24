@@ -12,6 +12,7 @@ import io.jstach.opt.spring.webflux.JStachioModelView;
  *
  * @author dsyer
  */
+@SuppressWarnings("exports")
 @Controller
 public class MessageController {
 

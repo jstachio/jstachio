@@ -10,6 +10,7 @@ import org.springframework.web.server.ServerWebExchange;
  * 
  * @author dsyer
  */
+@SuppressWarnings("exports")
 public interface JStachioModelViewConfigurer {
 
 	/**

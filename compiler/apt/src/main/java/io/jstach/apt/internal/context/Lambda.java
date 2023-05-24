@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.eclipse.jdt.annotation.Nullable;

@@ -16,6 +16,7 @@ import io.jstach.opt.spring.webflux.JStachioModelView;
  *
  * @author agentgt
  */
+@SuppressWarnings("exports")
 @Controller
 public class HelloController {
 

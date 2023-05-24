@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
  * @author dsyer
  *
  */
+@SuppressWarnings("exports")
 public interface JStachioModelView extends View {
 
 	@Override

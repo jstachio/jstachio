@@ -1,4 +1,3 @@
-
 /**
  * Spring Webflux example app for JStachio:
  * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-webflux-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-webflux-example</a>.
@@ -6,7 +5,7 @@
  * This module is an example modularized Spring Boot Webflux application.
  * <p>
  * <strong>
- * Make sure to take note of the annotations on this module as they define the jstachio config
+ * Make sure to take note of the annotations on {@link io.jstach.opt.spring.webflux.example.App} as they define the jstachio config
  * needed to integrate with Spring.
  * </strong>
  * <p>
@@ -24,7 +23,6 @@
  * 
  * @author agentgt
  */
-//@JStachePath(prefix = "views/", suffix = ".mustache") //
 module io.jstach.opt.spring.webflux.example {
 	
 	requires transitive io.jstach.opt.spring.webflux;
@@ -33,9 +31,18 @@ module io.jstach.opt.spring.webflux.example {
 
 	requires static spring.jcl;
 	
+	/*
+	 * Because Spring modules are just automatic name modules
+	 * we cannot require transitive.
+	 */
 	requires spring.boot;
 	requires spring.boot.autoconfigure;
 	requires com.fasterxml.jackson.databind;
+	requires spring.context;
+	requires spring.web;
+	requires spring.webflux;
+	requires spring.core;
+	requires spring.beans;
 	
 	opens io.jstach.opt.spring.webflux.example to //
 	spring.core, spring.web, spring.beans, spring.context

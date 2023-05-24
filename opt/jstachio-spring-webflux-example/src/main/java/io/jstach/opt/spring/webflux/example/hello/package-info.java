@@ -1,5 +1,5 @@
 /**
- * Spring Boot MVC components using JStachio.
+ * Spring Boot WebFlux example Hello endpoint using JStachio.
  * <p>
  * Has the following:
  * <ul>
@@ -9,7 +9,7 @@
  * <li>io.jstach.opt.spring.webflux.example.HelloModelView (jstachio generated
  * renderer)</li>
  * </ul>
- * <strong> Make sure to take note of the annotations on this module as they define the
+ * <strong> Make sure to take note of the annotations on this package as they define the
  * jstachio config needed to integrate with Spring. </strong> This is because much of
  * JStachio config is <em>not runtime driven but compile time driven</em>.
  * <p>

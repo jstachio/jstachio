@@ -15,6 +15,7 @@ import io.jstach.opt.spring.SpringJStachioExtension;
 /**
  * Configures JStachio Spring style.
  */
+@SuppressWarnings("exports")
 @Configuration
 public class SpringTemplateConfig {
 
