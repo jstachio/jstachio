@@ -5,9 +5,19 @@ import org.springframework.context.annotation.Configuration;
 
 import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 
+/**
+ * Message wiring.
+ * @author agent
+ *
+ */
 @Configuration
 public class MessageConfiguration {
 
+	/**
+	 * Bean to create configurer bean that does cross cutting logic
+	 * across controllers
+	 * @return configurer
+	 */
 	@Bean
 	public JStachioModelViewConfigurer configurer() {
 		return (page, model, request) -> {

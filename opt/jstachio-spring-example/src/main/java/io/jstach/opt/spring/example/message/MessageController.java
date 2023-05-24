@@ -17,6 +17,7 @@ public class MessageController {
 
 	/**
 	 * Here we use the global configurer to inject state into the {@link View}.
+	 * @return view
 	 */
 	@GetMapping(value = "/message")
 	public View message() {
