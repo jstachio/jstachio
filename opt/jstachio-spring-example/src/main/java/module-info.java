@@ -65,5 +65,9 @@ module io.jstach.opt.spring.example {
 	 * this in a real world app.
 	 */
 	exports io.jstach.opt.spring.example;
+	exports io.jstach.opt.spring.example.hello;
+	exports io.jstach.opt.spring.example.message;
+
+
 
 }
