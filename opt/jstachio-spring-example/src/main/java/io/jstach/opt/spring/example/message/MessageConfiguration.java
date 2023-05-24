@@ -7,6 +7,7 @@ import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 
 /**
  * Message wiring.
+ *
  * @author agent
  *
  */
@@ -14,8 +15,7 @@ import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 public class MessageConfiguration {
 
 	/**
-	 * Bean to create configurer bean that does cross cutting logic
-	 * across controllers
+	 * Bean to create configurer bean that does cross cutting logic across controllers
 	 * @return configurer
 	 */
 	@Bean
