@@ -17,6 +17,7 @@
     <metainf-services.version>1.9</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <project.build.outputTimestamp>1685021840</project.build.outputTimestamp>
+    <ant.tstamp.now>${project.build.outputTimestamp}</ant.tstamp.now>
     <javadoc.stylesheet/>
     <jstachio.doc.resources>../</jstachio.doc.resources>
     <deploy>snapshot</deploy>
@@ -551,6 +552,11 @@
                 </goals>
                 <configuration>
                   <rules>
+                    <requireProperty>
+                      <property>user.timezone</property>
+                      <regex>UTC</regex>
+                      <message>For reproducible builds you must pass -Duser.timezone=UTC (even if your tz is UTC)</message>
+                    </requireProperty>
                     <requireSnapshotVersion>
                       <message>No Releases Allowed!</message>
                     </requireSnapshotVersion>
@@ -587,6 +593,11 @@
                      <requireJavaVersion>
                       <version>[${jstachio.jdk.release.version}]</version>
                     </requireJavaVersion>
+                    <requireProperty>
+                      <property>user.timezone</property>
+                      <regex>UTC</regex>
+                      <message>For reproducible builds you must pass -Duser.timezone=UTC (even if your tz is UTC)</message>
+                    </requireProperty>
                     <requireReleaseDeps>
                       <message>No Snapshots Allowed!</message>
                     </requireReleaseDeps>
