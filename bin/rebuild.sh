@@ -1,2 +1,3 @@
 #!/bin/bash
-bin/vh set pom && mvn clean package -Ddeploy=release -DskipTests -Dmaven.javadoc.skip -Dgpg.skip $@
+# We assume the tag version has ben checkedout already
+bin/vh set pom && mvn clean package -Ddeploy=release -Duser.timezone=UTC -DskipTests -Dmaven.javadoc.skip -Dgpg.skip $@
