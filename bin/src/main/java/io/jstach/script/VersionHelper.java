@@ -98,12 +98,11 @@ enum Command implements HelpSupport {
 			tag(current);
 			out.println("Setting POM to release version and updating timestamp");
 			pom(current, timestamp);
-			out.println("Ready to release. Do not forget to push tags and log into sonatype to commit release!");
+			out.println("Ready to release. Do not forget to push tags!");
 			out.println("Now manually run:");
-			out.println("mvn clean deploy -Pcentral -Ddeploy=release \\");
+			out.println("mvn clean deploy -Duser.timezone=UTC -Ddeploy=release \\");
 			out.println("&& git checkout . \\");
-			out.println("&& git push \\");
-			out.println("&& git push origin " + current.tag());
+			out.println("&& git push --follow-tags");
 		}
 	},
 	CURRENT("Prints the current version based on version.properties.") {
