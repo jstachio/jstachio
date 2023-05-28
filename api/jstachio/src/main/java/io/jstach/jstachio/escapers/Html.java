@@ -10,13 +10,42 @@ import io.jstach.jstachio.Escaper;
  * Provides a mustache spec based HTML escaper which is the default in normal mustache.
  * <p>
  * The escaper simply escapes:
- * <ul>
- * <li>'&quot;'</li>
- * <li>'&gt;'</li>
- * <li>'&lt;'</li>
- * <li>'&amp;'</li>
- * </ul>
- *
+ * <table border="1">
+ * <caption><strong>Escape table</strong></caption>
+ * <tr>
+ * <th>Character</th>
+ * <th>Escaped String</th>
+ * </tr>
+ * <tr>
+ * <td>'<code>&quot;</code>'</td>
+ * <td>{@value HtmlEscaper#QUOT}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>&amp;</code>'</td>
+ * <td>{@value HtmlEscaper#AMP}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>&#x27;</code>'</td>
+ * <td>{@value HtmlEscaper#APOS}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>&lt;</code>'</td>
+ * <td>{@value HtmlEscaper#LT}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>=</code>'</td>
+ * <td>{@value HtmlEscaper#EQUAL}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>&gt;</code>'</td>
+ * <td>{@value HtmlEscaper#GT}</td>
+ * </tr>
+ * <tr>
+ * <td>'<code>&#x60;</code>'</td>
+ * <td>{@value HtmlEscaper#BACK_TICK}</td>
+ * </tr>
+ * </table>
+ * <br />
  * <em>N.B. Unlike many XML escapers this escaper does not differentiate attribute and
  * element content. Furthermore Mustache unlike many other templating languages is content
  * agnostic. If more flexibile attribute escaping is needed a custom lambda could be used

@@ -26,7 +26,7 @@ public class LambdaPartialTest {
 		String actual = JStachio.render(m);
 		String expected = """
 				bingo
-				LambdaSectionParent[stuff=ignore]
+				LambdaSectionParent[stuff&#x3D;ignore]
 								""";
 		assertEquals(expected, actual);
 	}

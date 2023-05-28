@@ -7,13 +7,19 @@ enum HtmlEscaper implements Escaper {
 
 	Html;
 
-	private static final String QUOT = "&quot;";
+	static final String QUOT = "&quot;";
 
-	private static final String GT = "&gt;";
+	static final String AMP = "&amp;";
 
-	private static final String LT = "&lt;";
+	static final String APOS = "&#x27;";
 
-	private static final String AMP = "&amp;";
+	static final String LT = "&lt;";
+
+	static final String EQUAL = "&#x3D;";
+
+	static final String GT = "&gt;";
+
+	static final String BACK_TICK = "&#x60;";
 
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
@@ -27,29 +33,42 @@ enum HtmlEscaper implements Escaper {
 		for (int i = start; i < end; i++) {
 			char c = csq.charAt(i);
 			switch (c) {
-				case '&' -> {
+				case '"' -> { // 34
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(QUOT);
+				}
+				case '&' -> { // 38
 					a.append(csq, start, i);
 					start = i + 1;
 					a.append(AMP);
 
 				}
-				case '<' -> {
+				case '\'' -> { // 39
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(APOS);
+				}
+				case '<' -> { // 60
 					a.append(csq, start, i);
 					start = i + 1;
 					a.append(LT);
-
 				}
-				case '>' -> {
+				case '=' -> { // 61
+					a.append(csq, start, i);
+					start = i + 1;
+					a.append(EQUAL);
+				}
+				case '>' -> { // 62
 					a.append(csq, start, i);
 					start = i + 1;
 					a.append(GT);
 				}
-				case '"' -> {
+				case '`' -> { // 96
 					a.append(csq, start, i);
 					start = i + 1;
-					a.append(QUOT);
+					a.append(BACK_TICK);
 				}
-
 			}
 		}
 		a.append(csq, start, end);
@@ -59,17 +78,26 @@ enum HtmlEscaper implements Escaper {
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E {
 		switch (c) {
+			case '"' -> {
+				a.append(QUOT);
+			}
 			case '&' -> {
 				a.append(AMP);
+			}
+			case '\'' -> {
+				a.append(APOS);
 			}
 			case '<' -> {
 				a.append(LT);
 			}
+			case '=' -> {
+				a.append(EQUAL);
+			}
 			case '>' -> {
 				a.append(GT);
 			}
-			case '"' -> {
-				a.append(QUOT);
+			case '`' -> {
+				a.append(BACK_TICK);
 			}
 			default -> {
 				a.append(c);
