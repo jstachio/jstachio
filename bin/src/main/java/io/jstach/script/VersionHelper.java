@@ -332,6 +332,7 @@ enum Command implements HelpSupport {
 			append(err, stderr, -1);
 		}
 		catch (InterruptedException e1) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeException(e1);
 		}
 		return e;
