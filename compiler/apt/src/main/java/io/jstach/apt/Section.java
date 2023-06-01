@@ -1,7 +1,7 @@
 package io.jstach.apt;
 
-import io.jstach.apt.internal.Position;
 import io.jstach.apt.internal.MustacheToken.TagToken;
+import io.jstach.apt.internal.Position;
 import io.jstach.apt.internal.token.MustacheTagKind;
 
 record Section<T> (TagToken token, Position position, T data) {

@@ -54,8 +54,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 	 */
 	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
 			TokenProcessor<PositionedToken<MustacheToken>> downstream) {
-		MustacheTokenizer mustacheTokenizer = new MustacheTokenizer(
-				new PositionHodingTokenProcessor<MustacheToken>(downstream));
+		MustacheTokenizer mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<>(downstream));
 		var publisher = mustacheTokenizer.getDelimitersPublisher();
 		return BracesTokenizer.createInstance(fileName, mustacheTokenizer, publisher);
 	}

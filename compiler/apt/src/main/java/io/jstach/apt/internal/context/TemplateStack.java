@@ -96,6 +96,7 @@ public sealed interface TemplateStack extends MessagerLogging {
 		return JavaLanguageModel.getInstance().getMessager();
 	}
 
+	@Override
 	default void debug(CharSequence message) {
 		if (isDebug()) {
 			var out = outWriter();
@@ -119,6 +120,7 @@ public sealed interface TemplateStack extends MessagerLogging {
 		}
 	}
 
+	@Override
 	default boolean isDebug() {
 		return flags().contains(Flag.DEBUG);
 	}
@@ -129,10 +131,12 @@ public sealed interface TemplateStack extends MessagerLogging {
 
 	record SimpleTemplateStack(String templateName, TemplateStack caller, TemplateType type) implements TemplateStack {
 
+		@Override
 		public String getTemplateName() {
 			return templateName;
 		}
 
+		@Override
 		public @Nullable TemplateStack getCaller() {
 			return caller;
 		}
@@ -163,10 +167,12 @@ public sealed interface TemplateStack extends MessagerLogging {
 			NamedTemplate template, //
 			Set<Flag> flags) implements TemplateStack {
 
+		@Override
 		public String getTemplateName() {
 			return template.name();
 		}
 
+		@Override
 		public @Nullable TemplateStack getCaller() {
 			return null;
 		}

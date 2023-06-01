@@ -41,9 +41,9 @@ class PositionedTransformer<T, U> implements TokenProcessor<PositionedToken<T>> 
 	public static <T, U> TokenProcessor<PositionedToken<T>> decorateTokenProcessor(
 			final TokenProcessorDecorator<T, U> decorator,
 			final TokenProcessor<PositionedToken<U>> positionedDownstream) {
-		PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<U>(positionedDownstream);
+		PositionHodingTokenProcessor<U> downstream = new PositionHodingTokenProcessor<>(positionedDownstream);
 		TokenProcessor<T> processor = decorator.decorateTokenProcessor(downstream);
-		return new PositionedTransformer<T, U>(downstream, processor);
+		return new PositionedTransformer<>(downstream, processor);
 	}
 
 	private final PositionHodingTokenProcessor<U> downstream;

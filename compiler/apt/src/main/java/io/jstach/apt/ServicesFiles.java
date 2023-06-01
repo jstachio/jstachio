@@ -50,7 +50,7 @@ final class ServicesFiles {
 	 * @throws IOException
 	 */
 	static Set<String> readServiceFile(InputStream input) throws IOException {
-		LinkedHashSet<String> serviceClasses = new LinkedHashSet<String>();
+		LinkedHashSet<String> serviceClasses = new LinkedHashSet<>();
 
 		try (BufferedReader r = new BufferedReader(new InputStreamReader(input, UTF_8))) {
 			String line;

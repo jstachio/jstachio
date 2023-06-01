@@ -11,6 +11,7 @@ import io.jstach.apt.internal.ProcessingException;
 abstract class AbstractTemplateCompiler extends WhitespaceTokenProcessor
 		implements TemplateCompilerLike, MustacheTokenProcessor, LoggingSupplier {
 
+	@Override
 	protected void handleToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
 		positionedToken.innerToken().accept(new CompilingTokenProcessor(this));
 	}

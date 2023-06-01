@@ -7,7 +7,6 @@ import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
 import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
-import static io.jstach.apt.prism.Prisms.TEMPLATE_INFO_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
 
 import java.io.IOException;
@@ -182,7 +181,6 @@ class TemplateClassWriter implements LoggingSupplier {
 			else {
 				interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
 			}
-			interfaces.add(TEMPLATE_INFO_CLASS);
 			interfaces.add(TEMPLATE_PROVIDER_CLASS);
 			interfaces.add(FILTER_CHAIN_CLASS);
 		}
@@ -600,7 +598,6 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("     * Needed for jstachio runtime.");
 			println("     * @hidden");
 			println("     */");
-			println("    @SuppressWarnings(\"unchecked\")");
 			println("    @Override");
 			println("    public void process(Object model, Appendable appendable) throws java.io.IOException {");
 			println("        execute( (" + className + ") model, appendable);");

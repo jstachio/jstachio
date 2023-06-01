@@ -105,6 +105,7 @@ class InvertedRenderingContext implements BooleanExpressionContext {
 		return "}";
 	}
 
+	@Override
 	public String getExpression() {
 		return "";
 	}

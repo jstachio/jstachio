@@ -16,6 +16,7 @@ interface TemplateCompilerLike extends AutoCloseable {
 
 	void run() throws ProcessingException, IOException;
 
+	@Override
 	void close() throws IOException;
 
 	TemplateCompilerType getCompilerType();

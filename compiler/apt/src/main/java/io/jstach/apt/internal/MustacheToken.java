@@ -59,22 +59,27 @@ public sealed interface MustacheToken {
 			};
 		}
 
+		@Override
 		public boolean isTagToken() {
 			return true;
 		}
 
+		@Override
 		public boolean isSectionToken() {
 			return tagKind().isSection();
 		}
 
+		@Override
 		public boolean isSectionEndToken(String name) {
 			return tagKind().isEndSection() && name().equals(name);
 		}
 
+		@Override
 		public boolean isStandaloneToken() {
 			return isSectionToken() || tagKind == MustacheTagKind.PARTIAL;
 		}
 
+		@Override
 		public boolean isIndented() {
 			return tagKind == MustacheTagKind.PARTIAL || tagKind == MustacheTagKind.BEGIN_PARENT_SECTION;
 		}
@@ -93,6 +98,7 @@ public sealed interface MustacheToken {
 			};
 		}
 
+		@Override
 		public void appendRawText(Appendable a) throws IOException {
 			switch (tagKind()) {
 				case //
@@ -115,9 +121,10 @@ public sealed interface MustacheToken {
 					delimiters.appendEnd(a);
 				}
 			}
-			;
+
 		}
 
+		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append("TagToken[");
@@ -147,6 +154,7 @@ public sealed interface MustacheToken {
 			return visitor.delimiters(nextDelimiters);
 		}
 
+		@Override
 		public boolean isStandaloneToken() {
 			return true;
 		}
@@ -168,6 +176,7 @@ public sealed interface MustacheToken {
 			delimiters.appendEnd(a);
 		}
 
+		@Override
 		public boolean isStandaloneToken() {
 			return true;
 		}
@@ -180,6 +189,7 @@ public sealed interface MustacheToken {
 			return visitor.text(text);
 		}
 
+		@Override
 		public void appendRawText(Appendable a) throws IOException {
 			a.append(text);
 		}
@@ -191,10 +201,12 @@ public sealed interface MustacheToken {
 			return visitor.specialCharacter(specialChar);
 		}
 
+		@Override
 		public void appendRawText(Appendable a) throws IOException {
 			a.append(specialChar.character());
 		}
 
+		@Override
 		public void appendEscapedJava(StringBuilder sb) {
 			sb.append(specialChar.javaEscaped());
 		}
@@ -211,10 +223,12 @@ public sealed interface MustacheToken {
 			return true;
 		}
 
+		@Override
 		public void appendRawText(Appendable a) throws IOException {
 			a.append(newlineChar.characters());
 		}
 
+		@Override
 		public void appendEscapedJava(StringBuilder sb) {
 			sb.append(newlineChar.javaEscaped());
 		}
@@ -227,6 +241,7 @@ public sealed interface MustacheToken {
 			return visitor.endOfFile();
 		}
 
+		@Override
 		public void appendRawText(Appendable a) throws IOException {
 		}
 
