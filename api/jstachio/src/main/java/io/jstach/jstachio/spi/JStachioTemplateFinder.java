@@ -261,7 +261,7 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 	public ClassValueCacheTemplateFinder(JStachioTemplateFinder delegate) {
 		super();
 		this.delegate = delegate;
-		this.cache = new ClassValue<TemplateInfo>() {
+		this.cache = new ClassValue<>() {
 
 			@Override
 			protected @Nullable TemplateInfo computeValue(@Nullable Class<?> type) {
