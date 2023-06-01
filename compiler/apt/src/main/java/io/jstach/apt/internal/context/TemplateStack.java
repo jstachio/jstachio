@@ -4,14 +4,19 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Set;
 
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.LoggingSupport;
+import io.jstach.apt.internal.LoggingSupport.MessagerLogging;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.prism.Prisms.Flag;
 
-public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
+public sealed interface TemplateStack extends MessagerLogging {
 
 	public String getTemplateName();
 
@@ -86,15 +91,31 @@ public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
 		return new RootTemplateStack(modelClass, template, flags);
 	}
 
+	@Override
+	default Messager messager() {
+		return JavaLanguageModel.getInstance().getMessager();
+	}
+
 	default void debug(CharSequence message) {
 		if (isDebug()) {
 			var out = System.out;
 			if (out != null) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("[JSTACHIO] ");
+				StringBuilder sb = new StringBuilder("[JSTACHIO] ");
 				logName(sb).append(": ").append(message);
 				out.println(sb.toString());
 			}
+		}
+	}
+
+	@Override
+	default void error(CharSequence message, Throwable t) {
+		printError(message + " " + t.getMessage());
+		var out = System.err;
+		if (out != null) {
+			StringBuilder sb = new StringBuilder("[JSTACHIO] ");
+			logName(sb).append(": ").append(message);
+			out.println(sb.toString());
+			t.printStackTrace(out);
 		}
 	}
 
@@ -102,7 +123,6 @@ public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
 		return flags().contains(Flag.DEBUG);
 	}
 
-	@Override
 	default LoggingSupport logging() {
 		return this;
 	}
@@ -127,9 +147,21 @@ public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
 			return type();
 		}
 
+		@Override
+		public AnnotationMirror annotationToLog() {
+			return caller.annotationToLog();
+		}
+
+		@Override
+		public Element elementToLog() {
+			return caller.elementToLog();
+		}
+
 	}
 
-	record RootTemplateStack(ClassRef modelClass, NamedTemplate template, Set<Flag> flags) implements TemplateStack {
+	record RootTemplateStack(ClassRef modelClass, //
+			NamedTemplate template, //
+			Set<Flag> flags) implements TemplateStack {
 
 		public String getTemplateName() {
 			return template.name();
@@ -148,6 +180,17 @@ public sealed interface TemplateStack extends LoggingSupport.LoggingSupplier {
 		public TemplateType getTemplateType() {
 			return TemplateType.ROOT;
 		}
+
+		@Override
+		public AnnotationMirror annotationToLog() {
+			return template.annotationMirror();
+		}
+
+		@Override
+		public Element elementToLog() {
+			return template.element();
+		}
+
 	}
 
 	default Set<Flag> flags() {

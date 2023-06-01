@@ -13,19 +13,7 @@ import io.jstach.apt.internal.ProcessingException;
 
 public class CallSiteProcessorTest {
 
-	LoggingSupport logging = new LoggingSupport() {
-
-		@Override
-		public boolean isDebug() {
-			return true;
-		}
-
-		@Override
-		public void debug(CharSequence message) {
-			System.out.println("[TEST] " + message);
-
-		}
-	};
+	LoggingSupport logging = LoggingSupport.testLogger();
 
 	@Test
 	public void testRun() throws ProcessingException, IOException {

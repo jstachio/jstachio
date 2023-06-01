@@ -8,10 +8,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 
+import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.util.ClassRef;
 import io.jstach.apt.prism.Prisms;
 
@@ -62,16 +61,20 @@ class CatalogClassWriter {
 		a.append("}\n");
 	}
 
-	public void write(Filer filer, Messager messager) {
+	public void write(Filer filer, LoggingSupport logging) {
 		try {
 			FileObject sourceFile = filer.createSourceFile(catalogClass.requireCanonicalName());
 			try (var w = sourceFile.openWriter()) {
 				write(w);
 			}
+			logging.info("Wrote catalog class: " + catalogClass.requireCanonicalName());
 		}
 		catch (IOException ioe) {
-			ioe.printStackTrace();
-			messager.printMessage(Kind.ERROR, "error writing catalog class: " + ioe.getMessage());
+			logging.error("error writing catalog class: ", ioe);
+			/*
+			 * It is unclear if we should just fail compilation entirely as this may
+			 * impact incremental. More testing will have to be done.
+			 */
 		}
 	}
 

@@ -131,7 +131,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 					debug(e.getMessage());
 					debug(context.getTemplateStack().describeTemplateStack());
 					debug(context.printStack());
-					e.printStackTrace();
+					debug(e);
 				}
 				throw e;
 			}

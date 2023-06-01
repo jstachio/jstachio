@@ -115,7 +115,7 @@ class CodeWriter {
 				nt = partials.get(name);
 			}
 			if (nt == null) {
-				nt = new FileTemplate(name, name);
+				nt = new FileTemplate(name, name, stack.elementToLog(), stack.annotationToLog());
 			}
 			if (nt instanceof FileTemplate ft) {
 				String path = ft.path();
