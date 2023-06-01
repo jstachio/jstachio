@@ -152,7 +152,7 @@ public final class Templates {
 	 */
 	public static <T> Template<T> getTemplate(Class<T> clazz) throws Exception {
 		List<ClassLoader> classLoaders = collectClassLoaders(clazz.getClassLoader());
-		return (Template<T>) getTemplate(clazz, ALL_STRATEGIES, classLoaders, JStachioConfig.noopLogger());
+		return getTemplate(clazz, ALL_STRATEGIES, classLoaders, JStachioConfig.noopLogger());
 	}
 
 	/**
@@ -251,7 +251,7 @@ public final class Templates {
 	@SuppressWarnings("unchecked")
 	private static <T> @Nullable Template<T> templateByConstructor(Class<T> clazz, ClassLoader classLoader)
 			throws Exception {
-		Class<?> implementation = (Class<?>) classLoader.loadClass(resolveName(clazz));
+		Class<?> implementation = classLoader.loadClass(resolveName(clazz));
 		Constructor<?> constructor = implementation.getDeclaredConstructor();
 		constructor.setAccessible(true);
 		return (Template<T>) constructor.newInstance();
@@ -458,10 +458,7 @@ public final class Templates {
 		sealed interface StaticProvider<P> {
 
 			default @Nullable Class<?> autoToNull(@Nullable Class<?> type) {
-				if (type == null) {
-					return null;
-				}
-				if (type.equals(autoProvider())) {
+				if ((type == null) || type.equals(autoProvider())) {
 					return null;
 				}
 				return type;
@@ -543,6 +540,7 @@ public final class Templates {
 				return a.providesMethod();
 			}
 
+			@Override
 			public Function<String, String> provides(@Nullable Class<?> contentType) throws Exception {
 				contentType = nullToDefault(contentType);
 				if (contentType.equals(Html.class)) {
@@ -586,6 +584,7 @@ public final class Templates {
 				return a.providesMethod();
 			}
 
+			@Override
 			public Function<@Nullable Object, String> provides(@Nullable Class<?> formatterType) throws Exception {
 				formatterType = nullToDefault(formatterType);
 				if (formatterType.equals(DefaultFormatter.class)) {

@@ -58,6 +58,7 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
+	@Override
 	default void execute(Object model, Appendable appendable) throws IOException {
 		Renderer.super.execute(model, appendable);
 	}
@@ -68,6 +69,7 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
+	@Override
 	default StringBuilder execute(Object model, StringBuilder sb) {
 		return Renderer.super.execute(model, sb);
 	}
@@ -78,6 +80,7 @@ public interface JStachio extends Renderer<Object> {
 	 * <p>
 	 * {@inheritDoc}
 	 */
+	@Override
 	default String execute(Object model) {
 		return Renderer.super.execute(model);
 	}

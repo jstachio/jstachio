@@ -18,9 +18,9 @@ import io.jstach.jstache.JStacheFormatterTypes;
  * <em>Important: the formatter does not decide what types are allowed at compile time to
  * be formatted.</em> To control what types are allowed to be formatted see
  * {@link JStacheFormatterTypes}.
- * 
+ *
  * <h2>Implementing</h2>
- * 
+ *
  * An alternative to implementing this complicated interface is to simply make a
  * {@code Function<@Nullable Object, String>} and call {@link #of(Function)} to create a
  * formatter.

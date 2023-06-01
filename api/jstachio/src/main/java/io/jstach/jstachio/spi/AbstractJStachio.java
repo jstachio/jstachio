@@ -9,8 +9,8 @@ import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
-import io.jstach.jstachio.TemplateModel;
 import io.jstach.jstachio.TemplateInfo;
+import io.jstach.jstachio.TemplateModel;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**

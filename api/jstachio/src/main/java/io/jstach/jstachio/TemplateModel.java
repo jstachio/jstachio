@@ -172,6 +172,7 @@ interface TemplateProxy extends Template<Object>, FilterChain {
 
 record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) implements TemplateModel, TemplateProxy {
 
+	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
 		return delegateTemplate.execute(model(), output);
 	}
@@ -194,10 +195,12 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) impl
 record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 		T model) implements TemplateModel, TemplateProxy {
 
+	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
 		return delegateTemplate.execute(model(), output);
 	}
 
+	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(A output) throws E {
 		return delegateTemplate.write(model, output);
 	}

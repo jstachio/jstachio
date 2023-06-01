@@ -144,6 +144,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 		 * @return the passed in output for convenience
 		 * @throws E if an error occurs while writing to output
 		 */
+		@Override
 		public <A extends io.jstach.jstachio.Output.EncodedOutput<E>, E extends Exception> A write( //
 				T model, //
 				A output) throws E;

@@ -248,10 +248,7 @@ public interface ContextNode extends Iterable<ContextNode> {
 	 * @return true if the object is falsey.
 	 */
 	static boolean isFalsey(@Nullable Object context) {
-		if (context == null) {
-			return true;
-		}
-		if (Boolean.FALSE.equals(context)) {
+		if ((context == null) || Boolean.FALSE.equals(context)) {
 			return true;
 		}
 		if (context instanceof Collection<?> c) {
