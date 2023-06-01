@@ -18,15 +18,15 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 
 	@Override
 	default void debug(CharSequence message) {
-		System.out.println("[JSTACHIO] " + message);
+		outWriter().println("[JSTACHIO] " + message);
 
 	}
 
 	@Override
 	default void error(CharSequence message, Throwable t) {
 		printError(message);
-		System.err.println("[JSTACHIO] " + message);
-		t.printStackTrace(System.err);
+		errorWriter().println("[JSTACHIO] " + message);
+		t.printStackTrace(errorWriter());
 	}
 
 	default String resourcesPath() {
