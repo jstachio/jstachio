@@ -205,6 +205,9 @@ public interface JStachio extends Renderer<Object> {
 final class JStachioHolder {
 
 	static Supplier<JStachio> provider = JStachio::defaults;
+	
+	private JStachioHolder() {
+	}
 
 	static JStachio get() {
 		return provider.get();
