@@ -69,6 +69,8 @@ enum HtmlEscaper implements Escaper {
 					start = i + 1;
 					a.append(BACK_TICK);
 				}
+				default -> {
+				}
 			}
 		}
 		a.append(csq, start, end);
