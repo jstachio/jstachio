@@ -33,6 +33,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,12 +42,13 @@ import javax.lang.model.element.TypeElement;
 import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
 import io.jstach.apt.internal.AnnotatedException;
+import io.jstach.apt.internal.CodeAppendable;
+import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.NamedTemplate.FileTemplate;
 import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
 import io.jstach.apt.internal.ProcessingConfig;
 import io.jstach.apt.internal.ProcessingException;
-import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.context.RenderingCodeGenerator;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.TemplateStack;
@@ -60,7 +62,7 @@ import io.jstach.apt.prism.Prisms.Flag;
  */
 class CodeWriter {
 
-	private final SwitchablePrintWriter writer;
+	private final CodeAppendable writer;
 
 	private final RenderingCodeGenerator codeGenerator;
 
@@ -68,7 +70,7 @@ class CodeWriter {
 
 	private final ProcessingConfig config;
 
-	CodeWriter(SwitchablePrintWriter writer, RenderingCodeGenerator codeGenerator, Map<String, NamedTemplate> partials,
+	CodeWriter(CodeAppendable writer, RenderingCodeGenerator codeGenerator, Map<String, NamedTemplate> partials,
 			ProcessingConfig config) {
 		this.writer = writer;
 		this.codeGenerator = codeGenerator;
@@ -88,7 +90,12 @@ class CodeWriter {
 	}
 
 	void println(String s) {
-		writer.println(s);
+		try {
+			writer.append(s).append("\n");
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	void compileTemplate(TextFileObject resource, TemplateCompilerContext context,

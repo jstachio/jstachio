@@ -33,7 +33,6 @@ package io.jstach.apt;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -77,6 +76,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.kohsuke.MetaInfServices;
 
 import io.jstach.apt.internal.AnnotatedException;
+import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
 import io.jstach.apt.internal.FormatterTypes;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
 import io.jstach.apt.internal.LoggingSupport;
@@ -797,39 +797,28 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		try {
 			var model = model(element, jstache, options);
 			config = model;
-			StringWriter stringWriter = new StringWriter();
-			try (SwitchablePrintWriter switchablePrintWriter = SwitchablePrintWriter.createInstance(stringWriter)) {
-				TextFileObject templateResource = new TextFileObject(config, Objects.requireNonNull(processingEnv));
-				JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
-				RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel,
-						model.formatterTypes(), model.formatCallType());
-				CodeWriter codeWriter = new CodeWriter(switchablePrintWriter, codeGenerator, model.partials(), config);
-				TemplateClassWriter writer = new TemplateClassWriter(codeWriter, templateResource,
-						model.formatCallType());
+			StringBuilder stringWriter = new StringBuilder();
+			StringCodeAppendable codeAppendable = new StringCodeAppendable(stringWriter);
 
-				writer.writeRenderableAdapterClass(model);
-			}
+			TextFileObject templateResource = new TextFileObject(config, Objects.requireNonNull(processingEnv));
+			JavaLanguageModel javaModel = JavaLanguageModel.getInstance();
+			RenderingCodeGenerator codeGenerator = RenderingCodeGenerator.createInstance(javaModel,
+					model.formatterTypes(), model.formatCallType());
+			CodeWriter codeWriter = new CodeWriter(codeAppendable, codeGenerator, model.partials(), config);
+			TemplateClassWriter writer = new TemplateClassWriter(codeWriter, templateResource, model.formatCallType());
+
+			writer.writeRenderableAdapterClass(model);
 
 			JavaFileObject sourceFile = processingEnv.getFiler()
 					.createSourceFile(model.rendererClassRef().requireCanonicalName(), element);
-			OutputStream stream = sourceFile.openOutputStream();
-			try {
-				Writer outputWriter = new OutputStreamWriter(stream, Charset.defaultCharset());
-				try {
-					outputWriter.append(stringWriter.getBuffer().toString());
-				}
-				finally {
-					outputWriter.close();
-				}
+			/*
+			 * Should we use the templates charset? Probably safest to use UTF-8.
+			 */
+			try (OutputStream stream = sourceFile.openOutputStream();
+					Writer outputWriter = new OutputStreamWriter(stream, StandardCharsets.UTF_8);) {
+				outputWriter.append(stringWriter.toString());
 			}
-			finally {
-				try {
-					stream.close();
-				}
-				catch (Exception ex) {
-					processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, Throwables.render(ex), element);
-				}
-			}
+
 			boolean pub = element.getModifiers().contains(Modifier.PUBLIC);
 			boolean jstachio = switch (model.formatCallType()) {
 				case JSTACHIO -> true;

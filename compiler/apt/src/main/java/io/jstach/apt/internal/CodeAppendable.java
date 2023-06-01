@@ -25,12 +25,6 @@ public interface CodeAppendable extends Appendable {
 		print("\n");
 	}
 
-	public boolean suppressesOutput();
-
-	public void enableOutput();
-
-	public void disableOutput();
-
 	public class HiddenCodeAppendable implements CodeAppendable {
 
 		private final Consumer<CharSequence> sink;
@@ -60,19 +54,6 @@ public interface CodeAppendable extends Appendable {
 		public HiddenCodeAppendable append(char c) {
 			append(String.valueOf(c));
 			return this;
-		}
-
-		@Override
-		public boolean suppressesOutput() {
-			return false;
-		}
-
-		@Override
-		public void enableOutput() {
-		}
-
-		@Override
-		public void disableOutput() {
 		}
 
 	}
@@ -111,20 +92,6 @@ public interface CodeAppendable extends Appendable {
 		public StringCodeAppendable append(char c) {
 			buffer.append(c);
 			return this;
-		}
-
-		@Override
-		public boolean suppressesOutput() {
-			return false;
-		}
-
-		@Override
-		public void enableOutput() {
-
-		}
-
-		@Override
-		public void disableOutput() {
 		}
 
 	}

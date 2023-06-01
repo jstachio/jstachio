@@ -861,20 +861,14 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 		@Override
 		public void run() throws ProcessingException, IOException {
-			boolean suppressesOutput = getWriter().suppressesOutput();
-			getWriter().enableOutput();
 			super.run();
-			if (suppressesOutput)
-				getWriter().disableOutput();
-			else
-				getWriter().enableOutput();
 		}
 
 	}
 
 	interface Factory {
 
-		TemplateCompiler createTemplateCompiler(NamedReader reader, SwitchablePrintWriter writer,
+		TemplateCompiler createTemplateCompiler(NamedReader reader, CodeAppendable writer,
 				TemplateCompilerContext context);
 
 	}
