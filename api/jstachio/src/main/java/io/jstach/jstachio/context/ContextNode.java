@@ -242,7 +242,7 @@ public interface ContextNode extends Iterable<ContextNode> {
 	/**
 	 * Determines if an object is falsey based on mustache spec semantics where:
 	 * <code>null</code>, empty iterables, empty arrays and boolean <code>false</code> are
-	 * falsey.
+	 * falsey however <strong>empty Map is not falsey</strong>.
 	 * @param context a context object. ContextNode are allowed as input as well as
 	 * <code>null</code>.
 	 * @return true if the object is falsey.
@@ -258,7 +258,7 @@ public interface ContextNode extends Iterable<ContextNode> {
 			return !it.iterator().hasNext();
 		}
 		if (context.getClass().isArray() && Array.getLength(context) == 0) {
-			return false;
+			return true;
 		}
 		return false;
 	}
