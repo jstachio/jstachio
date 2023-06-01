@@ -14,7 +14,6 @@ jobs:
     env:
       BUILD_NUMBER: "${{github.run_number}}"
       MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --no-transfer-progress"
-      NEXUS_SNAPHOP_COM_PASSWORD: ${{ secrets.NEXUS_SNAPHOP_COM_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v3
