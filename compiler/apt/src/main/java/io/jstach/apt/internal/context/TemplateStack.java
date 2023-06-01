@@ -98,7 +98,7 @@ public sealed interface TemplateStack extends MessagerLogging {
 
 	default void debug(CharSequence message) {
 		if (isDebug()) {
-			var out = System.out;
+			var out = outWriter();
 			if (out != null) {
 				StringBuilder sb = new StringBuilder("[JSTACHIO] ");
 				logName(sb).append(": ").append(message);
@@ -110,7 +110,7 @@ public sealed interface TemplateStack extends MessagerLogging {
 	@Override
 	default void error(CharSequence message, Throwable t) {
 		printError(message + " " + t.getMessage());
-		var out = System.err;
+		var out = errorWriter();
 		if (out != null) {
 			StringBuilder sb = new StringBuilder("[JSTACHIO] ");
 			logName(sb).append(": ").append(message);

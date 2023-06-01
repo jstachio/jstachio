@@ -1,5 +1,8 @@
 package io.jstach.apt.internal;
 
+import java.io.PrintStream;
+import java.util.Objects;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -15,8 +18,16 @@ public sealed interface LoggingSupport {
 
 	default void debug(Throwable t) {
 		if (isDebug()) {
-			t.printStackTrace(System.err);
+			t.printStackTrace(errorWriter());
 		}
+	}
+
+	default PrintStream errorWriter() {
+		return Objects.requireNonNull(System.err);
+	}
+
+	default PrintStream outWriter() {
+		return Objects.requireNonNull(System.out);
 	}
 
 	public void info(CharSequence message);
@@ -63,7 +74,7 @@ public sealed interface LoggingSupport {
 		@Override
 		public void debug(CharSequence message) {
 			if (isDebug()) {
-				System.out.println(prefix + message);
+				outWriter().println(prefix + message);
 			}
 		}
 
@@ -71,7 +82,7 @@ public sealed interface LoggingSupport {
 		public void error(CharSequence message, Throwable t) {
 			String m = message + t.getMessage();
 			printError(m);
-			var out = System.err;
+			var out = errorWriter();
 			out.println(m);
 			t.printStackTrace(out);
 		}
@@ -96,16 +107,16 @@ public sealed interface LoggingSupport {
 
 		@Override
 		public void debug(CharSequence message) {
-			System.out.println("[TEST] " + message);
+			outWriter().println("[TEST] " + message);
 		}
 
 		public void error(CharSequence message, Throwable t) {
-			System.err.println("[ERROR] " + message);
+			errorWriter().println("[ERROR] " + message);
 		}
 
 		@Override
 		public void info(CharSequence message) {
-			System.out.println("[INFO] " + message);
+			outWriter().println("[INFO] " + message);
 
 		}
 
@@ -117,14 +128,14 @@ public sealed interface LoggingSupport {
 		public void debug(CharSequence message) {
 			if (isDebug()) {
 				messager.printMessage(Kind.NOTE, message);
-				System.out.println("[JSTACHIO] " + message);
+				outWriter().println("[JSTACHIO] " + message);
 			}
 		}
 
 		public void error(CharSequence message, Throwable t) {
 			String m = message + " " + t.getMessage();
 			messager.printMessage(Kind.ERROR, m);
-			System.err.println("[JSTACHIO] " + m);
+			errorWriter().println("[JSTACHIO] " + m);
 		}
 
 		@Override
