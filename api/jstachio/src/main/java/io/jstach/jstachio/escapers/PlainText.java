@@ -49,7 +49,7 @@ public final class PlainText {
 	 * @return noop like escaper singleton
 	 */
 	public static Escaper provider() {
-		return NoEscaper.PlainText;
+		return NoEscaper.PLAIN_TEXT;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public final class PlainText {
 	 * @return noop like escaper singleton
 	 */
 	public static Escaper of() {
-		return NoEscaper.PlainText;
+		return NoEscaper.PLAIN_TEXT;
 	}
 
 }

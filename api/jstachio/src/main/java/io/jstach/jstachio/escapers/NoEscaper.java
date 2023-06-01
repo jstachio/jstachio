@@ -5,7 +5,7 @@ import io.jstach.jstachio.Output;
 
 enum NoEscaper implements Escaper {
 
-	PlainText;
+	PLAIN_TEXT;
 
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {

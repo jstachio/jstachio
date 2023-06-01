@@ -57,7 +57,7 @@ public interface DefaultFormatter extends Formatter {
 	 * @return the default formatter singleton
 	 */
 	public static Formatter provider() {
-		return DefaultFormatterSingleton.DefaultFormatter;
+		return DefaultFormatterSingleton.DEFAULT_FORMATTER;
 	}
 
 	/**
@@ -65,13 +65,13 @@ public interface DefaultFormatter extends Formatter {
 	 * @return the default formatter singleton
 	 */
 	public static Formatter of() {
-		return DefaultFormatterSingleton.DefaultFormatter;
+		return DefaultFormatterSingleton.DEFAULT_FORMATTER;
 	}
 
 }
 
 enum DefaultFormatterSingleton implements DefaultFormatter {
 
-	DefaultFormatter;
+	DEFAULT_FORMATTER;
 
 }

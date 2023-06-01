@@ -51,13 +51,13 @@ public interface SpecFormatter extends Formatter {
 	 * @return the single instance of the spec formatter
 	 */
 	public static Formatter provider() {
-		return SpecFormatterSingleton.SpecFormatter;
+		return SpecFormatterSingleton.SPEC_FORMATTER;
 	}
 
 }
 
 enum SpecFormatterSingleton implements SpecFormatter {
 
-	SpecFormatter;
+	SPEC_FORMATTER;
 
 }
