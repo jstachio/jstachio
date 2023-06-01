@@ -154,7 +154,7 @@ public interface Output<E extends Exception> {
 		 * @param bytes already encoded bytes
 		 * @throws E if an error happens
 		 */
-		public void write(byte bytes[]) throws E;
+		public void write(byte[] bytes) throws E;
 
 		/**
 		 * Analogous to {@link OutputStream#write(byte[], int, int)}. Generated templates
