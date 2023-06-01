@@ -98,7 +98,7 @@ class StartMustacheTokenizerState implements MustacheTokenizerState {
 				}
 			}
 		}
-		;
+
 		return null;
 	}
 

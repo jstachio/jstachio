@@ -35,9 +35,9 @@ import java.io.UncheckedIOException;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.MustacheToken;
-import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.MustacheToken.NewlineChar;
 import io.jstach.apt.internal.MustacheToken.SpecialChar;
+import io.jstach.apt.internal.ProcessingException;
 
 /**
  * @author Victor Nazarov

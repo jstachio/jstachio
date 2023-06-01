@@ -119,6 +119,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		this.logging = context.getTemplateStack();
 	}
 
+	@Override
 	public void run() throws ProcessingException, IOException {
 		TokenProcessor<@Nullable Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
 		int readResult;
@@ -289,6 +290,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 		return this.parent;
 	}
 
+	@Override
 	public @Nullable ParameterPartial currentParameterPartial() {
 		return this._partial;
 	}
@@ -466,10 +468,12 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 							return TemplateCompilerType.LAMBDA;
 						}
 
+						@Override
 						public CodeAppendable getWriter() {
 							return codeAppendable;
 						}
 
+						@Override
 						public TemplateLoader getTemplateLoader() {
 							var rootLoader = super.getTemplateLoader();
 							if (partials.isEmpty()) {
@@ -573,7 +577,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 				depth--;
 			}
 		}
-		;
+
 		print(context.endSectionRenderingCode());
 		printEndSectionComment();
 		popContext();
@@ -797,7 +801,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			var mt = positionedToken.innerToken();
 			if (mt instanceof TagToken tt) {
 				if (tt.tagKind().isBeginSection()) {
-					sectionStack.push(new Section<@Nullable Block>(tt, positionedToken.position(), block));
+					sectionStack.push(new Section<>(tt, positionedToken.position(), block));
 				}
 				else if (tt.tagKind().isEndSection()) {
 					var section = sectionStack.pop();

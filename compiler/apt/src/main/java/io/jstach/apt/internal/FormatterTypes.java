@@ -73,11 +73,9 @@ public interface FormatterTypes {
 			return false;
 		}
 
+		@Override
 		public boolean isMatch(String className) {
-			if (classNames.isEmpty() && patterns.isEmpty()) {
-				return true;
-			}
-			if (classNames.contains(className)) {
+			if ((classNames.isEmpty() && patterns.isEmpty()) || classNames.contains(className)) {
 				return true;
 			}
 			for (var p : patterns) {

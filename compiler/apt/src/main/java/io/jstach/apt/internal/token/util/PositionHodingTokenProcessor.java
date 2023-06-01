@@ -60,7 +60,7 @@ public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
 		if (position == null) {
 			throw new IllegalStateException("position was not set");
 		}
-		downstream.processToken(new PositionedToken<T>(position, transformedToken));
+		downstream.processToken(new PositionedToken<>(position, transformedToken));
 	}
 
 }

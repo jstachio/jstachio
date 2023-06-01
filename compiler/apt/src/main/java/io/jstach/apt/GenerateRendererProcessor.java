@@ -157,7 +157,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return Set.copyOf(Prisms.ANNOTATIONS);
 	}
 
-	private final List<ElementMessage> errors = new ArrayList<ElementMessage>();
+	private final List<ElementMessage> errors = new ArrayList<>();
 
 	@Override
 	public boolean process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv) {

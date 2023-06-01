@@ -172,6 +172,8 @@ interface TemplateProxy extends Template<Object>, FilterChain {
 
 record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) implements TemplateModel, TemplateProxy {
 
+	static final String ERROR_MESSAGE = "The model passed into this TemplateModel is not correct";
+
 	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
 		return delegateTemplate.execute(model(), output);
@@ -187,7 +189,7 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) impl
 		if (model == this || model == this.model) {
 			return execute(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
+		throw new UnsupportedOperationException(ERROR_MESSAGE);
 	}
 
 }
@@ -215,7 +217,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 		if (model == this || model == this.model) {
 			return execute(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
+		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);
 	}
 
 	@Override
@@ -223,7 +225,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 		if (model == this || model == this.model) {
 			return write(appendable);
 		}
-		throw new UnsupportedOperationException("the model passed into this TemplateModel is not correct");
+		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);
 	}
 
 }

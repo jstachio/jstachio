@@ -89,6 +89,7 @@ public class JavaLanguageModel implements TypesMixin {
 		return messager;
 	}
 
+	@Override
 	public Types getTypes() {
 		return operations;
 	}
@@ -122,7 +123,7 @@ public class JavaLanguageModel implements TypesMixin {
 	TypeMirror getGenericDeclaredType(TypeElement element) {
 		List<? extends TypeParameterElement> typeParameters = element.getTypeParameters();
 		int numberOfParameters = typeParameters.size();
-		List<TypeMirror> typeArguments = new ArrayList<TypeMirror>(numberOfParameters);
+		List<TypeMirror> typeArguments = new ArrayList<>(numberOfParameters);
 		for (int i = 0; i < numberOfParameters; i++) {
 			typeArguments.add(operations.getWildcardType(null, null));
 		}

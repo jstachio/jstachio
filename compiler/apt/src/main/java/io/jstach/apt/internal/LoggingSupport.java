@@ -110,6 +110,7 @@ public sealed interface LoggingSupport {
 			outWriter().println("[TEST] " + message);
 		}
 
+		@Override
 		public void error(CharSequence message, Throwable t) {
 			errorWriter().println("[ERROR] " + message);
 		}
@@ -132,6 +133,7 @@ public sealed interface LoggingSupport {
 			}
 		}
 
+		@Override
 		public void error(CharSequence message, Throwable t) {
 			String m = message + " " + t.getMessage();
 			messager.printMessage(Kind.ERROR, m);

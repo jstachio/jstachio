@@ -55,6 +55,7 @@ class BooleanRenderingContext implements BooleanExpressionContext {
 		return " }" + parent.endSectionRenderingCode();
 	}
 
+	@Override
 	public String getExpression() {
 		return expression;
 	}

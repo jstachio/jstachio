@@ -53,7 +53,7 @@ public class VariableContext {
 	public static String TEXT = "TEXT";
 
 	public static VariableContext createDefaultContext(NullChecking nullChecking) {
-		TreeMap<String, Integer> variables = new TreeMap<String, Integer>();
+		TreeMap<String, Integer> variables = new TreeMap<>();
 		variables.put(ESCAPER, 1);
 		variables.put(APPENDER, 1);
 		variables.put(APPENDABLE, 1);

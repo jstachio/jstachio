@@ -55,15 +55,17 @@ public sealed interface BracesToken {
 	}
 
 	public record CToken(char character) implements BracesToken {
+		@Override
 		public <R, E extends Exception> R accept(BracesToken.Visitor<R, E> visitor) throws E {
 			return visitor.character(character);
 		}
 	}
 
 	public record EOFToken() implements BracesToken {
+		@Override
 		public <R, E extends Exception> R accept(BracesToken.Visitor<R, E> visitor) throws E {
 			return visitor.endOfFile();
-		};
+		}
 	}
 
 	public static BracesToken twoOpenBraces() {

@@ -3,10 +3,10 @@ package io.jstach.apt;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.MustacheToken;
-import io.jstach.apt.internal.ProcessingException;
-import io.jstach.apt.internal.token.Delimiters;
 import io.jstach.apt.internal.MustacheToken.NewlineChar;
 import io.jstach.apt.internal.MustacheToken.SpecialChar;
+import io.jstach.apt.internal.ProcessingException;
+import io.jstach.apt.internal.token.Delimiters;
 
 class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, ProcessingException> {
 
@@ -53,6 +53,7 @@ class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, P
 		return null;
 	}
 
+	@Override
 	public @Nullable Void partial(String name) throws ProcessingException {
 		templateCompiler._partial(name);
 		return null;
@@ -64,15 +65,17 @@ class CompilingTokenProcessor implements MustacheToken.Visitor<@Nullable Void, P
 		return null;
 	}
 
+	@Override
 	public @Nullable Void specialCharacter(SpecialChar specialChar) throws ProcessingException {
 		templateCompiler._specialCharacter(specialChar);
 		return null;
 	}
 
+	@Override
 	public @Nullable Void newline(NewlineChar c) throws ProcessingException {
 		templateCompiler._newline(c);
 		return null;
-	};
+	}
 
 	@Override
 	public @Nullable Void text(String s) throws ProcessingException {

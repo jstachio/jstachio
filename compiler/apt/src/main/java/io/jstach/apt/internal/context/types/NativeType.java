@@ -10,6 +10,7 @@ public record NativeType(TypesMixin types, TypeMirror typeMirror, Class<?> boxed
 		return boxedType.getName() + ".toString(" + expression + ")";
 	}
 
+	@Override
 	public String renderClassName() {
 		return unboxedType.getName();
 	}
