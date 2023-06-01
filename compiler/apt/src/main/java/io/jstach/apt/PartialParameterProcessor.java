@@ -62,7 +62,7 @@ class PartialParameterProcessor
 
 	@Override
 	public void debug(CharSequence message) {
-		LoggingSupplier.super.debug("[parameter_processor] " + message);
+		logging().debug("[parameter_processor] " + message);
 	}
 
 	public List<PositionedToken<MustacheToken>> getEndTokens() {
@@ -96,10 +96,7 @@ class PartialParameterProcessor
 				processor.processToken((char) readResult);
 			}
 			catch (ProcessingException e) {
-				if (logging.isDebug()) {
-					debug(e.getMessage());
-					e.printStackTrace();
-				}
+				debug(e);
 				throw e;
 			}
 		}

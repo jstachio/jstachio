@@ -46,7 +46,6 @@ public class SpecGenerator {
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
-			// throw new UncheckedIOException(e);
 		}
 	}
 

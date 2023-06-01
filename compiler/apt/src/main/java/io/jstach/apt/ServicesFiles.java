@@ -18,13 +18,11 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic.Kind;
-
-import io.jstach.apt.internal.util.ClassRef;
-
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+
+import io.jstach.apt.internal.LoggingSupport;
+import io.jstach.apt.internal.util.ClassRef;
 
 /**
  * A helper class for reading and writing Services files.
@@ -93,7 +91,7 @@ final class ServicesFiles {
 		writer.flush();
 	}
 
-	public static void writeServicesFile(Filer filer, Messager messager, ClassRef serviceInterface,
+	public static void writeServicesFile(Filer filer, LoggingSupport messager, ClassRef serviceInterface,
 			Iterable<ClassRef> classes) {
 		String serviceFile = ServicesFiles.SERVICES_PATH + "/" + serviceInterface.requireCanonicalName();
 		SortedSet<String> services = new TreeSet<>();
@@ -103,7 +101,7 @@ final class ServicesFiles {
 			services.addAll(oldServices);
 		}
 		catch (IOException ioe) {
-			messager.printMessage(Kind.NOTE, "no existing services file found");
+			messager.debug("no existing services file found");
 		}
 		SortedSet<String> newServices = StreamSupport.stream(classes.spliterator(), false).map(c -> c.getBinaryName())
 				.collect(Collectors.toCollection(TreeSet::new));
@@ -114,10 +112,10 @@ final class ServicesFiles {
 			try (OutputStream os = existingFile.openOutputStream()) {
 				ServicesFiles.writeServiceFile(services, os);
 			}
+			messager.info("Wrote services file: " + serviceInterface.requireCanonicalName());
 		}
 		catch (IOException ioe) {
-			ioe.printStackTrace();
-			messager.printMessage(Kind.ERROR, "error writing services files: " + ioe.getMessage());
+			messager.error("error writing services files: ", ioe);
 
 		}
 	}

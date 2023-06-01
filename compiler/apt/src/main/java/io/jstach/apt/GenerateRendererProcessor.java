@@ -56,11 +56,13 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
@@ -77,6 +79,8 @@ import org.kohsuke.MetaInfServices;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.FormatterTypes;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
+import io.jstach.apt.internal.LoggingSupport;
+import io.jstach.apt.internal.LoggingSupport.MessagerLogging;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.Position;
 import io.jstach.apt.internal.ProcessingConfig;
@@ -176,6 +180,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				processingEnv.getMessager());
 		Map<String, String> options = processingEnv.getOptions();
 
+		boolean globalDebug = resolveFlags(options, null).contains(Flag.DEBUG);
+
+		LoggingSupport.RootLogging rootLogging = new LoggingSupport.RootLogging(processingEnv.getMessager(),
+				globalDebug);
+
 		if (roundEnv.processingOver()) {
 			for (ElementMessage error : errors) {
 				TypeElement element = processingEnv.getElementUtils().getTypeElement(error.qualifiedElementName());
@@ -188,7 +197,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_PROVIDER_META_INF_SERVICE))
 					.map(c -> c.classRef());
 
-			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), serviceClass,
+			ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, serviceClass,
 					Stream.concat(catalogs, renderers).toList());
 
 			ClassRef extensionClass = ClassRef.ofBinaryName(JSTACHIO_EXTENSION_CLASS);
@@ -197,8 +206,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_FINDER_META_INF_SERVICE))
 					.map(c -> c.classRef()).toList();
 
-			ServicesFiles.writeServicesFile(processingEnv.getFiler(), processingEnv.getMessager(), extensionClass,
-					finders);
+			ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, extensionClass, finders);
 
 			if (!catalogGenerated) {
 				/*
@@ -217,7 +225,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				JStacheCatalogPrism jstacheCatalog = JStacheCatalogPrism.getInstanceOn(packageElement);
 				String catalogName = jstacheCatalog.name();
 				var classRef = ClassRef.of(packageElement, catalogName);
-				catalogClasses.add(new CatalogRef(jstacheCatalog, classRef));
+				catalogClasses.add(new CatalogRef(jstacheCatalog, classRef, packageElement));
 				found = true;
 			}
 
@@ -254,7 +262,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			cw.addAll(rendererClasses.stream()
 					.filter(js -> js.jstachio() && (js.pub() || js.classRef().isSamePackage(cc)))
 					.map(js -> js.classRef()).toList());
-			cw.write(processingEnv.getFiler(), processingEnv.getMessager());
+			cw.write(processingEnv.getFiler(), cat.logging());
 		}
 	}
 
@@ -385,24 +393,25 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				String name = tp.name();
 				assert name != null;
 				String template = tp.template();
-				nt = resolveNamedTemplate(name, path, template);
+				nt = resolveNamedTemplate(name, path, template, element, prism.mirror);
 				paths.putIfAbsent(name, nt);
 			}
 		}
 		return paths;
 	}
 
-	private static NamedTemplate resolveNamedTemplate(String name, @Nullable String path, @Nullable String template) {
+	private static NamedTemplate resolveNamedTemplate(String name, @Nullable String path, @Nullable String template,
+			TypeElement element, AnnotationMirror annotationMirror) {
 		NamedTemplate nt;
 		assert name != null;
 		if (path != null && !path.isBlank()) {
-			nt = new NamedTemplate.FileTemplate(name, path);
+			nt = new NamedTemplate.FileTemplate(name, path, element, annotationMirror);
 		}
 		else if (template != null && !template.isEmpty()) {
-			nt = new NamedTemplate.InlineTemplate(name, template);
+			nt = new NamedTemplate.InlineTemplate(name, template, element, annotationMirror);
 		}
 		else {
-			nt = new NamedTemplate.FileTemplate(name, name);
+			nt = new NamedTemplate.FileTemplate(name, name, element, annotationMirror);
 
 		}
 		return nt;
@@ -420,9 +429,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		processorOptionNames = Map.copyOf(m);
 	}
 
-	private Set<Flag> resolveFlags(TypeElement element, Map<String, String> options) {
-		var prism = findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
+	private Set<Flag> resolveFlags(Map<String, String> options, @Nullable TypeElement element) {
+		@Nullable
+		JStacheFlagsPrism prism = element == null ? null : findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
 				.findFirst().orElse(null);
+
 		var flags = EnumSet.noneOf(Flag.class);
 
 		if (prism != null) {
@@ -514,6 +525,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	record RendererModel( //
 			FormatCallType formatCallType, //
 			TypeElement element, //
+			AnnotationMirror annotationMirror, //
 			ClassRef rendererClassRef, //
 			String path, //
 			PathConfig pathConfig, //
@@ -544,7 +556,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 						: folder + "/" + element.getSimpleName();
 				name = path;
 			}
-			return resolveNamedTemplate(name, path, template);
+			return resolveNamedTemplate(name, path, template, element, annotationMirror);
 
 		}
 
@@ -555,6 +567,22 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				return path;
 			}
 			return ProcessingConfig.super.resourcesPath();
+		}
+
+		@Override
+		public AnnotationMirror annotationToLog() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public TypeElement elementToLog() {
+			return element;
+		}
+
+		@Override
+		public Messager messager() {
+			return JavaLanguageModel.getInstance().getMessager();
 		}
 
 	}
@@ -593,6 +621,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 							+ " or the JStache type was supposed to be zero dep (JStacheType.STACHE)");
 		}
 
+		AnnotationMirror annotationMirror = gp.mirror;
 		String path = gp.path();
 		PathConfig pathConfig = resolvePathConfig(element);
 		String template = gp.template();
@@ -601,11 +630,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		ClassRef rendererClassRef = resolveRendererClassRef(element, gp);
 		FormatterTypes formatterTypes = resolveFormatterTypes(element, formatterElement);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
-		Set<Flag> flags = resolveFlags(element, options);
+		Set<Flag> flags = resolveFlags(options, element);
 
 		var model = new RendererModel( //
 				formatCallType, //
 				element, //
+				annotationMirror, //
 				rendererClassRef, //
 				path, //
 				pathConfig, //
@@ -810,8 +840,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			return new JStacheRef(model.rendererClassRef(), pub, jstachio);
 		}
 		catch (ProcessingException ex) {
-			if (config != null && config.isDebug()) {
-				ex.printStackTrace();
+			if (config != null) {
+				config.debug(ex);
 			}
 			String errorMessage = formatErrorMessage(ex.position(), ex.getMessage());
 			errors.add(ElementMessage.of(element, errorMessage));
@@ -831,13 +861,18 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	record JStacheRef(ClassRef classRef, boolean pub, boolean jstachio) {
 	}
 
-	record CatalogRef(JStacheCatalogPrism prism, ClassRef classRef) {
+	record CatalogRef(JStacheCatalogPrism prism, ClassRef classRef, Element element) {
 
 		EnumSet<CatalogFlag> flags() {
 			var flags = EnumSet.noneOf(CatalogFlag.class);
 			flags.addAll(prism.flags().stream().map(f -> CatalogFlag.valueOf(f)).toList());
 			return flags;
 		}
+
+		MessagerLogging logging() {
+			return new LoggingSupport.AdHocMessager("[JSTACHIO CATALOG] ", false, element, prism.mirror);
+		}
+
 	}
 
 }

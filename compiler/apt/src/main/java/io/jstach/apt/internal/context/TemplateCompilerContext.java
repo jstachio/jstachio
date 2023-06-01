@@ -411,7 +411,7 @@ public class TemplateCompilerContext {
 			case ESCAPED_VAR, UNESCAPED_VAR, SECTION, SECTION_VAR, PATH ->
 				generator.createRenderingContext(childType, entry, enclosing);
 			case INVERTED -> {
-				templateStack.debug("Invert entry: ", entry);
+				templateStack.logging().debug("Invert entry: ", entry);
 				yield new InvertedRenderingContext(generator.createInvertedRenderingContext(entry, enclosing), direct);
 			}
 			case PARENT_PARTIAL, ROOT -> throw new IllegalStateException("parent not allowed here");
