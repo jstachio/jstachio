@@ -14,7 +14,8 @@ import java.util.stream.Stream;
 public class JavadocJavascript {
 
 	static PrintStream out = System.out;
-	static String version = "_VERSION_";
+	static final String VERSION_TOKEN = "_VERSION_";
+	static String version = VERSION_TOKEN;
 
 	public static void main(
 			String[] args) {
@@ -65,8 +66,8 @@ public class JavadocJavascript {
 				processed.add(scriptTag(resourcesPath + "/" + "jstachio.js"));
 				processed.add(line);
 			}
-			else if (line.contains("_VERSION_")) {
-				processed.add(line.replace("_VERSION_", version));
+			else if (line.contains(VERSION_TOKEN)) {
+				processed.add(line.replace(VERSION_TOKEN, version));
 			}
 			else {
 				processed.add(line);
