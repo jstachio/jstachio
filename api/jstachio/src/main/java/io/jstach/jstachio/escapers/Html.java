@@ -71,7 +71,7 @@ public final class Html {
 	 * @return HTML escaper.
 	 */
 	public static Escaper provider() {
-		return HtmlEscaper.Html;
+		return HtmlEscaper.HTML5;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public final class Html {
 	 * @return HTML escaper.
 	 */
 	public static Escaper of() {
-		return HtmlEscaper.Html;
+		return HtmlEscaper.HTML5;
 	}
 
 }

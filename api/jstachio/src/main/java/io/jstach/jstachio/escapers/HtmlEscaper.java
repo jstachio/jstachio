@@ -5,7 +5,7 @@ import io.jstach.jstachio.Output;
 
 enum HtmlEscaper implements Escaper {
 
-	Html;
+	HTML5;
 
 	static final String QUOT = "&quot;";
 
