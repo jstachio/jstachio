@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheFlags;
 
 @JStache(template = """
 		{{#names}}
@@ -21,6 +22,7 @@ import io.jstach.jstache.JStache;
 		---------
 		{{/names}}
 		""")
+@JStacheFlags(flags = {}, nullableAnnotation = Nullable.class)
 public record NullCheckAlwaysModel(List<@Nullable String> names) {
 
 }
