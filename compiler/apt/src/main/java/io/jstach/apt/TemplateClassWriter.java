@@ -65,8 +65,6 @@ class TemplateClassWriter implements LoggingSupplier {
 
 	final String idt = "\n        ";
 
-	final String _F_Formatter = Function.class.getName() + "< /* @Nullable */ Object, String>";
-
 	final String _F_Escaper = Function.class.getName() + "<String, String>";
 
 	final String _Appendable = Appendable.class.getName();
@@ -221,6 +219,13 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		String _Appender = APPENDER_CLASS;
 
+		String nullable = model.nullableAnnotation() + " ";
+
+		final String _F_Formatter = Function.class.getName() + "<" + nullable + "Object, String>";
+		String nullable_F_Formatter = nullMarkClassRef(Function.class.getName(), nullable) + "<" + nullable
+				+ "Object, String>";
+		String nullable_F_Escaper = nullMarkClassRef(_F_Escaper, nullable);
+
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 		String _Escaper = jstachio ? ESCAPER_CLASS : _F_Escaper;
 
@@ -303,8 +308,8 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("     * @param escaper escaper if null the static escaper will be used");
 		println("     */");
 		println("    public " + rendererClassSimpleName + "(");
-		println("        /* @Nullable */ " + _F_Formatter + " formatter,");
-		println("        /* @Nullable */ " + _F_Escaper + " escaper) {");
+		println("        " + nullable_F_Formatter + " formatter,");
+		println("        " + nullable_F_Escaper + " escaper) {");
 		println("        super();");
 		println("        this.formatter = __formatter(formatter);");
 		println("        this.escaper = __escaper(escaper);");
@@ -313,15 +318,13 @@ class TemplateClassWriter implements LoggingSupplier {
 		if (jstachio) {
 			String formatterProvideCall = formatterTypeElement.orElseThrow().getQualifiedName() + "."
 					+ formatterPrism.orElseThrow().providesMethod() + "()";
-			println("    private static " + _Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
-					+ " formatter) {");
+			println("    private static " + _Formatter + " __formatter(" + nullable_F_Formatter + " formatter) {");
 			println("        return " + _Formatter + ".of(formatter != null ? formatter : " + formatterProvideCall
 					+ ");");
 			println("    }");
 		}
 		else {
-			println("    private static " + _F_Formatter + " __formatter(" + "/* @Nullable */ " + _F_Formatter
-					+ " formatter) {");
+			println("    private static " + _F_Formatter + " __formatter(" + nullable_F_Formatter + " formatter) {");
 			println("        return formatter != null ? formatter : (i -> i.toString());");
 			println("    }");
 		}
@@ -329,13 +332,12 @@ class TemplateClassWriter implements LoggingSupplier {
 		if (jstachio) {
 			String contentTypeProvideCall = contentTypeElement.orElseThrow().getQualifiedName() + "."
 					+ contentTypePrism.orElseThrow().providesMethod() + "()";
-			println("    private static " + _Escaper + " __escaper(" + "/* @Nullable */ " + _F_Escaper + " escaper) {");
+			println("    private static " + _Escaper + " __escaper(" + nullable_F_Escaper + " escaper) {");
 			println("        return " + _Escaper + ".of(escaper != null ? escaper : " + contentTypeProvideCall + ");");
 			println("    }");
 		}
 		else {
-			println("    private static " + _F_Escaper + " __escaper(" + "/* @Nullable */ " + _F_Escaper
-					+ " escaper) {");
+			println("    private static " + _F_Escaper + " __escaper(" + nullable_F_Escaper + " escaper) {");
 			println("        return escaper != null ? escaper : (i -> i);");
 			println("    }");
 		}
@@ -714,6 +716,21 @@ class TemplateClassWriter implements LoggingSupplier {
 		return t;
 	}
 
+	String nullMarkClassRef(String className, String nullable) {
+		/*
+		 * This is a quick hack that will only work for general cases
+		 */
+		int idx = className.lastIndexOf(".");
+		if (idx > 0) {
+			String pkg = className.substring(0, idx + 1);
+			String cname = className.substring(idx + 1);
+			return pkg + nullable + cname;
+		}
+		else {
+			return nullable + className;
+		}
+	}
+
 	private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model)
 			throws IOException, ProcessingException, AnnotatedException {
 
@@ -727,6 +744,8 @@ class TemplateClassWriter implements LoggingSupplier {
 		String className = element.getQualifiedName().toString();
 		String _Appender = APPENDER_CLASS;
 
+		String nullable = model.nullableAnnotation() + " ";
+		final String _F_Formatter = Function.class.getName() + "<" + nullable + "Object, String>";
 		String _Escaper = jstachio ? _Appender : _F_Escaper;
 		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
 

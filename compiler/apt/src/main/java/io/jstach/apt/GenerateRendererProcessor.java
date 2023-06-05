@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.annotation.Inherited;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -431,8 +432,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private Set<Flag> resolveFlags(Map<String, String> options, @Nullable TypeElement element) {
 		@Nullable
-		JStacheFlagsPrism prism = element == null ? null : findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
-				.findFirst().orElse(null);
+		JStacheFlagsPrism prism = resolveFlagsPrism(element);
 
 		var flags = EnumSet.noneOf(Flag.class);
 
@@ -453,6 +453,28 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 		}
 		return Collections.unmodifiableSet(flags);
+	}
+
+	private JStacheFlagsPrism resolveFlagsPrism(TypeElement element) {
+		@Nullable
+		JStacheFlagsPrism prism = element == null ? null : findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
+				.findFirst().orElse(null);
+		return prism;
+	}
+
+	private String resolveNullableAnnotation(TypeElement element) {
+		@Nullable
+		JStacheFlagsPrism prism = resolveFlagsPrism(element);
+		String noAnnotation = "/* @Nullable */";
+		if (prism == null) {
+			return noAnnotation;
+		}
+		TypeMirror tm = prism.nullableAnnotation();
+		String annotation = tm.toString();
+		if (annotation.equals(Inherited.class.getName())) {
+			return noAnnotation;
+		}
+		return "@" + annotation;
 	}
 
 	TypeElement toTypeElement(TypeMirror tm) {
@@ -536,7 +558,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			Optional<TypeElement> formatterTypeElement, //
 			Map<String, NamedTemplate> partials, //
 			InterfacesConfig ifaces, //
-			Set<Flag> flags, Map<String, String> options) implements ProcessingConfig {
+			String nullableAnnotation, Set<Flag> flags, Map<String, String> options) implements ProcessingConfig {
 
 		public NamedTemplate namedTemplate() {
 			String name;
@@ -631,7 +653,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		FormatterTypes formatterTypes = resolveFormatterTypes(element, formatterElement);
 		Map<String, NamedTemplate> partials = resolvePartials(element);
 		Set<Flag> flags = resolveFlags(options, element);
-
+		String nullableAnnotation = resolveNullableAnnotation(element);
 		var model = new RendererModel( //
 				formatCallType, //
 				element, //
@@ -646,7 +668,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				Optional.ofNullable(formatterElement), //
 				partials, //
 				ifaces, //
-				flags, //
+				nullableAnnotation, flags, //
 				options);
 		return model;
 	}

@@ -1,13 +1,16 @@
 package io.jstach.jstache;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Compiler feature flags that are subject to change. Use at your own risk!
+ * Compiler <strong>feature flags that are subject to change. Use at your own
+ * risk!</strong>
  * <p>
  * <strong>Flags maybe added without a major version change unlike the rest of the
  * API.</strong> If a flag becomes popular enough it will eventually make its way to
@@ -142,5 +145,12 @@ public @interface JStacheFlags {
 		PRE_ENCODE_DISABLE;
 
 	}
+
+	/**
+	 * Annotation to use for marking nullable types in generated code. The annotation must
+	 * be a {@link ElementType#TYPE_USE} compatible annotation.
+	 * @return {@link Inherited} signaling unspecified.
+	 */
+	Class<? extends Annotation> nullableAnnotation() default Inherited.class;
 
 }
