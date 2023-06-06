@@ -192,7 +192,7 @@ enum Command implements HelpSupport {
 
 	enum VersionSource implements HelpSupport {
 
-		CURRENT("version.properties"), POM("pom.xml"), TAG("git tag");
+		CURRENT(VERSION_PROPERTIES), POM("pom.xml"), TAG("git tag");
 		
 		private final String desc;
 		
@@ -227,7 +227,9 @@ enum Command implements HelpSupport {
 
 	static Version current() throws IOException {
 		var props = new Properties();
-		props.load(Files.newBufferedReader(Path.of("version.properties")));
+		try (var r = Files.newBufferedReader(Path.of(VERSION_PROPERTIES))) {
+			props.load(r);
+		}
 		String v = props.getProperty("version");
 		return Version.of(v);
 	}
@@ -236,7 +238,7 @@ enum Command implements HelpSupport {
 		if (v.snapshot()) {
 			throw new IllegalArgumentException("version.properties cannot have SNAPSHOT versions. version: " + v.print(Version.PrintFlag.SNAPSHOT));
 		}
-		try (var br = Files.newBufferedWriter(Path.of("version.properties"), StandardCharsets.ISO_8859_1)) {
+		try (var br = Files.newBufferedWriter(Path.of(VERSION_PROPERTIES), StandardCharsets.ISO_8859_1)) {
 			writeProperties(br, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
 			br.flush();
 		}
@@ -244,7 +246,9 @@ enum Command implements HelpSupport {
 
 	static long timestamp() throws IOException {
 		var props = new Properties();
-		props.load(Files.newBufferedReader(Path.of("version.properties")));
+		try (var r = Files.newBufferedReader(Path.of(VERSION_PROPERTIES))) {
+			props.load(r);
+		}
 		String t = props.getProperty("timestamp");
 		if (t == null) {
 			return -1;

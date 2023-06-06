@@ -459,7 +459,9 @@ public class SpecGenerator {
 		if (is == null) {
 			throw new IOException("Spec is missing. spec: " + spec);
 		}
-		return new YAMLFactory(new YAMLMapper()).createParser(new InputStreamReader(is)).readValueAsTree();
+		try (var r = new InputStreamReader(is); var parser = new YAMLFactory(new YAMLMapper()).createParser(r);) {
+			return parser.readValueAsTree();
+		}
 	}
 
 }
