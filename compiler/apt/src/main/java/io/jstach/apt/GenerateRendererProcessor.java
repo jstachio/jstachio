@@ -431,14 +431,14 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private Set<Flag> resolveFlags(Map<String, String> options, @Nullable TypeElement element) {
-		@Nullable
-		JStacheFlagsPrism prism = resolveFlagsPrism(element);
-
 		var flags = EnumSet.noneOf(Flag.class);
-
-		if (prism != null) {
-			prism.flags().stream().map(Flag::valueOf).forEach(flags::add);
-		}
+		Stream.ofNullable(element) //
+				.flatMap(e -> findPrisms(e, JStacheFlagsPrism::getInstanceOn)) //
+				.filter(p -> !this.isFlagsUnspecified(p)) //
+				.limit(1) //
+				.flatMap(p -> p.flags().stream()) //
+				.map(Flag::valueOf) //
+				.forEach(flags::add);
 		for (var e : options.entrySet()) {
 			@Nullable
 			Flag flag = processorOptionNames.get(e.getKey());
@@ -455,26 +455,29 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return Collections.unmodifiableSet(flags);
 	}
 
-	private JStacheFlagsPrism resolveFlagsPrism(TypeElement element) {
-		@Nullable
-		JStacheFlagsPrism prism = element == null ? null : findPrisms(element, JStacheFlagsPrism::getInstanceOn) //
-				.findFirst().orElse(null);
-		return prism;
+	boolean isFlagsUnspecified(JStacheFlagsPrism prism) {
+		for (String f : prism.flags()) {
+			if (Flag.UNSPECIFIED.name().equals(f)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private String resolveNullableAnnotation(TypeElement element) {
+		String defaultNullableName = Inherited.class.getName();
 		@Nullable
-		JStacheFlagsPrism prism = resolveFlagsPrism(element);
-		String noAnnotation = "/* @Nullable */";
-		if (prism == null) {
-			return noAnnotation;
+		String annotation = findPrisms(element, JStacheFlagsPrism::getInstanceOn)
+				.map(p -> p.nullableAnnotation().toString()).filter(tm -> !tm.equals(defaultNullableName)).findFirst()
+				.orElse(null);
+
+		if (annotation == null) {
+			annotation = "/* @Nullable */";
 		}
-		TypeMirror tm = prism.nullableAnnotation();
-		String annotation = tm.toString();
-		if (annotation.equals(Inherited.class.getName())) {
-			return noAnnotation;
+		else {
+			annotation = "@" + annotation;
 		}
-		return "@" + annotation;
+		return annotation;
 	}
 
 	TypeElement toTypeElement(TypeMirror tm) {
