@@ -22,7 +22,7 @@ import io.jstach.jstache.JStacheFlags;
 		---------
 		{{/names}}
 		""")
-@JStacheFlags(flags = {}, nullableAnnotation = Nullable.class)
+@JStacheFlags(nullableAnnotation = Nullable.class)
 public record NullCheckAlwaysModel(List<@Nullable String> names) {
 
 }

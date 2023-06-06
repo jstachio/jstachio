@@ -27,8 +27,9 @@ import java.lang.annotation.Target;
  * <li>annotation processor compiler arg options (<code>-A</code>). The flags are
  * lowercased and prefixed with "<code>jstache.</code>"</li>
  * </ol>
- * <em>The flags are NOT combined but rather the first found dictates the flags set or not
- * (including empty)</em>
+ * <em>The flags are NOT combined but rather the first found that is <strong>NOT</strong>
+ * containing {@link Flag#UNSPECIFIED} dictates the flags set or not (including
+ * empty)</em>. If other flags are set with UNSPECIFIED they will be ignored.
  *
  * @author agentgt
  * @apiNote the retention policy is purposely {@link RetentionPolicy#SOURCE} as these
@@ -41,10 +42,10 @@ public @interface JStacheFlags {
 
 	/**
 	 * Compiler flags that will be used on for this model.
-	 * @return flags
+	 * @return flags defaults to a single unspecified.
 	 * @see JStacheFlags
 	 */
-	Flag[] flags();
+	Flag[] flags() default { Flag.UNSPECIFIED };
 
 	/**
 	 * Compiler flags. Besides setting with {@link JStacheFlags} the flags are also
@@ -58,6 +59,14 @@ public @interface JStacheFlags {
 	 *
 	 */
 	public enum Flag {
+
+		/**
+		 * Flag to indicate nothing is set. This is to differentiate a request to unset
+		 * {@link JStacheFlags#flags()} flags vs ignore and cascade up. See
+		 * {@link JStacheConfig} for config cascading.
+		 * @see JStacheConfig
+		 */
+		UNSPECIFIED,
 
 		/**
 		 * This will produce additional logging that is sent to standard out while the

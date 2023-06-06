@@ -43,6 +43,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_FLAGS_UNSPECIFIED = "jstache.unspecified";
+
+	/**
+	 * Generated
+	 */
 	public static final String JSTACHE_FLAGS_DEBUG = "jstache.debug";
 
 	/**
@@ -66,6 +71,10 @@ public interface Prisms {
 	@NonNullByDefault
 	public enum Flag {
 
+		/**
+		 * Generated
+		 */
+		UNSPECIFIED, //
 		/**
 		 * Generated
 		 */

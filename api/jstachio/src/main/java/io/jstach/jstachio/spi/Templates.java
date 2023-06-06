@@ -251,19 +251,33 @@ public final class Templates {
 	@SuppressWarnings("unchecked")
 	private static <T> @Nullable Template<T> templateByConstructor(Class<T> clazz, ClassLoader classLoader)
 			throws Exception {
-		Class<?> implementation = classLoader.loadClass(resolveName(clazz));
+		Class<?> implementation = classLoader.loadClass(generatedClassName(clazz));
 		Constructor<?> constructor = implementation.getDeclaredConstructor();
 		constructor.setAccessible(true);
 		return (Template<T>) constructor.newInstance();
 	}
 
-	private static String resolveName(Class<?> c) {
-		var a = c.getAnnotation(JStache.class);
+	/**
+	 * Gets the canonical class name of the generated template code regardless of whether
+	 * or not code has actually been generated. Because the class may not have been
+	 * generated the return is a String.
+	 * @param modelClass the exact model class that contains the {@link JStache}
+	 * annotation.
+	 * @return the FQN class name of the would be generated template code
+	 * @throws NoSuchElementException if the model class is not annotated with
+	 * {@link JStache}.
+	 */
+	public static String generatedClassName(Class<?> modelClass) {
+		// TODO perhaps this information should be on TemplateInfo?
+		var a = modelClass.getAnnotation(JStache.class);
+		if (a == null) {
+			throw new TemplateNotFoundException(modelClass);
+		}
 		String cname;
 		if (a == null || a.name().isBlank()) {
 
-			JStacheName name = findAnnotations(c, JStacheConfig.class).flatMap(config -> Stream.of(config.naming()))
-					.findFirst().orElse(null);
+			JStacheName name = findAnnotations(modelClass, JStacheConfig.class) //
+					.flatMap(config -> Stream.of(config.naming())).findFirst().orElse(null);
 
 			String prefix = name == null ? JStacheName.UNSPECIFIED : name.prefix();
 
@@ -272,12 +286,12 @@ public final class Templates {
 			prefix = prefix.equals(JStacheName.UNSPECIFIED) ? JStacheName.DEFAULT_PREFIX : prefix;
 			suffix = suffix.equals(JStacheName.UNSPECIFIED) ? JStacheName.DEFAULT_SUFFIX : suffix;
 
-			cname = prefix + c.getSimpleName() + suffix;
+			cname = prefix + modelClass.getSimpleName() + suffix;
 		}
 		else {
 			cname = a.name();
 		}
-		String packageName = c.getPackageName();
+		String packageName = modelClass.getPackageName();
 		String fqn = packageName + (packageName.isEmpty() ? "" : ".") + cname;
 		return fqn;
 	}
@@ -394,7 +408,7 @@ public final class Templates {
 			JStachePath pathConfig = resolvePath(model);
 			String templateString = stache.template();
 
-			final String templateName = resolveName(model);
+			final String templateName = generatedClassName(model);
 			String path = stache.path();
 			String templatePath;
 			if (templateString.isEmpty() && path.isEmpty()) {
