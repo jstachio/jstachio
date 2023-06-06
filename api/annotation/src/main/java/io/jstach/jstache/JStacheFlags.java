@@ -9,8 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Compiler <strong>feature flags that are subject to change. Use at your own
- * risk!</strong>
+ * Compiler <strong>feature flags that are subject to change</strong>. Use at your own
+ * risk!
  * <p>
  * <strong>Flags maybe added without a major version change unlike the rest of the
  * API.</strong> If a flag becomes popular enough it will eventually make its way to
@@ -27,9 +27,9 @@ import java.lang.annotation.Target;
  * <li>annotation processor compiler arg options (<code>-A</code>). The flags are
  * lowercased and prefixed with "<code>jstache.</code>"</li>
  * </ol>
- * <em>The flags are NOT combined but rather the first found that is <strong>NOT</strong>
- * containing {@link Flag#UNSPECIFIED} dictates the flags set or not (including
- * empty)</em>. If other flags are set with UNSPECIFIED they will be ignored.
+ * <em>The {@link #flags()} are NOT combined but rather the first found that is
+ * <strong>NOT</strong> containing {@link Flag#UNSPECIFIED} dictates the flags set or not
+ * (including empty)</em>. If other flags are set with UNSPECIFIED they will be ignored.
  *
  * @author agentgt
  * @apiNote the retention policy is purposely {@link RetentionPolicy#SOURCE} as these
@@ -41,7 +41,10 @@ import java.lang.annotation.Target;
 public @interface JStacheFlags {
 
 	/**
-	 * Compiler flags that will be used on for this model.
+	 * Compiler flags that will be used on for this model. <em>The {@link #flags()} are
+	 * NOT combined but rather the first found that is <strong>NOT</strong> containing
+	 * {@link Flag#UNSPECIFIED} dictates the flags set or not (including empty)</em>. If
+	 * other flags are set with UNSPECIFIED they will be ignored.
 	 * @return flags defaults to a single unspecified.
 	 * @see JStacheFlags
 	 */
@@ -156,9 +159,25 @@ public @interface JStacheFlags {
 	}
 
 	/**
-	 * Annotation to use for marking nullable types in generated code. The annotation must
-	 * be a {@link ElementType#TYPE_USE} compatible annotation.
-	 * @return {@link Inherited} signaling unspecified.
+	 * <strong>EXPERIMENTAL:</strong> Annotation to use for marking nullable types in
+	 * generated code. Normally JStachio will just put a comment like
+	 * "<code>&#47;* &#64;Nullable *&#47;</code>" for allowed nulls.
+	 * <p>
+	 * For example by default a formatter that accepts nulls will be generated like: <pre>
+	 * <code class="language-java">
+	 * Function&lt;&#47;* &#64;Nullable *&#47; Object, String&gt; formatter;
+	 * </code> </pre> If this feature is turned on then the comment will be replaced with
+	 * the given annotation.
+	 * <p>
+	 * The annotation must be a {@link ElementType#TYPE_USE} compatible annotation. Also
+	 * known as JSR 308. Most JSR 305 style annotations will not work!
+	 * <p>
+	 * The default return annotation of Inherited has no special meaning other than
+	 * UNSPECIFIED and will not actually be used. It was chosen arbitrarily because there
+	 * are currently no annotations in java.base that correlate with this behavior.
+	 * @return {@link Inherited} signaling unspecified (it will not actually be used).
+	 * @apiNote The annotation other than the unspecified must be a
+	 * {@link ElementType#TYPE_USE}.
 	 */
 	Class<? extends Annotation> nullableAnnotation() default Inherited.class;
 
