@@ -4,7 +4,7 @@
   <artifactId>jstachio-maven-parent</artifactId>
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <url>https://github.com/jstachio/jstachio</url>
   <description>Compile time type-safe Java Mustache templating engine.</description>
   <organization>
@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.9</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
-    <project.build.outputTimestamp>1685021840</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1686078403</project.build.outputTimestamp>
     <ant.tstamp.now>${project.build.outputTimestamp}</ant.tstamp.now>
     <javadoc.stylesheet/>
     <jstachio.doc.resources>../</jstachio.doc.resources>
@@ -32,7 +32,7 @@
     <jstachio.website.doc>${jstachio.website}/${jstachio.version}</jstachio.website.doc>
     <jstachio.javadoc>${jstachio.website.doc}/apidocs</jstachio.javadoc>
 
-    <jstachio.doc.message>&lt;span class="jstachio-warn" &gt;&#x26A0; WARNING! This is the jar javadoc. The aggregated javadoc has better usability:&lt;/span&gt;</jstachio.doc.message>
+    <jstachio.doc.message>&lt;span class="jstachio-warn" &gt;⚠ WARNING! This is the jar javadoc. The aggregated javadoc has better usability:&lt;/span&gt;</jstachio.doc.message>
     <jstachio.doc.ahref>&lt;a target="_blank" href="${jstachio.javadoc}" &gt;${jstachio.javadoc}&lt;/a&gt;</jstachio.doc.ahref>
 
     <jstachio.tag>&lt;div class="jstachio-version"&gt; ${jstachio.doc.message} &lt;br/&gt; ${jstachio.doc.ahref}&lt;/div&gt;</jstachio.tag>

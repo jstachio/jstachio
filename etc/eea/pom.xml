@@ -3,7 +3,7 @@
   <parent>
     <groupId>io.jstach</groupId>
     <artifactId>jstachio-etc-parent</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>jstachio-eea</artifactId>
   <url>${jstachio.website.doc}</url>
