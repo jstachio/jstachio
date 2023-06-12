@@ -95,6 +95,7 @@ public class HelloController {
 	 * @return the model that will be used as View
 	 * @see JStachioHttpMessageConverter
 	 */
+	@SuppressWarnings("exports")
 	@GetMapping(value = "/mvc")
 	public View mvc() {
 		return new HelloModel("Spring Boot MVC is now JStachioed!");
