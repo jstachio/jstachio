@@ -1,0 +1,1 @@
+package io.jstach.test.opt.spring.example;

@@ -38,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(new JStachioHttpMessageConverter(jstachio));
+		converters.add(0, new JStachioHttpMessageConverter(jstachio));
 	}
 
 	/**
