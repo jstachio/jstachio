@@ -21,6 +21,7 @@
  * <a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-spring-webflux-example">directly on github.</a> 
  * </em>
  * 
+ * @apiNote This module is not public API as it is just an example and thus does not follow semver policy!
  * @author agentgt
  */
 module io.jstach.opt.spring.webflux.example {
