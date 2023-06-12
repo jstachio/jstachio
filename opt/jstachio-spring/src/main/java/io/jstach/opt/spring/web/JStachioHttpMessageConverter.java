@@ -9,10 +9,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
+import io.jstach.jstachio.output.ByteBufferedOutputStream;
 
 /**
  * Typesafe way to use JStachio in Spring Web.
@@ -68,12 +70,19 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 		/*
-		 * Its unclear if the body needs to be closed. Springs Jackson support seems to
-		 * want to avoid closing so we will do the same.
+		 * If we just write directly to the body we will get Transfer-Encoding: chunked
+		 * which is almost never desired for HTML.
+		 *
+		 * TODO we should explore making this configurable or other options as this
+		 * requires copying all the data.
 		 */
-		var body = outputMessage.getBody();
-		jstachio.write(t, Output.of(body, getDefaultCharset()));
-		body.flush();
+		ByteBufferedOutputStream buffer = new ByteBufferedOutputStream();
+		jstachio.write(t, Output.of(buffer, getDefaultCharset()));
+		int size = buffer.size();
+		outputMessage.getHeaders().setContentLength(size);
+		// buffer.toByteArray copies which we do not want so we use toBuffer which does
+		// not
+		StreamUtils.copy(buffer.toBuffer().array(), outputMessage.getBody());
 	}
 
 }
