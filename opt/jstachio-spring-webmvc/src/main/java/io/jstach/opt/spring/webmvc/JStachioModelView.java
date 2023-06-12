@@ -11,7 +11,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.Output;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -49,7 +48,11 @@ public interface JStachioModelView extends View {
 			charset = StandardCharsets.UTF_8;
 		}
 		try (var o = response.getOutputStream()) {
-			jstachio().write(model(), Output.of(o, charset));
+			var bo = jstachio().write(model(), new ByteCountOutput(o, charset));
+			long length = bo.size();
+			if (length < Integer.MAX_VALUE) {
+				response.setContentLength((int) bo.size());
+			}
 		}
 
 	}

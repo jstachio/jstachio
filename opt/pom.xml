@@ -16,7 +16,6 @@
     <module>jstachio-spring-webflux</module>
   </modules>
   <properties>
-    <spring-boot.version>3.1.0</spring-boot.version>
     <parent.root>${basedir}/../..</parent.root>
   </properties>
   <dependencyManagement>
