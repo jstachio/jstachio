@@ -1,4 +1,4 @@
-package io.jstach.opt.spring.example;
+package io.jstach.opt.spring.boot.webmvc;
 
 import java.util.List;
 
@@ -32,8 +32,8 @@ public class SpringTemplateConfig {
 	 * @return the services
 	 */
 	@Bean
-	public SpringJStachioExtension jstachioService(@SuppressWarnings("exports") Environment environment,
-			List<Template<?>> templates) {
+	@SuppressWarnings("exports")
+	public SpringJStachioExtension jstachioService(Environment environment, List<Template<?>> templates) {
 		return new SpringJStachioExtension(environment, templates);
 	}
 

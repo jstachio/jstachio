@@ -98,8 +98,8 @@ public class HelloController {
 	 * @see JStachioHttpMessageConverter
 	 * @see HelloModelAndView
 	 */
-	@SuppressWarnings("exports")
 	@GetMapping(value = "/mvc")
+	@SuppressWarnings("exports")
 	public View mvc() {
 		return new HelloModelAndView("Spring Boot MVC is now JStachioed!");
 	}

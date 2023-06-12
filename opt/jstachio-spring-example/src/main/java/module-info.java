@@ -28,13 +28,10 @@ import io.jstach.jstache.JStachePath;
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
 module io.jstach.opt.spring.example {
-	requires transitive io.jstach.opt.spring.webmvc;
-	requires io.jstach.opt.jmustache;
-	requires com.samskivert.jmustache;
+	requires transitive io.jstach.opt.spring.boot.webmvc;
 
 	requires static spring.jcl;
-	requires static jakarta.servlet;
-	
+
 	requires spring.web;
 	requires spring.webmvc;
 	requires spring.beans;
@@ -42,16 +39,20 @@ module io.jstach.opt.spring.example {
 	requires spring.context;
 	requires spring.boot;
 	requires spring.boot.autoconfigure;
-	
+
 	requires com.fasterxml.jackson.databind;
-	
+
+	// For IDE. Sigh.
+	requires java.instrument;
+
 	opens io.jstach.opt.spring.example to //
 	spring.core, spring.web, spring.beans, spring.context
 	;
 
 	opens io.jstach.opt.spring.example.message to //
 	spring.core, spring.web, spring.beans, spring.context //
-	, io.jstach.jstachio, io.jstach.opt.jmustache
+	, io.jstach.jstachio, io.jstach.opt.jmustache //
+	, io.jstach.opt.spring.webmvc
 	;
 
 	opens io.jstach.opt.spring.example.hello to //

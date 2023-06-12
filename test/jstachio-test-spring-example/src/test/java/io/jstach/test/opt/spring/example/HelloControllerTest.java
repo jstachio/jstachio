@@ -16,10 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import io.jstach.opt.spring.example.App;
-import io.jstach.opt.spring.example.SpringTemplateConfig;
-import io.jstach.opt.spring.example.WebConfig;
 
-@SpringBootTest(classes = { App.class, WebConfig.class, SpringTemplateConfig.class })
+@SpringBootTest(classes = { App.class })
 @AutoConfigureMockMvc
 public class HelloControllerTest {
 
