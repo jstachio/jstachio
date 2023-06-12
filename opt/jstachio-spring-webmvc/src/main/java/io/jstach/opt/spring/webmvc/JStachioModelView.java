@@ -1,13 +1,17 @@
 package io.jstach.opt.spring.webmvc;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Output;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -27,17 +31,25 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public interface JStachioModelView extends View {
 
+	/**
+	 * The default media type is "<code>text/html; charset=UTF-8</code>".
+	 */
+	@SuppressWarnings("exports")
+	static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
+
 	@SuppressWarnings("exports")
 	@Override
 	default void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
 		String contentType = getContentType();
-		if (contentType != null) {
-			response.setContentType(contentType);
+		response.setContentType(contentType);
+		Charset charset = getMediaType().getCharset();
+		if (charset == null) {
+			charset = StandardCharsets.UTF_8;
 		}
-		try (var w = response.getWriter()) {
-			jstachio().execute(model(), w);
+		try (var o = response.getOutputStream()) {
+			jstachio().write(model(), Output.of(o, charset));
 		}
 
 	}
@@ -59,14 +71,29 @@ public interface JStachioModelView extends View {
 		return this;
 	}
 
+	@Override
+	default String getContentType() {
+		return getMediaType().toString();
+	}
+
+	/**
+	 * The media type for this view. The default is
+	 * "<code>text/html; charset=UTF-8</code>".
+	 * @return the media type
+	 */
+	@SuppressWarnings("exports")
+	default MediaType getMediaType() {
+		return DEFAULT_MEDIA_TYPE;
+	}
+
 	/**
 	 * Creates a spring view from a model with content type:
-	 * "<code>text/html; charset=utf-8</code>".
+	 * "<code>text/html; charset=UTF-8</code>".
 	 * @param model an instance of a class annotated with {@link JStache}.
 	 * @return view ready for rendering
 	 */
 	public static JStachioModelView of(Object model) {
-		return of(model, "text/html; charset=utf-8");
+		return of(model, MediaType.TEXT_HTML.toString());
 	}
 
 	/**
@@ -76,6 +103,20 @@ public interface JStachioModelView extends View {
 	 * @return view ready for rendering
 	 */
 	public static JStachioModelView of(Object model, String contentType) {
+		MediaType mediaType = MediaType.parseMediaType(contentType);
+		return JStachioModelView.of(model, mediaType);
+	}
+
+	/**
+	 * Creates a spring view from a model.
+	 * @param model an instance of a class annotated with {@link JStache}.
+	 * @param mediaType the mediaType
+	 * @return view ready for rendering
+	 */
+	static JStachioModelView of(Object model, @SuppressWarnings("exports") MediaType mediaType) {
+		/*
+		 * TODO potentially make this public on the next minor version release.
+		 */
 		return new JStachioModelView() {
 			@Override
 			public Object model() {
@@ -83,8 +124,8 @@ public interface JStachioModelView extends View {
 			}
 
 			@Override
-			public String getContentType() {
-				return contentType;
+			public MediaType getMediaType() {
+				return mediaType;
 			}
 		};
 	}
