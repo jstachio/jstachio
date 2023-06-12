@@ -16,6 +16,7 @@ import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateModel;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.webmvc.JStachioModelView;
 
 /**
  * Example hello world controller using different ways to use JStachio for web
@@ -83,22 +84,24 @@ public class HelloController {
 	}
 
 	/**
-	 * Here we use {@link JStacheInterfaces} to make our model implement a Spring View to
-	 * support the traditional servlet MVC approach. The model will use the static
-	 * jstachio singleton that will be the spring one.
+	 * Here we could use {@link JStacheInterfaces} to make our model implement
+	 * {@link JStachioModelView} to support the traditional servlet MVC approach. The
+	 * model will use the static jstachio singleton that will be the spring one.
 	 * <p>
 	 * This approach has pros and cons. It makes your models slightly coupled to Spring
 	 * MVC but allows you to return different views if say you had to redirect on some
 	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
 	 *
 	 * @apiNote Notice that the return type is {@link View}.
-	 * @return the model that will be used as View
+	 * @return the model and view that will be used as View (see
+	 * {@link HelloModelAndView}).
 	 * @see JStachioHttpMessageConverter
+	 * @see HelloModelAndView
 	 */
 	@SuppressWarnings("exports")
 	@GetMapping(value = "/mvc")
 	public View mvc() {
-		return new HelloModel("Spring Boot MVC is now JStachioed!");
+		return new HelloModelAndView("Spring Boot MVC is now JStachioed!");
 	}
 
 	/**

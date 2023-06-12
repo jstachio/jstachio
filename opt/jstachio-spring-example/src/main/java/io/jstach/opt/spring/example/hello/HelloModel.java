@@ -1,7 +1,6 @@
 package io.jstach.opt.spring.example.hello;
 
 import io.jstach.jstache.JStache;
-import io.jstach.opt.spring.webmvc.JStachioModelView;
 
 /**
  * Model using a resource template that is in src/main/resources/views. The path will be
@@ -10,6 +9,6 @@ import io.jstach.opt.spring.webmvc.JStachioModelView;
  * @param message The greeting message
  */
 @JStache(path = "hello")
-public record HelloModel(String message) implements JStachioModelView {
+public record HelloModel(String message) {
 
 }
