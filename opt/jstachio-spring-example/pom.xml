@@ -10,16 +10,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.jstach</groupId>
-      <artifactId>jstachio-spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.jstach</groupId>
-      <artifactId>jstachio-jmustache</artifactId>
+      <artifactId>jstachio-spring-boot-starter-webmvc</artifactId>
     </dependency>
      <dependency>
       <groupId>jakarta.servlet</groupId>

@@ -6,9 +6,6 @@
  * <li>{@linkplain io.jstach.opt.spring.example.hello.HelloController Controller}</li>
  * <li>{@linkplain io.jstach.opt.spring.example.hello.HelloModel Model}</li>
  * <li>io.jstach.opt.spring.example.HelloModelView (jstachio generated renderer)</li>
- * <li>{@linkplain io.jstach.opt.spring.example.SpringTemplateConfig Bean
- * configuration}</li>
- * <li>{@linkplain io.jstach.opt.spring.example.WebConfig Web configuration}</li>
  * </ul>
  * <strong> Make sure to take note of the {@linkplain io.jstach.opt.spring.example/
  * annotations on this module as they define the jstachio config} needed to integrate with
