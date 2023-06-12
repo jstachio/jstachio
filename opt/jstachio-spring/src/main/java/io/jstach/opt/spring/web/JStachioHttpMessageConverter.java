@@ -67,7 +67,13 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
-		jstachio.write(t, Output.of(outputMessage.getBody(), getDefaultCharset()));
+		/*
+		 * Its unclear if the body needs to be closed. Springs Jackson support seems to
+		 * want to avoid closing so we will do the same.
+		 */
+		var body = outputMessage.getBody();
+		jstachio.write(t, Output.of(body, getDefaultCharset()));
+		body.flush();
 	}
 
 }

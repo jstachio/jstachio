@@ -44,6 +44,7 @@ module io.jstach.opt.spring.webmvc {
 	/*
 	 * start required for Spring webmvc support
 	 */
+	requires spring.web;
 	requires spring.webmvc;
 	requires static jakarta.servlet;
 	/* end spring mvc optional deps*/
