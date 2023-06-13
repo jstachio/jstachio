@@ -38,7 +38,7 @@ public class HelloController {
 	@GetMapping(value = "/")
 	@ResponseBody
 	public HelloModel hello() {
-		return new HelloModel("Spring Boot is now JStachioed!");
+		return new HelloModel("Spring Boot WebFlux is now JStachioed!");
 	}
 
 	/**
@@ -54,9 +54,9 @@ public class HelloController {
 	 * @return the model that will be used as View
 	 * @see JStachioHttpMessageConverter
 	 */
-	@GetMapping(value = "/webflux")
+	@GetMapping(value = "/mvc")
 	public View mvc() {
-		return JStachioModelView.of(new HelloModel("Spring Boot WebFlux is now JStachioed!"));
+		return JStachioModelView.of(new HelloModel("Spring Boot WebFlux View is now JStachioed!"));
 	}
 
 }
