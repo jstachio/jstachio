@@ -7,22 +7,48 @@
   </parent>
   <artifactId>jstachio-etc-parent</artifactId>
   <packaging>pom</packaging>
-  <modules>
-    <module>eea</module>
-  </modules>
   <properties>
     <parent.root>${basedir}/../..</parent.root>
-    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
   </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <dependencies>
+    <!-- 
+    The following deps are not actually deployed or needed.
+    The are to enforce order to make sure this is the last pom in the reactor.
+    Because of bug in sonatype we need a pom or jar 
+    that is not skipped by nexus staging deploy to be at the very end.
+    -->
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-test-spring-example</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-test-spring-webflux-example</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-spec-mustache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-examples</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-test-stache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <profiles>
+    <profile>
+      <id>eea</id>
+      <modules>
+        <module>eea</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
