@@ -15,6 +15,7 @@
     <module>examples</module>
     <module>jstachio-test-stache</module>
     <module>jstachio-test-spring-example</module>
+    <module>jstachio-test-spring-webflux-example</module>
   </modules>
   <build>
     <pluginManagement>

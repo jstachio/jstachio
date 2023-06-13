@@ -8,17 +8,17 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import io.jstach.opt.spring.webflux.JStachioEncoder;
 import io.jstach.opt.spring.webflux.JStachioModelViewConfigurer;
 import io.jstach.opt.spring.webflux.ViewSetupBeanPostProcessor;
 
 /**
- * Configures MVC using {@link JStachioHttpMessageConverter} to allow returning models
- * which will be rendered using JStachio runtime.
+ * Configures WebFlux using {@link JStachioEncoder} to allow returning models which will
+ * be rendered using JStachio runtime.
  *
  * @author agentgt
- * @see JStachioHttpMessageConverter
+ * @author dsyer
+ * @see JStachioEncoder
  */
 @SuppressWarnings("exports")
 @Configuration
@@ -37,6 +37,9 @@ public class WebConfig implements WebFluxConfigurer {
 
 	@Override
 	public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
+		/*
+		 * TODO consider using HttpMessageWriter on minor release
+		 */
 		configurer.customCodecs().register(new JStachioEncoder(jstachio));
 	}
 
