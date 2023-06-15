@@ -52,13 +52,10 @@ public class SpringJStachioExtension implements JStachioExtensionProvider {
 	@Override
 	public JStachioTemplateFinder provideTemplateFinder() {
 
-		return new JStachioTemplateFinder() {
+		var wiredTemplates = new JStachioTemplateFinder() {
 
 			@Override
 			public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
-				/*
-				 * TODO should we do reflection based lookup if this fails?
-				 */
 				for (var t : templates) {
 					if (t.supportsType(modelType)) {
 						return t;
@@ -76,7 +73,9 @@ public class SpringJStachioExtension implements JStachioExtensionProvider {
 				}
 				return false;
 			}
+
 		};
+		return wiredTemplates;
 
 	}
 

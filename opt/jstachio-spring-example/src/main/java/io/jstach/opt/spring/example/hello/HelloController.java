@@ -1,11 +1,8 @@
 package io.jstach.opt.spring.example.hello;
 
 import java.io.IOException;
-import java.io.Writer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import io.jstach.jstache.JStacheInterfaces;
+import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateModel;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
@@ -29,17 +27,26 @@ public class HelloController {
 
 	/**
 	 * Placate JDK 18 Javadoc
+	 * @param jstachio spring powered jstachio
+	 * @param wired in template
 	 */
-	public HelloController() {
+	public HelloController(JStachio jstachio, Template<HelloModel> view) {
+		this.jstachio = jstachio;
+		this.view = view;
 	}
 
 	/**
-	 * Spring will inject this as the templates are component scanned as this projects
-	 * module {@link io.jstach.opt.spring.example/ } has a config that will add &#64;
-	 * {@link Component} to all generated code.
+	 * (Optional) Spring will inject this template as the templates are either component
+	 * scanned or loaded by the ServiceLoader into Spring's context.
+	 *
+	 * This is usually not needed as just returning the models is good enough.
 	 */
-	@Autowired(required = true)
-	public Template<HelloModel> view;
+	public final Template<HelloModel> view;
+
+	/**
+	 * Although not needed You can also wire in JStachio directly
+	 */
+	public final JStachio jstachio;
 
 	/**
 	 * Here we use JStachio runtime to resolve the renderer (in this case we are calling
@@ -105,15 +112,12 @@ public class HelloController {
 	}
 
 	/**
-	 * Here we use the {@linkplain #view wired renderer} that does not have filtering and
-	 * thus cannot use JMustache for dynamic editing of templates.
-	 * @param writer spring will inject the servlet output
-	 * @throws IOException an error while writing to the output
+	 * Here we use the {@linkplain #view wired renderer}.
 	 */
 	@GetMapping(value = "/wired")
-	public void wired(Writer writer) throws IOException {
+	public TemplateModel wired() throws IOException {
 		var model = new HelloModel("JStachioed is wired!");
-		view.execute(model, writer);
+		return view.model(model);
 	}
 
 }

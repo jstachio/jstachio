@@ -20,7 +20,15 @@ public class SpringJStachio extends AbstractJStachio {
 	 * @param extensions not null.
 	 */
 	public SpringJStachio(List<JStachioExtension> extensions) {
-		this.extensions = JStachioExtensions.of(extensions);
+		this(JStachioExtensions.of(extensions));
+	}
+
+	/**
+	 * Passed the found services usually injected by Spring.
+	 * @param extensions not null.
+	 */
+	public SpringJStachio(JStachioExtensions extensions) {
+		this.extensions = extensions;
 	}
 
 	@Override
