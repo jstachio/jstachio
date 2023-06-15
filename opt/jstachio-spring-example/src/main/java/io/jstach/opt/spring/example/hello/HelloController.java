@@ -28,7 +28,7 @@ public class HelloController {
 	/**
 	 * Placate JDK 18 Javadoc
 	 * @param jstachio spring powered jstachio
-	 * @param wired in template
+	 * @param view wired in template
 	 */
 	public HelloController(JStachio jstachio, Template<HelloModel> view) {
 		this.jstachio = jstachio;
@@ -113,9 +113,10 @@ public class HelloController {
 
 	/**
 	 * Here we use the {@linkplain #view wired renderer}.
+	 * @return template model pair derived from {@link Template#model(Object)}.
 	 */
 	@GetMapping(value = "/wired")
-	public TemplateModel wired() throws IOException {
+	public TemplateModel wired() {
 		var model = new HelloModel("JStachioed is wired!");
 		return view.model(model);
 	}
