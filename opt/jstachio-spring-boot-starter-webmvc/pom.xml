@@ -32,10 +32,6 @@
       <groupId>io.jstach</groupId>
       <artifactId>jstachio-spring-webmvc</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.jstach</groupId>
-      <artifactId>jstachio-jmustache</artifactId>
-    </dependency>
      <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>

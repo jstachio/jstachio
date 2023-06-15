@@ -1,18 +1,26 @@
 package io.jstach.opt.spring.boot.webmvc;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateConfig;
+import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioExtension;
+import io.jstach.jstachio.spi.JStachioTemplateFinder;
 import io.jstach.jstachio.spi.TemplateProvider;
 import io.jstach.jstachio.spi.Templates;
 import io.jstach.opt.spring.SpringJStachio;
@@ -38,12 +46,14 @@ public class SpringTemplateConfig {
 
 	/**
 	 * Templates found with the service loader
+	 * @param templateConfig used to create singleton templates
 	 * @return templates
+	 * @see #templateConfig()
 	 */
 	@Bean
-	public List<Template<?>> templatesByServiceLoader() {
-		var serviceLoader = ServiceLoader.load(TemplateProvider.class);
-		var templates = Templates.findTemplates(serviceLoader, e -> {
+	public List<Template<?>> templatesByServiceLoader(TemplateConfig templateConfig) {
+		var serviceLoader = serviceLoader(TemplateProvider.class);
+		var templates = Templates.findTemplates(serviceLoader, templateConfig, e -> {
 			logger.error("Failed to load template provider. Skipping it.", e);
 		}).toList();
 		for (var t : templates) {
@@ -53,45 +63,94 @@ public class SpringTemplateConfig {
 	}
 
 	/**
-	 * Creates a services based on spring objects.
-	 * @param environment used for config
-	 * @return the services
+	 * Resolve config from spring environment
+	 * @param environment for properties
+	 * @return config
 	 */
 	@Bean
-	@SuppressWarnings("exports")
-	public SpringJStachioExtension springJStachioExtension(Environment environment) {
-		return new SpringJStachioExtension(environment, templatesByServiceLoader());
+	@ConditionalOnMissingBean(JStachioConfig.class)
+	public JStachioConfig config(@SuppressWarnings("exports") Environment environment) {
+		return SpringJStachioExtension.config(environment);
+	}
+
+	/**
+	 * Resolve template finder configs
+	 * @param config jstachio config
+	 * @param templateConfig the template config
+	 * @return spring powered template finder
+	 */
+	@Bean
+	@ConditionalOnMissingBean(JStachioTemplateFinder.class)
+	public JStachioTemplateFinder templateFinder(JStachioConfig config, TemplateConfig templateConfig) {
+		var templates = templatesByServiceLoader(templateConfig);
+		var springTemplateFinder = JStachioTemplateFinder.cachedTemplateFinder(JStachioTemplateFinder.of(templates, 0));
+		var fallbackFinder = JStachioTemplateFinder.defaultTemplateFinder(config);
+		return JStachioTemplateFinder.of(List.of(springTemplateFinder, fallbackFinder));
+	}
+
+	/**
+	 * The default template config is empty and will let each template resolve its own
+	 * config. The template config contains an optional formatter (nullable) and optional
+	 * escaper (nullable). If a template config is provided as a bean somewhere else it
+	 * will replace this default. The only time this could be of use is if you needed a
+	 * formatter or escaper with custom wiring.
+	 * @return empty template config.
+	 * @see TemplateConfig#empty()
+	 */
+	@Bean
+	@ConditionalOnMissingBean(TemplateConfig.class)
+	public TemplateConfig templateConfig() {
+		return TemplateConfig.empty();
+	}
+
+	/**
+	 * Creates a services based on spring objects.
+	 * @param config used for config
+	 * @param templateFinder used to find templates
+	 * @return spring powered jstatchio extension provider
+	 * @see TemplateConfig#empty()
+	 */
+	@Bean
+	public SpringJStachioExtension springJStachioExtension(JStachioConfig config,
+			JStachioTemplateFinder templateFinder) {
+		return new SpringJStachioExtension(config, templateFinder);
 	}
 
 	/**
 	 * Creates jstachio from found plugins
-	 * @param services plugins
+	 * @param extensions plugins
 	 * @return spring version fo jstachio
 	 */
 	@Bean
-	public SpringJStachio jstachio(List<JStachioExtension> services) {
-		for (var s : services) {
-			logger.info("JStachio will load extension: " + s.getClass());
+	public SpringJStachio jstachio(List<JStachioExtension> extensions) {
+		Set<Class<?>> extensionClasses = extensions.stream().map(e -> e.getClass())
+				.collect(Collectors.toCollection(HashSet::new));
+		/*
+		 * We attempt to filter already loaded extensions via the service loader.
+		 *
+		 * We should probably make this configurable.
+		 */
+		List<JStachioExtension> serviceLoaderExtensions = serviceLoader(JStachioExtension.class) //
+				.stream() //
+				.filter(p -> !extensionClasses.contains(p.type())) //
+				.map(p -> p.get()) //
+				.toList();
+
+		for (var s : serviceLoaderExtensions) {
+			logger.info("JStachio found extension by ServiceLoader: " + s.getClass());
 		}
-		var js = new SpringJStachio(services);
+
+		extensions = Stream.concat(extensions.stream(), serviceLoaderExtensions.stream()).toList();
+
+		var js = new SpringJStachio(extensions);
 		// We need this for the view mixins.
 		JStachio.setStatic(() -> js);
 		return js;
 	}
 
-	/**
-	 * Extensions found with the service loader
-	 * @return extensions
-	 */
-	@Bean
-	public List<JStachioExtension> extensionsByServiceLoader() {
-		/*
-		 * In a modular world the service loader is the better solution to find extensions
-		 * then using Spring Boots ConditionalOnClass
-		 */
-		var extensions = ServiceLoader.load(JStachioExtension.class).stream().map(p -> p.get()).toList();
-		return extensions;
-
+	private <T> ServiceLoader<T> serviceLoader(Class<T> spiClass) {
+		ClassLoader classLoader = beanFactory.getBeanClassLoader();
+		return classLoader == null ? ServiceLoader.load(spiClass) : ServiceLoader.load(spiClass, classLoader);
 	}
 
 }

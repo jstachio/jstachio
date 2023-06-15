@@ -36,6 +36,7 @@ import io.jstach.jstache.JStachePath;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
+import io.jstach.jstachio.TemplateConfig;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.escapers.Html;
 import io.jstach.jstachio.escapers.PlainText;
@@ -90,6 +91,35 @@ public final class Templates {
 	 * @throws Exception if any reflection error happes or the template is not found
 	 */
 	public static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config) throws Exception {
+		Logger logger = config.getLogger(Templates.class.getCanonicalName());
+		return findTemplate(modelType, config, logger);
+	}
+
+	/**
+	 * Finds a {@link Template} if possible otherwise falling back to a
+	 * {@link TemplateInfo} based on annotation metadata. This method is effectively calls
+	 * {@link #getTemplate(Class)} first and if that fails possibly tries
+	 * {@link #getInfoByReflection(Class)} based on config. Unlike
+	 * {@link #findTemplate(Class, JStachioConfig)} this call will not produce any logging
+	 * and will not throw an exception if it fails.
+	 * @apiNote Callers can do an <code>instanceof Template t</code> to see if a generated
+	 * template was returned instead of the fallback.
+	 * @param modelType the models class (<em>the one annotated with {@link JStache} and
+	 * not the Templates class</em>)
+	 * @param config config used to determine whether or not to fallback
+	 * @return the template info which might be a {@link Template} if the generated
+	 * template was found or <code>null</code> if not found.
+	 */
+	public static @Nullable TemplateInfo findTemplateOrNull(Class<?> modelType, JStachioConfig config) {
+		try {
+			return findTemplate(modelType, config, JStachioConfig.noopLogger());
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
 		EnumSet<TemplateLoadStrategy> strategies = EnumSet.noneOf(TemplateLoadStrategy.class);
 
 		for (var s : ALL_STRATEGIES) {
@@ -98,8 +128,6 @@ public final class Templates {
 			}
 		}
 		var classLoaders = collectClassLoaders(modelType.getClassLoader());
-
-		Logger logger = config.getLogger(Templates.class.getCanonicalName());
 
 		Exception error;
 		try {
@@ -354,7 +382,7 @@ public final class Templates {
 	private static <T> @Nullable Template<?> templateByServiceLoader(Class<T> clazz, ClassLoader classLoader,
 			System.Logger logger) {
 		ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, classLoader);
-		return findTemplates(loader, e -> {
+		return findTemplates(loader, TemplateConfig.empty(), e -> {
 			logger.log(Level.ERROR, "Template provider failed to load. Skipping it.", e);
 		}).filter(t -> t.supportsType(clazz)).findFirst().orElse(null);
 	}
@@ -362,10 +390,13 @@ public final class Templates {
 	/**
 	 * Find templates by the given service loader.
 	 * @param serviceLoader a prepared service loader
+	 * @param templateConfig template config to use for instantiating templates
 	 * @param errorHandler handle {@link ServiceConfigurationError} errors.
 	 * @return lazy stream of templates
 	 */
-	public static Stream<Template<?>> findTemplates(ServiceLoader<TemplateProvider> serviceLoader,
+	public static Stream<Template<?>> findTemplates( //
+			ServiceLoader<TemplateProvider> serviceLoader, //
+			TemplateConfig templateConfig, //
 			Consumer<ServiceConfigurationError> errorHandler) {
 		return serviceLoader.stream().flatMap(p -> {
 			try {

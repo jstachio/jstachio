@@ -13,6 +13,10 @@
       <groupId>io.jstach</groupId>
       <artifactId>jstachio-spring-boot-starter-webmvc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-jmustache</artifactId>
+    </dependency>
      <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>

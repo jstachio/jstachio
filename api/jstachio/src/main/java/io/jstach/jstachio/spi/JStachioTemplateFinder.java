@@ -135,6 +135,16 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	}
 
 	/**
+	 * Creates a composite template finder from a list. If the list only has a single
+	 * element then it is returned without being wrapped.
+	 * @param templateFinders list of template finders.
+	 * @return templateFinder searching in order of {@link #order()} then the list order
+	 */
+	public static JStachioTemplateFinder of(List<? extends JStachioTemplateFinder> templateFinders) {
+		return CompositeTemplateFinder.of(templateFinders);
+	}
+
+	/**
 	 * An easier to implement template finder based on a sequence of templates.
 	 *
 	 * @author agentgt
@@ -194,6 +204,11 @@ final class DefaultTemplateFinder implements JStachioTemplateFinder {
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
 		return Templates.findTemplate(modelType, config);
+	}
+
+	@Override
+	public @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+		return Templates.findTemplateOrNull(modelType, config);
 	}
 
 	@Override
@@ -290,9 +305,9 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 
 final class CompositeTemplateFinder implements JStachioTemplateFinder {
 
-	private final List<JStachioTemplateFinder> finders;
+	private final Iterable<? extends JStachioTemplateFinder> finders;
 
-	private CompositeTemplateFinder(List<JStachioTemplateFinder> finders) {
+	private CompositeTemplateFinder(Iterable<? extends JStachioTemplateFinder> finders) {
 		super();
 		this.finders = finders;
 	}
@@ -316,6 +331,16 @@ final class CompositeTemplateFinder implements JStachioTemplateFinder {
 			}
 		}
 		throw new TemplateNotFoundException(modelType);
+	}
+
+	@Override
+	public boolean supportsType(Class<?> modelType) {
+		for (var f : finders) {
+			var b = f.supportsType(modelType);
+			if (b)
+				return true;
+		}
+		return false;
 	}
 
 }

@@ -3,10 +3,10 @@
  * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-example</a>.
  * 
  * @author agentgt
+ * @author dsyer
  */
 module io.jstach.opt.spring.boot.webmvc {
 	requires transitive io.jstach.opt.spring.webmvc;
-	requires transitive io.jstach.opt.jmustache;
 
 	requires static spring.jcl;
 	requires transitive jakarta.servlet;
