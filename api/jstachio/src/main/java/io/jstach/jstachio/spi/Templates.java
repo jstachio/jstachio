@@ -354,21 +354,28 @@ public final class Templates {
 	private static <T> @Nullable Template<?> templateByServiceLoader(Class<T> clazz, ClassLoader classLoader,
 			System.Logger logger) {
 		ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, classLoader);
-		var it = loader.iterator();
-		while (it.hasNext()) {
+		return findTemplates(loader, e -> {
+			logger.log(Level.ERROR, "Template provider failed to load. Skipping it.", e);
+		}).filter(t -> t.supportsType(clazz)).findFirst().orElse(null);
+	}
+
+	/**
+	 * Find templates by the given service loader.
+	 * @param serviceLoader a prepared service loader
+	 * @param errorHandler handle {@link ServiceConfigurationError} errors.
+	 * @return lazy stream of templates
+	 */
+	public static Stream<Template<?>> findTemplates(ServiceLoader<TemplateProvider> serviceLoader,
+			Consumer<ServiceConfigurationError> errorHandler) {
+		return serviceLoader.stream().flatMap(p -> {
 			try {
-				var templateProvider = it.next();
-				for (var t : templateProvider.provideTemplates()) {
-					if (t.supportsType(clazz)) {
-						return t;
-					}
-				}
+				return p.get().provideTemplates().stream();
 			}
 			catch (ServiceConfigurationError e) {
-				logger.log(Level.ERROR, "Template provider failed to load. Skipping it.", e);
+				errorHandler.accept(e);
 			}
-		}
-		return null;
+			return Stream.empty();
+		});
 	}
 
 	private static List<ClassLoader> collectClassLoaders(@Nullable ClassLoader classLoader) {

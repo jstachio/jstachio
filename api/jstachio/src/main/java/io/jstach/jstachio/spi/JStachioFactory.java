@@ -68,13 +68,17 @@ public final class JStachioFactory {
 		}
 
 		private static Holder of() {
-			Iterable<JStachioExtension> it = ServiceLoader.load(JStachioExtension.class);
-			return new Holder(JStachioExtensions.of(it));
+			return new Holder(JStachioExtensions.of());
 		}
 
 		@Override
 		public JStachioExtensions extensions() {
 			return this.extensions;
+		}
+
+		@Override
+		public String toString() {
+			return "ServiceLoaderJStachio";
 		}
 
 	}

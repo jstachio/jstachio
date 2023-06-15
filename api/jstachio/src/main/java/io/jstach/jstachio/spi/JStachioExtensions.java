@@ -48,6 +48,16 @@ public interface JStachioExtensions {
 	}
 
 	/**
+	 * Resolves extensions from the {@link ServiceLoader} with {@link JStachioExtension}
+	 * as the SPI.
+	 * @return jstachio extensions found by the ServiceLoader
+	 */
+	public static JStachioExtensions of() {
+		Iterable<JStachioExtension> it = ServiceLoader.load(JStachioExtension.class);
+		return of(it);
+	}
+
+	/**
 	 * Composite Config where the first config that returns a nonnull for
 	 * {@link JStachioConfig#getProperty(String)} is used.
 	 * @return config
