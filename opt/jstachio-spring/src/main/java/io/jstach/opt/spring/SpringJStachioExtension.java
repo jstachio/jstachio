@@ -3,10 +3,11 @@ package io.jstach.opt.spring;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 
 import io.jstach.jstachio.Template;
-import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioExtensionProvider;
 import io.jstach.jstachio.spi.JStachioTemplateFinder;
@@ -22,9 +23,29 @@ import io.jstach.jstachio.spi.JStachioTemplateFinder;
  */
 public class SpringJStachioExtension implements JStachioExtensionProvider {
 
-	private final Environment environment;
+	private final JStachioConfig config;
 
-	private final List<Template<?>> templates;
+	private final JStachioTemplateFinder templateFinder;
+
+	/**
+	 * Constructor for injection
+	 * @param config jstachio config see {@link #config(PropertyResolver)}
+	 * @param templateFinder template finder to use
+	 */
+	public SpringJStachioExtension(JStachioConfig config, JStachioTemplateFinder templateFinder) {
+		super();
+		this.config = config;
+		this.templateFinder = templateFinder;
+	}
+
+	/**
+	 * Creates a JStachio config from a property resolver (usually {@link Environment}).
+	 * @param propertyResolver wrapper property resolver
+	 * @return config
+	 */
+	public static JStachioConfig config(@SuppressWarnings("exports") PropertyResolver propertyResolver) {
+		return new SpringJStachioConfig(propertyResolver);
+	}
 
 	/**
 	 * Constructor for injection
@@ -32,9 +53,8 @@ public class SpringJStachioExtension implements JStachioExtensionProvider {
 	 * @param templates templates found via spring
 	 */
 	public SpringJStachioExtension(@SuppressWarnings("exports") Environment environment, List<Template<?>> templates) {
-		super();
-		this.environment = environment;
-		this.templates = templates;
+		this(config(environment),
+				JStachioTemplateFinder.cachedTemplateFinder(JStachioTemplateFinder.of(templates, -1)));
 	}
 
 	/**
@@ -42,7 +62,7 @@ public class SpringJStachioExtension implements JStachioExtensionProvider {
 	 */
 	@Override
 	public JStachioConfig provideConfig() {
-		return prop -> environment.getProperty(prop);
+		return this.config;
 	}
 
 	/**
@@ -51,31 +71,22 @@ public class SpringJStachioExtension implements JStachioExtensionProvider {
 	 */
 	@Override
 	public JStachioTemplateFinder provideTemplateFinder() {
+		return this.templateFinder;
+	}
 
-		var wiredTemplates = new JStachioTemplateFinder() {
+	private static final class SpringJStachioConfig implements JStachioConfig {
 
-			@Override
-			public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
-				for (var t : templates) {
-					if (t.supportsType(modelType)) {
-						return t;
-					}
-				}
-				throw new RuntimeException("template not found for type: " + modelType);
-			}
+		private final PropertyResolver propertyResolver;
 
-			@Override
-			public boolean supportsType(Class<?> modelType) {
-				for (var t : templates) {
-					if (t.supportsType(modelType)) {
-						return true;
-					}
-				}
-				return false;
-			}
+		SpringJStachioConfig(PropertyResolver propertyResolver) {
+			super();
+			this.propertyResolver = propertyResolver;
+		}
 
-		};
-		return wiredTemplates;
+		@Override
+		public @Nullable String getProperty(String key) {
+			return propertyResolver.getProperty(key);
+		}
 
 	}
 
