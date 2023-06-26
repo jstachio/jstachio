@@ -30,9 +30,9 @@ import io.jstach.opt.spring.SpringJStachioExtension;
  * Configures JStachio Spring style.
  */
 @Configuration
-public class SpringTemplateConfig {
+public class JStachioConfiguration {
 
-	private static final Log logger = LogFactory.getLog(SpringTemplateConfig.class);
+	private static final Log logger = LogFactory.getLog(JStachioConfiguration.class);
 
 	private final ConfigurableListableBeanFactory beanFactory;
 
@@ -40,7 +40,7 @@ public class SpringTemplateConfig {
 	 * Do nothing constructor to placate jdk 18 javadoc
 	 * @param beanFactory used to register the serviceloader found templates
 	 */
-	public SpringTemplateConfig(@SuppressWarnings("exports") ConfigurableListableBeanFactory beanFactory) {
+	public JStachioConfiguration(@SuppressWarnings("exports") ConfigurableListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
