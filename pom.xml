@@ -14,7 +14,7 @@
   <properties>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <metainf-services.version>1.9</metainf-services.version>
+    <metainf-services.version>1.11</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <project.build.outputTimestamp>1686078403</project.build.outputTimestamp>
     <ant.tstamp.now>${project.build.outputTimestamp}</ant.tstamp.now>
