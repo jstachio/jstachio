@@ -44,8 +44,8 @@ public interface DefaultFormatter extends Formatter {
 	 * {@inheritDoc} Will throw an NPE if parameter s is <code>null</code>.
 	 */
 	@Override
-	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, String s)
-			throws E {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path,
+			@Nullable String s) throws E {
 		if (s == null) {
 			throw new NullPointerException("null at: '" + path + "'");
 		}

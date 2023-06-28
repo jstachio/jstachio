@@ -23,13 +23,14 @@ enum HtmlEscaper implements Escaper {
 
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
-		s = s == null ? "null" : s;
 		append(a, s, 0, s.length());
 	}
 
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E {
-		csq = csq == null ? "null" : csq;
+		/*
+		 * Per the contract of appenders csq cannot be null.
+		 */
 		for (int i = start; i < end; i++) {
 			char c = csq.charAt(i);
 			switch (c) {

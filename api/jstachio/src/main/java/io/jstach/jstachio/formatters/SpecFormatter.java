@@ -39,8 +39,8 @@ public interface SpecFormatter extends Formatter {
 	 * if a String is null then nothing will be rendered per the mustache spec. </strong>.
 	 */
 	@Override
-	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, String s)
-			throws E {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path,
+			@Nullable String s) throws E {
 		if (s != null) {
 			downstream.append(a, s);
 		}

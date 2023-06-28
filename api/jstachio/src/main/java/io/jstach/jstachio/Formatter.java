@@ -35,6 +35,9 @@ import io.jstach.jstache.JStacheFormatterTypes;
  * <li>Set {@link JStacheConfig#formatter()} to the class that has the
  * {@link JStacheFormatter}.</li>
  * </ol>
+ * <em>It is the formatters responsibility to handle <code>null</code> for
+ * {@linkplain Formatter#format(Appender, Output, String, Class, Object) nullable format
+ * calls} as the downstream appender do not allow <code>null</code>. </em>
  *
  * @apiNote Although the formatter has access to the raw {@link Output} the formatter
  * should never use it directly and simply pass it on to the downstream appender.
@@ -208,22 +211,24 @@ public interface Formatter extends Function<@Nullable Object, String> {
 
 	/**
 	 * Formats the object and then sends the results to the downstream appender. The
-	 * default implementation passes natives through to the downstream appender.
+	 * default implementation calls
+	 * {@link #format(Appender, Output, String, Class, Object)} and it is generally
+	 * recommend you override for performance.
 	 *
 	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
 	 * formatter should never use it directly and simply pass it on to the downstream
-	 * appender.
+	 * appender. Also take note that the string value maybe null!
 	 * @param <A> the appendable type
 	 * @param <E> the appender exception type
 	 * @param downstream the downstream appender to be used instead of the appendable
 	 * directly
 	 * @param a the appendable to be passed to the appender
 	 * @param path the dotted mustache like path
-	 * @param s String
+	 * @param s String value which maybe <code>null</code>.
 	 * @throws E if the appender or appendable throws an exception
 	 */
-	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, String s)
-			throws E {
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path,
+			@Nullable String s) throws E {
 		format(downstream, a, path, String.class, s);
 	}
 
