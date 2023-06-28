@@ -232,6 +232,12 @@ class TemplateClassWriter implements LoggingSupplier {
 		String _EncodedOutput = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
 		String _A = "<A extends " + _Output + "<E>, E extends Exception>";
 
+		String templateFormatterExp = GeneratedMethod.templateFormatter.gen(generatedMethods) ? "this.formatter"
+				: "templateFormatter()";
+		String templateEscaperExp = GeneratedMethod.templateEscaper.gen(generatedMethods) ? "this.escaper"
+				: "templateEscaper()";
+		String templateAppenderExp = "templateAppender()";
+
 		println("package " + packageName + ";");
 		println("");
 		println("/**");
@@ -359,7 +365,7 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("     * @throws IOException if there is an error writing to the appendable");
 			println("     */");
 			println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
-			println("        execute(model, a, templateFormatter(), templateEscaper());");
+			println("        execute(model, a, " + templateFormatterExp + ", " + templateEscaperExp + ");");
 			println("    }");
 			println("");
 		}
@@ -394,8 +400,8 @@ class TemplateClassWriter implements LoggingSupplier {
 		if (jstachio && GeneratedMethod.execute.gen(generatedMethods)) {
 			println("    @Override");
 			println("    public StringBuilder execute(" + className + " model, StringBuilder sb) {");
-			println("        render(model, " + _Output
-					+ ".of(sb), templateFormatter(), templateEscaper(), templateAppender());");
+			println("        render(model, " + _Output + ".of(sb), " + templateFormatterExp + ", " + templateEscaperExp
+					+ ", " + templateAppenderExp + ");");
 			println("        return sb;");
 			println("    }");
 			println("");
@@ -406,7 +412,8 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("    public " + _A + " A execute(" //
 					+ idt + className + " model, " //
 					+ idt + "A" + " a) throws E {");
-			println("        render(model, a, formatter, escaper, templateAppender());");
+			println("        render(model, a, " + templateFormatterExp + ", " + templateEscaperExp + ", "
+					+ templateAppenderExp + ");");
 			println("        return a;");
 			println("    }");
 			println("");
@@ -454,7 +461,8 @@ class TemplateClassWriter implements LoggingSupplier {
 					+ idt + className + " model, " //
 					+ idt + "A" + " outputStream" //
 					+ ") throws E {");
-			println("        encode(model, outputStream, templateFormatter(), templateEscaper(), templateAppender());");
+			println("        encode(model, outputStream, " + templateFormatterExp + ", " + templateEscaperExp + ", "
+					+ templateAppenderExp + ");");
 			println("        return outputStream;");
 			println("    }");
 			println("");
