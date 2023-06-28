@@ -1,6 +1,6 @@
 /**
- * Spring Web MVC starter for JStachio:
- * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-example</a>.
+ * Spring Boot Web MVC starter for JStachio:
+ * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-boot-starter-webmvc/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-boot-starter-webmvc</a>.
  * 
  * @author agentgt
  * @author dsyer
