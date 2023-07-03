@@ -1,8 +1,9 @@
 package io.jstach.jstachio.output;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -12,7 +13,8 @@ import java.util.Arrays;
  * mechanism.
  * <p>
  * If the buffer is to be reused {@link #close()} should be called first before it is used
- * or after every time it is used.
+ * or after every time it is used and {@link #toBuffer()} should be called to get a correct
+ * view of the internal buffer.
  * <p>
  * This is basically the same as Joobys Rockers byte buffer but as an OutputStream because
  * JStachio wants that interface.
@@ -25,7 +27,7 @@ import java.util.Arrays;
  * @author agentgt
  * @author jknack
  */
-public class ByteBufferedOutputStream extends OutputStream {
+public class ByteBufferedOutputStream extends OutputStream implements BufferedEncodedOutput {
 
 	/** Default buffer size: <code>4k</code>. */
 	public static final int BUFFER_SIZE = 4096;
@@ -42,13 +44,25 @@ public class ByteBufferedOutputStream extends OutputStream {
 
 	/** The number of valid bytes in the buffer. */
 	protected int count;
+	
+	protected final Charset charset;
 
 	/**
-	 * Creates buffered stream of given size
+	 * Creates buffered stream of given size.
 	 * @param bufferSize initial size.
 	 */
 	public ByteBufferedOutputStream(int bufferSize) {
+		this(bufferSize, StandardCharsets.UTF_8);
+	}
+	
+	/**
+	 * Creates buffered Output of given size and given charset if used as a Jstachio Output.
+	 * @param bufferSize initial size.
+	 * @param charset the charset of the output
+	 */
+	public ByteBufferedOutputStream(int bufferSize, Charset charset) {
 		this.buf = new byte[bufferSize];
+		this.charset = charset;
 	}
 
 	/**
@@ -66,6 +80,11 @@ public class ByteBufferedOutputStream extends OutputStream {
 	public void close() {
 		this.reset();
 	}
+	
+	@Override
+	public Charset charset() {
+		return this.charset;
+	}
 
 	@Override
 	public void write(byte[] bytes) {
@@ -76,12 +95,23 @@ public class ByteBufferedOutputStream extends OutputStream {
 	}
 
 	@Override
-	public void write(byte[] bytes, int off, int len) throws IOException {
+	public void write(byte[] bytes, int off, int len) {
 		ensureCapacity(count + len);
 		System.arraycopy(bytes, off, buf, count, len);
 		count += len;
 	}
 
+	@Override
+	public void append(CharSequence csq) {
+		append(csq.toString());
+	}
+	
+	@Override
+	public void append(
+			String s) {
+		write(s.getBytes(this.charset));
+	}
+	
 	/**
 	 * How many bytes have been written so far.
 	 * @return 0 if empty, otherwise how many bytes so far
@@ -99,9 +129,19 @@ public class ByteBufferedOutputStream extends OutputStream {
 		System.arraycopy(buf, 0, array, 0, count);
 		return array;
 	}
+	
+	/**
+	 * Gets the internal array. Do not use without calling {@link #size()} as
+	 * the buffer is usually bigger than the content.
+	 * @return the backing byte array.
+	 */
+	public byte[] getInternalBuffer() {
+		return buf;
+	}
 
 	/**
-	 * Get a view of the byte buffer.
+	 * Get a view of the internal byte buffer.
+	 * <strong>Care must be taken if this instance is to be reused in multithreaded environment!</strong> 
 	 * @return Byte buffer.
 	 */
 	public ByteBuffer toBuffer() {
@@ -144,5 +184,6 @@ public class ByteBufferedOutputStream extends OutputStream {
 	public void write(int b) {
 		throw new UnsupportedOperationException("expecting only write(byte[])");
 	}
+
 
 }
