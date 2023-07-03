@@ -42,18 +42,48 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	/**
 	 * The default media type is "<code>text/html; charset=UTF-8</code>".
 	 */
-	static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
+	protected static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
 
 	private final JStachio jstachio;
+	
+	protected final int bufferSize;
+	
+	private final MediaType mediaType;
 
 	/**
 	 * Create http converter from jstachio
 	 * @param jstachio an instance usually created by spring
 	 */
 	public JStachioHttpMessageConverter(JStachio jstachio) {
-		super(StandardCharsets.UTF_8, MediaType.TEXT_HTML, MediaType.ALL);
-		this.jstachio = jstachio;
+		this(jstachio, ByteBufferedOutputStream.BUFFER_SIZE);
 	}
+	
+	
+	public JStachioHttpMessageConverter(
+			JStachio jstachio,
+			int bufferSize) {
+		this(jstachio, bufferSize, DEFAULT_MEDIA_TYPE);
+		
+	}
+
+	protected JStachioHttpMessageConverter(
+			JStachio jstachio,
+			int bufferSize,
+			MediaType mediaType) {
+		super(resolveCharset(mediaType), mediaType, MediaType.ALL);
+		this.jstachio = jstachio;
+		this.bufferSize = bufferSize;
+		this.mediaType = mediaType;
+	}
+
+	private static Charset resolveCharset(MediaType mediaType) {
+		var charset = mediaType.getCharset();
+		if (charset == null) {
+			return StandardCharsets.UTF_8;
+		}
+		return charset;
+	}
+
 
 	@Override
 	protected boolean supports(Class<?> clazz) {
@@ -82,9 +112,9 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 		 * TODO we should explore making this configurable or other options as this
 		 * requires copying all the data.
 		 */
-		try (ByteBufferedOutputStream buffer = new ByteBufferedOutputStream()) {
+		try (ByteBufferedOutputStream buffer = new ByteBufferedOutputStream(bufferSize, charset())) {
 			// The try - with is not necessary but keeps linters happy
-			jstachio.write(t, Output.of(buffer, charset()));
+			jstachio.write(t, buffer);
 			int size = buffer.size();
 			var headers = outputMessage.getHeaders();
 			headers.setContentLength(size);
@@ -92,12 +122,12 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 			 * We have to override the content type here because if we do not Spring
 			 * appears to default to application/json if the Accept does not include HTML.
 			 */
-			headers.setContentType(DEFAULT_MEDIA_TYPE);
+			headers.setContentType(mediaType);
 			/*
 			 * buffer.toByteArray copies which we do not want so we use toBuffer which
 			 * does not
 			 */
-			var bytes = buffer.toBuffer().array();
+			var bytes = buffer.getInternalBuffer();
 			var body = outputMessage.getBody();
 			body.write(bytes, 0, size);
 		}

@@ -34,24 +34,12 @@ class ByteCountOutput implements Output.EncodedOutput<IOException> {
 		size += len;
 		outputStream.write(bytes, off, len);
 	}
-
+	
 	@Override
-	public void append(char c) throws IOException {
-		var bytes = ("" + c).getBytes(this.charset);
-		size += bytes.length;
-		outputStream.write(bytes);
-	}
-
-	@Override
-	public void append(CharSequence csq) throws IOException {
-		var bytes = csq.toString().getBytes(this.charset);
-		size += bytes.length;
-		outputStream.write(bytes);
-	}
-
-	@Override
-	public void append(CharSequence csq, int start, int end) throws IOException {
-		var bytes = csq.subSequence(start, end).toString().getBytes(this.charset);
+		public void append(
+				String s)
+				throws IOException {
+		var bytes = s.getBytes(this.charset);
 		size += bytes.length;
 		outputStream.write(bytes);
 	}
@@ -63,6 +51,13 @@ class ByteCountOutput implements Output.EncodedOutput<IOException> {
 
 	public long size() {
 		return size;
+	}
+
+	@Override
+	public void append(
+			CharSequence s)
+			throws IOException {
+		append(s.toString());
 	}
 
 }

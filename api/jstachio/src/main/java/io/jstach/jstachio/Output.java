@@ -24,6 +24,17 @@ public interface Output<E extends Exception> {
 	 * @apiNote Implementations are required to implement this method.
 	 */
 	public void append(CharSequence s) throws E;
+	
+	/**
+	 * Analogous to {@link Appendable#append(CharSequence)}
+	 * which by default treats the String as a CharSequence.
+	 * @param s unlike appendable always non null.
+	 * @throws E if an error happens while writting to the appendable
+	 * @apiNote Implementations are required to implement this method.
+	 */
+	default void append(String s) throws E {
+		append((CharSequence) s);
+	}
 
 	/**
 	 * Analogous to {@link Appendable#append(CharSequence, int, int)}.
@@ -169,17 +180,19 @@ public interface Output<E extends Exception> {
 
 		@Override
 		default void append(char c) throws E {
-			write(("" + c).getBytes(charset()));
+			append(String.valueOf(c));
 		}
-
+		
 		@Override
-		default void append(CharSequence csq) throws E {
-			write(csq.toString().getBytes(charset()));
+		default void append(
+				String s)
+				throws E {
+			write(s.getBytes(charset()));
 		}
 
 		@Override
 		default void append(CharSequence csq, int start, int end) throws E {
-			write(csq.subSequence(start, end).toString().getBytes(charset()));
+			append(csq.subSequence(start, end).toString());
 		}
 
 		/**
@@ -221,6 +234,11 @@ public interface Output<E extends Exception> {
 
 		@Override
 		public void append(CharSequence s) {
+			buffer.append(s);
+		}
+		
+		@Override
+		public void append(String s) {
 			buffer.append(s);
 		}
 
@@ -388,7 +406,14 @@ class OutputStreamOutput implements Output.EncodedOutput<IOException> {
 
 	@Override
 	public void append(CharSequence csq) throws IOException {
-		outputStream.write(csq.toString().getBytes(this.charset));
+		append(csq.toString());
+	}
+	
+	@Override
+	public void append(
+			String s)
+			throws IOException {
+		outputStream.write(s.getBytes(charset));
 	}
 
 	@Override

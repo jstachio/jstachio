@@ -22,11 +22,17 @@ class DataBufferOutput implements EncodedOutput<RuntimeException> {
 	public void append(CharSequence csq) throws RuntimeException {
 		buffer.write(csq, charset);
 	}
+	
+	@Override
+	public void append(
+			String s)
+			throws RuntimeException {
+		buffer.write(s, charset);
+	}
 
 	@Override
 	public void write(byte[] bytes) throws RuntimeException {
 		buffer.write(bytes);
-
 	}
 
 	@Override
