@@ -24,10 +24,10 @@ public interface Output<E extends Exception> {
 	 * @apiNote Implementations are required to implement this method.
 	 */
 	public void append(CharSequence s) throws E;
-	
+
 	/**
-	 * Analogous to {@link Appendable#append(CharSequence)}
-	 * which by default treats the String as a CharSequence.
+	 * Analogous to {@link Appendable#append(CharSequence)} which by default treats the
+	 * String as a CharSequence.
 	 * @param s unlike appendable always non null.
 	 * @throws E if an error happens while writting to the appendable
 	 * @apiNote Implementations are required to implement this method.
@@ -169,24 +169,30 @@ public interface Output<E extends Exception> {
 
 		/**
 		 * Analogous to {@link OutputStream#write(byte[], int, int)}. Generated templates
-		 * usually do not call this method as great care as to be taken to preserve the
-		 * encoding. It is only provided in the case of future found optimizations.
+		 * do not call this method as great care as to be taken to preserve the encoding.
+		 * It is only provided in the case of future found optimizations and is not
+		 * currently required.
+		 * <p>
+		 * The default implementation creates an array copies the data and then calls
+		 * {@link #write(byte[])}.
 		 * @param bytes already encoded bytes
 		 * @param off offset
 		 * @param len length to copy
 		 * @throws E if an error happens
 		 */
-		public void write(byte[] bytes, int off, int len) throws E;
+		default void write(byte[] bytes, int off, int len) throws E {
+			byte[] dest = new byte[len];
+			System.arraycopy(bytes, off, dest, 0, len);
+			write(dest);
+		}
 
 		@Override
 		default void append(char c) throws E {
 			append(String.valueOf(c));
 		}
-		
+
 		@Override
-		default void append(
-				String s)
-				throws E {
+		default void append(String s) throws E {
 			write(s.getBytes(charset()));
 		}
 
@@ -236,7 +242,7 @@ public interface Output<E extends Exception> {
 		public void append(CharSequence s) {
 			buffer.append(s);
 		}
-		
+
 		@Override
 		public void append(String s) {
 			buffer.append(s);
@@ -408,11 +414,9 @@ class OutputStreamOutput implements Output.EncodedOutput<IOException> {
 	public void append(CharSequence csq) throws IOException {
 		append(csq.toString());
 	}
-	
+
 	@Override
-	public void append(
-			String s)
-			throws IOException {
+	public void append(String s) throws IOException {
 		outputStream.write(s.getBytes(charset));
 	}
 

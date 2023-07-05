@@ -1,5 +1,6 @@
 package io.jstach.jstachio.output;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -13,8 +14,8 @@ import java.util.Arrays;
  * mechanism.
  * <p>
  * If the buffer is to be reused {@link #close()} should be called first before it is used
- * or after every time it is used and {@link #toBuffer()} should be called to get a correct
- * view of the internal buffer.
+ * or after every time it is used and {@link #toBuffer()} should be called to get a
+ * correct view of the internal buffer.
  * <p>
  * This is basically the same as Joobys Rockers byte buffer but as an OutputStream because
  * JStachio wants that interface.
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * @author agentgt
  * @author jknack
  */
-public class ByteBufferedOutputStream extends OutputStream implements BufferedEncodedOutput {
+public class ByteBufferedOutputStream extends OutputStream implements ByteBufferEncodedOutput {
 
 	/** Default buffer size: <code>4k</code>. */
 	public static final int BUFFER_SIZE = 4096;
@@ -44,7 +45,7 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 
 	/** The number of valid bytes in the buffer. */
 	protected int count;
-	
+
 	protected final Charset charset;
 
 	/**
@@ -54,9 +55,10 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 	public ByteBufferedOutputStream(int bufferSize) {
 		this(bufferSize, StandardCharsets.UTF_8);
 	}
-	
+
 	/**
-	 * Creates buffered Output of given size and given charset if used as a Jstachio Output.
+	 * Creates buffered Output of given size and given charset if used as a Jstachio
+	 * Output.
 	 * @param bufferSize initial size.
 	 * @param charset the charset of the output
 	 */
@@ -80,7 +82,7 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 	public void close() {
 		this.reset();
 	}
-	
+
 	@Override
 	public Charset charset() {
 		return this.charset;
@@ -102,16 +104,10 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 	}
 
 	@Override
-	public void append(CharSequence csq) {
-		append(csq.toString());
-	}
-	
-	@Override
-	public void append(
-			String s) {
+	public void append(String s) {
 		write(s.getBytes(this.charset));
 	}
-	
+
 	/**
 	 * How many bytes have been written so far.
 	 * @return 0 if empty, otherwise how many bytes so far
@@ -129,23 +125,19 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 		System.arraycopy(buf, 0, array, 0, count);
 		return array;
 	}
-	
-	/**
-	 * Gets the internal array. Do not use without calling {@link #size()} as
-	 * the buffer is usually bigger than the content.
-	 * @return the backing byte array.
-	 */
-	public byte[] getInternalBuffer() {
-		return buf;
-	}
 
 	/**
-	 * Get a view of the internal byte buffer.
-	 * <strong>Care must be taken if this instance is to be reused in multithreaded environment!</strong> 
+	 * Get a view of the internal byte buffer. <strong>Care must be taken if this instance
+	 * is to be reused in multithreaded environment!</strong>
 	 * @return Byte buffer.
 	 */
 	public ByteBuffer toBuffer() {
 		return ByteBuffer.wrap(buf, 0, count);
+	}
+
+	@Override
+	public ByteBuffer asByteBuffer() {
+		return toBuffer();
 	}
 
 	private void ensureCapacity(int minCapacity) {
@@ -185,5 +177,19 @@ public class ByteBufferedOutputStream extends OutputStream implements BufferedEn
 		throw new UnsupportedOperationException("expecting only write(byte[])");
 	}
 
+	@Override
+	public void transferTo(OutputStream stream) throws IOException {
+		stream.write(buf, 0, count);
+	}
+
+	@Override
+	public <E extends Exception> void accept(DataConsumer<E> consumer) throws E {
+		consumer.accept(buf, 0, count);
+	}
+
+	@Override
+	public boolean isReusable() {
+		return true;
+	}
 
 }
