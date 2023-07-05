@@ -14,8 +14,9 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.Output;
-import io.jstach.jstachio.output.ByteBufferedOutputStream;
+import io.jstach.jstachio.output.BufferedEncodedOutput;
+import io.jstach.jstachio.output.ByteBufferEncodedOutput;
+import io.jstach.jstachio.output.ChunkEncodedOutput;
 
 /**
  * Typesafe way to use JStachio in Spring Web.
@@ -45,9 +46,7 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	protected static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
 
 	private final JStachio jstachio;
-	
-	protected final int bufferSize;
-	
+
 	private final MediaType mediaType;
 
 	/**
@@ -55,24 +54,12 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	 * @param jstachio an instance usually created by spring
 	 */
 	public JStachioHttpMessageConverter(JStachio jstachio) {
-		this(jstachio, ByteBufferedOutputStream.BUFFER_SIZE);
-	}
-	
-	
-	public JStachioHttpMessageConverter(
-			JStachio jstachio,
-			int bufferSize) {
-		this(jstachio, bufferSize, DEFAULT_MEDIA_TYPE);
-		
+		this(jstachio, DEFAULT_MEDIA_TYPE);
 	}
 
-	protected JStachioHttpMessageConverter(
-			JStachio jstachio,
-			int bufferSize,
-			MediaType mediaType) {
+	protected JStachioHttpMessageConverter(JStachio jstachio, MediaType mediaType) {
 		super(resolveCharset(mediaType), mediaType, MediaType.ALL);
 		this.jstachio = jstachio;
-		this.bufferSize = bufferSize;
 		this.mediaType = mediaType;
 	}
 
@@ -83,7 +70,6 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 		}
 		return charset;
 	}
-
 
 	@Override
 	protected boolean supports(Class<?> clazz) {
@@ -112,7 +98,7 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 		 * TODO we should explore making this configurable or other options as this
 		 * requires copying all the data.
 		 */
-		try (ByteBufferedOutputStream buffer = new ByteBufferedOutputStream(bufferSize, charset())) {
+		try (BufferedEncodedOutput buffer = createBufferedOutput()) {
 			// The try - with is not necessary but keeps linters happy
 			jstachio.write(t, buffer);
 			int size = buffer.size();
@@ -123,14 +109,20 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 			 * appears to default to application/json if the Accept does not include HTML.
 			 */
 			headers.setContentType(mediaType);
-			/*
-			 * buffer.toByteArray copies which we do not want so we use toBuffer which
-			 * does not
-			 */
-			var bytes = buffer.getInternalBuffer();
 			var body = outputMessage.getBody();
-			body.write(bytes, 0, size);
+			buffer.transferTo(body);
 		}
+	}
+
+	/**
+	 * Create the buffered output to use when executing JStachio. The default uses a chunk
+	 * strategy instead of an array strategy.
+	 * @return the output ready for writing to.
+	 * @see ByteBufferEncodedOutput
+	 * @see ChunkEncodedOutput
+	 */
+	protected BufferedEncodedOutput createBufferedOutput() {
+		return ChunkEncodedOutput.ofByteArrays(getDefaultCharset());
 	}
 
 	protected Charset charset() {
