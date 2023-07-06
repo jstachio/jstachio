@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Maintains the encoded output in an iterable of chunks.
+ * Maintains the encoded output in an iterable of chunks of type <code>T</code> that is
+ * optimized for {@link #asReadableByteChannel()}.
  *
  * @author agentgt
  * @param <T> the chunk type
@@ -28,6 +29,13 @@ public non-sealed interface ChunkEncodedOutput<T> extends BufferedEncodedOutput 
 		return new ByteArrayChunkEncodedOutput(charset);
 	}
 
+	/**
+	 * For chunk output the buffer hint is usually the size of the largest chunk.
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int bufferSizeHint();
+
 }
 
 class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
@@ -37,6 +45,8 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 	private final Charset charset;
 
 	private int size = 0;
+
+	private int bufferSizeHint = 0;
 
 	public ByteArrayChunkEncodedOutput(Charset charset) {
 		chunks = new ArrayList<>();
@@ -50,7 +60,11 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 
 	private void addChunk(byte[] chunk) {
 		chunks.add(chunk);
-		size += chunk.length;
+		int length = chunk.length;
+		size += length;
+		if (bufferSizeHint < length) {
+			bufferSizeHint = length;
+		}
 	}
 
 	public byte[] toByteArray() {
@@ -68,6 +82,11 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 	@Override
 	public int size() {
 		return size;
+	}
+
+	@Override
+	public int bufferSizeHint() {
+		return bufferSizeHint;
 	}
 
 	@Override
