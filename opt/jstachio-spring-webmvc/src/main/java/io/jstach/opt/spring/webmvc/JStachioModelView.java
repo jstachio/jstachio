@@ -1,5 +1,7 @@
 package io.jstach.opt.spring.webmvc;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -11,6 +13,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.output.CloseableEncodedOutput;
+import io.jstach.jstachio.output.ThresholdEncodedOutput;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -47,14 +51,20 @@ public interface JStachioModelView extends View {
 		if (charset == null) {
 			charset = StandardCharsets.UTF_8;
 		}
-		try (var o = response.getOutputStream()) {
-			var bo = jstachio().write(model(), new ByteCountOutput(o, charset));
-			long length = bo.size();
-			if (length < Integer.MAX_VALUE) {
-				response.setContentLength((int) bo.size());
-			}
+		try (var o = new ServletThresholdEncodedOutput(charset, response)) {
+			jstachio().write(model(), o);
 		}
+	}
 
+	/**
+	 * Creates the output from the servlet response to use for rendering.
+	 * @param charset charset resolved from {@link #getMediaType()}
+	 * @param response servlet response
+	 * @return output that should be closed when finished
+	 */
+	@SuppressWarnings("exports")
+	default CloseableEncodedOutput<IOException> createOutput(Charset charset, HttpServletResponse response) {
+		return new ServletThresholdEncodedOutput(charset, response);
 	}
 
 	/**
@@ -131,6 +141,50 @@ public interface JStachioModelView extends View {
 				return mediaType;
 			}
 		};
+	}
+
+}
+
+class ServletThresholdEncodedOutput extends ThresholdEncodedOutput<OutputStream, IOException> {
+
+	private final HttpServletResponse response;
+
+	public ServletThresholdEncodedOutput(Charset charset, HttpServletResponse response) {
+		super(charset, calculateLimit(response));
+		this.response = response;
+	}
+
+	private static int calculateLimit(HttpServletResponse response) {
+		int limit = response.getBufferSize();
+		if (limit <= 0) {
+			/*
+			 * It is probably lying here or its a unit test.
+			 */
+			return 1024 * 32;
+		}
+		return limit;
+	}
+
+	@Override
+	protected void write(OutputStream consumer, byte[] bytes) throws IOException {
+		consumer.write(bytes);
+	}
+
+	@Override
+	protected OutputStream createConsumer(int size) throws IOException {
+		if (size > -1) {
+			response.setContentLength(size);
+			/*
+			 * It is already all in memory so we do not need a buffer.
+			 */
+			response.setBufferSize(0);
+		}
+		return response.getOutputStream();
+	}
+
+	@Override
+	protected void close(OutputStream consumer) throws IOException {
+		consumer.close();
 	}
 
 }

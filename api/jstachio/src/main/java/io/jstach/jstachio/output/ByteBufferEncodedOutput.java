@@ -6,7 +6,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
 /**
- * An encoded output optimized for producing a single {@link ByteBuffer}.
+ * An encoded output optimized for producing a single {@link ByteBuffer}. The
+ * {@link #bufferSizeHint()} is usually the size of the entire output and usually
+ * implementations of this type are {@linkplain #isReusable() reusable} with care.
  *
  * @author agentgt
  */
@@ -29,6 +31,16 @@ public non-sealed interface ByteBufferEncodedOutput extends BufferedEncodedOutpu
 	 */
 	public static ByteBufferEncodedOutput ofByteArray(Charset charset, int initialSize) {
 		return new ByteBufferedOutputStream(initialSize, charset);
+	}
+
+	/**
+	 * Calls {@link #ofByteArray(Charset, int)} with initial size of
+	 * {@value ByteBufferedOutputStream#BUFFER_SIZE}.
+	 * @param charset the expected encoding
+	 * @return buffered output
+	 */
+	public static ByteBufferEncodedOutput ofByteArray(Charset charset) {
+		return new ByteBufferedOutputStream(ByteBufferedOutputStream.BUFFER_SIZE, charset);
 	}
 
 	@Override
