@@ -114,6 +114,7 @@ public class HelloController {
 	 * @return template model pair derived from {@link Template#model(Object)}.
 	 */
 	@GetMapping(value = "/wired")
+	@ResponseBody
 	public TemplateModel wired() {
 		var model = new HelloModel("JStachioed is wired!");
 		return view.model(model);
