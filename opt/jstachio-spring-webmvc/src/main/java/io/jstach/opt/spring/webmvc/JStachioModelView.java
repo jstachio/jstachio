@@ -145,7 +145,7 @@ public interface JStachioModelView extends View {
 
 }
 
-class ServletThresholdEncodedOutput extends ThresholdEncodedOutput<OutputStream, IOException> {
+class ServletThresholdEncodedOutput extends ThresholdEncodedOutput.OutputStreamThresholdEncodedOutput {
 
 	private final HttpServletResponse response;
 
@@ -166,11 +166,6 @@ class ServletThresholdEncodedOutput extends ThresholdEncodedOutput<OutputStream,
 	}
 
 	@Override
-	protected void write(OutputStream consumer, byte[] bytes) throws IOException {
-		consumer.write(bytes);
-	}
-
-	@Override
 	protected OutputStream createConsumer(int size) throws IOException {
 		if (size > -1) {
 			response.setContentLength(size);
@@ -180,11 +175,6 @@ class ServletThresholdEncodedOutput extends ThresholdEncodedOutput<OutputStream,
 			response.setBufferSize(0);
 		}
 		return response.getOutputStream();
-	}
-
-	@Override
-	protected void close(OutputStream consumer) throws IOException {
-		consumer.close();
 	}
 
 }

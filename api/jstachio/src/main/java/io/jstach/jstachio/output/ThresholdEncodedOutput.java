@@ -1,5 +1,7 @@
 package io.jstach.jstachio.output;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,12 +9,14 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This abstract output will limit buffering and then fallback to writing to the
- * downstream output type of <code>T</code> once limit is exceeded. If the limit is not
- * exceed then the data will be replayed and written to when {@linkplain #close() closed}.
+ * This abstract output will {@linkplain #limit limit} buffering by byte count and then
+ * fallback to writing to the downstream output type of <code>T</code> once limit is
+ * exceeded. If the limit is not exceeded then the buffered data will be replayed and
+ * written to when {@linkplain #close() closed}.
  * <p>
- * The output is lazily created once and only once by calling
- * {@link #createConsumer(int)}.
+ * The output <code>T</code> is lazily created once and only once by calling
+ * {@link #createConsumer(int)} and the total size buffered will be passed if under limit.
+ * If the limit is exceeded than the size passed will be <code>-1</code>.
  * <p>
  * <strong>For this implementation to work {@link #close()} must be called and thus a
  * try-with-resource is recommended regardless if the downstream consumer needs to be
@@ -25,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <T> the downstream output type
  * @param <E> the exception type that can be thrown while writing to the output type
  * @apiNote This class is not thread safe.
+ * @see OutputStreamThresholdEncodedOutput
  */
 public abstract class ThresholdEncodedOutput<T, E extends Exception> implements CloseableEncodedOutput<E> {
 
@@ -34,6 +39,9 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 
 	private int size = 0;
 
+	/**
+	 * The maximum number of bytes to buffer.
+	 */
 	protected final int limit;
 
 	private @Nullable T consumer;
@@ -45,7 +53,7 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	 * buffered amount of data is not guaranteed to be exactly at the limit even if the
 	 * total output is greater than the limit.
 	 */
-	public ThresholdEncodedOutput(Charset charset, int limit) {
+	protected ThresholdEncodedOutput(Charset charset, int limit) {
 		chunks = new ArrayList<>();
 		this.charset = charset;
 		this.limit = limit;
@@ -139,6 +147,32 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	@Override
 	public void append(String s) throws E {
 		write(s.getBytes(charset));
+	}
+
+	/**
+	 * An OutputStream backed buffer limited encoded output. This partial implementation
+	 * will cascade {@link #close()} to the OutputStream similar to OutputStream
+	 * decorators in the JDK.
+	 *
+	 * @author agentgt
+	 */
+	public abstract static class OutputStreamThresholdEncodedOutput
+			extends ThresholdEncodedOutput<OutputStream, IOException> {
+
+		protected OutputStreamThresholdEncodedOutput(Charset charset, int limit) {
+			super(charset, limit);
+		}
+
+		@Override
+		protected void write(OutputStream consumer, byte[] bytes) throws IOException {
+			consumer.write(bytes);
+		}
+
+		@Override
+		protected void close(OutputStream consumer) throws IOException {
+			consumer.close();
+		}
+
 	}
 
 }

@@ -95,7 +95,7 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 	}
 
 	@Override
-	public <E extends Exception> void accept(DataConsumer<E> consumer) throws E {
+	public <E extends Exception> void accept(OutputConsumer<E> consumer) throws E {
 		for (byte[] chunk : chunks) {
 			consumer.accept(chunk);
 		}
