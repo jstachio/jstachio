@@ -183,7 +183,7 @@ public class ByteBufferedOutputStream extends OutputStream implements ByteBuffer
 	}
 
 	@Override
-	public <E extends Exception> void accept(DataConsumer<E> consumer) throws E {
+	public <E extends Exception> void accept(OutputConsumer<E> consumer) throws E {
 		consumer.accept(buf, 0, count);
 	}
 

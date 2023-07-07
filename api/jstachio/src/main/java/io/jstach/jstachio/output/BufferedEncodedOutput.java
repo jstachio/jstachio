@@ -54,56 +54,6 @@ public sealed interface BufferedEncodedOutput
 		extends CloseableEncodedOutput<RuntimeException>permits ChunkEncodedOutput, ByteBufferEncodedOutput {
 
 	/**
-	 * An OutputStream like callback.
-	 *
-	 * @param <E> exception that could be thrown while accepting byte data.
-	 */
-	@FunctionalInterface
-	public interface DataConsumer<E extends Exception> extends AutoCloseable {
-
-		/**
-		 * Convenience method that will call the real accept.
-		 * @param data array to be fully copied
-		 * @throws E if consumer has an error
-		 */
-		default void accept(byte[] data) throws E {
-			accept(data, 0, data.length);
-		}
-
-		/**
-		 * Analagous to {@link OutputStream#write(byte[], int, int)}.
-		 * @param data data
-		 * @param offset offset
-		 * @param length length
-		 * @throws E if the consumer as an error
-		 */
-		public void accept(byte[] data, int offset, int length) throws E;
-
-		@Override
-		default void close() throws E {
-		}
-
-		// /**
-		// * Callback to supply a data consumer
-		// * @author agent
-		// *
-		// * @param <E> the error that can be thrown while getting the consumer or using
-		// the consumer.
-		// */
-		// @FunctionalInterface
-		// interface Supplier<E extends Exception> {
-		// /**
-		// * Analagous to Supplier.get.
-		// * @param the buffer size if known or -1 if not known.
-		// * @return the data consumer
-		// * @throws E error thrown while getting the supplier
-		// */
-		// DataConsumer<E> get(int bufferSize) throws E;
-		// }
-
-	}
-
-	/**
 	 * Total size in number of bytes of the output.
 	 * @return size
 	 * @see #bufferSizeHint()
@@ -131,7 +81,7 @@ public sealed interface BufferedEncodedOutput
 	 * @apiNote For nonblocking {@link #asReadableByteChannel()} is generally accepted as
 	 * the better aproach as it is a pull model.
 	 */
-	public <E extends Exception> void accept(DataConsumer<E> consumer) throws E;
+	public <E extends Exception> void accept(OutputConsumer<E> consumer) throws E;
 
 	/**
 	 * The recommend buffer size to use for extracting with
@@ -160,7 +110,7 @@ public sealed interface BufferedEncodedOutput
 	default byte[] toByteArray() {
 		int size = size();
 		byte[] result = new byte[size];
-		DataConsumer<RuntimeException> consumer = new DataConsumer<RuntimeException>() {
+		OutputConsumer<RuntimeException> consumer = new OutputConsumer<RuntimeException>() {
 			int index = 0;
 
 			@Override
