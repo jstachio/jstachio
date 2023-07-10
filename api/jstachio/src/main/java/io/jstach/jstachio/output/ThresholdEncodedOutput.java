@@ -10,9 +10,13 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This abstract output will {@linkplain #limit limit} buffering by byte count and then
- * fallback to writing to the downstream output type of <code>T</code> once limit is
+ * fallback to pushing to the downstream output type of <code>T</code> once limit is
  * exceeded. If the limit is not exceeded then the buffered data will be replayed and
- * written to when {@linkplain #close() closed}.
+ * pushed when {@linkplain #close() closed}. <em>Consequently this output strategy is a
+ * better fit for integration of blocking APIs such as Servlet based frameworks where the
+ * data is pushed instead of pulled. If pulling is more desired (non blocking code
+ * generally prefers a pull approach) than {@link BufferedEncodedOutput} is a better fit
+ * but requires the entire output be buffered.</em>
  * <p>
  * The output <code>T</code> is lazily created once and only once by calling
  * {@link #createConsumer(int)} and the total size buffered will be passed if under limit.
@@ -24,6 +28,43 @@ import org.eclipse.jdt.annotation.Nullable;
  * <p>
  * The total buffered amount of data is not guaranteed to be exactly at the limit even if
  * the total output is greater than the limit.
+ * <p>
+ * The advantages to letting this implementation do the buffering instead of the
+ * downstream framework is saving memory in that the pre-encoded parts of the template are
+ * just pointers and are not copied multiple times. Since this output instance will be
+ * doing the buffering it is important to minimize downstream buffering by letting the
+ * framework know that it does not need to buffer.
+ *
+ * <h2>Example for Servlet output:</h2> <pre><code class="language-java">
+ * class ServletThresholdEncodedOutput extends ThresholdEncodedOutput.OutputStreamThresholdEncodedOutput {
+ *
+ *     private final HttpServletResponse response;
+ *
+ *     public ServletThresholdEncodedOutput(Charset charset, HttpServletResponse response) {
+ *         super(charset, calculateLimit(response));
+ *         this.response = response;
+ *     }
+ *
+ *     private static int calculateLimit(HttpServletResponse response) {
+ *         int limit = response.getBufferSize();
+ *         if (limit &lt;= 0) {
+ *             return 1024 * 32;
+ *         }
+ *         return limit;
+ *     }
+ *
+ *     &#64;Override
+ *     protected OutputStream createConsumer(int size) throws IOException {
+ *         if (size > -1) {
+ *             response.setContentLength(size);
+ *              // It is already all in memory so we do not need a buffer.
+ *             response.setBufferSize(0);
+ *         }
+ *         return response.getOutputStream();
+ *     }
+ *
+ * }
+ * </code> </pre>
  *
  * @author agentgt
  * @param <T> the downstream output type
@@ -63,6 +104,7 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	 * Writes to a consumer.
 	 * @param consumer the consumer created from {@link #createConsumer(int)}.
 	 * @param bytes data to be written
+	 * @throws E if an error happens while using the consumer.
 	 */
 	protected abstract void write(T consumer, byte[] bytes) throws E;
 
@@ -120,6 +162,12 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 		return charset;
 	}
 
+	/**
+	 * If the limit is not exceeded then the buffered data will be replayed and pushed
+	 * when closed. Regardless {@link #close(Object)} will be called on the output like
+	 * object.
+	 * @throws E if an error happens while creating or closing the downstream output
+	 */
 	@Override
 	public void close() throws E {
 		var c = this.consumer;
@@ -159,6 +207,13 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	public abstract static class OutputStreamThresholdEncodedOutput
 			extends ThresholdEncodedOutput<OutputStream, IOException> {
 
+		/**
+		 * Create with charset and limit.
+		 * @param charset the encoding to use.
+		 * @param limit the amount of total bytes to limit buffering however the total
+		 * buffered amount of data is not guaranteed to be exactly at the limit even if
+		 * the total output is greater than the limit.
+		 */
 		protected OutputStreamThresholdEncodedOutput(Charset charset, int limit) {
 			super(charset, limit);
 		}

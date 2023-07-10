@@ -1,9 +1,9 @@
 package io.jstach.opt.spring.web;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -14,9 +14,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.output.BufferedEncodedOutput;
 import io.jstach.jstachio.output.ByteBufferEncodedOutput;
 import io.jstach.jstachio.output.ChunkEncodedOutput;
+import io.jstach.jstachio.output.CloseableEncodedOutput;
+import io.jstach.jstachio.output.ThresholdEncodedOutput;
 
 /**
  * Typesafe way to use JStachio in Spring Web.
@@ -45,22 +46,38 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	 */
 	protected static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
 
+	/**
+	 * The default buffer limit before bailing on trying to set
+	 * <code>Content-Length</code>.
+	 */
+	protected static final int DEFAULT_BUFFER_LIMIT = 1024 * 512;
+
 	private final JStachio jstachio;
 
 	private final MediaType mediaType;
+
+	private final int bufferLimit;
 
 	/**
 	 * Create http converter from jstachio
 	 * @param jstachio an instance usually created by spring
 	 */
 	public JStachioHttpMessageConverter(JStachio jstachio) {
-		this(jstachio, DEFAULT_MEDIA_TYPE);
+		this(jstachio, DEFAULT_MEDIA_TYPE, DEFAULT_BUFFER_LIMIT);
 	}
 
-	protected JStachioHttpMessageConverter(JStachio jstachio, MediaType mediaType) {
+	/**
+	 * Creates a message converter with media type and buffer limit.
+	 * @param jstachio an instance usually created by spring
+	 * @param mediaType used to set ContentType
+	 * @param bufferLimit buffer limit before bailing on trying to set
+	 * <code>Content-Length</code>.
+	 */
+	protected JStachioHttpMessageConverter(JStachio jstachio, MediaType mediaType, int bufferLimit) {
 		super(resolveCharset(mediaType), mediaType, MediaType.ALL);
 		this.jstachio = jstachio;
 		this.mediaType = mediaType;
+		this.bufferLimit = bufferLimit;
 	}
 
 	private static Charset resolveCharset(MediaType mediaType) {
@@ -91,42 +108,54 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	@Override
 	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
+
 		/*
-		 * If we just write directly to the body we will get Transfer-Encoding: chunked
-		 * which is almost never desired for HTML.
-		 *
-		 * TODO we should explore making this configurable or other options as this
-		 * requires copying all the data.
+		 * We have to override the content type here because if we do not Spring appears
+		 * to default to application/json if the Accept does not include HTML.
 		 */
-		try (BufferedEncodedOutput buffer = createBufferedOutput()) {
-			// The try - with is not necessary but keeps linters happy
-			jstachio.write(t, buffer);
-			int size = buffer.size();
-			var headers = outputMessage.getHeaders();
-			headers.setContentLength(size);
-			/*
-			 * We have to override the content type here because if we do not Spring
-			 * appears to default to application/json if the Accept does not include HTML.
-			 */
-			headers.setContentType(mediaType);
-			var body = outputMessage.getBody();
-			buffer.transferTo(body);
+		var headers = outputMessage.getHeaders();
+
+		/*
+		 * If we just write directly to the body without resolving content length first it
+		 * might not get set and we MIGHT get Transfer-Encoding: chunked which is almost
+		 * never desired for HTML.
+		 */
+		headers.setContentType(mediaType);
+		try (CloseableEncodedOutput<IOException> output = createOutput(outputMessage)) {
+			jstachio.write(t, output);
 		}
 	}
 
 	/**
 	 * Create the buffered output to use when executing JStachio. The default uses a chunk
 	 * strategy instead of an array strategy.
+	 * @param message response.
 	 * @return the output ready for writing to.
 	 * @see ByteBufferEncodedOutput
 	 * @see ChunkEncodedOutput
+	 * @see ThresholdEncodedOutput
 	 */
-	protected BufferedEncodedOutput createBufferedOutput() {
-		return ChunkEncodedOutput.ofByteArrays(getDefaultCharset());
+	protected CloseableEncodedOutput<IOException> createOutput(HttpOutputMessage message) {
+		return new HttpOutputMessageEncodedOutput(getDefaultCharset(), message, bufferLimit);
 	}
 
-	protected Charset charset() {
-		return Objects.requireNonNull(getDefaultCharset());
+}
+
+class HttpOutputMessageEncodedOutput extends ThresholdEncodedOutput.OutputStreamThresholdEncodedOutput {
+
+	private final HttpOutputMessage response;
+
+	public HttpOutputMessageEncodedOutput(Charset charset, HttpOutputMessage response, int limit) {
+		super(charset, limit);
+		this.response = response;
+	}
+
+	@Override
+	protected OutputStream createConsumer(int size) throws IOException {
+		if (size > -1) {
+			response.getHeaders().setContentLength(size);
+		}
+		return response.getBody();
 	}
 
 }
