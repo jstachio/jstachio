@@ -22,9 +22,12 @@ module io.jstach.opt.spring.boot.webmvc {
 	requires com.fasterxml.jackson.databind;
 
 	opens io.jstach.opt.spring.boot.webmvc to //
-	    spring.core, spring.web, spring.beans, spring.context
+	spring.core, spring.web, spring.beans, spring.context
 	;
 
-    exports io.jstach.opt.spring.boot.webmvc;
+	exports io.jstach.opt.spring.boot.webmvc;
+	
+	uses io.jstach.jstachio.spi.JStachioExtension;
+	uses io.jstach.jstachio.spi.TemplateProvider;
 
 }

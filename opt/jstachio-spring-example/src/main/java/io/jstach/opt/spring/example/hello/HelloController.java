@@ -3,6 +3,7 @@ package io.jstach.opt.spring.example.hello;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -118,6 +119,36 @@ public class HelloController {
 	public TemplateModel wired() {
 		var model = new HelloModel("JStachioed is wired!");
 		return view.model(model);
+	}
+	
+	/**
+	 * Here we could use {@link JStacheInterfaces} to make our model implement
+	 * {@link JStachioModelView} to support the traditional servlet MVC approach. The
+	 * model will use the static jstachio singleton that will be the spring one.
+	 * <p>
+	 * This approach has pros and cons. It makes your models slightly coupled to Spring
+	 * MVC but allows you to return different views if say you had to redirect on some
+	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
+	 *
+	 * @apiNote Notice that the return type is {@link View}.
+	 * @return the model and view that will be used as View (see
+	 * {@link HelloModelAndView}).
+	 * @see JStachioHttpMessageConverter
+	 * @see HelloModelAndView
+	 */
+	@GetMapping(value = "/long/mvc")
+	@SuppressWarnings("exports")
+	public View longMvc(@RequestParam(name="size", defaultValue = "0") int size) {
+		if (size <= 0) {
+			size = 1024 * 16;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < size; i++) {
+			int j = (i % 64) + 48;
+			char c = (char) j;
+			sb.append(c);
+		}
+		return new HelloModelAndView(sb.toString());
 	}
 
 }

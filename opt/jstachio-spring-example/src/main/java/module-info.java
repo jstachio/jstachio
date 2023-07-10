@@ -5,6 +5,9 @@ import io.jstach.jstache.JStachePath;
  * <a href="https://repo1.maven.org/maven2/io/jstach/jstachio-spring-example/maven-metadata.xml" class="gav">io.jstach:jstachio-spring-example</a>.
  * 
  * This module is an example modularized Spring Boot application.
+ * It is not a requirement that your application be modularized to use JStachio (or Spring w/ JStachio).
+ * Spring (as of 6.0) is still not really designed for modularization so this module-info looks
+ * more complex than it really should.
  * <p>
  * <strong>
  * Make sure to take note of the annotations on this module as they define the jstachio config
@@ -25,6 +28,7 @@ import io.jstach.jstache.JStachePath;
  * 
  * @apiNote This module is not public API as it is just an example and thus does not follow semver policy!
  * @author agentgt
+ * @provides io.jstach.jstachio.spi.TemplateProvider this is needed for modular applications.
  */
 @JStachePath(prefix = "views/", suffix = ".mustache") //
 module io.jstach.opt.spring.example {
@@ -45,7 +49,14 @@ module io.jstach.opt.spring.example {
 	requires jakarta.servlet;
 
 	requires com.fasterxml.jackson.databind;
-
+	
+	/*
+	 * Apparently tomcat needs java.lang.instrument
+	 * and since Spring just auto finds Tomcat the module system
+	 * is unaware that it needs.
+	 */
+	requires java.instrument;
+	
 	opens io.jstach.opt.spring.example to //
 	spring.core, spring.web, spring.beans, spring.context, io.jstach.opt.spring.boot.webmvc
 	;
@@ -71,6 +82,9 @@ module io.jstach.opt.spring.example {
 	exports io.jstach.opt.spring.example.hello;
 	exports io.jstach.opt.spring.example.message;
 
-
+	/*
+	 * See JStacheCatalog. We need this for modular applications.
+	 */
+	provides io.jstach.jstachio.spi.TemplateProvider with io.jstach.opt.spring.example.TemplateCatalog;
 
 }
