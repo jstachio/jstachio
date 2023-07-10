@@ -258,7 +258,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.5.0</version>
           <configuration>
-            <show>public</show>
+            <show>protected</show>
             <tags>
               <tag>
                 <name>apiNote</name>

@@ -3,8 +3,6 @@ package io.jstach.jstachio.spi;
 import static io.jstach.jstachio.spi.Templates.sneakyThrow;
 import static io.jstach.jstachio.spi.Templates.validateEncoding;
 
-import java.io.IOException;
-
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
@@ -76,7 +74,6 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	 * @param model to render
 	 * @param template loaded by {@link #template(Class)}
 	 * @return filter chain that can process model
-	 * @throws IOException if the filter cannot process the model
 	 */
 	protected final FilterChain loadFilter(Object model, TemplateInfo template) {
 		var filter = FilterChain.of(extensions().getFilter(), template);

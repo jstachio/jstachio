@@ -46,6 +46,9 @@ public class ByteBufferedOutputStream extends OutputStream implements ByteBuffer
 	/** The number of valid bytes in the buffer. */
 	protected int count;
 
+	/**
+	 * The expected charset of the output.
+	 */
 	protected final Charset charset;
 
 	/**

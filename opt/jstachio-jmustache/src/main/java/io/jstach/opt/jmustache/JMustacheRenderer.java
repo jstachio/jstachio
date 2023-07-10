@@ -121,11 +121,19 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 		return this;
 	}
 
+	/**
+	 * Log plugin on reload.
+	 * @param flag true is if extension is enabled.
+	 */
 	protected void log(boolean flag) {
 		logger.log(Level.INFO,
 				"JMustache is now: " + (flag ? "enabled" : "disabled") + " using sourcePath: " + sourcePath);
 	}
 
+	/**
+	 * Log template execution through jmustache
+	 * @param template template to execute.
+	 */
 	protected void log(TemplateInfo template) {
 		if (logger.isLoggable(Level.DEBUG)) {
 			logger.log(Level.DEBUG, "Using JMustache. template: " + template.description());
@@ -147,7 +155,7 @@ public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	}
 
-	protected CompilerAdapter createCompiler(TemplateInfo template, Class<?> modelClass) {
+	private CompilerAdapter createCompiler(TemplateInfo template, Class<?> modelClass) {
 		Loader loader = new Loader(logger, sourcePath, initTime);
 		return new CompilerAdapter(template, modelClass, loader);
 	}

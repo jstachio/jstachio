@@ -269,9 +269,23 @@ public final class Templates {
 
 		};
 
+		/**
+		 * Load the template by this strategy.
+		 * @param <T> model type.
+		 * @param clazz model type.
+		 * @param classLoader classload which may more may not be used.
+		 * @param logger used to log reflection warnings or other errors.
+		 * @return loaded template
+		 * @throws Exception if an error happens while trying to load template.
+		 */
 		protected abstract <T> @Nullable Template<T> load(Class<T> clazz, ClassLoader classLoader, System.Logger logger)
 				throws Exception;
 
+		/**
+		 * Determine if the strategy is enabled.
+		 * @param config key value config
+		 * @return true if not disabled.
+		 */
 		protected abstract boolean isEnabled(JStachioConfig config);
 
 	}
