@@ -12,7 +12,11 @@
  * Spring. </strong> This is because much of JStachio config is <em>not runtime driven but
  * compile time driven</em>.
  * <p>
+ * A {@link io.jstach.jstache.JStacheCatalog} is defined on this package to generate a
+ * template provider to support the application being modularized.
+ * <p>
  * <em>This package is only exported for documenting the Spring Example. In a real world
  * app you probably would not export a package like this. </em>
  */
+@io.jstach.jstache.JStacheCatalog
 package io.jstach.opt.spring.example;
