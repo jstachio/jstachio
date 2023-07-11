@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import io.jstach.jstachio.JStachio;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
@@ -26,20 +25,20 @@ import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
 @AutoConfigureAfter(value = { JStachioAutoConfiguration.class })
 public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer {
 
-	private final JStachio jstachio;
+	private final JStachioHttpMessageConverter messageConverter;
 
 	/**
 	 * Configures based on the jstachio found by spring
-	 * @param jstachio the found jstachio
+	 * @param messageConverter jstachio powered message converter
 	 */
 	@Autowired
-	public JStachioWebMvcAutoConfiguration(JStachio jstachio) {
-		this.jstachio = jstachio;
+	public JStachioWebMvcAutoConfiguration(JStachioHttpMessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
 	}
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		converters.add(0, new JStachioHttpMessageConverter(jstachio));
+		converters.add(0, this.messageConverter);
 	}
 
 	/**

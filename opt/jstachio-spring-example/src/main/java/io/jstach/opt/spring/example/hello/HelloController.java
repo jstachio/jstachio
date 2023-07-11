@@ -120,7 +120,7 @@ public class HelloController {
 		var model = new HelloModel("JStachioed is wired!");
 		return view.model(model);
 	}
-	
+
 	/**
 	 * Here we could use {@link JStacheInterfaces} to make our model implement
 	 * {@link JStachioModelView} to support the traditional servlet MVC approach. The
@@ -129,16 +129,21 @@ public class HelloController {
 	 * This approach has pros and cons. It makes your models slightly coupled to Spring
 	 * MVC but allows you to return different views if say you had to redirect on some
 	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
+	 * <p>
+	 * 
+	 * This controller method is to test buffering. Ignore.
 	 *
 	 * @apiNote Notice that the return type is {@link View}.
+	 * @param size size of output
 	 * @return the model and view that will be used as View (see
 	 * {@link HelloModelAndView}).
 	 * @see JStachioHttpMessageConverter
 	 * @see HelloModelAndView
+	 * @hidden
 	 */
 	@GetMapping(value = "/long/mvc")
 	@SuppressWarnings("exports")
-	public View longMvc(@RequestParam(name="size", defaultValue = "0") int size) {
+	public View longMvc(@RequestParam(name = "size", defaultValue = "0") int size) {
 		if (size <= 0) {
 			size = 1024 * 16;
 		}

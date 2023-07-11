@@ -25,6 +25,8 @@ import io.jstach.jstachio.spi.TemplateProvider;
 import io.jstach.jstachio.spi.Templates;
 import io.jstach.opt.spring.SpringJStachio;
 import io.jstach.opt.spring.SpringJStachioExtension;
+import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
+import io.jstach.opt.spring.webmvc.ServletJStachioHttpMessageConverter;
 
 /**
  * Configures JStachio Spring style.
@@ -160,6 +162,17 @@ public class JStachioConfiguration {
 	private <T> ServiceLoader<T> serviceLoader(Class<T> spiClass) {
 		ClassLoader classLoader = beanFactory.getBeanClassLoader();
 		return classLoader == null ? ServiceLoader.load(spiClass) : ServiceLoader.load(spiClass, classLoader);
+	}
+
+	/**
+	 * Creates a message converter from Spring JStachio
+	 * @param jstachio jstachio instance
+	 * @return jstachio message converter
+	 */
+	@Bean
+	@ConditionalOnMissingBean(value = JStachioHttpMessageConverter.class)
+	public JStachioHttpMessageConverter messageConverter(SpringJStachio jstachio) {
+		return new ServletJStachioHttpMessageConverter(jstachio);
 	}
 
 }
