@@ -72,7 +72,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @apiNote This class is not thread safe.
  * @see OutputStreamThresholdEncodedOutput
  */
-public abstract class ThresholdEncodedOutput<T, E extends Exception> implements CloseableEncodedOutput<E> {
+public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> implements LimitEncodedOutput<T, E> {
 
 	private final List<byte[]> chunks;
 
@@ -158,6 +158,11 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	}
 
 	@Override
+	public @Nullable T consumer() {
+		return this.consumer;
+	}
+
+	@Override
 	public Charset charset() {
 		return charset;
 	}
@@ -185,6 +190,11 @@ public abstract class ThresholdEncodedOutput<T, E extends Exception> implements 
 	 */
 	public int size() {
 		return size;
+	}
+
+	@Override
+	public int limit() {
+		return limit;
 	}
 
 	@Override

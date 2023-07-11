@@ -73,6 +73,31 @@ public sealed interface BufferedEncodedOutput
 	}
 
 	/**
+	 * Decorates this buffer so that buffering is limited to certain amount and will
+	 * eventually send all output to the OutputStream created by the factory. The factory
+	 * will be passed <code>-1</code> if the limit is exceeded and
+	 * {@linkplain OutputFactory#create(int) create} will only be called once and only
+	 * once provided that the returned object is closed.
+	 * <p>
+	 * This method should be called before passed to JStachio and the result is the output
+	 * that should be passed.
+	 * @param limit the maximum amount of bytes to buffer.
+	 * @param factory create the output stream on demand and will always be used before
+	 * close is called.
+	 * @return output that will need to be closed eventually.
+	 * @see LimitEncodedOutput
+	 */
+	default LimitEncodedOutput<OutputStream, IOException> limit(int limit,
+			OutputFactory<OutputStream, IOException> factory) {
+		return new AbstractLimitEncodedOutput(this, limit) {
+			@Override
+			protected OutputStream createConsumer(int size) throws IOException {
+				return factory.create(size);
+			}
+		};
+	}
+
+	/**
 	 * Transfers the entire buffered output to a consumer
 	 * @param <E> the exception type
 	 * @param consumer not null.

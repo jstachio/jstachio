@@ -3,13 +3,13 @@
  * integration logic for plugging into web application frameworks.
  *
  * <h2>Blocking frameworks</h2>
- * <strong>{@link io.jstach.jstachio.output.ThresholdEncodedOutput}</strong>
+ * <strong>{@link io.jstach.jstachio.output.LimitEncodedOutput}</strong>
  * <p>
- * For blocking frameworks {@link io.jstach.jstachio.output.ThresholdEncodedOutput}
- * provides a good solution over just writing to directly to the body
- * {@link java.io.OutputStream} if the length of output is needed apriori while avoiding
- * running out of memory for rare large outputs (in those cases the length will not be
- * determined before writing to the stream).
+ * For blocking frameworks {@link io.jstach.jstachio.output.LimitEncodedOutput} provides a
+ * good solution over just writing to directly to the body {@link java.io.OutputStream} if
+ * the length of output is needed apriori while avoiding running out of memory for rare
+ * large outputs (in those cases the length will not be determined before writing to the
+ * stream).
  *
  * <h2>Non-blocking frameworks</h2>
  * <strong>{@link io.jstach.jstachio.output.BufferedEncodedOutput}</strong>
@@ -41,7 +41,7 @@
  * <li>If size must ALWAYS be known before writing use
  * {@link io.jstach.jstachio.output.ChunkEncodedOutput}.</li>
  * <li>If size must be known for MOST outputs use
- * {@link io.jstach.jstachio.output.ThresholdEncodedOutput}.</li>
+ * {@link io.jstach.jstachio.output.LimitEncodedOutput}.</li>
  * <li>If size is not needed use
  * {@link io.jstach.jstachio.Output.EncodedOutput#of(java.io.OutputStream, java.nio.charset.Charset)}.
  * </li>

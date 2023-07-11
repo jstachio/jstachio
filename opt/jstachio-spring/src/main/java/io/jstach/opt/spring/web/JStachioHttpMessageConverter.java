@@ -17,6 +17,7 @@ import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.output.ByteBufferEncodedOutput;
 import io.jstach.jstachio.output.ChunkEncodedOutput;
 import io.jstach.jstachio.output.CloseableEncodedOutput;
+import io.jstach.jstachio.output.LimitEncodedOutput;
 import io.jstach.jstachio.output.ThresholdEncodedOutput;
 
 /**
@@ -50,7 +51,7 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	 * The default buffer limit before bailing on trying to set
 	 * <code>Content-Length</code>.
 	 */
-	protected static final int DEFAULT_BUFFER_LIMIT = 1024 * 512;
+	protected static final int DEFAULT_BUFFER_LIMIT = 1024 * 64;
 
 	private final JStachio jstachio;
 
@@ -127,13 +128,12 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	}
 
 	/**
-	 * Create the buffered output to use when executing JStachio. The default uses a chunk
-	 * strategy instead of an array strategy.
+	 * Create the buffered output to use when executing JStachio.
 	 * @param message response.
 	 * @return the output ready for writing to.
 	 * @see ByteBufferEncodedOutput
 	 * @see ChunkEncodedOutput
-	 * @see ThresholdEncodedOutput
+	 * @see LimitEncodedOutput
 	 */
 	protected CloseableEncodedOutput<IOException> createOutput(HttpOutputMessage message) {
 		return new HttpOutputMessageEncodedOutput(getDefaultCharset(), message, bufferLimit);
