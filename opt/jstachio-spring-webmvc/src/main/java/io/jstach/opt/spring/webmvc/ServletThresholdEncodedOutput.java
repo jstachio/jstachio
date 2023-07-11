@@ -39,9 +39,4 @@ class ServletThresholdEncodedOutput extends ThresholdEncodedOutput.OutputStreamT
 		return response.getOutputStream();
 	}
 
-	@Override
-	protected void close(OutputStream consumer) throws IOException {
-		consumer.flush();
-	}
-
 }
