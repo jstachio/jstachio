@@ -62,6 +62,11 @@ public sealed interface LimitEncodedOutput<T, E extends Exception>
 
 }
 
+/**
+ * This is purposely not public at the moment.
+ *
+ * @author agentgt
+ */
 abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutput<OutputStream, IOException> {
 
 	private final BufferedEncodedOutput buffer;
@@ -74,7 +79,7 @@ abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutp
 
 	protected final Charset charset;
 
-	public AbstractLimitEncodedOutput(BufferedEncodedOutput buffer, int limit) {
+	protected AbstractLimitEncodedOutput(BufferedEncodedOutput buffer, int limit) {
 		super();
 		this.buffer = buffer;
 		this.limit = limit;
