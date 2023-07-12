@@ -108,7 +108,8 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 
 	@Override
 	public void close() {
-
+		// We do nothing here as doing something will not really help anything
+		// as this output is not designed for reuse.
 	}
 
 	@Override
