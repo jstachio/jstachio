@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Map;
 
-import org.kohsuke.MetaInfServices;
-
 import io.dropwizard.views.common.View;
 import io.dropwizard.views.common.ViewRenderException;
 import io.dropwizard.views.common.ViewRenderer;
@@ -20,7 +18,6 @@ import io.jstach.jstachio.Output.EncodedOutput;
  * @author agentgt
  */
 @SuppressWarnings("exports")
-@MetaInfServices(ViewRenderer.class)
 public class JStachioViewRenderer implements ViewRenderer {
 
 	/**
