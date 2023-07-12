@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
+
 /**
  * This output will {@linkplain #limit() limit} buffering by byte count and then fallback
  * to pushing to the downstream output type of <code>T</code> once limit is exceeded. If

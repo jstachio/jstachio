@@ -143,7 +143,8 @@ Instead it generates code that writes to an {@link java.lang.Appendable}.
 </p>
 
 <p>
-The current best workaround is <a href="#faq_reactive">to buffer as discussed in the FAQ</a>.
+The current best workaround is <a href="#faq_reactive">to buffer as discussed in the FAQ</a>
+using {@link io.jstach.jstachio.output.BufferedEncodedOutput}.
 </p>
 
 <p>
@@ -929,7 +930,8 @@ The short answer is to handle the backpressure by simply buffering.
 For example a simple workaround it just to buffer the entire output and hand the output
 as a String or ByteBuffer off to the reactive framework. The idea being that
 memory is cheap and the model has to be fully loaded anyway since JStachio does
-not support iterating over reactive data types.
+not support iterating over reactive data types. For buffered output strategies
+see {@link io.jstach.jstachio.output.BufferedEncodedOutput}.
 </p>
 
 <p>

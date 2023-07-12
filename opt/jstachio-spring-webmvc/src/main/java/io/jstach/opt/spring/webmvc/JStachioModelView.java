@@ -12,16 +12,19 @@ import org.springframework.web.servlet.view.RedirectView;
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.output.CloseableEncodedOutput;
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
+import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Another way to use JStachio with Spring MVC is to have models implement Springs
  * {@link View} interface. You can enforce that your models implement this interface with
- * {@link JStacheInterfaces}.
+ * {@link JStacheInterfaces}. Alternatively one can call {@link #of(Object)} on the model
+ * and return the result.
  * <p>
- * The model will use the static jstachio singleton that will be the spring one.
+ * This view will by default use the static jstachio singleton and if configured correctly
+ * that will be the spring version.
  * <p>
  * This approach has pros and cons. It makes your models slightly coupled to Spring MVC
  * but allows you to return different views if say you had to redirect on some inputs
@@ -36,7 +39,14 @@ public interface JStachioModelView extends View {
 	 * The default media type is "<code>text/html; charset=UTF-8</code>".
 	 */
 	@SuppressWarnings("exports")
-	static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
+	static final MediaType DEFAULT_MEDIA_TYPE = JStachioHttpMessageConverter.DEFAULT_MEDIA_TYPE;
+
+	/**
+	 * The default buffer limit before bailing on trying to set
+	 * <code>Content-Length</code>. The default is
+	 * "{@value JStachioHttpMessageConverter#DEFAULT_BUFFER_LIMIT}".
+	 */
+	static final int DEFAULT_BUFFER_LIMIT = JStachioHttpMessageConverter.DEFAULT_BUFFER_LIMIT;
 
 	@SuppressWarnings("exports")
 	@Override
@@ -62,7 +72,7 @@ public interface JStachioModelView extends View {
 	 */
 	@SuppressWarnings("exports")
 	default CloseableEncodedOutput<IOException> createOutput(Charset charset, HttpServletResponse response) {
-		return new ServletThresholdEncodedOutput(charset, response);
+		return new ServletThresholdEncodedOutput(charset, response, DEFAULT_BUFFER_LIMIT);
 	}
 
 	/**

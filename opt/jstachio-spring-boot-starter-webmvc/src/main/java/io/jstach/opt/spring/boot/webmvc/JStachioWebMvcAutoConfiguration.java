@@ -15,7 +15,7 @@ import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
 import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
 
 /**
- * AutoConfiguration for JStachio runtime.
+ * MVC AutoConfiguration for JStachio runtime.
  *
  * @see JStachioHttpMessageConverter
  * @author agentgt
