@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.ServletServerHttpResponse;
 
 import io.jstach.jstachio.JStachio;
-import io.jstach.jstachio.output.CloseableEncodedOutput;
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -21,30 +21,32 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ServletJStachioHttpMessageConverter extends JStachioHttpMessageConverter {
 
 	/**
-	 * See {@link JStachioHttpMessageConverter}.
-	 * @param jstachio not null.
-	 */
-	public ServletJStachioHttpMessageConverter(JStachio jstachio) {
-		this(jstachio, DEFAULT_MEDIA_TYPE, DEFAULT_BUFFER_LIMIT);
-	}
-
-	/**
 	 * See {@link JStachioHttpMessageConverter}
 	 * @param jstachio not null.
 	 * @param mediaType used for setContentType
 	 * @param bufferLimit limit used if the response is not a
 	 * {@link ServletServerHttpResponse}.
 	 */
-	protected ServletJStachioHttpMessageConverter(JStachio jstachio, MediaType mediaType, int bufferLimit) {
+	public ServletJStachioHttpMessageConverter(JStachio jstachio, @SuppressWarnings("exports") MediaType mediaType,
+			int bufferLimit) {
 		super(jstachio, mediaType, bufferLimit);
 	}
 
 	@Override
 	protected CloseableEncodedOutput<IOException> createOutput(HttpOutputMessage message) {
 		if (message instanceof ServletServerHttpResponse sr) {
-			return new ServletThresholdEncodedOutput(getDefaultCharset(), sr.getServletResponse());
+			return createOutput(sr.getServletResponse());
 		}
 		return super.createOutput(message);
+	}
+
+	/**
+	 * Create the output from a servlet response.
+	 * @param response servlet response
+	 * @return closeable output.
+	 */
+	protected CloseableEncodedOutput<IOException> createOutput(HttpServletResponse response) {
+		return new ServletThresholdEncodedOutput(getDefaultCharset(), response, bufferLimit);
 	}
 
 }

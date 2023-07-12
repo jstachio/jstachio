@@ -14,14 +14,14 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
 import io.jstach.jstachio.output.ByteBufferEncodedOutput;
 import io.jstach.jstachio.output.ChunkEncodedOutput;
-import io.jstach.jstachio.output.CloseableEncodedOutput;
 import io.jstach.jstachio.output.LimitEncodedOutput;
 import io.jstach.jstachio.output.ThresholdEncodedOutput;
 
 /**
- * Typesafe way to use JStachio in Spring Web.
+ * Type-safe way to use JStachio in Spring Web.
  * <p>
  * For this to work the controllers need to return JStache models and have the controller
  * method return annotated with {@link ResponseBody}.
@@ -35,7 +35,10 @@ import io.jstach.jstachio.output.ThresholdEncodedOutput;
  * public HelloModel hello() {
  *     return new HelloModel("Spring Boot is now JStachioed!");
  * }
- * </code> </pre>
+ * </code> </pre> Because JStachio by default pre-encodes the static text parts of the
+ * template the output strategy handles the buffering instead of the framework (usually
+ * servlet) to improve performance and to reliable set <code>Content-Length</code>. This
+ * can be changed by overriding {@link #createOutput(HttpOutputMessage)}.
  *
  * @author agentgt
  *
@@ -45,19 +48,23 @@ public class JStachioHttpMessageConverter extends AbstractHttpMessageConverter<O
 	/**
 	 * The default media type is "<code>text/html; charset=UTF-8</code>".
 	 */
-	protected static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
+	@SuppressWarnings("exports")
+	public static final MediaType DEFAULT_MEDIA_TYPE = new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8);
 
 	/**
 	 * The default buffer limit before bailing on trying to set
-	 * <code>Content-Length</code>.
+	 * <code>Content-Length</code>. The default is "{@value #DEFAULT_BUFFER_LIMIT}".
 	 */
-	protected static final int DEFAULT_BUFFER_LIMIT = 1024 * 64;
+	public static final int DEFAULT_BUFFER_LIMIT = 1024 * 64;
 
 	private final JStachio jstachio;
 
 	private final MediaType mediaType;
 
-	private final int bufferLimit;
+	/**
+	 * The maximum amount of bytes to buffer.
+	 */
+	protected final int bufferLimit;
 
 	/**
 	 * Create http converter from jstachio

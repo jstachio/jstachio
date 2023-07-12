@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -41,6 +42,7 @@ import io.jstach.opt.spring.webmvc.ServletJStachioHttpMessageConverter;
  * is not intended to be true public API.
  */
 @Configuration
+@EnableConfigurationProperties(value = JStachioProperties.class)
 public class JStachioConfiguration {
 
 	private static final Log logger = LogFactory.getLog(JStachioConfiguration.class);
@@ -133,6 +135,7 @@ public class JStachioConfiguration {
 	 * @return spring version fo jstachio
 	 */
 	@Bean
+	@ConditionalOnMissingBean(JStachio.class)
 	public SpringJStachio jstachio(List<JStachioExtension> extensions) {
 		Set<Class<?>> extensionClasses = extensions.stream().map(e -> e.getClass())
 				.collect(Collectors.toCollection(HashSet::new));
@@ -167,12 +170,14 @@ public class JStachioConfiguration {
 	/**
 	 * Creates a message converter from Spring JStachio
 	 * @param jstachio jstachio instance
+	 * @param properties spring boot powered properties
 	 * @return jstachio message converter
 	 */
 	@Bean
 	@ConditionalOnMissingBean(value = JStachioHttpMessageConverter.class)
-	public JStachioHttpMessageConverter messageConverter(SpringJStachio jstachio) {
-		return new ServletJStachioHttpMessageConverter(jstachio);
+	public JStachioHttpMessageConverter messageConverter(JStachio jstachio, JStachioProperties properties) {
+		return new ServletJStachioHttpMessageConverter(jstachio, properties.getMediaType(),
+				properties.getBufferLimit());
 	}
 
 }

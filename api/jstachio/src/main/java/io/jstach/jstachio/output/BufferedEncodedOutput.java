@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template.EncodedTemplate;
 

@@ -7,24 +7,22 @@ import java.nio.charset.Charset;
 import io.jstach.jstachio.output.ThresholdEncodedOutput;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * If you would like to use this class and make it public please file an issue.
+ *
+ * @author agent
+ */
 class ServletThresholdEncodedOutput extends ThresholdEncodedOutput.OutputStreamThresholdEncodedOutput {
 
 	private final HttpServletResponse response;
 
-	public ServletThresholdEncodedOutput(Charset charset, HttpServletResponse response) {
-		super(charset, calculateLimit(response));
+	public ServletThresholdEncodedOutput(Charset charset, HttpServletResponse response, int bufferLimit) {
+		super(charset, calculateLimit(response, bufferLimit));
 		this.response = response;
 	}
 
-	private static int calculateLimit(HttpServletResponse response) {
-		int limit = response.getBufferSize();
-		if (limit <= 0) {
-			/*
-			 * It is probably lying here or its a unit test.
-			 */
-			return 1024 * 32;
-		}
-		return limit;
+	private static int calculateLimit(HttpServletResponse response, int bufferLimit) {
+		return Math.max(response.getBufferSize(), bufferLimit);
 	}
 
 	@Override

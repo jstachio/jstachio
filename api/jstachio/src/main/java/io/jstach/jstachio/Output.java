@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+
+import io.jstach.jstachio.Output.CloseableEncodedOutput;
 
 /**
  * A low level abstraction and implementation detail analogous to {@link Appendable} and
@@ -161,7 +162,8 @@ public interface Output<E extends Exception> {
 	public interface EncodedOutput<E extends Exception> extends Output<E> {
 
 		/**
-		 * Analogous to {@link OutputStream#write(byte[])}.
+		 * Analogous to {@link OutputStream#write(byte[])}. Implementations should not
+		 * alter the byte array.
 		 * @param bytes already encoded bytes
 		 * @throws E if an error happens
 		 */
@@ -208,14 +210,29 @@ public interface Output<E extends Exception> {
 		Charset charset();
 
 		/**
-		 * Adapts an {@link OutputStream} as an {@link EncodedOutput}.
+		 * Adapts an {@link OutputStream} as an {@link EncodedOutput}. The resulting
+		 * output can be closed and will close the passed in OutputStream.
 		 * @param a the OutputStream to be wrapped.
 		 * @param charset the encoding to use
 		 * @return outputstream output
 		 */
-		public static EncodedOutput<IOException> of(OutputStream a, Charset charset) {
+		public static CloseableEncodedOutput<IOException> of(OutputStream a, Charset charset) {
 			return new OutputStreamOutput(a, charset);
 		}
+
+	}
+
+	/**
+	 * An encoded output that can be closed. This maybe to close downstream outputstreams
+	 * or to signify ready for reuse or to clear buffers.
+	 *
+	 * @author agent
+	 * @param <E> error on close
+	 */
+	public interface CloseableEncodedOutput<E extends Exception> extends EncodedOutput<E>, AutoCloseable {
+
+		@Override
+		public void close() throws E;
 
 	}
 
@@ -312,7 +329,7 @@ class OutputAppendable implements Appendable {
 	}
 
 	@Override
-	public @NonNull Appendable append(@Nullable CharSequence csq) throws @Nullable IOException {
+	public Appendable append(@Nullable CharSequence csq) throws @Nullable IOException {
 		try {
 			output.append(csq);
 			return this;
@@ -326,7 +343,7 @@ class OutputAppendable implements Appendable {
 	}
 
 	@Override
-	public @NonNull Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
+	public Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
 		try {
 			output.append(csq, start, end);
 			return this;
@@ -340,7 +357,7 @@ class OutputAppendable implements Appendable {
 	}
 
 	@Override
-	public @NonNull Appendable append(char c) throws IOException {
+	public Appendable append(char c) throws IOException {
 		try {
 			output.append(c);
 			return this;
@@ -383,7 +400,7 @@ class AppendableOutput implements Output<IOException> {
 
 }
 
-class OutputStreamOutput implements Output.EncodedOutput<IOException> {
+class OutputStreamOutput implements CloseableEncodedOutput<IOException> {
 
 	private final OutputStream outputStream;
 
@@ -406,28 +423,23 @@ class OutputStreamOutput implements Output.EncodedOutput<IOException> {
 	}
 
 	@Override
-	public void append(char c) throws IOException {
-		outputStream.write(("" + c).getBytes(this.charset));
-	}
-
-	@Override
 	public void append(CharSequence csq) throws IOException {
 		append(csq.toString());
 	}
 
 	@Override
 	public void append(String s) throws IOException {
-		outputStream.write(s.getBytes(charset));
-	}
-
-	@Override
-	public void append(CharSequence csq, int start, int end) throws IOException {
-		outputStream.write(csq.subSequence(start, end).toString().getBytes(this.charset));
+		write(s.getBytes(charset));
 	}
 
 	@Override
 	public Charset charset() {
 		return charset;
+	}
+
+	@Override
+	public void close() throws IOException {
+		outputStream.close();
 	}
 
 }
