@@ -16,6 +16,7 @@
     <module>jstachio-spring-webflux-example</module>
     <module>jstachio-spring-webflux</module>
     <module>jstachio-dropwizard</module>
+    <module>jstachio-dropwizard-example</module>
   </modules>
   <properties>
     <parent.root>${basedir}/../..</parent.root>
@@ -65,6 +66,18 @@
       <dependency>
         <groupId>io.jstach</groupId>
         <artifactId>jstachio-spring-webflux</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard</groupId>
+        <artifactId>dropwizard-bom</artifactId>
+        <version>4.0.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-dropwizard</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
