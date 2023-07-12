@@ -15,6 +15,7 @@
     <module>jstachio-spring-example</module>
     <module>jstachio-spring-webflux-example</module>
     <module>jstachio-spring-webflux</module>
+    <module>jstachio-dropwizard</module>
   </modules>
   <properties>
     <parent.root>${basedir}/../..</parent.root>
