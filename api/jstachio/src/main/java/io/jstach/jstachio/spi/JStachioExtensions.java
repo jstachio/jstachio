@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -43,7 +45,18 @@ public interface JStachioExtensions {
 	 * @param extensions found extensions.
 	 * @return bean like container of services.
 	 */
-	public static JStachioExtensions of(Iterable<JStachioExtension> extensions) {
+	public static JStachioExtensions of(Iterable<? extends JStachioExtension> extensions) {
+		return of(StreamSupport.stream(extensions.spliterator(), false));
+	}
+
+	/**
+	 * Resolve from a stream of extensions that usually come from some discovery mechanism
+	 * like the {@link ServiceLoader} or a DI framework. <em>The order of the extensions
+	 * is important and primacy order takes precedence!</em>
+	 * @param extensions found extensions.
+	 * @return bean like container of services.
+	 */
+	public static JStachioExtensions of(Stream<? extends JStachioExtension> extensions) {
 		return DefaultJStachioExtensions.of(extensions);
 	}
 
@@ -121,7 +134,7 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 	 * @param it services
 	 * @return bean like container of services.
 	 */
-	static JStachioExtensions of(Iterable<JStachioExtension> it) {
+	static JStachioExtensions of(Stream<? extends JStachioExtension> it) {
 		List<JStachioExtensionProvider> svs = new ArrayList<>();
 		it.forEach(s -> svs.add(JStachioExtensionProvider.of(s)));
 

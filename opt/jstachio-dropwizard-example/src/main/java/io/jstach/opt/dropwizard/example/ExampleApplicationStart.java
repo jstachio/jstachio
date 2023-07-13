@@ -13,6 +13,12 @@ import io.dropwizard.views.common.ViewBundle;
  */
 public class ExampleApplicationStart extends Application<ExampleConfiguration> {
 
+	/**
+	 * Main method entrypoint for the application. If no args are passed we assume that
+	 * "<code>server</code>" is the desired mode.
+	 * @param args if empty <code>["server"]</code> will be used.
+	 * @throws Exception if the application fails to start
+	 */
 	public static void main(String[] args) throws Exception {
 		String[] resolved = args;
 		if (resolved.length == 0) {
@@ -22,7 +28,8 @@ public class ExampleApplicationStart extends Application<ExampleConfiguration> {
 	}
 
 	@Override
-	public void run(ExampleConfiguration configuration, Environment environment) throws Exception {
+	public void run(ExampleConfiguration configuration, @SuppressWarnings("exports") Environment environment)
+			throws Exception {
 		/*
 		 * This health check is just to make dropwizard happy
 		 */
