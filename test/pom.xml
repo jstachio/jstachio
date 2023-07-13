@@ -16,6 +16,7 @@
     <module>jstachio-test-stache</module>
     <module>jstachio-test-spring-example</module>
     <module>jstachio-test-spring-webflux-example</module>
+    <module>jstachio-test-dropwizard-example</module>
   </modules>
   <build>
     <pluginManagement>
@@ -54,6 +55,13 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>io.dropwizard</groupId>
+        <artifactId>dropwizard-bom</artifactId>
+        <version>${dropwizard.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
         <version>6.0.0</version>
@@ -77,6 +85,11 @@
       <dependency>
         <groupId>io.jstach</groupId>
         <artifactId>jstachio-spring-webflux</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach</groupId>
+        <artifactId>jstachio-dropwizard</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

@@ -39,6 +39,7 @@
     
     <spring.version>6.0.10</spring.version>
     <spring-boot.version>3.1.1</spring-boot.version>
+    <dropwizard.version>4.0.1</dropwizard.version>
 
   </properties>
   <modules>
