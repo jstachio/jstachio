@@ -1,4 +1,4 @@
-import io.jstach.jstache.JStachePath;
+import io.jstach.jstache.JStacheConfig;
 
 /**
  * Spring Web MVC example app for JStachio:
@@ -30,7 +30,7 @@ import io.jstach.jstache.JStachePath;
  * @author agentgt
  * @provides io.jstach.jstachio.spi.TemplateProvider this is needed for modular applications.
  */
-@JStachePath(prefix = "views/", suffix = ".mustache") //
+@JStacheConfig(using = io.jstach.opt.spring.SpringJStacheConfig.class)
 module io.jstach.opt.spring.example {
 	
 	requires transitive io.jstach.opt.spring.webmvc;
