@@ -46,6 +46,9 @@ public class FragmentTokenProcessorTest {
 				---
 				""";
 		assertEquals(expected, actual);
+		actual = p.getIndent();
+		expected = "          ";
+		assertEquals(expected, actual);
 	}
 
 }

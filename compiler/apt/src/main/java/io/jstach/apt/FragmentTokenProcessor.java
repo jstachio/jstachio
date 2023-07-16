@@ -4,16 +4,18 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.WhitespaceTokenProcessor.ProcessToken.ProcessHint;
 import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.MustacheToken.TagToken;
-import io.jstach.apt.internal.token.MustacheTokenizer;
 import io.jstach.apt.internal.PositionedToken;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.TokenProcessor;
+import io.jstach.apt.internal.token.MustacheTokenizer;
 
 public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 
@@ -22,6 +24,7 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 	private final StringBuilder content = new StringBuilder();
 	private final Deque<Section> section = new ArrayDeque<>();
 	private State state = State.OUTSIDE;
+	private String indent = "";
 
 	private record Section(
 			TagToken token, boolean isFragment) {}
@@ -73,10 +76,22 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		return s.token().name();
 	}
 	
+	public String getIndent() {
+		return indent;
+	}
+	
 	@Override
 	protected void processTokenGroup(
 			List<ProcessToken> tokens)
 			throws ProcessingException {
+		if (hasFragmentStart(tokens.stream())) {
+			var first = tokens.get(0);
+			if (first.hint() == ProcessHint.INDENT) {
+				StringBuilder indent = new StringBuilder();
+				first.token().innerToken().appendRawText(indent);
+				this.indent = indent.toString();
+			}
+		}
 		if (this.state == State.INSIDE) {
 			if (hasFragmentEnd(tokens)) {
 				processTokenGroup(this::handleToken, tokens);
@@ -100,11 +115,28 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 		return false;
 	}
+	
+	boolean hasFragmentStart(Stream<ProcessToken> tokens) {
+		return tokens.filter(this::isFragmentStart).findFirst().isPresent();
+	}
+	
 	boolean isFragmentEnd(ProcessToken token) {
 		var mt = token.token().innerToken();
 		var sec = section.peek();
-		if (mt instanceof TagToken tt && tt.tagKind().isEndSection()) {
+		if (sec != null && mt instanceof TagToken tt && tt.tagKind().isEndSection()) {
 			return sec.isFragment();
+		}
+		return false;
+	}
+	
+	boolean isFragmentStart(ProcessToken token) {
+		if (this.state != State.OUTSIDE) {
+			return false;
+		}
+		var mt = token.token().innerToken();
+		
+		if (mt instanceof TagToken tt && tt.tagKind().isBeginSection() && tt.name().equals(fragment)) {
+			return true;
 		}
 		return false;
 	}
