@@ -40,18 +40,17 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-
 /**
- * Version Helper (vh) is to help manage versions on git tags, poms, and
- * properties as well as manage timestamps. It replaces a lot of functionality
- * that the Maven release plugin would do.
- * 
+ * Version Helper (vh) is to help manage versions on git tags, poms, and properties as
+ * well as manage timestamps. It replaces a lot of functionality that the Maven release
+ * plugin would do.
+ *
  * It should be run in the project root like:
- * 
+ *
  * <code>
  * bin/vh [COMMAND]
  * </code>
- * 
+ *
  * @author agentgt
  *
  */
@@ -78,12 +77,13 @@ public final class VersionHelper {
 }
 
 interface HelpSupport {
+
 	String desc();
+
 }
 
 enum Command implements HelpSupport {
 
-	
 	RELEASE("Validates and prepares the enviroment for release by tagging based on version.properties") {
 		@Override
 		public void run(List<String> args) throws IOException {
@@ -175,15 +175,15 @@ enum Command implements HelpSupport {
 		}
 
 	};
-	
+
 	public static final String VERSION_PROPERTIES = "version.properties";
 
 	private final String desc;
-	
+
 	Command(String desc) {
 		this.desc = desc;
 	}
-	
+
 	public String desc() {
 		return this.desc;
 	}
@@ -193,19 +193,18 @@ enum Command implements HelpSupport {
 	enum VersionSource implements HelpSupport {
 
 		CURRENT(VERSION_PROPERTIES), POM("pom.xml"), TAG("git tag");
-		
+
 		private final String desc;
-		
+
 		VersionSource(String desc) {
 			this.desc = desc;
 		}
-		
+
 		public String desc() {
 			return this.desc;
 		}
 
 	}
-
 
 	static void validate(Version current, Version tag, Version pom) throws IOException {
 
@@ -236,7 +235,8 @@ enum Command implements HelpSupport {
 
 	static void current(Version v, long timestamp) throws IOException {
 		if (v.snapshot()) {
-			throw new IllegalArgumentException("version.properties cannot have SNAPSHOT versions. version: " + v.print(Version.PrintFlag.SNAPSHOT));
+			throw new IllegalArgumentException("version.properties cannot have SNAPSHOT versions. version: "
+					+ v.print(Version.PrintFlag.SNAPSHOT));
 		}
 		try (var br = Files.newBufferedWriter(Path.of(VERSION_PROPERTIES), StandardCharsets.ISO_8859_1)) {
 			writeProperties(br, Map.entry("version", v.print()), Map.entry("timestamp", "" + timestamp));
@@ -276,7 +276,8 @@ enum Command implements HelpSupport {
 
 	static void tag(Version version) throws IOException {
 		if (version.snapshot()) {
-			throw new IllegalArgumentException("tag cannot have SNAPSHOT versions. version: " + version.print(Version.PrintFlag.SNAPSHOT));
+			throw new IllegalArgumentException(
+					"tag cannot have SNAPSHOT versions. version: " + version.print(Version.PrintFlag.SNAPSHOT));
 		}
 		String command = "git tag -a -m 'release " + version.print() + "'" + " v" + version.print();
 		out.println("Executing " + command);
@@ -353,13 +354,13 @@ enum Command implements HelpSupport {
 			i++;
 		}
 	}
-	
+
 	public static <E extends Enum<E> & HelpSupport> E parseCommand(Class<E> commandType, List<String> args, int index) {
 		return parseCommand(commandType, args, index, null);
 	}
 
-	public static <E extends Enum<E> & HelpSupport, P extends Enum<P> & HelpSupport> 
-		E parseCommand(Class<E> commandType, List<String> args, int index, P parent) {
+	public static <E extends Enum<E> & HelpSupport, P extends Enum<P> & HelpSupport> E parseCommand(
+			Class<E> commandType, List<String> args, int index, P parent) {
 		if (args.size() < (index + 1)) {
 			String message;
 			if (parent != null) {
@@ -388,11 +389,11 @@ enum Command implements HelpSupport {
 							Version Helper (vh) is to help manage versions on git tags, poms, and properties
 							as well as manage timestamps. It replaces a lot of functionality that the
 							Maven release plugin would do.
-							
+
 							It should be run in the project root like:
-							
+
 								bin/vh [COMMAND]
-							
+
 							""");
 					message = "Commands: ";
 				}
@@ -410,13 +411,12 @@ enum Command implements HelpSupport {
 		}
 	}
 
-	public static <E extends Enum<E>> String printCommands(
-			Class<E> commandType) {
+	public static <E extends Enum<E>> String printCommands(Class<E> commandType) {
 		return ""
 				+ Stream.concat(Stream.of("help"), EnumSet.allOf(commandType).stream().map(e -> e.name().toLowerCase()))
 						.toList();
 	}
-	
+
 	public static <E extends Enum<E> & HelpSupport> String helpCommands(Class<E> commandType) {
 		StringBuilder sb = new StringBuilder();
 		for (var e : EnumSet.allOf(commandType)) {
@@ -478,7 +478,7 @@ enum Command implements HelpSupport {
 				Node v = (Node) xpath.evaluate(path, doc, XPathConstants.NODE);
 				v.setTextContent("" + timestamp);
 			}
-			try (OutputStream os = Files.newOutputStream(Path.of("pom.xml"), StandardOpenOption.WRITE, 
+			try (OutputStream os = Files.newOutputStream(Path.of("pom.xml"), StandardOpenOption.WRITE,
 					StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)) {
 				DOMSource domSource = new DOMSource(doc);
 				StreamResult result = new StreamResult(os);
@@ -514,28 +514,27 @@ record Version(int major, int minor, int patch, boolean snapshot) implements Com
 		}
 		return new Version(major, minor, patch, snapshot);
 	}
-	
+
 	enum PrintFlag {
-		PREFIX,
-		SNAPSHOT
+
+		PREFIX, SNAPSHOT
+
 	}
 
 	public String print(Set<PrintFlag> flags) {
-		return (flags.contains(PrintFlag.PREFIX) ? "v" : "") 
-				+ major() + "." + minor() + "." + patch()
-				+ (flags.contains(PrintFlag.SNAPSHOT) && snapshot ? "-SNAPSHOT": "");
+		return (flags.contains(PrintFlag.PREFIX) ? "v" : "") + major() + "." + minor() + "." + patch()
+				+ (flags.contains(PrintFlag.SNAPSHOT) && snapshot ? "-SNAPSHOT" : "");
 	}
-	
+
 	public String print() {
 		return print(Set.of());
 	}
-	
-	public String print(PrintFlag flag, PrintFlag ... flags) {
+
+	public String print(PrintFlag flag, PrintFlag... flags) {
 		Set<PrintFlag> fs = EnumSet.of(flag, flags);
 		return print(fs);
 	}
-	
-	
+
 	public String label() {
 		return print(Set.of(PrintFlag.PREFIX, PrintFlag.SNAPSHOT));
 	}

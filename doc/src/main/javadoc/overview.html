@@ -245,6 +245,32 @@ iterable
 JStachio also has virtual keys for enum types where the name is a boolean if it matches.
 An example of that is in the {@linkplain io.jstach.jstache.JStache JStache javadoc}.
 
+<h3 id="mustache_fragments">Fragments</h3>
+
+JStachio allows referencing a <a href="https://htmx.org/essays/template-fragments/">
+subset of a template called "fragments"</a>. The subset of a template can be any type
+of section block and the <em>first one found from top to bottom reading with the matching name</em> is picked. 
+The subset of a resource template is referenced with the URI fragment notation.
+<p>
+<strong> If the fragment start tag is "standalone" and all the content inside the
+fragment start tag starts with the same whitespace (or more) as the fragment start tag
+starting whitespace will be stripped from each line of the content. </strong>
+This is to allow a partial references to dictate the indentation based on 
+spec whitespace handling.
+</p>
+Fragment section blocks can be of these type:
+<ul>
+<li><code>{{#fragment}}</code></li>
+<li><code>{{$fragment}}</code></li>
+<li><code>{{&lt;fragment}}</code></li>
+<li><code>{{$fragment}}</code></li>
+</ul>
+
+The semantics of the section block are ignored as well as the rest of the template.
+<p>
+An example of fragments is in the {@linkplain io.jstach.jstache.JStache JStache javadoc}.
+</p>
+
 <h2 id="java_code">Java Code</h2>
 
 Simply annotate a class with <strong>{@link io.jstach.jstache.JStache}</strong> like

@@ -17,30 +17,27 @@ public class JavadocJavascript {
 	static final String VERSION_TOKEN = "_VERSION_";
 	static String version = VERSION_TOKEN;
 
-	public static void main(
-			String[] args) {
+	public static void main(String[] args) {
 		try {
 			if (args.length > 0) {
 				version = args[0];
 			}
 			findFiles();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 	}
 
-	static void findFiles()
-			throws Exception {
+	static void findFiles() throws Exception {
 		String path = "../doc/target/site/apidocs";
-		//Path resourcesPath = Path.of("../doc/target/site/apidocs/resources");
+		// Path resourcesPath = Path.of("../doc/target/site/apidocs/resources");
 		Path resourcesPath = Path.of("../doc/target/site/apidocs/resources");
 
 		var p = Path.of(path);
 		int maxDepth = 100;
-		BiPredicate<Path, BasicFileAttributes> matcher = (
-				_p,
-				_a) -> {
+		BiPredicate<Path, BasicFileAttributes> matcher = (_p, _a) -> {
 			return _p.getFileName().toString().endsWith(".html");
 		};
 		try (Stream<Path> stream = Files.find(p, maxDepth, matcher)) {
@@ -52,9 +49,7 @@ public class JavadocJavascript {
 		}
 	}
 
-	static void addJavascript(
-			Path htmlPath, Path resourcesPath)
-			throws IOException {
+	static void addJavascript(Path htmlPath, Path resourcesPath) throws IOException {
 		List<String> lines = Files.readAllLines(htmlPath);
 		List<String> processed = new ArrayList<>();
 		boolean found = false;
@@ -80,7 +75,7 @@ public class JavadocJavascript {
 			out.println("body tag not found for: " + htmlPath);
 		}
 	}
-	
+
 	static String scriptTag(String src) {
 		return "<script src=\"" + src + "\"></script>";
 	}
