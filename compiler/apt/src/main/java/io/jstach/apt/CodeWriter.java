@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
+import io.jstach.apt.internal.FragmentNotFoundException;
 import io.jstach.apt.internal.NamedTemplate;
 import io.jstach.apt.internal.NamedTemplate.FileTemplate;
 import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
@@ -114,6 +116,9 @@ class CodeWriter {
 			throw new IllegalStateException("Expected root template");
 		}
 
+		/*
+		 * TODO Template path resolution is complicated and spread across to many classes.
+		 */
 		TemplateLoader templateLoader = (name) -> {
 			NamedTemplate nt;
 			if (name.equals(templateName)) {
@@ -123,12 +128,28 @@ class CodeWriter {
 				nt = partials.get(name);
 			}
 			if (nt == null) {
+				try {
+					URI uri = new URI(name);
+					if (uri.getPath() == null || uri.getPath().isBlank()) {
+						throw new URISyntaxException(name, "Template is missing URI path.");
+					}
+				}
+				catch (URISyntaxException e) {
+					throw new IOException(e);
+				}
+
 				nt = new FileTemplate(name, name, stack.elementToLog(), stack.annotationToLog());
 			}
 			if (nt instanceof FileTemplate ft) {
-				String path = ft.path();
-				path = config.pathConfig().resolveTemplatePath(path);
-				return reader(resource, name, path);
+				URI uri;
+				try {
+					uri = config.pathConfig().resolveTemplatePath(rootTemplate, ft);
+				}
+				catch (URISyntaxException e) {
+					throw new IOException(String.format("Resolved Template path \"%s\" is not a valid URI", ft.path()),
+							e);
+				}
+				return reader(resource, name, uri);
 			}
 			else if (nt instanceof InlineTemplate it) {
 				String template = it.template();
@@ -147,27 +168,31 @@ class CodeWriter {
 		}
 	}
 
-	private NamedReader reader(TextFileObject resource, String name, String path) throws IOException {
-		var uri = URI.create(path);
+	private NamedReader reader(TextFileObject resource, String name, URI uri) throws IOException {
 		String fragment = uri.getFragment();
-		String p = uri.getPath();
+		String path = uri.getPath();
 		if (fragment == null || fragment.isBlank()) {
 			return fileReader(resource, name, path);
 		}
 		else {
 			try {
-				return fragmentReader(resource, name, p, fragment);
+				return fragmentReader(resource, name, path, fragment);
 			}
 			catch (ProcessingException e) {
-				throw new IOException("Fragment parsing failure", e);
+				throw new IOException("Fragment parsing failure for path: \"" + path + "\"", e);
 			}
 		}
 	}
 
 	private NamedReader fileReader(TextFileObject resource, String name, String path) throws IOException {
-		return new NamedReader(
-				new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()),
-				name, path);
+		try {
+			return new NamedReader(
+					new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()),
+					name, path);
+		}
+		catch (IllegalArgumentException e) {
+			throw new IOException("Failed to read template \"" + name + "\" for path \"" + path + "\"", e);
+		}
 	}
 
 	private NamedReader fragmentReader(TextFileObject resource, String name, String path, String fragment)
