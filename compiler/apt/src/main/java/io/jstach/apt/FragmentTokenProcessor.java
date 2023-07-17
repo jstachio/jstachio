@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.WhitespaceTokenProcessor.ProcessToken.ProcessHint;
+import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.LoggingSupport;
 import io.jstach.apt.internal.MustacheToken;
 import io.jstach.apt.internal.MustacheToken.TagToken;
@@ -17,7 +18,7 @@ import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.TokenProcessor;
 import io.jstach.apt.internal.token.MustacheTokenizer;
 
-public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
+class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 
 	private final String fragment;
 	private final LoggingSupport logging;
@@ -25,6 +26,7 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 	private final Deque<Section> section = new ArrayDeque<>();
 	private State state = State.OUTSIDE;
 	private String indent = "";
+	private String processed = "";
 
 	private record Section(
 			TagToken token, boolean isFragment) {}
@@ -60,7 +62,8 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 			}
 		}
 		processor.processToken(EOF);
-		return content.toString();
+		processed = content.toString();
+		return reindent(processed, indent);
 	}
 
 	@Override
@@ -78,6 +81,26 @@ public class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 	
 	public String getIndent() {
 		return indent;
+	}
+	
+	static String reindent(String content, String indent) {
+		if (indent.isEmpty()) {
+			return content;
+		}
+		var lines = CodeAppendable.split(content, "\n");
+		StringBuilder sb = new StringBuilder();
+		for (var line : lines) {
+			if (line.equals("\n") || line.equals("\r\n")) {
+				sb.append(line);
+			}
+			else if (line.startsWith(indent)) {
+				sb.append(line.substring(indent.length()));
+			}
+			else {
+				return content;
+			}
+		}
+		return sb.toString();
 	}
 	
 	@Override
