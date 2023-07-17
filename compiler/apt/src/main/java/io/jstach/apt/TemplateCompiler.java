@@ -801,7 +801,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			var mt = positionedToken.innerToken();
 			if (mt instanceof TagToken tt) {
 				if (tt.tagKind().isBeginSection()) {
-					sectionStack.push(new Section<>(tt, positionedToken.position(), block));
+					sectionStack.push(new Section<@Nullable Block>(tt, positionedToken.position(), block));
 				}
 				else if (tt.tagKind().isEndSection()) {
 					var section = sectionStack.pop();
