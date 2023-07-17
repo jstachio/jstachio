@@ -1,8 +1,12 @@
 package io.jstach.apt.internal;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Set;
 
+import io.jstach.apt.internal.NamedTemplate.FileTemplate;
+import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
 import io.jstach.apt.prism.Prisms.Flag;
 
 public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
@@ -49,13 +53,61 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 
 	public record PathConfig(String prefix, String suffix) {
 
-		public String resolveTemplatePath(String path) {
-			String templatePath = path;
+		public URI resolveTemplatePath(NamedTemplate namedTemplate) throws URISyntaxException {
+			if (namedTemplate instanceof FileTemplate ft) {
+				return resolveTemplatePath(new URI(ft.path()));
+			}
+			else if (namedTemplate instanceof InlineTemplate it) {
+				return new URI(it.path());
+			}
+			else {
+				throw new IllegalStateException();
+			}
+		}
+
+		public URI resolveTemplatePath(NamedTemplate rootTemplate, FileTemplate childTemplate)
+				throws URISyntaxException {
+			if (rootTemplate == childTemplate) {
+				return resolveTemplatePath(new URI(rootTemplate.path()));
+			}
+			URI uri = resolveFragmentURI(rootTemplate, new URI(childTemplate.path()));
+			return resolveTemplatePath(uri);
+		}
+
+		public URI resolveTemplatePath(URI uri) throws URISyntaxException {
+			String templatePath = uri.getPath();
+			if (templatePath == null) {
+				templatePath = "";
+			}
 			if (!templatePath.isBlank()) {
 				templatePath = prefix() + templatePath + suffix();
 			}
-			return templatePath;
+			return new URI(uri.getScheme(), uri.getHost(), templatePath, uri.getFragment());
 		}
+
+		static URI resolveFragmentURI(NamedTemplate rootTemplate, URI template) throws URISyntaxException {
+
+			if (rootTemplate instanceof InlineTemplate it) {
+				return template;
+			}
+			var rootUri = new URI(rootTemplate.path());
+			String fragment = template.getFragment();
+			String path = template.getPath();
+			path = path == null ? "" : path;
+
+			if (fragment != null && (fragment.isBlank() || path == null)) {
+				throw new URISyntaxException(template.toString(), "Fragment is blank");
+			}
+			else if (fragment != null && path.isBlank()) {
+				if (rootUri.getFragment() != null) {
+					throw new URISyntaxException(template.toString(), String.format(
+							"Root template already has a fragment so \"%s\" is not valid URI", template.toString()));
+				}
+				return new URI(rootUri.getScheme(), rootUri.getHost(), rootUri.getPath(), fragment);
+			}
+			return template;
+		}
+
 	}
 
 }

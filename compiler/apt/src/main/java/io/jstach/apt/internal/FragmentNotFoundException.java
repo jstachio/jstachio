@@ -1,8 +1,8 @@
-package io.jstach.apt;
+package io.jstach.apt.internal;
 
 import java.io.FileNotFoundException;
 
-class FragmentNotFoundException extends FileNotFoundException {
+public class FragmentNotFoundException extends FileNotFoundException {
 
 	private static final long serialVersionUID = 1L;
 

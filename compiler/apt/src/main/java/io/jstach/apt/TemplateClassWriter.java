@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -211,7 +212,15 @@ class TemplateClassWriter implements LoggingSupplier {
 		NamedTemplate namedTemplate = model.namedTemplate();
 
 		String templateName = (packageName.isEmpty() ? "" : packageName + ".") + rendererClassSimpleName;
-		String templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate().path());
+		String templatePath;
+		try {
+			templatePath = model.pathConfig().resolveTemplatePath(model.namedTemplate()).toString();
+		}
+		catch (URISyntaxException e) {
+			throw new AnnotatedException(
+					"Template path \"" + model.namedTemplate().path() + "\" is not a valid URI: " + e.getMessage(),
+					element);
+		}
 		String templateString = namedTemplate.template();
 		String templateCharsetCode = resolveCharsetCode(model.charset());
 

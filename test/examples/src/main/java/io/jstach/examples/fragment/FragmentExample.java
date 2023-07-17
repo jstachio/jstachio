@@ -24,4 +24,17 @@ public record FragmentExample(String message) {
 	public record FragmentD(String message) {
 
 	}
+
+	/*
+	 * This will fail for now
+	 */
+	// @JStache(template = """
+	// {{$blah}}
+	// REPEAT
+	// {{/blah}}
+	// {{> #blah }}
+	// """)
+	// public record FragmentInline(String message) {
+	//
+	// }
 }
