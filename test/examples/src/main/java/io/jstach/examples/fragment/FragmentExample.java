@@ -16,4 +16,12 @@ public record FragmentExample(String message) {
 	public record FragmentC(String message) {
 
 	}
+
+	/*
+	 * dolar sign one
+	 */
+	@JStache(path = "fragment.mustache#d")
+	public record FragmentD(String message) {
+
+	}
 }

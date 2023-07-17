@@ -30,7 +30,6 @@
 package io.jstach.apt;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -177,7 +176,7 @@ class CodeWriter {
 		var processor = new FragmentTokenProcessor(fragment, config);
 		String result = processor.run(reader);
 		if (!processor.wasFound()) {
-			throw new FileNotFoundException("Fragment not found in resource. fragment=" + fragment + " path=" + path);
+			throw new FragmentNotFoundException(path, fragment);
 		}
 		StringReader sr = new StringReader(result);
 		return new NamedReader(sr, name, path + "#" + fragment);

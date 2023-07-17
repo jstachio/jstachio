@@ -1,10 +1,11 @@
 package io.jstach.examples.fragment;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import io.jstach.examples.fragment.FragmentExample.FragmentC;
+import io.jstach.examples.fragment.FragmentExample.FragmentD;
 
 public class FragmentExampleTest {
 
@@ -27,6 +28,17 @@ public class FragmentExampleTest {
 		String actual = FragmentCRenderer.of().execute(c);
 		String expected = """
 				C
+				Hello
+				""";
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testBlockDollarSigilStyle() throws Exception {
+		FragmentD c = new FragmentD("Hello");
+		String actual = FragmentDRenderer.of().execute(c);
+		String expected = """
+				D
 				Hello
 				""";
 		assertEquals(expected, actual);
