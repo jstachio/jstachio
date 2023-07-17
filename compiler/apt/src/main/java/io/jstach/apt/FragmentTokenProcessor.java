@@ -177,37 +177,10 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 
 		var token = positionedToken.innerToken();
-		String lastSection = lastSection();
 
 		final State nextState;
 		if (token instanceof TagToken tt) {
-			String tagName = tt.name();
-			boolean isFragmentName = fragment.equals(tagName);
-
-			if (tt.tagKind().isBeginSection()) {
-				if (isFragmentName && state == State.OUTSIDE) {
-					section.push(new Section(tt, true));
-					nextState = State.INSIDE;
-				}
-				else {
-					section.push(new Section(tt, false));
-					nextState = this.state;
-				}
-
-			}
-			else if (tt.tagKind().isEndSection()) {
-				validateEndSection(lastSection, tt);
-				var sec = section.pop();
-				if (sec.isFragment()) {
-					nextState = State.FOUND;
-				}
-				else {
-					nextState = this.state;
-				}
-			}
-			else {
-				nextState = this.state;
-			}
+			nextState = handleTag(tt, this.state);
 		}
 		else if (token.isEOF() && this.state != State.FOUND) {
 			nextState = State.NOT_FOUND;
@@ -229,7 +202,41 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 	}
 
-	private void validateEndSection(String lastSection, TagToken tt) throws ProcessingException {
+	private State handleTag(TagToken tt, final State state) throws ProcessingException {
+		final State nextState;
+		String tagName = tt.name();
+		@Nullable
+		String lastSection = lastSection();
+		boolean isFragmentName = fragment.equals(tagName);
+
+		if (tt.tagKind().isBeginSection()) {
+			if (isFragmentName && state == State.OUTSIDE) {
+				section.push(new Section(tt, true));
+				nextState = State.INSIDE;
+			}
+			else {
+				section.push(new Section(tt, false));
+				nextState = state;
+			}
+
+		}
+		else if (tt.tagKind().isEndSection()) {
+			validateEndSection(lastSection, tt);
+			var sec = section.pop();
+			if (sec.isFragment()) {
+				nextState = State.FOUND;
+			}
+			else {
+				nextState = state;
+			}
+		}
+		else {
+			nextState = state;
+		}
+		return nextState;
+	}
+
+	private void validateEndSection(@Nullable String lastSection, TagToken tt) throws ProcessingException {
 		if (lastSection == null) {
 			throw new ProcessingException(position, "Close section for no open section: " + tt.name());
 		}
