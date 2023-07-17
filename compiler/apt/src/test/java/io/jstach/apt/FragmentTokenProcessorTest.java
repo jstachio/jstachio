@@ -12,9 +12,7 @@ import io.jstach.apt.internal.ProcessingException;
 public class FragmentTokenProcessorTest {
 
 	@Test
-	public void testRun()
-			throws ProcessingException,
-			IOException {
+	public void testRun() throws ProcessingException, IOException {
 		String template = """
 				<html>
 				    <body>
@@ -54,9 +52,7 @@ public class FragmentTokenProcessorTest {
 	}
 
 	@Test
-	public void testReindent()
-			throws ProcessingException,
-			IOException {
+	public void testReindent() throws ProcessingException, IOException {
 		String template = """
 				<html>
 				    <body>

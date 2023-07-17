@@ -1,0 +1,17 @@
+<body>
+  {{#fragment-a}}
+  <div id="a">
+  A
+  {{message}}
+  </div>
+  {{/fragment-a}}
+  {{#b}}
+  <div id="b">
+  B
+    {{#c}}
+    C
+    {{message}}
+    {{/c}}
+  </div>
+  {{/b}}
+</body>

@@ -21,31 +21,34 @@ import io.jstach.apt.internal.token.MustacheTokenizer;
 class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 
 	private final String fragment;
+
 	private final LoggingSupport logging;
+
 	private final StringBuilder content = new StringBuilder();
+
 	private final Deque<Section> section = new ArrayDeque<>();
+
 	private State state = State.OUTSIDE;
+
 	private String indent = "";
+
 	private String processed = "";
 
-	private record Section(
-			TagToken token, boolean isFragment) {}
-
-	private enum State {
-		INSIDE,
-		OUTSIDE,
-		FOUND,
-		NOT_FOUND;
+	private record Section(TagToken token, boolean isFragment) {
 	}
 
-	public FragmentTokenProcessor(
-			String fragment,
-			LoggingSupport logging) {
+	private enum State {
+
+		INSIDE, OUTSIDE, FOUND, NOT_FOUND;
+
+	}
+
+	public FragmentTokenProcessor(String fragment, LoggingSupport logging) {
 		super();
 		this.fragment = fragment;
 		this.logging = logging;
 	}
-	
+
 	public String run(NamedReader reader) throws ProcessingException, IOException {
 		TokenProcessor<@Nullable Character> processor = MustacheTokenizer.createInstance(reader.name(), this);
 		int readResult;
@@ -78,11 +81,15 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 			return null;
 		return s.token().name();
 	}
-	
+
 	public String getIndent() {
 		return indent;
 	}
-	
+
+	public boolean wasFound() {
+		return State.FOUND == state;
+	}
+
 	static String reindent(String content, String indent) {
 		if (indent.isEmpty()) {
 			return content;
@@ -102,11 +109,9 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 		return sb.toString();
 	}
-	
+
 	@Override
-	protected void processTokenGroup(
-			List<ProcessToken> tokens)
-			throws ProcessingException {
+	protected void processTokenGroup(List<ProcessToken> tokens) throws ProcessingException {
 		if (hasFragmentStart(tokens.stream())) {
 			var first = tokens.get(0);
 			if (first.hint() == ProcessHint.INDENT) {
@@ -129,7 +134,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 			super.processTokenGroup(tokens);
 		}
 	}
-	
+
 	boolean hasFragmentEnd(Iterable<ProcessToken> tokens) {
 		for (var pt : tokens) {
 			if (isFragmentEnd(pt)) {
@@ -138,11 +143,11 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 		return false;
 	}
-	
+
 	boolean hasFragmentStart(Stream<ProcessToken> tokens) {
 		return tokens.filter(this::isFragmentStart).findFirst().isPresent();
 	}
-	
+
 	boolean isFragmentEnd(ProcessToken token) {
 		var mt = token.token().innerToken();
 		var sec = section.peek();
@@ -151,13 +156,13 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 		return false;
 	}
-	
+
 	boolean isFragmentStart(ProcessToken token) {
 		if (this.state != State.OUTSIDE) {
 			return false;
 		}
 		var mt = token.token().innerToken();
-		
+
 		if (mt instanceof TagToken tt && tt.tagKind().isBeginSection() && tt.name().equals(fragment)) {
 			return true;
 		}
@@ -165,14 +170,12 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 	}
 
 	@Override
-	protected void handleToken(
-			PositionedToken<MustacheToken> positionedToken)
-			throws ProcessingException {
-		
+	protected void handleToken(PositionedToken<MustacheToken> positionedToken) throws ProcessingException {
+
 		if (state == State.FOUND) {
 			return;
 		}
-		
+
 		var token = positionedToken.innerToken();
 		String lastSection = lastSection();
 
@@ -180,7 +183,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		if (token instanceof TagToken tt) {
 			String tagName = tt.name();
 			boolean isFragmentName = fragment.equals(tagName);
-			
+
 			if (tt.tagKind().isBeginSection()) {
 				if (isFragmentName && state == State.OUTSIDE) {
 					section.push(new Section(tt, true));
@@ -190,7 +193,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 					section.push(new Section(tt, false));
 					nextState = this.state;
 				}
-				
+
 			}
 			else if (tt.tagKind().isEndSection()) {
 				validateEndSection(lastSection, tt);
@@ -206,7 +209,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 				nextState = this.state;
 			}
 		}
-		else if( token.isEOF() && this.state != State.FOUND) {
+		else if (token.isEOF() && this.state != State.FOUND) {
 			nextState = State.NOT_FOUND;
 		}
 		else {
@@ -227,19 +230,14 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		}
 	}
 
-	private void validateEndSection(
-			String lastSection,
-			TagToken tt)
-			throws ProcessingException {
+	private void validateEndSection(String lastSection, TagToken tt) throws ProcessingException {
 		if (lastSection == null) {
 			throw new ProcessingException(position, "Close section for no open section: " + tt.name());
 		}
 		if (!lastSection.equals(tt.name())) {
-			throw new ProcessingException(
-					position,
+			throw new ProcessingException(position,
 					"Close section of: " + tt.name() + " does not match current open section: " + lastSection);
 		}
 	}
-
 
 }

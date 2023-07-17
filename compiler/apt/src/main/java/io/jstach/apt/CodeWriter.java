@@ -30,10 +30,12 @@
 package io.jstach.apt;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
@@ -127,8 +129,7 @@ class CodeWriter {
 			if (nt instanceof FileTemplate ft) {
 				String path = ft.path();
 				path = config.pathConfig().resolveTemplatePath(path);
-				return new NamedReader(new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)),
-						resource.charset()), name, path);
+				return reader(resource, name, path);
 			}
 			else if (nt instanceof InlineTemplate it) {
 				String template = it.template();
@@ -145,6 +146,41 @@ class CodeWriter {
 				context, templateCompilerType, config.flags())) {
 			templateCompiler.run();
 		}
+	}
+
+	private NamedReader reader(TextFileObject resource, String name, String path) throws IOException {
+		var uri = URI.create(path);
+		String fragment = uri.getFragment();
+		String p = uri.getPath();
+		if (fragment == null || fragment.isBlank()) {
+			return fileReader(resource, name, path);
+		}
+		else {
+			try {
+				return fragmentReader(resource, name, p, fragment);
+			}
+			catch (ProcessingException e) {
+				throw new IOException("Fragment parsing failure", e);
+			}
+		}
+	}
+
+	private NamedReader fileReader(TextFileObject resource, String name, String path) throws IOException {
+		return new NamedReader(
+				new InputStreamReader(new BufferedInputStream(resource.openInputStream(path)), resource.charset()),
+				name, path);
+	}
+
+	private NamedReader fragmentReader(TextFileObject resource, String name, String path, String fragment)
+			throws IOException, ProcessingException {
+		var reader = fileReader(resource, name, path);
+		var processor = new FragmentTokenProcessor(fragment, config);
+		String result = processor.run(reader);
+		if (!processor.wasFound()) {
+			throw new FileNotFoundException("Fragment not found in resource. fragment=" + fragment + " path=" + path);
+		}
+		StringReader sr = new StringReader(result);
+		return new NamedReader(sr, name, path + "#" + fragment);
 	}
 
 	public ProcessingConfig getConfig() {
