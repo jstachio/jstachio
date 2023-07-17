@@ -115,9 +115,9 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 		if (hasFragmentStart(tokens.stream())) {
 			var first = tokens.get(0);
 			if (first.hint() == ProcessHint.INDENT) {
-				StringBuilder indent = new StringBuilder();
-				first.token().innerToken().appendRawText(indent);
-				this.indent = indent.toString();
+				StringBuilder leadingSpace = new StringBuilder();
+				first.token().innerToken().appendRawText(leadingSpace);
+				this.indent = leadingSpace.toString();
 			}
 		}
 		if (this.state == State.INSIDE) {
@@ -223,9 +223,8 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 					token.appendRawText(content);
 				}
 			}
-			case OUTSIDE -> {
-			}
-			case FOUND, NOT_FOUND -> {
+			case OUTSIDE, FOUND, NOT_FOUND -> {
+				// Sonar.. I am almost done with you. I want exhaustive here.
 			}
 		}
 	}
