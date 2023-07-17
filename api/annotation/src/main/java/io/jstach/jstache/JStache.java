@@ -149,6 +149,66 @@ import java.util.Optional;
  * You may also remap partial names via {@link io.jstach.jstache.JStachePartial} to a
  * different location as well as to an inline template (string literal).
  *
+ * <h4 id="_fragments">Fragments</h4>
+ *
+ * JStachio allows referencing a <a href="https://htmx.org/essays/template-fragments/">
+ * subset of a template called "fragments"</a>. The subset of a template can be any type
+ * of section block and the <em>first one found from top to bottom reading with the
+ * matching name</em> is picked. The subset of a resource template is referenced with the
+ * URI fragment notation.
+ *
+ * <p>
+ * For example let us say we have a template like <code>/contacts/details.mustache</code>:
+ * <pre><code class="language-hbs">
+ * &lt;html&gt;
+ *     &lt;body&gt;
+ *         &lt;div hx-target="this"&gt;
+ *           {{#archive-ui}}
+ *             {{#contact.archived}}
+ *             &lt;button hx-patch="/contacts/${contact.id}/unarchive"&gt;Unarchive&lt;/button&gt;
+ *             {{/contact.archived}}
+ *             {{^contact.archived}}
+ *             &lt;button hx-delete="/contacts/${contact.id}"&gt;Archive&lt;/button&gt;
+ *             {{/contact.archived}}
+ *           {{/archive-ui}}
+ *         &lt;/div&gt;
+ *         &lt;h3&gt;Contact&lt;/h3&gt;
+ *         &lt;p&gt;${contact.email}&lt;/p&gt;
+ *     &lt;/body&gt;
+ * &lt;/html&gt;
+ * </code> </pre>
+ *
+ * <pre><code class="language-java">
+ * &#64;JStache("/contacts/details.mustache#archive-ui")
+ * public record ContactDetails(Contact contact){}
+ * </code> </pre>
+ *
+ * The effective template for <code>ContactDetails</code> would be:
+ *
+ * <pre><code class="language-hbs">
+ *   {{#contact.archived}}
+ *   &lt;button hx-patch="/contacts/${contact.id}/unarchive"&gt;Unarchive&lt;/button&gt;
+ *   {{/contact.archived}}
+ *   {{^contact.archived}}
+ *   &lt;button hx-delete="/contacts/${contact.id}"&gt;Archive&lt;/button&gt;
+ *   {{/contact.archived}}
+ * </code> </pre>
+ *
+ * <strong> If the fragment start tag is "standalone" and all the content inside the
+ * fragment start tag starts with the same whitespace (or more) as the fragment start tag
+ * starting whitespace will be stripped from each line of the content. </strong> This is
+ * to allow a partial references to dictate the indentation based on spec whitespace
+ * handling.
+ * <p>
+ * Fragment section blocks can be of these type:
+ * <ul>
+ * <li><code>{{#fragment}}</code></li>
+ * <li><code>{{$fragment}}</code></li>
+ * <li><code>{{&lt;fragment}}</code></li>
+ * <li><code>{{$fragment}}</code></li>
+ * </ul>
+ *
+ * The semantics of the section block are ignored as well as the rest of the template.
  *
  * <h4 id="_optional_spec">Optional Spec Support</h4> JStachio implements some optional
  * parts of the specification. Below shows what is and is not supported.
