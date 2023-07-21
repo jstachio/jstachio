@@ -3,6 +3,7 @@ package io.jstach.apt.internal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Set;
 
 import io.jstach.apt.internal.NamedTemplate.FileTemplate;
@@ -33,12 +34,12 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 		t.printStackTrace(errorWriter());
 	}
 
-	default String resourcesPath() {
-		return "src/main/resources";
+	default List<String> resourcesPaths() {
+		return List.of("src/main/resources");
 	}
 
 	default boolean fallbackToFilesystem() {
-		return !resourcesPath().isBlank();
+		return !resourcesPaths().isEmpty();
 	}
 
 	PathConfig pathConfig();

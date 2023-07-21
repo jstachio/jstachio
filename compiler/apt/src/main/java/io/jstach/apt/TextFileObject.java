@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
@@ -118,17 +119,35 @@ class TextFileObject {
 				// target/classes/dummy
 				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
 			}
-			Path filePath = Path.of(config.resourcesPath(), name);
-			Path fullPath = filePath.isAbsolute() ? filePath : projectPath.resolve(filePath);
+			String resourceName = name;
+			List<Path> fullPaths = config.resourcesPaths().stream()
+					.map(rp -> resolvePath(projectPath, rp, resourceName)).toList();
 
-			if (config.isDebug()) {
-				config.debug("File not found with Filer. Trying direct file access. name:" + name + ", path: "
-						+ fullPath + ", dummy: " + dummy.toUri());
+			for (Path fullPath : fullPaths) {
+				if (config.isDebug()) {
+					config.debug("File not found with Filer. Trying direct file access. name:" + resourceName
+							+ ", path: " + fullPath + ", dummy: " + dummy.toUri());
+				}
+				if (Files.isReadable(fullPath)) {
+					return Files.newInputStream(fullPath);
+				}
 			}
-			return Files.newInputStream(fullPath);
+			StringBuilder sb = new StringBuilder();
+			sb.append("Failed to find template resource: '").append(name).append("'. Tried the following locations: ");
+			sb.append("'").append(resource.toUri()).append("'");
+			for (Path p : fullPaths) {
+				sb.append(", '").append(p.toString()).append("'");
+			}
+
+			throw new IOException(sb.toString());
 		}
 
 		return resource.openInputStream();
+	}
+
+	private static Path resolvePath(Path projectPath, String resourcePath, String name) {
+		Path filePath = Path.of(resourcePath, name);
+		return filePath.isAbsolute() ? filePath : projectPath.resolve(filePath);
 	}
 
 	Charset charset() {

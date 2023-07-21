@@ -586,12 +586,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 
 		@Override
-		public String resourcesPath() {
+		public List<String> resourcesPaths() {
 			String path = options.get(JSTACHE_RESOURCES_PATH_OPTION);
 			if (path != null) {
-				return path;
+				return Stream.of(path.split(",")).filter(p -> !p.isBlank()).toList();
 			}
-			return ProcessingConfig.super.resourcesPath();
+			return ProcessingConfig.super.resourcesPaths();
 		}
 
 		@Override
