@@ -111,12 +111,28 @@ public final class Templates {
 	 * template was found or <code>null</code> if not found.
 	 */
 	public static @Nullable TemplateInfo findTemplateOrNull(Class<?> modelType, JStachioConfig config) {
+		if (isIgnoredType(modelType)) {
+			return null;
+		}
 		try {
 			return findTemplate(modelType, config, JStachioConfig.noopLogger());
 		}
 		catch (Exception e) {
 			return null;
 		}
+	}
+
+	static boolean isIgnoredType(Class<?> modelType) {
+		if (modelType == String.class || modelType == Map.class || modelType == Object.class) {
+			return true;
+		}
+		if (modelType.isPrimitive()) {
+			return true;
+		}
+		if (modelType.getName().startsWith("java.")) {
+			return true;
+		}
+		return false;
 	}
 
 	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
