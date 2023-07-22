@@ -102,6 +102,9 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		if (TemplateModel.class.isAssignableFrom(modelType)) {
 			return true;
 		}
+		if (Templates.isIgnoredType(modelType)) {
+			return false;
+		}
 		return extensions().getTemplateFinder().supportsType(modelType);
 	}
 
