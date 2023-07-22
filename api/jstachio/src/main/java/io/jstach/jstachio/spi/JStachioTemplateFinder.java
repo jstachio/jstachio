@@ -57,6 +57,9 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	 */
 	default @Nullable TemplateInfo findOrNull(Class<?> modelType) {
 		Objects.requireNonNull(modelType, "modelType");
+		if (Templates.isIgnoredType(modelType)) {
+			return null;
+		}
 		try {
 			return findTemplate(modelType);
 		}
@@ -74,6 +77,9 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	 * @throws NullPointerException if the modelType is null
 	 */
 	default boolean supportsType(Class<?> modelType) {
+		if (Templates.isIgnoredType(modelType)) {
+			return false;
+		}
 		var t = findOrNull(modelType);
 		if (t == null) {
 			return false;
@@ -271,6 +277,8 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 
 	private final ClassValue<TemplateInfo> cache;
 
+	private final ClassValue<TemplateInfo> nullCache;
+
 	private final JStachioTemplateFinder delegate;
 
 	public ClassValueCacheTemplateFinder(JStachioTemplateFinder delegate) {
@@ -289,11 +297,26 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 				}
 			}
 		};
+		this.nullCache = new ClassValue<>() {
+			@Override
+			protected @Nullable TemplateInfo computeValue(@Nullable Class<?> type) {
+				return delegate.findOrNull(type);
+
+			}
+		};
 	}
 
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
 		return cache.get(modelType);
+	}
+
+	@Override
+	public @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+		if (Templates.isIgnoredType(modelType)) {
+			return null;
+		}
+		return this.nullCache.get(modelType);
 	}
 
 	@Override
