@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -61,6 +62,9 @@ public class ViewSetupHandlerInterceptor implements HandlerInterceptor, WebMvcCo
 		if (modelAndView != null) {
 			if (modelAndView.getView() instanceof JStachioModelView) {
 				return (JStachioModelView) modelAndView.getView();
+			}
+			if (modelAndView.getView() instanceof View) {
+				return null;
 			}
 			if (this.context.getBean(modelAndView.getViewName()) instanceof JStachioModelView view) {
 				return view;
