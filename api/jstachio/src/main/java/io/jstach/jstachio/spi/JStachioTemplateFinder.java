@@ -114,8 +114,12 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 	 * Decorates a template finder with a cache using {@link ClassValue} with the
 	 * modelType as the key.
 	 * <p>
-	 * <em>While the finder does not provide any eviction the cache will not prevent
-	 * garbage collection of the model classes.</em>
+	 * <em>The returned finder will only call {@link #findTemplate(Class)} on the passed
+	 * in delegate finder to resolve {@link #supportsType(Class)} and
+	 * {@link #findOrNull(Class)}! </em>
+	 * <p>
+	 * While the finder does not provide any eviction the cache will not prevent garbage
+	 * collection of the model classes.
 	 * @param finder to be decorated unless the finder is already decorated thus it is a
 	 * noop to repeateadly call this method on already cached template finder.
 	 * @return caching template finder
@@ -180,8 +184,9 @@ public non-sealed interface JStachioTemplateFinder extends JStachioExtension {
 
 		@Override
 		default @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+			var resolvedType = Templates.findJStache(modelType).getKey();
 			for (var t : templates()) {
-				if (t.supportsType(modelType)) {
+				if (t.supportsType(resolvedType)) {
 					return t;
 				}
 			}
@@ -239,8 +244,12 @@ class TemplateNotFoundException extends NoSuchElementException {
 		this(modelType, errorMessage(modelType), (Throwable) null);
 	}
 
+	public TemplateNotFoundException(String message, Class<?> modelType) {
+		this(modelType, message + " " + errorMessage(modelType), (Throwable) null);
+	}
+
 	protected static String errorMessage(Class<?> modelType) {
-		return "template not found for type: " + modelType;
+		return "Template not found for type: " + modelType;
 	}
 
 	public Class<?> modelType() {

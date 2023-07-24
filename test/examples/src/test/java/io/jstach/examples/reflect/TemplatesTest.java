@@ -1,8 +1,9 @@
 package io.jstach.examples.reflect;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
@@ -33,6 +34,20 @@ public class TemplatesTest {
 
 	}
 
+	@JStache(template = "{{message}}")
+	public interface UseInterface {
+
+		public String message();
+
+	}
+
+	@JStache(template = "{{message}}")
+	public record UseInterfaceAnnotated(String message) implements UseInterface {
+	}
+
+	public record UseInterfaceNotAnnotated(String message) implements UseInterface {
+	}
+
 	@Test
 	public void testTemplateInfoReflection() throws Exception {
 		TemplateInfo b = Templates.getInfoByReflection(UsePackage.class);
@@ -58,6 +73,17 @@ public class TemplatesTest {
 		TemplateInfo b = Templates.getInfoByReflection(UseResource.class);
 		Template<UseResource> a = Templates.getTemplate(UseResource.class);
 		assertTemplateEquals(a, b);
+	}
+
+	@Test
+	public void testFindOnUseInterfaceNotAnnotated() throws Exception {
+		var t = Templates.findTemplate(UseInterfaceNotAnnotated.class, s -> null);
+		assertNotNull(t);
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testGetOnUseInterfaceNotAnnotatedShouldNotFind() throws Exception {
+		Templates.getTemplate(UseInterfaceNotAnnotated.class);
 	}
 
 	@Test

@@ -78,7 +78,8 @@ public final class Templates {
 
 	/**
 	 * Finds a {@link Template} if possible otherwise falling back to a
-	 * {@link TemplateInfo} based on annotation metadata. This method is effectively calls
+	 * {@link TemplateInfo} based on annotation metadata. A call first resolves the type
+	 * that is actually annotated with JStache and then effectively calls
 	 * {@link #getTemplate(Class)} first and if that fails possibly tries
 	 * {@link #getInfoByReflection(Class)} based on config.
 	 * @apiNote Callers can do an <code>instanceof Template t</code> to see if a generated
@@ -97,7 +98,8 @@ public final class Templates {
 
 	/**
 	 * Finds a {@link Template} if possible otherwise falling back to a
-	 * {@link TemplateInfo} based on annotation metadata. This method is effectively calls
+	 * {@link TemplateInfo} based on annotation metadata. A call first resolves the type
+	 * that is actually annotated with JStache and then effectively calls
 	 * {@link #getTemplate(Class)} first and if that fails possibly tries
 	 * {@link #getInfoByReflection(Class)} based on config. Unlike
 	 * {@link #findTemplate(Class, JStachioConfig)} this call will not produce any logging
@@ -122,7 +124,18 @@ public final class Templates {
 		}
 	}
 
+	/**
+	 * Checks to see if the model type is a type that is always ignored for faster
+	 * {@link JStachioTemplateFinder#supportsType(Class)} checking.
+	 *
+	 * TODO possible candidate for public on minor release
+	 * @param modelType the jstache annotated type
+	 * @return <code>true</code> if the type should be ignored.
+	 */
 	static boolean isIgnoredType(Class<?> modelType) {
+		/*
+		 * TODO JMH as this method will be called quite frequently
+		 */
 		if (modelType == String.class || modelType == Map.class || modelType == Object.class) {
 			return true;
 		}
@@ -135,6 +148,41 @@ public final class Templates {
 		return false;
 	}
 
+	/**
+	 * Finds the closest JStache annotation on this class or parent classes (super and
+	 * interfaces).
+	 *
+	 * TODO possible candidate to make public on minor release
+	 * @param c the model type to search on.
+	 * @return a tuple of found class annotated and the jstache annotation.
+	 */
+	static Entry<Class<?>, JStache> findJStache(final Class<?> modelType) {
+		var jstache = findJStacheOrNull(modelType);
+		if (jstache == null) {
+			throw new TemplateNotFoundException("JStache annotation was not found on type or parents.", modelType);
+		}
+		return jstache;
+	}
+
+	/**
+	 * Finds the closest JStache annotation on this class or parent classes (super and
+	 * interfaces).
+	 *
+	 * TODO possible candidate to make public on minor release
+	 * @param c the model type to search on.
+	 * @return a tuple of found class annotated and the jstache annotation.
+	 */
+	static @Nullable Entry<Class<?>, JStache> findJStacheOrNull(final Class<?> modelType) {
+		if (isIgnoredType(modelType))
+			return null;
+		return Stream.concat(parents(modelType), interfaces(modelType)) //
+				.filter(_c -> !isIgnoredType(_c)) //
+				.filter(_c -> _c.getDeclaredAnnotation(JStache.class) != null) //
+				.map(_c -> Map.<Class<?>, JStache>entry(_c, _c.getDeclaredAnnotation(JStache.class))) //
+				.findFirst() //
+				.orElse(null);
+	}
+
 	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
 		EnumSet<TemplateLoadStrategy> strategies = EnumSet.noneOf(TemplateLoadStrategy.class);
 
@@ -144,10 +192,12 @@ public final class Templates {
 			}
 		}
 		var classLoaders = collectClassLoaders(modelType.getClassLoader());
+		var jstache = findJStache(modelType);
+		var resolvedType = jstache.getKey();
 
 		Exception error;
 		try {
-			Template<?> r = Templates.getTemplate(modelType, strategies, classLoaders, logger);
+			Template<?> r = Templates.getTemplate(resolvedType, strategies, classLoaders, logger);
 			return r;
 		}
 		catch (Exception e) {
@@ -155,11 +205,12 @@ public final class Templates {
 		}
 		if (!config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
 			if (logger.isLoggable(Level.WARNING)) {
-				logger.log(Level.WARNING,
-						"Could not find generated template and will try reflection for model type: " + modelType,
-						error);
+				String message = String
+						.format("Could not find generated template and will try reflection for model type:"
+								+ "'%s', annotated type: '%s'", modelType, resolvedType);
+				logger.log(Level.WARNING, message, error);
 			}
-			return getInfoByReflection(modelType);
+			return getInfoByReflection(resolvedType);
 
 		}
 		throw error;
@@ -200,7 +251,9 @@ public final class Templates {
 	}
 
 	/**
-	 * Finds a template by reflection or an exception is thrown.
+	 * Finds a template by reflection or an exception is thrown. <em>Because the return
+	 * template is parameterized a template matching the exact type is returned and
+	 * inheritance either via interfaces or super class is not checked!</em>
 	 * @param <T> the model type
 	 * @param modelType the model type
 	 * @param strategies load strategies
@@ -214,7 +267,6 @@ public final class Templates {
 	 */
 	public static <T> Template<T> getTemplate(Class<T> modelType, Iterable<TemplateLoadStrategy> strategies,
 			Iterable<ClassLoader> classLoaders, System.Logger logger) throws Exception {
-
 		for (TemplateLoadStrategy s : strategies) {
 			if (logger.isLoggable(Level.DEBUG)) {
 				logger.log(Level.DEBUG, "For modelType: \"" + modelType + "\" trying strategy: \"" + s + "\"");
@@ -244,7 +296,8 @@ public final class Templates {
 	private static final Set<TemplateLoadStrategy> ALL_STRATEGIES = EnumSet.allOf(TemplateLoadStrategy.class);
 
 	/**
-	 * Strategy to load templates dynamically.
+	 * Strategy to load templates dynamically. <em>These strategies expect the exact type
+	 * and not a super type!</em>
 	 *
 	 * @author agentgt
 	 *
@@ -391,6 +444,19 @@ public final class Templates {
 	}
 
 	private static Stream<Class<?>> enclosing(Class<?> e) {
+		return findClasses(e, Class::getEnclosingClass);
+	}
+
+	private static Stream<Class<?>> parents(Class<?> e) {
+		return findClasses(e, Class::getSuperclass);
+	}
+
+	private static Stream<Class<?>> interfaces(Class<?> clazz) {
+		return Stream.concat(Stream.of(clazz.getInterfaces()),
+				Stream.of(clazz.getInterfaces()).flatMap(interfaceClass -> interfaces(interfaceClass)));
+	}
+
+	private static Stream<Class<?>> findClasses(Class<?> e, Function<Class<?>, @Nullable Class<?>> f) {
 		AbstractSpliterator<Class<?>> split = new AbstractSpliterator<Class<?>>(Long.MAX_VALUE, 0) {
 			@Nullable
 			Class<?> current = e;
@@ -401,7 +467,7 @@ public final class Templates {
 					return false;
 				}
 				var c = current;
-				current = current.getEnclosingClass();
+				current = f.apply(c);
 				action.accept(c);
 				return true;
 			}
@@ -414,7 +480,7 @@ public final class Templates {
 		ServiceLoader<TemplateProvider> loader = ServiceLoader.load(TemplateProvider.class, classLoader);
 		return findTemplates(loader, TemplateConfig.empty(), e -> {
 			logger.log(Level.ERROR, "Template provider failed to load. Skipping it.", e);
-		}).filter(t -> t.supportsType(clazz)).findFirst().orElse(null);
+		}).filter(t -> clazz.equals(t.modelClass())).findFirst().orElse(null);
 	}
 
 	/**

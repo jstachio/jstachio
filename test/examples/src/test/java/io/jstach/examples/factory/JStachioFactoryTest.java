@@ -39,7 +39,7 @@ public class JStachioFactoryTest {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NoSuchElementException.class)
 	public void testMissingTemplate() throws Exception {
 		JStachio jstachio = JStachioFactory.builder().build();
 		jstachio.execute(new NotRegistered());
@@ -66,10 +66,9 @@ public class JStachioFactoryTest {
 			fail("expected exception");
 		}
 		catch (NoSuchElementException e) {
-			assertEquals(
-					"template not found for type: class io.jstach.examples.factory.JStachioFactoryTest$NotRegistered",
+			assertEquals("JStache annotation was not found on type or parents. "
+					+ "Template not found for type: class io.jstach.examples.factory.JStachioFactoryTest$NotRegistered",
 					e.getMessage());
-			System.out.println(e.getMessage());
 		}
 
 	}
