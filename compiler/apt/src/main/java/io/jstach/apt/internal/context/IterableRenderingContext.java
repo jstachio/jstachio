@@ -45,6 +45,7 @@ import io.jstach.apt.internal.util.ToStringTypeVisitor;
 
 /**
  * @author Victor Nazarov
+ * @author agentgt
  */
 class IterableRenderingContext implements RenderingContext {
 

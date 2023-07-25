@@ -802,6 +802,9 @@ class TemplateClassWriter implements LoggingSupplier {
 					+ idt + _Formatter + " " + variables.formatter() + "," //
 					+ idt + _Escaper + " " + variables.escaper() + ") throws java.io.IOException {");
 		}
+		if (jstachio) {
+			printContextNode(variables, dataName);
+		}
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
@@ -857,6 +860,8 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Formatter + " " + variables.formatter() + "," //
 				+ idt + _Escaper + " " + variables.escaper() + "," //
 				+ idt + _Appender + " " + variables.appender() + ") throws E {");
+
+		printContextNode(variables, dataName);
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
@@ -870,6 +875,18 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		codeWriter.setFormatCallType(formatCallType);
 
+	}
+
+	private void printContextNode(VariableContext variables, String dataName) {
+		println("        " + renderContextNode(variables, dataName));
+		println("        " + Prisms.CONTEXT_NODE_CLASS + ".suppressUnused(" + variables.context() + ");");
+	}
+
+	private static String renderContextNode(VariableContext variables, String dataName) {
+		String contextCreator = Prisms.CONTEXT_NODE_CLASS + ".resolve(" + dataName + "," + variables.unescapedWriter()
+				+ ")";
+		String contextDeclare = Prisms.CONTEXT_NODE_CLASS + " " + variables.context();
+		return contextDeclare + " = " + contextCreator + ";";
 	}
 
 	private static final Map<Charset, String> STANDARD_CHARSETS = Map.of( //
