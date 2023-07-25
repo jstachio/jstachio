@@ -239,7 +239,7 @@ public class RenderingCodeGenerator {
 					yield createIterableContext(childType, expression, enclosing);
 				}
 				default: {
-					yield createMapNodeContext(expression, enclosing);
+					yield createContextNodeContext(expression, enclosing);
 				}
 			};
 		}
@@ -330,7 +330,7 @@ public class RenderingCodeGenerator {
 		return map;
 	}
 
-	private RenderingContext createMapNodeContext(JavaExpression expression, RenderingContext enclosing) {
+	private RenderingContext createContextNodeContext(JavaExpression expression, RenderingContext enclosing) {
 		RenderingContext nullable = nullableRenderingContext(expression, enclosing);
 		DeclaredType mapType = (DeclaredType) expression.type();
 		ContextNodeRenderingContext map = new ContextNodeRenderingContext(expression, javaModel.asElement(mapType),
@@ -349,7 +349,7 @@ public class RenderingCodeGenerator {
 		IterableRenderingContext iterable = new IterableRenderingContext(expression, elementVariableName,
 				indexVariableName, variables);
 		if (expression.model().isType(expression.type(), knownTypes._ContextNode)) {
-			return createMapNodeContext(iterable.elementExpession(), iterable);
+			return createContextNodeContext(iterable.elementExpession(), iterable);
 		}
 		return createRenderingContext(ContextType.SECTION_VAR, iterable.elementExpession(), iterable);
 	}

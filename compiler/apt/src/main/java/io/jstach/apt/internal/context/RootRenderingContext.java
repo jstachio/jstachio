@@ -56,12 +56,24 @@ class RootRenderingContext implements RenderingContext {
 
 	@Override
 	public @Nullable JavaExpression get(String name) throws ContextException {
+		return _get(name);
+	}
+
+	private JavaExpression _get(String name) {
+		if (name.equals("@context")) {
+			var contextNodeType = JavaLanguageModel.getInstance().knownTypes()._ContextNode.orElse(null);
+			if (contextNodeType == null) {
+				return null;
+			}
+			return JavaLanguageModel.getInstance().expression(variables.context(),
+					contextNodeType.typeElement().asType());
+		}
 		return null;
 	}
 
 	@Override
 	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) {
-		return null;
+		return _get(name);
 	}
 
 	@Override

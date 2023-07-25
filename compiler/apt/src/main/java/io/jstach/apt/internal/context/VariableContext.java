@@ -52,6 +52,8 @@ public class VariableContext {
 
 	public static String TEXT = "TEXT";
 
+	public static String CONTEXT = "_context";
+
 	public static VariableContext createDefaultContext(NullChecking nullChecking) {
 		TreeMap<String, Integer> variables = new TreeMap<>();
 		variables.put(ESCAPER, 1);
@@ -170,6 +172,10 @@ public class VariableContext {
 
 	public boolean isEscaped() {
 		return escaped;
+	}
+
+	public String context() {
+		return CONTEXT;
 	}
 
 	public NullChecking nullChecking() {
