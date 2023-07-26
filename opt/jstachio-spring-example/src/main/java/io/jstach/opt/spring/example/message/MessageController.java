@@ -31,4 +31,13 @@ public class MessageController {
 		return JStachioModelView.of(new MessagePage());
 	}
 
+	/**
+	 * Here we use the return value type to construct a {@link View} that will be
+	 * rendered.
+	 */
+	@GetMapping(value = "/msg")
+	public MessagePage msg() {
+		return new MessagePage();
+	}
+
 }

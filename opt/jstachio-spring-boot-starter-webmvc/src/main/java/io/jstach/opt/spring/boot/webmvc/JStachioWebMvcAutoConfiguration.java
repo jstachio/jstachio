@@ -2,16 +2,18 @@ package io.jstach.opt.spring.boot.webmvc;
 
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
-import io.jstach.opt.spring.webmvc.JStachioModelViewConfigurer;
+import io.jstach.opt.spring.webmvc.ViewResolvingHandlerInterceptor;
 import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
 
 /**
@@ -23,9 +25,11 @@ import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
  */
 @AutoConfiguration
 @AutoConfigureAfter(value = { JStachioAutoConfiguration.class })
-public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer {
+public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer, ApplicationContextAware {
 
 	private final JStachioHttpMessageConverter messageConverter;
+
+	private ApplicationContext context;
 
 	/**
 	 * Configures based on the jstachio found by spring
@@ -41,16 +45,17 @@ public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer {
 		converters.add(0, this.messageConverter);
 	}
 
-	/**
-	 * Configures an interceptor for before rendering logic useful for adding additional
-	 * data to JStache models.
-	 * @param context searched for {@link JStachioModelViewConfigurer}s.
-	 * @return interceptor that will automatically be added to the web context.
-	 */
-	@Bean
+	@Override
 	@SuppressWarnings("exports")
-	public ViewSetupHandlerInterceptor viewSetupHandlerInterceptor(ApplicationContext context) {
-		return new ViewSetupHandlerInterceptor(context);
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new ViewSetupHandlerInterceptor(context));
+		registry.addInterceptor(new ViewResolvingHandlerInterceptor());
+	}
+
+	@Override
+	@SuppressWarnings("exports")
+	public void setApplicationContext(ApplicationContext context) throws BeansException {
+		this.context = context;
 	}
 
 }
