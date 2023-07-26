@@ -19,6 +19,17 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
 	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
 		// See MapNode.find
 		// Currently this only works if MapNode is the root context
+
+		var parent = getParent();
+
+		JavaExpression r = parent.find(name, filter.and(c -> !(c instanceof MapRenderingContext)));
+		if (r != null) {
+			return r;
+		}
+		if (!filter.test(this)) {
+			return null;
+		}
+
 		var all = JavaLanguageModel.getInstance().getElements().getAllMembers(definitionElement);
 
 		var getMethod = ElementFilter.methodsIn(all).stream()
