@@ -1,11 +1,10 @@
 package io.jstach.examples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.jstach.jstachio.JStachio;
@@ -22,28 +21,13 @@ public class ContextAwareTest {
 		attributes.put("csrf", "TOKEN");
 		var context = ContextNode.of(attributes::get);
 		var contextOutput = ContextAwareOutput.of(output, context);
-		var model = new ContextAwareExample("Hello");
+		var model = new ContextAwareExample("Hello", IdContainer.test());
 		String actual = JStachio.of().execute(model, contextOutput).getOutput().toString();
 		String expected = """
 				TOKEN
 				Hello
-				""";
-		assertEquals(expected, actual);
-	}
-
-	@Ignore // TODO need to fix
-	@Test
-	public void testContextAwareOutputNonNull() throws Exception {
-		var output = Output.of(new StringBuilder());
-		Map<String, String> attributes = new LinkedHashMap<>();
-		attributes.put("csrf", "TOKEN");
-		var context = ContextNode.ofNonNull(attributes::get);
-		var contextOutput = ContextAwareOutput.of(output, context);
-		var model = new ContextAwareExample("Hello");
-		String actual = JStachio.of().execute(model, contextOutput).getOutput().toString();
-		String expected = """
-				TOKEN
-				Hello
+				098f6bcd-4621-3373-8ade-4e832627b4f6
+				From myLambda TOKEN
 				""";
 		assertEquals(expected, actual);
 	}
@@ -51,11 +35,13 @@ public class ContextAwareTest {
 	@Test
 	public void testContextAwareMissing() throws Exception {
 		var output = Output.of(new StringBuilder());
-		var model = new ContextAwareExample("Hello");
+		var model = new ContextAwareExample("Hello", IdContainer.test());
 		String actual = JStachio.of().execute(model, output).toString();
 		String expected = """
 
 				Hello
+				098f6bcd-4621-3373-8ade-4e832627b4f6
+				From myLambda MISSING CSRF
 				""";
 		assertEquals(expected, actual);
 	}

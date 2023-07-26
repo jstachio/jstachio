@@ -1,6 +1,10 @@
 package io.jstach.examples;
 
+import java.util.Optional;
+
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheLambda;
+import io.jstach.jstachio.context.ContextNode;
 
 @JStache(template = """
 		{{@context.csrf}}
@@ -8,7 +12,19 @@ import io.jstach.jstache.JStache;
 		{{.}}
 		{{/@context.user}}
 		{{message}}
+		{{id.id}}
+		{{#@context}}
+		{{#myLambda}}
+		{{.}}
+		{{/myLambda}}
+		{{/@context}}
 		""")
-public record ContextAwareExample(String message) {
+record ContextAwareExample(String message, IdContainer id) {
 
+	@JStacheLambda
+	public String myLambda(ContextNode node) {
+		var csrf = Optional.ofNullable(node.get("csrf")).map(n -> n.object()).map(o -> o.toString())
+				.orElse("MISSING CSRF");
+		return "From myLambda " + csrf;
+	}
 }
