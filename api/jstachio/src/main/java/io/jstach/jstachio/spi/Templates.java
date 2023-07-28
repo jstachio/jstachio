@@ -184,6 +184,9 @@ public final class Templates {
 	}
 
 	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
+
+		var resolvedType = findJStache(modelType).getKey();
+
 		EnumSet<TemplateLoadStrategy> strategies = EnumSet.noneOf(TemplateLoadStrategy.class);
 
 		for (var s : ALL_STRATEGIES) {
@@ -192,8 +195,6 @@ public final class Templates {
 			}
 		}
 		var classLoaders = collectClassLoaders(modelType.getClassLoader());
-		var jstache = findJStache(modelType);
-		var resolvedType = jstache.getKey();
 
 		Exception error;
 		try {

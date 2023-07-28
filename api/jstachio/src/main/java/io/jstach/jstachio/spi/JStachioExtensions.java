@@ -148,7 +148,7 @@ class DefaultJStachioExtensions implements JStachioExtensions {
 				configs.add(c);
 			}
 		}
-		JStachioConfig config = configs.isEmpty() ? SystemPropertyConfig.INSTANCE : new CompositeConfig(configs);
+		JStachioConfig config = CompositeConfig.of(configs);
 
 		for (var sv : svs) {
 			sv.init(config);
