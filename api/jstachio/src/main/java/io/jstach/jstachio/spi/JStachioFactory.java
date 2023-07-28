@@ -59,7 +59,7 @@ public final class JStachioFactory {
 
 	private static class Holder extends AbstractJStachio {
 
-		private static Holder INSTANCE = Holder.of();
+		private static final Holder INSTANCE = Holder.of();
 
 		private final JStachioExtensions extensions;
 
