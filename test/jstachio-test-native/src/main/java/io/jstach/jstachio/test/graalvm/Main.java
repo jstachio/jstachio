@@ -17,14 +17,13 @@ public class Main {
 		var js = JStachioFactory.builder().add(new MyConfig()).build();
 		JStachio.setStatic(() -> js);
 		var helloworld = new HelloWorldModel("Hello native");
-		// js.supportsType(helloworld.getClass());
 		try {
 			JStachio.of().execute(helloworld, System.out);
 			JStachio.of().execute(new Bad(), System.out);
 
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
