@@ -196,7 +196,18 @@ class CompositeConfig implements JStachioConfig {
 
 	private final List<JStachioConfig> configs;
 
-	CompositeConfig(List<JStachioConfig> configs) {
+	static JStachioConfig of(List<JStachioConfig> configs) {
+		if (configs.isEmpty()) {
+			return SystemPropertyConfig.INSTANCE;
+		}
+		if (configs.size() == 1) {
+			return configs.get(0);
+		}
+		return new CompositeConfig(configs);
+
+	}
+
+	private CompositeConfig(List<JStachioConfig> configs) {
 		super();
 		this.configs = configs;
 	}
@@ -210,6 +221,11 @@ class CompositeConfig implements JStachioConfig {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Logger getLogger(String name) {
+		return configs.get(0).getLogger(name);
 	}
 
 }

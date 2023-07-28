@@ -17,6 +17,7 @@
     <module>jstachio-test-spring-example</module>
     <module>jstachio-test-spring-webflux-example</module>
     <module>jstachio-test-dropwizard-example</module>
+    <module>jstachio-test-native</module>
   </modules>
   <build>
     <pluginManagement>
