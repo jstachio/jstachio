@@ -1,0 +1,44 @@
+
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+  
+dependencies {
+
+    def jstachioVersion = "1.3.0-SNAPSHOT"
+
+    implementation "io.jstach:jstachio:$jstachioVersion"
+    implementation "io.jstach:jstachio-annotation:$jstachioVersion"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+
+    //Comment me!!!
+    annotationProcessor "io.jstach:jstachio-apt:$jstachioVersion"
+
+
+    annotationProcessor fileTree(layout.projectDirectory.dir('src/main/resources/templates')) { include '**/*' }
+}
+
+compileJava {
+	options.compilerArgs += [
+//		'-Ajstache.debug=true',
+		'-Ajstache.incremental=true',
+	]
+}
+
+
+application {
+    mainClass = 'issue201.ShoppingApp'
+}
