@@ -104,7 +104,7 @@ class TextFileObject {
 			 */
 			Path projectPath;
 
-			if (config.isGradle()) {
+			if (config.isGradleEnabled()) {
 				if (config.isDebug()) {
 					config.debug("Looks like we are using Gradle incremental. dummy: " + dummy.toUri());
 				}

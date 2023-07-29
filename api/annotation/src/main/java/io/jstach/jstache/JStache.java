@@ -476,6 +476,7 @@ import java.util.Optional;
  *
  * <ul>
  * <li>{@link #RESOURCES_PATH_OPTION}</li>
+ * <li>{@link #INCREMENTAL_OPTION}</li>
  * </ul>
  *
  * The previously mentioned {@linkplain JStacheFlags compiler flags} are also available as
@@ -608,5 +609,16 @@ public @interface JStache {
 	 *
 	 */
 	public static final String RESOURCES_PATH_OPTION = "jstache.resourcesPath";
+
+	/**
+	 * <strong>EXPERIMENTAL:</strong> annotation processor compiler flag
+	 * (<strong>{@value #INCREMENTAL_OPTION}</strong>) that turns on incremental compiling
+	 * of supported platforms (currently only Gradle). <em>This option may turn off other
+	 * settings and if it does it will warn you!</em>
+	 * <p>
+	 * Incremental compiling does not support generating {@linkplain JStacheCatalog
+	 * catalogs} or Service Provider files (<code>META-INF/services</code>).
+	 */
+	public static final String INCREMENTAL_OPTION = "jstache.incremental";
 
 }

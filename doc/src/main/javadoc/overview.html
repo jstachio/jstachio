@@ -519,6 +519,43 @@ dependencies {
 </code>
 </pre>
 
+<h4 id="gradle_cache">Gradle cache support</h4>
+
+Gradle has powerful support for cache and incremental builds. If cache is turned on
+it is recommended you add a <code>fileTree</code> to the annotation processor of
+where the templates are stored. Otherwise if a template is changed a renderer will not be
+updated.
+<p>
+Below is an example of configuring Gradle to know about template changes:
+</p>
+
+<pre><code class="language-kotlin">
+dependencies {
+    // other deps
+    annotationProcessor 'io.jstach:jstachio-apt:_VERSION_'
+    annotationProcessor fileTree(layout.projectDirectory.dir('src/main/resources/views')) { include '**/*' }
+}
+</code></pre>
+
+<h4 id="gradle_incremental">Gradle incremental support</h4>
+
+<strong>See {@link io.jstach.jstache.JStache#INCREMENTAL_OPTION} as there are major caveats
+when using this and it is recommend that this flag be disabled in CI/CD pipelines!
+</strong>
+
+<p>
+JStachio also supports <strong>experimental</strong> incremental annotation compiling support.
+<em>Service provider files and catalogs of templates will not be generated in this mode!</em>
+</p>
+
+<pre><code class="language-kotlin">
+compileJava {
+   options.compilerArgs += [
+      '-Ajstache.incremental=true',
+   ]
+}
+</code></pre>
+
 <h2 id="configuration">Configuration</h2>
 
 <h3 id="compile_config">Compile time Configuration</h3>

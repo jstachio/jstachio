@@ -57,6 +57,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -114,8 +115,7 @@ import io.jstach.apt.prism.Prisms;
  *
  */
 @MetaInfServices(value = Processor.class)
-@SupportedAnnotationTypes("*")
-@SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, Prisms.JSTACHE_FLAGS_DEBUG,
+@SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, Prisms.JSTACHE_INCREMENTAL_OPTION, Prisms.JSTACHE_FLAGS_DEBUG,
 		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN, Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING })
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
@@ -134,14 +134,24 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	Set<CatalogRef> catalogClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+	private final List<ElementMessage> errors = new ArrayList<>();
+
+	boolean globalDebug = false;
+
 	boolean catalogGenerated = false;
+
+	boolean incremental = false;
 
 	private static String formatErrorMessage(Position position, @Nullable String message) {
 		message = message == null ? "" : message;
 		String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
 		@Nullable
-		Object @NonNull [] fields = new @Nullable Object @NonNull [] { position.fileName(), position.row(), message,
-				position.currentLine(), columnPositioningString(position.col()), };
+		Object @NonNull [] fields = new @Nullable Object @NonNull [] { position.fileName(), //
+				position.row(), //
+				message, //
+				// Tabs make for confusing column reporting
+				position.currentLine().replace('\t', ' '), //
+				columnPositioningString(position.col()) };
 		return String.format(formatString, fields);
 	}
 
@@ -154,11 +164,44 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	@Override
+	public synchronized void init(ProcessingEnvironment processingEnv) {
+		super.init(processingEnv);
+		var opts = processingEnv.getOptions();
+		incremental = Boolean.parseBoolean(opts.get(JSTACHE_INCREMENTAL_OPTION));
+		globalDebug = resolveFlags(opts, null).contains(Flag.DEBUG);
+		LoggingSupport.RootLogging rootLogging = new LoggingSupport.RootLogging(processingEnv.getMessager(),
+				globalDebug);
+		if (globalDebug) {
+			for (var e : opts.entrySet()) {
+				var k = e.getKey();
+				var v = e.getValue();
+				if (k.startsWith("jstache.")) {
+					rootLogging.debug(k + " = " + v);
+				}
+			}
+		}
+		if (incremental) {
+			rootLogging
+					.info("Incremental is turned on so catalogs and service provider files will not be (re)generated!");
+		}
+	}
+
+	@Override
 	public @NonNull Set<@NonNull String> getSupportedAnnotationTypes() {
 		return Set.copyOf(Prisms.ANNOTATIONS);
 	}
 
-	private final List<ElementMessage> errors = new ArrayList<>();
+	@Override
+	public Set<String> getSupportedOptions() {
+		if (ProcessingConfig.isGradle() || incremental) {
+			String gradleFlag = incremental ? "isolating" : "aggregating";
+			gradleFlag = "org.gradle.annotation.processing." + gradleFlag;
+			return Stream.concat(Stream.of(gradleFlag), super.getSupportedOptions().stream())
+					.collect(Collectors.toSet());
+		}
+
+		return super.getSupportedOptions();
+	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv) {
@@ -181,8 +224,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				processingEnv.getMessager());
 		Map<String, String> options = processingEnv.getOptions();
 
-		boolean globalDebug = resolveFlags(options, null).contains(Flag.DEBUG);
-
 		LoggingSupport.RootLogging rootLogging = new LoggingSupport.RootLogging(processingEnv.getMessager(),
 				globalDebug);
 
@@ -198,16 +239,17 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_PROVIDER_META_INF_SERVICE))
 					.map(c -> c.classRef());
 
-			ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, serviceClass,
-					Stream.concat(catalogs, renderers).toList());
+			if (!incremental) {
+				ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, serviceClass,
+						Stream.concat(catalogs, renderers).toList());
+				ClassRef extensionClass = ClassRef.ofBinaryName(JSTACHIO_EXTENSION_CLASS);
 
-			ClassRef extensionClass = ClassRef.ofBinaryName(JSTACHIO_EXTENSION_CLASS);
+				var finders = catalogClasses.stream()
+						.filter(c -> c.flags().contains(CatalogFlag.GENERATE_FINDER_META_INF_SERVICE))
+						.map(c -> c.classRef()).toList();
 
-			var finders = catalogClasses.stream()
-					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_FINDER_META_INF_SERVICE))
-					.map(c -> c.classRef()).toList();
-
-			ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, extensionClass, finders);
+				ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, extensionClass, finders);
+			}
 
 			if (!catalogGenerated) {
 				/*
@@ -254,7 +296,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private void generateCatalog() {
-		if (catalogGenerated)
+		if (catalogGenerated || incremental)
 			return;
 		catalogGenerated = true;
 		for (var cat : catalogClasses) {

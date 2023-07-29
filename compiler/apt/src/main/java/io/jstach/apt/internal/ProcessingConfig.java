@@ -44,7 +44,11 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 
 	PathConfig pathConfig();
 
-	default boolean isGradle() {
+	default boolean isGradleEnabled() {
+		return isGradle();
+	}
+
+	public static boolean isGradle() {
 		String cmd = System.getProperty("sun.java.command");
 		if (cmd != null) {
 			return cmd.toLowerCase().contains("gradle");

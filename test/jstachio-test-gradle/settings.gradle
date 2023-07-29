@@ -1,0 +1,4 @@
+rootProject.name = 'jstachio-test-gradle'
+include('app')
+project(":app").name = 'jstachio-test-gradle-app'
+

@@ -23,6 +23,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_INCREMENTAL_OPTION = "jstache.incremental";
+
+	/**
+	 * Generated
+	 */
 	public static final String JSTACHE_NAME_UNSPECIFIED = "*";
 
 	/**
