@@ -585,8 +585,10 @@ public @interface JStache {
 	 * instead of the output (<code>javax.tools.StandardLocation#CLASS_OUTPUT</code>) if
 	 * the files cannot be found.
 	 * <p>
-	 * If the path does not start with a path separator then it will be appended to the
-	 * the current working directory otherwise it is assumed to be a fully qualified path.
+	 * <strong>Multiple paths can be passed by comma separating them.</strong> The paths
+	 * are tried in order. If a path does not start with a path separator then it will be
+	 * appended to the the current working directory otherwise it is assumed to be a fully
+	 * qualified path.
 	 * <p>
 	 * The default location is <code>CWD/src/main/resources</code> where CWD is the
 	 * current working directory.
