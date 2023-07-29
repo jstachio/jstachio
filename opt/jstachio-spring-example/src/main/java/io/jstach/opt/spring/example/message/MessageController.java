@@ -34,6 +34,7 @@ public class MessageController {
 	/**
 	 * Here we use the return value type to construct a {@link View} that will be
 	 * rendered.
+	 * @return the jstache model that will be rendered
 	 */
 	@GetMapping(value = "/msg")
 	public MessagePage msg() {
