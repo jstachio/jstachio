@@ -69,20 +69,6 @@ public interface ContextNode extends Iterable<ContextNode> {
 	}
 
 	/**
-	 * Creates a root context node with the given function to look up children and if any
-	 * child is missing will throw a {@link NullPointerException}.
-	 * @param function used to find children with a given name
-	 * @return root context node powered by a function
-	 * @apiNote Unlike many other methods in this class this is not nullable.
-	 */
-	public static ContextNode ofNonNull(Function<String, ?> function) {
-		if (function == null) {
-			throw new NullPointerException("function is required");
-		}
-		return new NonNullFunctionContextNode(function);
-	}
-
-	/**
 	 * An empty context node that is safe to use identify comparison.
 	 * @return empty singleton context node
 	 */
@@ -353,32 +339,6 @@ public interface ContextNode extends Iterable<ContextNode> {
 
 }
 
-interface NonNullContextNode extends ContextNode {
-
-	@Override
-	default ContextNode ofChild(String name, @Nullable Object o) throws IllegalArgumentException {
-		if (o == null) {
-			throw new NullPointerException("Child is null at field: " + name);
-		}
-		if (o instanceof ContextNode) {
-			throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
-		}
-		return new NamedContextNode(this, o, name);
-	}
-
-	@Override
-	default ContextNode ofChild(int index, @Nullable Object o) {
-		if (o == null) {
-			throw new NullPointerException("Child is null at index: " + index);
-		}
-		if (o instanceof ContextNode) {
-			throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
-		}
-		return new NonNullIndexedContextNode(this, o, index);
-	}
-
-}
-
 record RootContextNode(Object object) implements ContextNode {
 	@Override
 	public String toString() {
@@ -407,33 +367,6 @@ record NamedContextNode(ContextNode parent, Object object, String name) implemen
 }
 
 record IndexedContextNode(ContextNode parent, Object object, int index) implements ContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-}
-
-record NonNullFunctionContextNode(Function<String, ?> object) implements NonNullContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-
-	@Override
-	public @Nullable ContextNode get(String field) {
-		return ofChild(field, object().apply(field));
-	}
-
-}
-
-record NonNullNamedContextNode(ContextNode parent, Object object, String name) implements NonNullContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-}
-
-record NonNullIndexedContextNode(ContextNode parent, Object object, int index) implements NonNullContextNode {
 	@Override
 	public String toString() {
 		return renderString();
