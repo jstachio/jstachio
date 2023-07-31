@@ -118,7 +118,7 @@ abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutp
 	}
 
 	@Override
-	public OutputStream consumer() {
+	public @Nullable OutputStream consumer() {
 		return consumer;
 	}
 
@@ -179,7 +179,7 @@ abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutp
 		var c = this.consumer;
 		if (c == null) {
 			this.consumer = c = createConsumer(size);
-			this.buffer.transferTo(consumer);
+			this.buffer.transferTo(c);
 		}
 		close(c);
 		this.consumer = null;

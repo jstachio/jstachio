@@ -296,7 +296,7 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 			@Override
 			protected @Nullable TemplateInfo computeValue(@Nullable Class<?> type) {
 				try {
-					return delegate.findTemplate(type);
+					return delegate.findTemplate(Objects.requireNonNull(type));
 				}
 				catch (Exception e) {
 					Templates.sneakyThrow(e);
@@ -308,7 +308,8 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
-		return cache.get(modelType);
+		Objects.requireNonNull(modelType);
+		return Objects.requireNonNull(cache.get(modelType));
 	}
 
 	@Override

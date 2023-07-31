@@ -2,3 +2,6 @@ class java/util/ServiceLoader
 load
  <S:Ljava/lang/Object;>(Ljava/lang/Class<TS;>;)Ljava/util/ServiceLoader<TS;>;
  <S:Ljava/lang/Object;>(Ljava/lang/Class<TS;>;)L1java/util/ServiceLoader<TS;>;
+load
+ <S:Ljava/lang/Object;>(Ljava/lang/Class<TS;>;Ljava/lang/ClassLoader;)Ljava/util/ServiceLoader<TS;>;
+ <S:Ljava/lang/Object;>(Ljava/lang/Class<TS;>;Ljava/lang/ClassLoader;)L1java/util/ServiceLoader<TS;>;

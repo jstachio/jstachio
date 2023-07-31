@@ -103,7 +103,7 @@ interface BufferedReadableByteChannel extends ReadableByteChannel {
 	}
 
 	static BufferedReadableByteChannel of(BufferedEncodedOutput output, final Iterator<byte[]> arrays) {
-		Supplier<@Nullable byte[]> sup = () -> {
+		Supplier<byte @Nullable[]> sup = () -> {
 			if (!arrays.hasNext()) {
 				return null;
 			}
@@ -112,7 +112,7 @@ interface BufferedReadableByteChannel extends ReadableByteChannel {
 		return of(output, sup);
 	}
 
-	static BufferedReadableByteChannel of(BufferedEncodedOutput output, final Supplier<@Nullable byte[]> arrays) {
+	static BufferedReadableByteChannel of(BufferedEncodedOutput output, final Supplier<byte @Nullable []> arrays) {
 		int length = output.size();
 
 		return new BufferedReadableByteChannel() {
@@ -121,7 +121,7 @@ interface BufferedReadableByteChannel extends ReadableByteChannel {
 
 			private int chunkOffset = 0;
 
-			byte[] current = arrays.get();
+			byte @Nullable [] current = arrays.get();
 
 			@Override
 			public int read(ByteBuffer dst) {
@@ -131,9 +131,9 @@ interface BufferedReadableByteChannel extends ReadableByteChannel {
 
 				int readBytes = 0;
 
-				while (current != null && dst.hasRemaining()) {
+				byte[] chunk;
+				while ((chunk = current) != null && dst.hasRemaining()) {
 
-					byte[] chunk = current;
 					int chunkLength = chunk.length - chunkOffset;
 
 					// number of bytes capable of being read

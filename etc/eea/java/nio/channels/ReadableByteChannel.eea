@@ -1,0 +1,4 @@
+class java/nio/channels/ReadableByteChannel
+read
+ (Ljava/nio/ByteBuffer;)I
+ (L1java/nio/ByteBuffer;)I

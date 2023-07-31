@@ -66,4 +66,5 @@
  * @see io.jstach.jstachio.output.ThresholdEncodedOutput
  * @apiNote As with most IO the classes in this package are not thread safe unless noted.
  */
+@org.eclipse.jdt.annotation.NonNullByDefault
 package io.jstach.jstachio.output;

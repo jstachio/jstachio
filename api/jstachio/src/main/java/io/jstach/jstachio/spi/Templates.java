@@ -422,9 +422,9 @@ public final class Templates {
 		return s.filter(p -> p != null).map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
 	}
 
-	private static @NonNull Stream<AnnotatedElement> annotationElements(Class<?> c) {
-		Stream<? extends AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
-		var s = Stream.concat(enclosing, Stream.of(c.getPackage(), c.getModule()));
+	private static Stream<? extends @Nullable AnnotatedElement> annotationElements(Class<?> c) {
+		Stream<? extends @Nullable AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
+		var s = Stream.concat(enclosing, Stream.<AnnotatedElement>of(c.getPackage(), c.getModule()));
 		return s;
 	}
 
