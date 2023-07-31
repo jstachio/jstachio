@@ -163,18 +163,18 @@ enum NOOPLogger implements Logger {
 	}
 
 	@Override
-	public boolean isLoggable(@NonNull Level level) {
+	public boolean isLoggable(Level level) {
 		return false;
 	}
 
 	@Override
-	public void log(@NonNull Level level, @Nullable ResourceBundle bundle, @Nullable String msg,
+	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String msg,
 			@Nullable Throwable thrown) {
 
 	}
 
 	@Override
-	public void log(@NonNull Level level, @Nullable ResourceBundle bundle, @Nullable String format,
+	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String format,
 			@Nullable Object @NonNull... params) {
 
 	}

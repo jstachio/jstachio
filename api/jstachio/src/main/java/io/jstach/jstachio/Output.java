@@ -329,9 +329,9 @@ class OutputAppendable implements Appendable {
 	}
 
 	@Override
-	public Appendable append(@Nullable CharSequence csq) throws @Nullable IOException {
+	public Appendable append(@Nullable CharSequence csq) throws IOException {
 		try {
-			output.append(csq);
+			output.append(csq == null ? "null" : csq);
 			return this;
 		}
 		catch (Exception e) {
@@ -345,7 +345,7 @@ class OutputAppendable implements Appendable {
 	@Override
 	public Appendable append(@Nullable CharSequence csq, int start, int end) throws IOException {
 		try {
-			output.append(csq, start, end);
+			output.append(csq == null ? " null " : csq, start, end);
 			return this;
 		}
 		catch (Exception e) {

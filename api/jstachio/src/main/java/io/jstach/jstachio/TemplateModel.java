@@ -3,6 +3,7 @@ package io.jstach.jstachio;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -170,13 +171,13 @@ interface TemplateProxy extends Template<Object>, FilterChain {
 
 }
 
-record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) implements TemplateModel, TemplateProxy {
+record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) implements TemplateModel, TemplateProxy {
 
 	static final String ERROR_MESSAGE = "The model passed into this TemplateModel is not correct";
 
 	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
-		return delegateTemplate.execute(model(), output);
+		return delegateTemplate.execute(this._model, output);
 	}
 
 	@Override
@@ -185,8 +186,13 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) impl
 	}
 
 	@Override
+	public Object model() {
+		return Objects.requireNonNull(_model);
+	}
+
+	@Override
 	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
-		if (model == this || model == this.model) {
+		if (model == this || model == this._model) {
 			return execute(appendable);
 		}
 		throw new UnsupportedOperationException(ERROR_MESSAGE);
@@ -195,26 +201,31 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T model) impl
 }
 
 record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
-		T model) implements TemplateModel, TemplateProxy {
+		T _model) implements TemplateModel, TemplateProxy {
 
 	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
-		return delegateTemplate.execute(model(), output);
+		return delegateTemplate.execute(this._model, output);
 	}
 
 	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(A output) throws E {
-		return delegateTemplate.write(model, output);
+		return delegateTemplate.write(_model, output);
 	}
 
 	@Override
 	public Template<?> template() {
 		return this;
 	}
+	
+	@Override
+	public Object model() {
+		return Objects.requireNonNull(_model);
+	}
 
 	@Override
 	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
-		if (model == this || model == this.model) {
+		if (model == this || model == this._model) {
 			return execute(appendable);
 		}
 		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);
@@ -222,7 +233,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 
 	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
-		if (model == this || model == this.model) {
+		if (model == this || model == this._model) {
 			return write(appendable);
 		}
 		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);

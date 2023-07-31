@@ -1,5 +1,6 @@
 package io.jstach.jstachio;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -262,7 +263,7 @@ class ObjectFunctionFormatter implements Formatter {
 	@Override
 	public <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path, Class<?> c,
 			@Nullable Object o) throws E {
-		String result = function.apply(o);
+		String result = Objects.requireNonNull(function.apply(o));
 		downstream.append(a, result);
 	}
 
