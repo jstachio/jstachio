@@ -66,7 +66,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		}
 		var filter = loadFilter(model, template);
 		Template t = FilterChain.toTemplate(filter, template);
-		return t;
+		return (Template<Object>) t;
 	}
 
 	/**

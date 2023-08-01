@@ -3,7 +3,6 @@ package io.jstach.jstachio.context;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +13,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.Nullable;
+
+import io.jstach.jstachio.context.Internal.ContextNodeFactory;
+import io.jstach.jstachio.context.Internal.EmptyContextNode;
+import io.jstach.jstachio.context.Internal.FunctionContextNode;
 
 /**
  * This interface serves three puproses:
@@ -49,12 +52,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * </code> </pre>
  *
  * @apiNote The parents do not know anything about their children as it is the child that
- * has reference to the parent. This interface unlike most of JStachio API is very 
+ * has reference to the parent. This interface unlike most of JStachio API is very
  * <code>null</code> heavy because JSON and Javascript allow null.
  * @author agentgt
  *
  */
-public interface ContextNode extends Iterable<@Nullable ContextNode> {
+public sealed interface ContextNode extends Iterable<@Nullable ContextNode> {
 
 	/**
 	 * Creates a root context node with the given function to look up children.
@@ -91,7 +94,7 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 		}
 		return ContextNode.empty();
 	}
-	
+
 	/**
 	 * Resolves the context node trying first and then second.
 	 * @param first first object to try
@@ -120,8 +123,8 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 	 * context node it is simply returned if it is a root node otherwise it is rewrapped.
 	 * @param o the object to be wrapped. Maybe <code>null</code>.
 	 * @return <code>null</code> if the root object is null otherwise a new root node.
-	 * @deprecated This method is slated for removal as it confusing. Prefer {@link #of(Function)}
-	 * or implement the interface.
+	 * @deprecated This method is slated for removal as it confusing. Prefer
+	 * {@link #of(Function)}.
 	 */
 	public static @Nullable ContextNode ofRoot(@Nullable Object o) {
 		if (o == null) {
@@ -133,69 +136,53 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 			}
 			return n;
 		}
-		return new RootContextNode(o);
+		return ContextNodeFactory.INSTANCE.create(null, o);
 	}
 
-	/**
-	 * Creates a named child node off of this node where the return child nodes parent
-	 * will be this node.
-	 * @param name the context name.
-	 * @param o the object to be wrapped.
-	 * @return <code>null</code> if the child object is null otherwise a new child node.
-	 * @throws IllegalArgumentException if the input object is a {@link ContextNode}
-	 * @deprecated with no planned replacement. If you rely on this please file an issue.
-	 */
-	@Deprecated
-	default @Nullable ContextNode ofChild(String name, @Nullable Object o) throws IllegalArgumentException {
-		if (o == null) {
-			return null;
-		}
-		if (o instanceof ContextNode) {
-			throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
-		}
-		return new NamedContextNode(this, o, name);
-	}
+	// /**
+	// * Creates a named child node off of this node where the return child nodes parent
+	// * will be this node.
+	// * @param name the context name.
+	// * @param o the object to be wrapped.
+	// * @return <code>null</code> if the child object is null otherwise a new child node.
+	// * @throws IllegalArgumentException if the input object is a {@link ContextNode}
+	// * @deprecated with no planned replacement. If you rely on this please file an
+	// issue.
+	// */
+	// @Deprecated
+	// private @Nullable ContextNode ofChild(String name, @Nullable Object o) throws
+	// IllegalArgumentException {
+	// return ContextNodeFactory.INSTANCE.ofChild(this, name, o);
+	// }
+	//
+	// /**
+	// * Creates an indexed child node off of this node where the return child nodes
+	// parent
+	// * will be this node.
+	// * @param index a numeric index
+	// * @param o the object to be wrapped. Maybe <code>null</code>.
+	// * @return <code>null</code> if the child object is null otherwise a new child node.
+	// * @throws IllegalArgumentException if the input object is a {@link ContextNode}
+	// * @apiNote there is no checking to see if the same index is reused as the parent
+	// * knows nothing of the child.
+	// * @deprecated with no planned replacement. If you rely on this please file an
+	// issue.
+	// */
+	// @Deprecated
+	// private @Nullable ContextNode ofChild(int index, @Nullable Object o) {
+	// return ContextNodeFactory.INSTANCE.ofChild(this, index, o);
+	// }
 
 	/**
-	 * Creates an indexed child node off of this node where the return child nodes parent
-	 * will be this node.
-	 * @param index a numeric index
-	 * @param o the object to be wrapped. Maybe <code>null</code>.
-	 * @return <code>null</code> if the child object is null otherwise a new child node.
-	 * @throws IllegalArgumentException if the input object is a {@link ContextNode}
-	 * @apiNote there is no checking to see if the same index is reused as the parent
-	 * knows nothing of the child.
-	 * @deprecated with no planned replacement. If you rely on this please file an issue.
-	 */
-	@Deprecated
-	default @Nullable ContextNode ofChild(int index, @Nullable Object o) {
-		if (o == null) {
-			return null;
-		}
-		if (o instanceof ContextNode) {
-			throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
-		}
-		return new IndexedContextNode(this, o, index);
-	}
-
-	/**
-	 * Gets a field from a ContextNode. This is direct
-	 * access (end of a dotted path) and does not check the parents.
-	 * The default implementation will check if the wrapping object is
-	 * a {@link Map} and use it to return a child context node.
+	 * Gets a field from a ContextNode. This is direct access (end of a dotted path) and
+	 * does not check the parents. The default implementation will check if the wrapping
+	 * object is a {@link Map} and use it to return a child context node.
 	 *
 	 * Just like {@link Map} <code>null</code> will be returned if no field is found.
 	 * @param field the name of the field
 	 * @return a new child node. Maybe <code>null</code>.
 	 */
-	default @Nullable ContextNode get(String field) {
-		Object o = object();
-		ContextNode child = null;
-		if (o instanceof Map<?, ?> m) {
-			child = ofChild(field, m.get(field));
-		}
-		return child;
-	}
+	public @Nullable ContextNode get(String field);
 
 	/**
 	 * Will search up the tree for a field starting at this nodes children first.
@@ -203,24 +190,7 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 	 * @return <code>null</code> if not found otherwise creates a new node from the map or
 	 * object containing the field.
 	 */
-	default @Nullable ContextNode find(String field) {
-		/*
-		 * In theory we could make a special RenderingContext for ContextNode to go up the
-		 * stack (generated code) but it would probably look similar to the following.
-		 */
-		ContextNode child = get(field);
-		if (child != null) {
-			return child;
-		}
-		var parent = parent();
-		if (parent != null && parent != this) {
-			child = parent.find(field);
-			if (child != null) {
-				child = ofChild(field, child.object());
-			}
-		}
-		return child;
-	}
+	public @Nullable ContextNode find(String field);
 
 	/**
 	 * The object being wrapped.
@@ -252,85 +222,25 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 	 */
 	@SuppressWarnings("exports")
 	@Override
-	default Iterator<@Nullable ContextNode> iterator() {
-		Object o = object();
-		if (o instanceof Iterable<?> it) {
-			int[] j = {-1};
-			return StreamSupport.stream(it.spliterator(), false).map(i -> this.ofChild((j[0] += 1), i))
-					.iterator();
-		}
-		else if (o == null || Boolean.FALSE.equals(o)) {
-			return Collections.emptyIterator();
-		}
-		else if (o.getClass().isArray()) {
-
-			Stream<? extends @Nullable Object> s = arrayToStream(o);
-			int[] j = {-1};
-			return s.map(i -> this.ofChild((j[0] += 1), i)).iterator();
-		}
-
-		return Collections.<@Nullable ContextNode>singletonList(this).iterator();
-	}
-
-	@SuppressWarnings("null")
-	private static Stream<? extends @Nullable Object> arrayToStream(
-			Object o) {
-		/*
-		 * There is probably an easier way to do this
-		 */
-		final Stream<? extends @Nullable Object> s;
-		if (o instanceof int[] a) {
-			s = Arrays.stream(a).boxed();
-		}
-		else if (o instanceof long[] a) {
-			s = Arrays.stream(a).boxed();
-		}
-		else if (o instanceof double[] a) {
-			s = Arrays.stream(a).boxed();
-		}
-		else if (o instanceof boolean[] a) {
-			List<Boolean> b = new ArrayList<>();
-			for (var _a : a) {
-				b.add(_a);
-			}
-			s = b.stream();
-		}
-		else if (o instanceof char[] a) {
-			List<Character> b = new ArrayList<>();
-			for (var _a : a) {
-				b.add(_a);
-			}
-			s = b.stream();
-		}
-		else if (o instanceof byte[] a) {
-			List<Byte> b = new ArrayList<>();
-			for (var _a : a) {
-				b.add(_a);
-			}
-			s = b.stream();
-		}
-		else if (o instanceof float[] a) {
-			List<Float> b = new ArrayList<>();
-			for (var _a : a) {
-				b.add(_a);
-			}
-			s = b.stream();
-		}
-		else if (o instanceof short[] a) {
-			List<Short> b = new ArrayList<>();
-			for (var _a : a) {
-				b.add(_a);
-			}
-			s = b.stream();
-		}
-		else if (o instanceof Object[] a) {
-			s = Arrays.asList(a).stream();
-		}
-		else {
-			throw new IllegalArgumentException("array type not supported: " + o.getClass());
-		}
-		return s;
-	}
+	public Iterator<@Nullable ContextNode> iterator();
+	// Object o = object();
+	// if (o instanceof Iterable<?> it) {
+	// int[] j = { -1 };
+	// return StreamSupport.stream(it.spliterator(), false).map(i -> this.ofChild((j[0] +=
+	// 1), i)).iterator();
+	// }
+	// else if (o == null || Boolean.FALSE.equals(o)) {
+	// return Collections.emptyIterator();
+	// }
+	// else if (o.getClass().isArray()) {
+	//
+	// Stream<? extends @Nullable Object> s = arrayToStream(o);
+	// int[] j = { -1 };
+	// return s.map(i -> this.ofChild((j[0] += 1), i)).iterator();
+	// }
+	//
+	// return Collections.<@Nullable ContextNode>singletonList(this).iterator();
+	// }
 
 	/**
 	 * Determines if an object is falsey based on mustache spec semantics where:
@@ -344,8 +254,8 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 		if ((context == null) || Boolean.FALSE.equals(context)) {
 			return true;
 		}
-		if (context instanceof Collection<?> c) {
-			return c.isEmpty();
+		if (context == ContextNode.empty()) {
+			return true;
 		}
 		if (context instanceof Iterable<?> it) {
 			return !it.iterator().hasNext();
@@ -355,121 +265,285 @@ public interface ContextNode extends Iterable<@Nullable ContextNode> {
 		}
 		return false;
 	}
-	
-}
-
-interface SingleNode extends ContextNode {
-	@Override
-	default Iterator<@Nullable ContextNode> iterator() {
-		return Collections.<@Nullable ContextNode>singleton(this).iterator();
-	}
-}
-
-interface ObjectContextNode extends SingleNode {
-	
-	public @Nullable Object getValue(String key);
-	
-	@Override
-	default @Nullable ContextNode get(
-			String field) {
-		return ofChild(field, getValue(field));
-	}
-	
-	@SuppressWarnings("exports")
-	@Override
-	default Iterator<@Nullable ContextNode> iterator() {
-		return Collections.<@Nullable ContextNode>singleton(this).iterator();
-	}
-}
-
-interface ListNode extends ContextNode {
-	@Override
-	default @Nullable ContextNode get(
-			String field) {
-		return null;
-	}
-	
-	@Override
-	public Iterator<@Nullable ContextNode> iterator();
-	
-}
-
-record NamedContextNode(ContextNode parent, Object object, String name) implements ContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-}
-
-record IndexedContextNode(ContextNode parent, Object object, int index) implements ContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-}
-
-record IterableContextNode(
-		Iterable<?> object, ContextNode parent) implements ListNode {
-
-	@Override
-	public Iterator<@Nullable ContextNode> iterator() {
-		int[] j = { -1 };
-		var it = object();
-		return StreamSupport.stream(it.spliterator(), false)
-			.map(i -> this.ofChild((j[0] += 1), i))
-			.iterator();
-	}
 
 }
 
-record RootContextNode(Object object) implements ContextNode {
-	@Override
-	public String toString() {
-		return renderString();
-	}
-}
+@SuppressWarnings("exports")
+sealed interface Internal extends ContextNode {
 
-record FunctionContextNode(Function<String, ?> object) implements ObjectContextNode {
-	@Override
-	public String toString() {
-		return renderString();
+	/**
+	 * Creates a named child node off of this node where the return child nodes parent
+	 * will be this node.
+	 * @param name the context name.
+	 * @param o the object to be wrapped.
+	 * @return <code>null</code> if the child object is null otherwise a new child node.
+	 * @throws IllegalArgumentException if the input object is a {@link ContextNode}
+	 */
+	default @Nullable ContextNode ofChild(String name, @Nullable Object o) throws IllegalArgumentException {
+		return ContextNodeFactory.INSTANCE.ofChild(this, name, o);
 	}
 
-	@Override
-	public @Nullable Object getValue(
-			String key) {
-		return object.apply(key);
+	/**
+	 * Creates an indexed child node off of this node where the return child nodes parent
+	 * will be this node.
+	 * @param index a numeric index
+	 * @param o the object to be wrapped. Maybe <code>null</code>.
+	 * @return <code>null</code> if the child object is null otherwise a new child node.
+	 * @throws IllegalArgumentException if the input object is a {@link ContextNode}
+	 * @apiNote there is no checking to see if the same index is reused as the parent
+	 * knows nothing of the child.
+	 */
+	default @Nullable ContextNode ofChild(int index, @Nullable Object o) {
+		return ContextNodeFactory.INSTANCE.ofChild(this, index, o);
 	}
-}
 
-
-enum EmptyContextNode implements ContextNode {
-
-	EMPTY;
-
-	@Override
-	public Object object() {
-		return Map.of();
-	}
-	
-	@Override
-	public @Nullable ContextNode get(
-			String field) {
-		return null;
-	}
-	
-	@Override
-	public @Nullable ContextNode find(
-			String field) {
-		return null;
-	}
-	
-	@Override
-	public Iterator<@Nullable ContextNode> iterator() {
+	default @Nullable ContextNode find(String field) {
 		/*
-		 * TODO should this be empty?
+		 * In theory we could make a special RenderingContext for ContextNode to go up the
+		 * stack (generated code) but it would probably look similar to the following.
 		 */
-		return Collections.<@Nullable ContextNode>singleton(this).iterator();
+		ContextNode child = get(field);
+		if (child != null) {
+			return child;
+		}
+		var parent = parent();
+		if (parent != null && parent != this) {
+			child = parent.find(field);
+			if (child != null) {
+				child = ofChild(field, child.object());
+			}
+		}
+		return child;
+	}
+
+	enum ContextNodeFactory {
+
+		INSTANCE;
+
+		@Nullable
+		ContextNode ofChild(ContextNode parent, String name, @Nullable Object o) {
+			if (o == null) {
+				return null;
+			}
+			return create(parent, o);
+		}
+
+		@Nullable
+		ContextNode ofChild(ContextNode parent, int index, @Nullable Object o) {
+			if (o == null) {
+				return null;
+			}
+			return create(parent, o);
+
+		}
+
+		ContextNode create(@Nullable ContextNode parent, Object o) {
+			if (o instanceof ContextNode) {
+				throw new IllegalArgumentException("Cannot wrap ContextNode around another ContextNode");
+			}
+			if (o instanceof Iterable<?> it) {
+				return new IterableContextNode(it, parent);
+			}
+			if (o instanceof Map<?, ?> m) {
+				return new MapContextNode(m, parent);
+			}
+			return new ValueContextNode(o, parent);
+
+		}
+
+		public Iterator<@Nullable ContextNode> iteratorOf(ContextNode parent, Iterable<?> it) {
+			int[] j = { -1 };
+			return StreamSupport.stream(it.spliterator(), false).map(i -> this.ofChild(parent, (j[0] += 1), i))
+					.iterator();
+		}
+
+		public Iterator<@Nullable ContextNode> iteratorOf(ContextNode parent, @Nullable Object o) {
+			if (o instanceof Iterable<?> it) {
+				return iteratorOf(parent, o);
+			}
+			else if (o == null || Boolean.FALSE.equals(o)) {
+				return Collections.emptyIterator();
+			}
+			else if (o.getClass().isArray()) {
+
+				Stream<? extends @Nullable Object> s = arrayToStream(o);
+				int[] j = { -1 };
+				return s.map(i -> this.ofChild(parent, (j[0] += 1), i)).iterator();
+			}
+
+			return Collections.<@Nullable ContextNode>singletonList(parent).iterator();
+
+		}
+
+		@SuppressWarnings("null")
+		private static Stream<? extends @Nullable Object> arrayToStream(Object o) {
+			/*
+			 * There is probably an easier way to do this
+			 */
+			final Stream<? extends @Nullable Object> s;
+			if (o instanceof int[] a) {
+				s = Arrays.stream(a).boxed();
+			}
+			else if (o instanceof long[] a) {
+				s = Arrays.stream(a).boxed();
+			}
+			else if (o instanceof double[] a) {
+				s = Arrays.stream(a).boxed();
+			}
+			else if (o instanceof boolean[] a) {
+				List<Boolean> b = new ArrayList<>();
+				for (var _a : a) {
+					b.add(_a);
+				}
+				s = b.stream();
+			}
+			else if (o instanceof char[] a) {
+				List<Character> b = new ArrayList<>();
+				for (var _a : a) {
+					b.add(_a);
+				}
+				s = b.stream();
+			}
+			else if (o instanceof byte[] a) {
+				List<Byte> b = new ArrayList<>();
+				for (var _a : a) {
+					b.add(_a);
+				}
+				s = b.stream();
+			}
+			else if (o instanceof float[] a) {
+				List<Float> b = new ArrayList<>();
+				for (var _a : a) {
+					b.add(_a);
+				}
+				s = b.stream();
+			}
+			else if (o instanceof short[] a) {
+				List<Short> b = new ArrayList<>();
+				for (var _a : a) {
+					b.add(_a);
+				}
+				s = b.stream();
+			}
+			else if (o instanceof Object[] a) {
+				s = Arrays.asList(a).stream();
+			}
+			else {
+				throw new IllegalArgumentException("array type not supported: " + o.getClass());
+			}
+			return s;
+		}
+
+	}
+
+	sealed interface ObjectContextNode extends Internal permits ObjectContext, FunctionContextNode, MapContextNode {
+
+		/**
+		 * Get value like map.
+		 * @param key not null
+		 * @return value mapped to key.
+		 */
+		public @Nullable Object getValue(String key);
+
+		@Override
+		default @Nullable ContextNode get(String field) {
+			return ofChild(field, getValue(field));
+		}
+
+		@Override
+		default Iterator<@Nullable ContextNode> iterator() {
+			return Collections.<@Nullable ContextNode>singleton(this).iterator();
+		}
+
+	}
+
+	sealed interface ListNode extends Internal {
+
+		@Override
+		default @Nullable ContextNode get(String field) {
+			return null;
+		}
+
+		@Override
+		public Iterator<@Nullable ContextNode> iterator();
+
+	}
+
+	record IterableContextNode(Iterable<?> object, @Nullable ContextNode parent) implements ListNode {
+
+		@Override
+		public Iterator<@Nullable ContextNode> iterator() {
+			return ContextNodeFactory.INSTANCE.iteratorOf(this, object);
+		}
+
+	}
+
+	record ValueContextNode(Object object, @Nullable ContextNode parent) implements Internal {
+		@Override
+		public String toString() {
+			return renderString();
+		}
+
+		@Override
+		public @Nullable ContextNode get(String field) {
+			return null;
+		}
+
+		@Override
+		public Iterator<@Nullable ContextNode> iterator() {
+			return ContextNodeFactory.INSTANCE.iteratorOf(this, object);
+		}
+
+	}
+
+	record FunctionContextNode(Function<String, ?> object) implements ObjectContextNode {
+		@Override
+		public String toString() {
+			return renderString();
+		}
+
+		@Override
+		public @Nullable Object getValue(String key) {
+			return object.apply(key);
+		}
+	}
+
+	record MapContextNode(Map<?, ?> object, @Nullable ContextNode parent) implements ObjectContextNode {
+		@Override
+		public String toString() {
+			return renderString();
+		}
+
+		@Override
+		public @Nullable Object getValue(String key) {
+			return object.get(key);
+		}
+	}
+
+	enum EmptyContextNode implements Internal {
+
+		EMPTY;
+
+		@Override
+		public Object object() {
+			return Map.of();
+		}
+
+		@Override
+		public @Nullable ContextNode get(String field) {
+			return null;
+		}
+
+		@Override
+		public @Nullable ContextNode find(String field) {
+			return null;
+		}
+
+		@Override
+		public Iterator<@Nullable ContextNode> iterator() {
+			return Collections.emptyIterator();
+		}
+
 	}
 
 }

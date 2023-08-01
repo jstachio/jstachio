@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -22,7 +23,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStache;
@@ -92,7 +92,7 @@ public final class Templates {
 	 * @throws Exception if any reflection error happes or the template is not found
 	 */
 	public static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config) throws Exception {
-		Logger logger = config.getLogger(Templates.class.getCanonicalName());
+		Logger logger = config.getLogger(Templates.class.getName());
 		return findTemplate(modelType, config, logger);
 	}
 
@@ -388,6 +388,7 @@ public final class Templates {
 		String cname;
 		if (a == null || a.name().isBlank()) {
 
+			@SuppressWarnings("null") // Eclipse null analysis bug
 			JStacheName name = findAnnotations(modelClass, JStacheConfig.class) //
 					.flatMap(config -> Stream.of(config.naming())).findFirst().orElse(null);
 
@@ -419,13 +420,14 @@ public final class Templates {
 
 	static <A extends Annotation> Stream<A> findAnnotations(Class<?> c, Class<A> annotationClass) {
 		var s = annotationElements(c);
-		return s.filter(p -> p != null).map(p -> p.getAnnotation(annotationClass)).filter(a -> a != null);
+		return s.filter(p -> p != null).flatMap(p -> Stream.ofNullable(p.getAnnotation(annotationClass)));
 	}
 
-	private static Stream<? extends @Nullable AnnotatedElement> annotationElements(Class<?> c) {
-		Stream<? extends @Nullable AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
-		var s = Stream.concat(enclosing, Stream.<AnnotatedElement>of(c.getPackage(), c.getModule()));
-		return s;
+	private static Stream<? extends AnnotatedElement> annotationElements(Class<?> c) {
+		Stream<? extends AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
+		return Stream.<Stream<? extends AnnotatedElement>>builder().add(enclosing)
+				.add(Stream.ofNullable(c.getPackage())).add(Stream.ofNullable(c.getModule())).build()
+				.flatMap(Function.identity());
 	}
 
 	/*
@@ -464,10 +466,10 @@ public final class Templates {
 
 			@Override
 			public boolean tryAdvance(Consumer<? super Class<?>> action) {
-				if (current == null) {
+				Class<?> c;
+				if ((c = current) == null) {
 					return false;
 				}
-				var c = current;
 				current = f.apply(c);
 				action.accept(c);
 				return true;
@@ -507,8 +509,9 @@ public final class Templates {
 	}
 
 	private static List<ClassLoader> collectClassLoaders(@Nullable ClassLoader classLoader) {
-		return Stream.of(classLoader, Thread.currentThread().getContextClassLoader(), Template.class.getClassLoader())
-				.filter(cl -> cl != null).toList();
+		return Stream.<@Nullable ClassLoader>builder().add(classLoader)
+				.add(Thread.currentThread().getContextClassLoader()).add(Template.class.getClassLoader()).build()
+				.<ClassLoader>flatMap(s -> Stream.ofNullable(s)).toList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -561,16 +564,13 @@ public final class Templates {
 				templatePath = pathConfig.prefix() + templatePath + pathConfig.suffix();
 			}
 
-			// Class<?> templateContentType =
-			// EscaperProvider.INSTANCE.nullToDefault(stache.contentType());
-
 			var ee = EscaperProvider.INSTANCE.providesFromModelType(model, stache);
 			Function<String, String> templateEscaper = ee.getValue();
 			Class<?> templateContentType = ee.getKey();
 			String templateMediaType = "";
 			var jstacheContentType = templateContentType.getAnnotation(JStacheContentType.class);
 			if (jstacheContentType != null) {
-				templateMediaType = jstacheContentType.mediaType();
+				templateMediaType = Objects.requireNonNull(jstacheContentType.mediaType());
 			}
 			Function<@Nullable Object, String> templateFormatter = FormatterProvider.INSTANCE
 					.providesFromModelType(model, stache).getValue();
@@ -606,7 +606,7 @@ public final class Templates {
 
 		sealed interface StaticProvider<P> {
 
-			default @Nullable Class<?> autoToNull(@Nullable Class<?> type) {
+			private @Nullable Class<?> autoToNull(@Nullable Class<?> type) {
 				if ((type == null) || type.equals(autoProvider())) {
 					return null;
 				}
@@ -646,7 +646,7 @@ public final class Templates {
 
 			default Entry<Class<?>, P> providesFromModelType(Class<?> modelType, JStache jstache) throws Exception {
 				var t = findProvider(modelType, jstache);
-				return Map.entry(t, provides(t));
+				return Map.entry(t, Objects.requireNonNull(provides(t)));
 			}
 
 			@SuppressWarnings("unchecked")
@@ -680,13 +680,17 @@ public final class Templates {
 
 			@Override
 			public Class<?> providerFromConfig(JStacheConfig config) {
-				return config.contentType();
+				return Objects.requireNonNull(config.contentType());
 			}
 
 			@Override
 			public String providesMethod(Class<?> type) {
 				JStacheContentType a = type.getAnnotation(JStacheContentType.class);
-				return a.providesMethod();
+				if (a == null) {
+					throw new IllegalArgumentException("Specified content type class is not annotated with @"
+							+ JStacheContentType.class.getSimpleName());
+				}
+				return Objects.requireNonNull(a.providesMethod());
 			}
 
 			@Override
@@ -724,13 +728,17 @@ public final class Templates {
 
 			@Override
 			public Class<?> providerFromConfig(JStacheConfig config) {
-				return config.formatter();
+				return Objects.requireNonNull(config.formatter());
 			}
 
 			@Override
 			public String providesMethod(Class<?> type) {
 				JStacheFormatter a = type.getAnnotation(JStacheFormatter.class);
-				return a.providesMethod();
+				if (a == null) {
+					throw new IllegalArgumentException("Specified formatter provider is not annotated with @"
+							+ JStacheFormatter.class.getSimpleName());
+				}
+				return Objects.requireNonNull(a.providesMethod());
 			}
 
 			@Override
@@ -762,6 +770,16 @@ public final class Templates {
 			@Override
 			public boolean supportsType(Class<?> type) {
 				return modelClass().isAssignableFrom(type);
+			}
+
+			@Override
+			public Function<String, String> templateEscaper() {
+				return this.templateEscaper;
+			}
+
+			@Override
+			public Function<@Nullable Object, String> templateFormatter() {
+				return this.templateFormatter;
 			}
 
 		}

@@ -103,7 +103,7 @@ interface BufferedReadableByteChannel extends ReadableByteChannel {
 	}
 
 	static BufferedReadableByteChannel of(BufferedEncodedOutput output, final Iterator<byte[]> arrays) {
-		Supplier<byte @Nullable[]> sup = () -> {
+		Supplier<byte @Nullable []> sup = () -> {
 			if (!arrays.hasNext()) {
 				return null;
 			}

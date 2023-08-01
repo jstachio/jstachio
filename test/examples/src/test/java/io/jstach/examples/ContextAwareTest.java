@@ -41,7 +41,6 @@ public class ContextAwareTest {
 
 				Hello
 				098f6bcd-4621-3373-8ade-4e832627b4f6
-				From myLambda MISSING CSRF
 				""";
 		assertEquals(expected, actual);
 	}

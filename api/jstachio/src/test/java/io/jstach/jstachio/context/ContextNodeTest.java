@@ -8,6 +8,7 @@ import org.junit.Test;
 
 public class ContextNodeTest {
 
+	@SuppressWarnings({ "null", "deprecation" })
 	@Test
 	public void testIsFalseyArray() {
 		int[] ia = new int[] { 1, 0 };
@@ -18,9 +19,11 @@ public class ContextNodeTest {
 		assertFalse(ContextNode.ofRoot(ia).iterator().hasNext());
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testIteratorOnArray() throws Exception {
 		int[] ia = new int[] { 1, 0 };
+		@SuppressWarnings("deprecation")
 		var node = ContextNode.ofRoot(ia);
 		StringBuilder sb = new StringBuilder();
 		for (var n : node) {
