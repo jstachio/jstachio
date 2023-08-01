@@ -3,6 +3,7 @@ package io.jstach.jstachio;
 import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
@@ -173,11 +174,7 @@ public interface JStachio extends Renderer<Object> {
 	 * @see #setStatic(Supplier)
 	 */
 	public static JStachio of() {
-		JStachio jstachio = JStachioHolder.get();
-		if (jstachio == null) {
-			throw new NullPointerException("JStachio not found. This is probably a classloading issue.");
-		}
-		return jstachio;
+		return JStachioHolder.get();
 	}
 
 	/**
@@ -197,7 +194,7 @@ public interface JStachio extends Renderer<Object> {
 	 * avoid constant recreation it is recommend the supplier be memoized/cached.
 	 */
 	public static void setStatic(Supplier<JStachio> jstachioProvider) {
-		if (jstachioProvider == null) {
+		if (Objects.isNull(jstachioProvider)) {
 			throw new NullPointerException("JStachio provider cannot be null");
 		}
 		JStachioHolder.provider = jstachioProvider;
@@ -213,7 +210,7 @@ final class JStachioHolder {
 	}
 
 	static JStachio get() {
-		return provider.get();
+		return Objects.requireNonNull(provider.get(), "JStachio not found. This is probably a classloading issue.");
 	}
 
 }

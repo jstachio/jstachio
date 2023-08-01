@@ -3,15 +3,17 @@ package io.jstach.spec.generator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.jstach.jstachio.context.ContextNode;
+import org.eclipse.jdt.annotation.Nullable;
 
-public class SpecModel implements ContextNode {
+import io.jstach.jstachio.context.ObjectContext;
+
+public class SpecModel extends ObjectContext {
 
 	private final Map<String, Object> object = new LinkedHashMap<>();
 
 	@Override
-	public Map<String, Object> object() {
-		return object;
+	public @Nullable Object getValue(String key) {
+		return object.get(key);
 	}
 
 	@Override
@@ -20,7 +22,7 @@ public class SpecModel implements ContextNode {
 	}
 
 	public void putAll(Map<? extends String, ? extends Object> m) {
-		object().putAll(m);
+		object.putAll(m);
 	}
 
 }

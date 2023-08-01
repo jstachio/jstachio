@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -133,6 +134,7 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 
 	private void addChunk(byte[] chunk) throws E {
 		int length = chunk.length;
+		@Nullable
 		T c = this.consumer;
 		if (c != null) {
 			write(c, chunk);
@@ -141,9 +143,9 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 			/*
 			 * We have exceeded the threshold
 			 */
-			c = this.consumer = createConsumer(-1);
+			this.consumer = c = Objects.requireNonNull(createConsumer(-1));
 			chunks.add(chunk);
-			drain(consumer);
+			drain(c);
 		}
 		else {
 			chunks.add(chunk);
@@ -175,9 +177,10 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 	 */
 	@Override
 	public void close() throws E {
-		var c = this.consumer;
+		@Nullable
+		T c = this.consumer;
 		if (c == null) {
-			this.consumer = c = createConsumer(size);
+			this.consumer = c = Objects.requireNonNull(createConsumer(size));
 			drain(c);
 		}
 		close(c);

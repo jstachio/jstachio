@@ -168,7 +168,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 			if (template instanceof FilterChain c) {
 				previous = c;
 			}
-			else if (template instanceof @SuppressWarnings("rawtypes") Template t) {
+			else if (template instanceof Template t) {
 				/*
 				 * This is sort of abusing that filter chains happen to be a functional
 				 * interface

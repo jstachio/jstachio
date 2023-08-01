@@ -3,17 +3,19 @@ package io.jstach.examples;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.jstache.JStache;
-import io.jstach.jstachio.context.ContextNode;
+import io.jstach.jstachio.context.ObjectContext;
 
 @JStache(path = "example-map-node.mustache")
-class ExampleMapNode implements ContextNode {
+class ExampleMapNode extends ObjectContext {
 
 	private final Map<String, Object> object = new LinkedHashMap<>();
 
 	@Override
-	public Object object() {
-		return object;
+	public @Nullable Object getValue(String key) {
+		return object.get(key);
 	}
 
 }

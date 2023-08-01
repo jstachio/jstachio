@@ -2,6 +2,7 @@ package io.jstach.jstachio.spi;
 
 import java.lang.System.Logger;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -103,14 +104,14 @@ public non-sealed interface JStachioConfig extends JStachioExtension {
 	 * @throws NullPointerException if the fallback is null or if the key is null.
 	 */
 	default String requireProperty(String key, String fallback) {
-		if (key == null) {
+		if (Objects.isNull(key)) {
 			throw new NullPointerException("key is null");
 		}
 		String v = getProperty(key);
 		if (v == null) {
 			v = fallback;
 		}
-		if (v == null) {
+		if (Objects.isNull(v)) {
 			throw new NullPointerException("fallback is null. key: " + key);
 		}
 		return v;
@@ -168,8 +169,7 @@ enum NOOPLogger implements Logger {
 	}
 
 	@Override
-	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String msg,
-			@Nullable Throwable thrown) {
+	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String msg, @Nullable Throwable thrown) {
 
 	}
 

@@ -217,7 +217,7 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 	public Template<?> template() {
 		return this;
 	}
-	
+
 	@Override
 	public Object model() {
 		return Objects.requireNonNull(_model);

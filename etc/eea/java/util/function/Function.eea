@@ -1,0 +1,4 @@
+class java/util/function/Function
+identity
+ <T:Ljava/lang/Object;>()Ljava/util/function/Function<TT;TT;>;
+ <T:Ljava/lang/Object;>()L1java/util/function/Function<TT;TT;>;
