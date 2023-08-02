@@ -234,6 +234,29 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	}
 
 	/**
+	 * Formats the formattable object and then sends the results to the downstream
+	 * appender. The default implementation calls
+	 * {@link #format(Appender, Output, String, Class, Object)} and it is generally
+	 * recommend you override for performance.
+	 *
+	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
+	 * formatter should never use it directly and simply pass it on to the downstream
+	 * appender. Also take note that the string value maybe null!
+	 * @param <A> the appendable type
+	 * @param <E> the appender exception type
+	 * @param downstream the downstream appender to be used instead of the appendable
+	 * directly
+	 * @param a the appendable to be passed to the appender
+	 * @param path the dotted mustache like path
+	 * @param f Formattable which maybe <code>null</code>.
+	 * @throws E if the appender or appendable throws an exception
+	 */
+	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path,
+			@Nullable Formattable f) throws E {
+		format(downstream, a, path, Formatter.class, f);
+	}
+
+	/**
 	 * Adapts a function to a formatter.
 	 *
 	 * If the function is already a formatter then it is simply returned (noop). Thus it
@@ -247,6 +270,30 @@ public interface Formatter extends Function<@Nullable Object, String> {
 			return f;
 		}
 		return new ObjectFunctionFormatter(formatterFunction);
+	}
+
+	/**
+	 * Implement to allow formatting of custom objects you want to output. This is often
+	 * easier than registering custom {@link JStacheFormatterTypes} but couples model
+	 * objects to JStachio.
+	 */
+	public interface Formattable {
+
+		/**
+		 * Called by the formatter to format. Implementations can decide if they want to
+		 * use the passed in formatter to perhaps format other types.
+		 * @param <A> the appendable type
+		 * @param <E> the appender exception type
+		 * @param formatter the calling formatter
+		 * @param downstream the downstream appender to be used instead of the appendable
+		 * directly.
+		 * @param path the dotted mustache like path
+		 * @param a the appendable to be passed to the appender
+		 * @throws E if the appender or appendable throws an exception
+		 */
+		<A extends Output<E>, E extends Exception> void format(Formatter formatter, Appender downstream, String path,
+				A a) throws E;
+
 	}
 
 }

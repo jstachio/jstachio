@@ -170,13 +170,13 @@ enum NOOPLogger implements Logger {
 
 	@Override
 	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String msg, @Nullable Throwable thrown) {
-
+		// Do nothing
 	}
 
 	@Override
 	public void log(Level level, @Nullable ResourceBundle bundle, @Nullable String format,
 			@Nullable Object @NonNull... params) {
-
+		// Do nothing
 	}
 
 }

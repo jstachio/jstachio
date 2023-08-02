@@ -1,18 +1,24 @@
 package io.jstach.jstachio.context;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStache;
 import io.jstach.jstachio.context.Internal.ObjectContextNode;
 
 /**
- * Extend this class to make a model more like JSON/Map
+ * Extend this class to make {@link JStache} model act like JSON object or a
+ * java.util.Map.
+ *
+ * @see ContextNode
+ * @author agentgt
  */
 public non-sealed abstract class ObjectContext implements ObjectContextNode {
 
 	/**
-	 * Get value like map.
+	 * Get a value by key. This is analagous to {@link Map#get(Object)}.
 	 * @param key not null
 	 * @return value mapped to key.
 	 */
@@ -43,6 +49,11 @@ public non-sealed abstract class ObjectContext implements ObjectContextNode {
 	@Override
 	public final Iterator<@Nullable ContextNode> iterator() {
 		return ObjectContextNode.super.iterator();
+	}
+
+	@Override
+	public final boolean isFalsey() {
+		return ObjectContextNode.super.isFalsey();
 	}
 
 }
