@@ -45,6 +45,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.FormatterTypes;
@@ -112,7 +113,7 @@ public class RenderingCodeGenerator {
 
 		KnownType knownType = javaModel.resolveType(type).orElse(null);
 
-		if (knownType != null && ((knownType instanceof NativeType) || knownType.equals(knownTypes._String))) {
+		if (isDirectFormat(type, knownType)) {
 			return renderFormatCall(variables, path, text);
 		}
 		else if (knownType != null && knownType instanceof ObjectType) {
@@ -129,6 +130,23 @@ public class RenderingCodeGenerator {
 
 		throw new TypeException(MessageFormat.format(
 				"Can''t render {0} expression of {1} type as it is not an allowed type to format. ", text, type));
+	}
+
+	private boolean isDirectFormat(TypeMirror type, @Nullable KnownType kt) {
+		KnownType formattableType = knownTypes._Formattable.orElse(null);
+		if (formattableType != null && formattableType.isSupertype(type)) {
+			return true;
+		}
+		if (kt == null) {
+			return false;
+		}
+		if (kt instanceof NativeType) {
+			return true;
+		}
+		if (kt.equals(knownTypes._String)) {
+			return true;
+		}
+		return false;
 	}
 
 	private String renderFormatCall(VariableContext variables, String path, String text, String cname) {

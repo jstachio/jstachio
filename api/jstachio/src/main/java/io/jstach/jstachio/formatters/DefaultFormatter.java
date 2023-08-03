@@ -10,7 +10,6 @@ import io.jstach.jstache.JStacheFormatterTypes;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.Output;
-import io.jstach.jstachio.context.ContextNode;
 
 /**
  * Default formatters.
@@ -31,9 +30,6 @@ public interface DefaultFormatter extends Formatter {
 			@Nullable Object o) throws E {
 		if (o == null) {
 			throw new NullPointerException("null at: '" + path + "'");
-		}
-		else if (o instanceof ContextNode m) {
-			downstream.append(a, m.renderString());
 		}
 		else {
 			downstream.append(a, String.valueOf(o));

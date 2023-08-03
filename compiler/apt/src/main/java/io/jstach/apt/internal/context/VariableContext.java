@@ -50,9 +50,11 @@ public class VariableContext {
 
 	public static String FORMATTER = "formatter";
 
-	public static String TEXT = "TEXT";
+	public static String TEMPLATE = "template";
 
-	public static String CONTEXT = "_context";
+	public static String CONTEXT = "context";
+
+	public static String TEXT = "TEXT";
 
 	public static VariableContext createDefaultContext(NullChecking nullChecking) {
 		TreeMap<String, Integer> variables = new TreeMap<>();
@@ -60,9 +62,12 @@ public class VariableContext {
 		variables.put(APPENDER, 1);
 		variables.put(APPENDABLE, 1);
 		variables.put(FORMATTER, 1);
+		variables.put(CONTEXT, 1);
+
 		// return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables,
 		// null, true, nullChecking);
-		return new RootVariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables, nullChecking);
+		return new RootVariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, TEMPLATE, CONTEXT, variables,
+				nullChecking);
 	}
 
 	private final String appender;
@@ -72,6 +77,10 @@ public class VariableContext {
 	private final String unescapedWriter;
 
 	private final String formatter;
+
+	private final String template;
+
+	private final String context;
 
 	private final Map<String, Integer> variables;
 
@@ -102,13 +111,15 @@ public class VariableContext {
 
 	}
 
-	VariableContext(String appender, String escaper, String unescapedWriter, String formatter,
-			Map<String, Integer> variables, @Nullable VariableContext parent, boolean escaped,
+	VariableContext(String appender, String escaper, String unescapedWriter, String formatter, String template,
+			String context, Map<String, Integer> variables, @Nullable VariableContext parent, boolean escaped,
 			NullChecking nullChecking) {
 		this.appender = appender;
 		this.escaper = escaper;
 		this.unescapedWriter = unescapedWriter;
 		this.formatter = formatter;
+		this.template = template;
+		this.context = context;
 		this.variables = variables;
 		this.parent = parent;
 		this.escaped = escaped;
@@ -119,9 +130,10 @@ public class VariableContext {
 
 		private List<String> textCodes = new ArrayList<>();
 
-		RootVariableContext(String appender, String escaper, String unescapedWriter, String formatter,
-				Map<String, Integer> variables, NullChecking nullChecking) {
-			super(appender, escaper, unescapedWriter, formatter, variables, null, true, nullChecking);
+		RootVariableContext(String appender, String escaper, String unescapedWriter, String formatter, String template,
+				String context, Map<String, Integer> variables, NullChecking nullChecking) {
+			super(appender, escaper, unescapedWriter, formatter, template, context, variables, null, true,
+					nullChecking);
 		}
 
 	}
@@ -175,7 +187,11 @@ public class VariableContext {
 	}
 
 	public String context() {
-		return CONTEXT;
+		return context;
+	}
+
+	public String template() {
+		return template;
 	}
 
 	public NullChecking nullChecking() {
@@ -183,8 +199,8 @@ public class VariableContext {
 	}
 
 	VariableContext unescaped() {
-		return new VariableContext(appender, appender, unescapedWriter, formatter, variables, parent, false,
-				nullChecking);
+		return new VariableContext(appender, appender, unescapedWriter, formatter, template, context, variables, parent,
+				false, nullChecking);
 	}
 
 	private @Nullable Integer lookupVariable(String baseName) {
@@ -223,8 +239,8 @@ public class VariableContext {
 	}
 
 	VariableContext createEnclosedContext() {
-		return new VariableContext(appender, escaper, unescapedWriter, formatter, new TreeMap<String, Integer>(), this,
-				true, nullChecking);
+		return new VariableContext(appender, escaper, unescapedWriter, formatter, template, context,
+				new TreeMap<String, Integer>(), this, true, nullChecking);
 	}
 
 }

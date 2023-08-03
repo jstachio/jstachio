@@ -8,6 +8,7 @@ import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
+import static io.jstach.apt.prism.Prisms.CONTEXT_TEMPLATE_CLASS;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -75,6 +76,8 @@ class TemplateClassWriter implements LoggingSupplier {
 	final String _OutputStream = OutputStream.class.getName();
 
 	final String _Charset = Charset.class.getName();
+
+	final String _ContextNode = Prisms.CONTEXT_NODE_CLASS;
 
 	TemplateClassWriter(CodeWriter compilerManager, TextFileObject templateLoader, FormatCallType formatCallType) {
 		this.codeWriter = compilerManager;
@@ -172,6 +175,8 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		boolean preEncode = !model.flags().contains(Prisms.Flag.PRE_ENCODE_DISABLE);
 
+		boolean contextSupport = model.flags().contains(Prisms.Flag.CONTEXT_SUPPORT);
+
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
 			if (preEncode) {
@@ -179,6 +184,9 @@ class TemplateClassWriter implements LoggingSupplier {
 			}
 			else {
 				interfaces.add(TEMPLATE_CLASS + "<" + className + ">");
+			}
+			if (contextSupport) {
+				interfaces.add(CONTEXT_TEMPLATE_CLASS + "<" + className + ">");
 			}
 			interfaces.add(TEMPLATE_PROVIDER_CLASS);
 			interfaces.add(FILTER_CHAIN_CLASS);
@@ -477,6 +485,20 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("");
 		}
 
+		if (jstachio && preEncode && contextSupport) {
+			println("    @Override");
+			println("    public " + _EncodedOutput + " A write(" //
+					+ idt + className + " model, " //
+					+ idt + _ContextNode + " context, " //
+					+ idt + "A" + " outputStream" //
+					+ ") throws E {");
+			println("        encode(this, model, context, outputStream, " + templateFormatterExp + ", "
+					+ templateEscaperExp + ", " + templateAppenderExp + ");");
+			println("        return outputStream;");
+			println("    }");
+			println("");
+		}
+
 		if (jstachio)
 			println("    @Override");
 		else {
@@ -759,57 +781,97 @@ class TemplateClassWriter implements LoggingSupplier {
 		VariableContext variables = VariableContext.createDefaultContext(nullChecking);
 		String dataName = variables.introduceNewNameLike("data");
 		String className = element.getQualifiedName().toString();
-		String _Appender = APPENDER_CLASS;
 
-		String nullable = model.nullableAnnotation() + " ";
-		final String _F_Formatter = Function.class.getName() + "<" + nullable + "Object, String>";
-		String _Escaper = jstachio ? _Appender : _F_Escaper;
-		String _Formatter = jstachio ? FORMATTER_CLASS : _F_Formatter;
-
-		String _A = "<A extends " + _Output + "<E>, E extends Exception>";
-
-		println("    /**");
-		println("     * Renders the passed in model.");
 		if (jstachio) {
-			println("     * @param <A> appendable type.");
-			println("     * @param <E> error type.");
-		}
-		println("     * @param " + dataName + " model");
-		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
-		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
-		println("     * @param " + variables.escaper() + " used to write escaped variables.");
-		if (jstachio)
-			println("     * @param " + variables.appender() + " used to write unescaped variables.");
-		if (jstachio) {
-			println("     * @throws E if an error occurs while writing to the appendable");
+			jstachioRenderMethodHead(variables, dataName, className, model);
 		}
 		else {
-			println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
-		}
-		println("     */");
-		if (jstachio) {
-			println("    public static " + _A + " void render(" //
-					+ idt + className + " " + dataName + ", " //
-					+ idt + "A" + " " + variables.unescapedWriter() + "," //
-					+ idt + _Formatter + " " + variables.formatter() + "," //
-					+ idt + _Escaper + " " + variables.escaper() + "," //
-					+ idt + _Appender + " " + variables.appender() + ") throws E {");
-		}
-		else {
-			println("    public static  void render(" //
-					+ idt + className + " " + dataName + ", " //
-					+ idt + _Appendable + " " + variables.unescapedWriter() + "," //
-					+ idt + _Formatter + " " + variables.formatter() + "," //
-					+ idt + _Escaper + " " + variables.escaper() + ") throws java.io.IOException {");
-		}
-		if (jstachio) {
-			printContextNode(variables, dataName);
+			stacheRenderMethodHead(variables, dataName, className, model);
 		}
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
 		println("");
 		println("    }");
+	}
+
+	private void stacheRenderMethodHead(VariableContext variables, String dataName, String className,
+			RendererModel model) {
+		String nullable = model.nullableAnnotation() + " ";
+		final String _F_Formatter = Function.class.getName() + "<" + nullable + "Object, String>";
+		String _Escaper = _F_Escaper;
+		String _Formatter = _F_Formatter;
+		println("    /**");
+		println("     * Renders the passed in model.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
+		println("     */");
+		println("    public static  void render(" //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + _Appendable + " " + variables.unescapedWriter() + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Escaper + " " + variables.escaper() + ") throws java.io.IOException {");
+	}
+
+	private void jstachioRenderMethodHead(VariableContext variables, String dataName, String className,
+			RendererModel model) {
+		String _Appender = APPENDER_CLASS;
+		String _Escaper = _Appender;
+		String _Formatter = FORMATTER_CLASS;
+		String _A = "<A extends " + _Output + "<E>, E extends Exception>";
+		String _Template = model.rendererClassRef().requireCanonicalName();
+
+		println("    /**");
+		println("     * Renders the passed in model.");
+		println("     * @param <A> appendable type.");
+		println("     * @param <E> error type.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     * @throws E if an error occurs while writing to the appendable");
+		println("     */");
+		println("    public static " + _A + " void render(" //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + "A" + " " + variables.unescapedWriter() + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Escaper + " " + variables.escaper() + "," //
+				+ idt + _Appender + " " + variables.appender() + ") throws E {");
+		println("        render(" //
+				+ "of(), " //
+				+ dataName + ", " //
+				+ renderContextNode(variables, dataName, model) + ", " //
+				+ variables.unescapedWriter() + ", " //
+				+ variables.formatter() + ", " //
+				+ variables.escaper() + ", " //
+				+ variables.appender() + ");");
+		println("    }");
+		println("");
+		println("    /**");
+		println("     * Renders the passed in model.");
+		println("     * @param <A> appendable type.");
+		println("     * @param <E> error type.");
+		println("     * @param " + variables.template() + " instance of template.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.context() + " context");
+		println("     * @param " + variables.unescapedWriter() + " appendable to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     * @throws E if an error occurs while writing to the appendable");
+		println("     */");
+		println("    protected static " + _A + " void render(" //
+				+ idt + _Template + " " + variables.template() + ", " //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + _ContextNode + " " + variables.context() + ", " //
+				+ idt + "A" + " " + variables.unescapedWriter() + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Escaper + " " + variables.escaper() + "," //
+				+ idt + _Appender + " " + variables.appender() + ") throws E {");
 	}
 
 	private NullChecking nullChecking(RendererModel model) {
@@ -841,6 +903,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		String _Escaper = ESCAPER_CLASS;
 		String _Formatter = FORMATTER_CLASS;
 		String _OutputStream = "<A extends " + Prisms.ENCODED_OUTPUT_CLASS + "<E>, E extends Exception>";
+		String _Template = model.rendererClassRef().requireCanonicalName();
 
 		println("");
 		println("    /**");
@@ -860,8 +923,39 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Formatter + " " + variables.formatter() + "," //
 				+ idt + _Escaper + " " + variables.escaper() + "," //
 				+ idt + _Appender + " " + variables.appender() + ") throws E {");
+		println("        encode(" //
+				+ "of(), " //
+				+ dataName + ", " //
+				+ renderContextNode(variables, dataName, model) + ", " //
+				+ variables.unescapedWriter() + ", " //
+				+ variables.formatter() + ", " //
+				+ variables.escaper() + ", " //
+				+ variables.appender() + ");");
+		println("    }");
+		println("");
+		println("    /**");
+		println("     * Renders to an OutputStream use pre-encoded parts of the template.");
+		println("     * @param <A> output type.");
+		println("     * @param <E> error type.");
+		println("     * @param " + variables.template() + " instance of template.");
+		println("     * @param " + dataName + " model");
+		println("     * @param " + variables.context() + " context");
+		println("     * @param " + variables.unescapedWriter() + " stream to write to.");
+		println("     * @param " + variables.formatter() + " formats variables before they are passed to the escaper.");
+		println("     * @param " + variables.escaper() + " used to write escaped variables.");
+		println("     * @param " + variables.appender() + " used to write unescaped variables.");
+		println("     * @throws E if an error occurs while writing to the appendable");
+		println("     */");
+		println("    protected static " + _OutputStream + " void encode(" //
+				+ idt + _Template + " " + variables.template() + ", " //
+				+ idt + className + " " + dataName + ", " //
+				+ idt + _ContextNode + " " + variables.context() + ", " //
+				+ idt + "A" + " " + variables.unescapedWriter() + "," //
+				+ idt + _Formatter + " " + variables.formatter() + "," //
+				+ idt + _Escaper + " " + variables.escaper() + "," //
+				+ idt + _Appender + " " + variables.appender() + ") throws E {");
 
-		printContextNode(variables, dataName);
+		// printContextNode(variables, dataName, model);
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
@@ -877,16 +971,32 @@ class TemplateClassWriter implements LoggingSupplier {
 
 	}
 
-	private void printContextNode(VariableContext variables, String dataName) {
-		println("        " + renderContextNode(variables, dataName));
-		println("        " + Prisms.CONTEXT_NODE_CLASS + ".suppressUnused(" + variables.context() + ");");
+	private void printContextNode(VariableContext variables, String dataName, RendererModel model) {
+		boolean enabled = model.flags().contains(Flag.CONTEXT_SUPPORT);
+		if (!enabled) {
+			println("        " + "@SuppressWarnings(\"unused\")");
+		}
+
+		String contextCreator = renderContextNode(variables, dataName, enabled);
+		String contextDeclare = _ContextNode + " " + variables.context() + " = " + contextCreator + ";";
+		println("        " + contextDeclare);
 	}
 
-	private static String renderContextNode(VariableContext variables, String dataName) {
-		String contextCreator = Prisms.CONTEXT_NODE_CLASS + ".resolve(" + dataName + "," + variables.unescapedWriter()
-				+ ")";
-		String contextDeclare = Prisms.CONTEXT_NODE_CLASS + " " + variables.context();
-		return contextDeclare + " = " + contextCreator + ";";
+	private static String renderContextNode(VariableContext variables, String dataName, RendererModel model) {
+		boolean enabled = model.flags().contains(Flag.CONTEXT_SUPPORT);
+		return renderContextNode(variables, dataName, enabled);
+	}
+
+	private static String renderContextNode(VariableContext variables, String dataName, boolean enabled) {
+		String contextCreator;
+		if (enabled) {
+			contextCreator = Prisms.CONTEXT_NODE_CLASS + ".resolve(" + dataName + "," + variables.unescapedWriter()
+					+ ")";
+		}
+		else {
+			contextCreator = Prisms.CONTEXT_NODE_CLASS + ".empty()";
+		}
+		return contextCreator;
 	}
 
 	private static final Map<Charset, String> STANDARD_CHARSETS = Map.of( //
