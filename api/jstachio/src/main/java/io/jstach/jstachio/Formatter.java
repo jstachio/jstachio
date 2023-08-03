@@ -235,9 +235,9 @@ public interface Formatter extends Function<@Nullable Object, String> {
 
 	/**
 	 * Formats the formattable object and then sends the results to the downstream
-	 * appender. The default implementation calls
-	 * {@link #format(Appender, Output, String, Class, Object)} and it is generally
-	 * recommend you override for performance.
+	 * appender. The default implementation will call the supplied
+	 * {@linkplain Formattable} if it is not null otherwise it will call
+	 * {@link #format(Appender, Output, String, Class, Object)} to handle the null case.
 	 *
 	 * @apiNote Although the formatter has access to the raw {@link Appendable} the
 	 * formatter should never use it directly and simply pass it on to the downstream
@@ -253,7 +253,13 @@ public interface Formatter extends Function<@Nullable Object, String> {
 	 */
 	default <A extends Output<E>, E extends Exception> void format(Appender downstream, A a, String path,
 			@Nullable Formattable f) throws E {
-		format(downstream, a, path, Formatter.class, f);
+		if (f != null) {
+			f.format(this, downstream, path, a);
+		}
+		else {
+			format(downstream, a, path, Formattable.class, null);
+
+		}
 	}
 
 	/**

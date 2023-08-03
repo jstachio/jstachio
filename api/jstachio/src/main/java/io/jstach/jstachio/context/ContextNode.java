@@ -64,6 +64,11 @@ import io.jstach.jstachio.context.Internal.FunctionContextNode;
 public sealed interface ContextNode extends Formattable, Iterable<@Nullable ContextNode> {
 
 	/**
+	 * The default binding name for context.
+	 */
+	public static final String CONTEXT_BINDING_NAME = "@context";
+
+	/**
 	 * Creates a root context node with the given function to look up children.
 	 * @param function used to find children with a given name
 	 * @return root context node powered by a function
@@ -111,14 +116,6 @@ public sealed interface ContextNode extends Formattable, Iterable<@Nullable Cont
 			return resolve(second);
 		}
 		return f;
-	}
-
-	/**
-	 * Internal for suppress unused warnings for context node variable.
-	 * @param node node
-	 * @apiNote ignore. For code generation purposes.
-	 */
-	public static void suppressUnused(ContextNode node) {
 	}
 
 	/**

@@ -154,7 +154,13 @@ public @interface JStacheFlags {
 		 * code will not implement
 		 * <code>io.jstach.jstachio.Template.EncodedTemplate</code>.
 		 */
-		PRE_ENCODE_DISABLE;
+		PRE_ENCODE_DISABLE,
+
+		/**
+		 * <strong>EXPERIMENTAL:</strong> Will bind "@context" with a ContextNode. This is
+		 * to add cross cutting variables that the model does not have such CSRF.
+		 */
+		CONTEXT_SUPPORT;
 
 	}
 

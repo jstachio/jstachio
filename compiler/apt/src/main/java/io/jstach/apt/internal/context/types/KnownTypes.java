@@ -104,6 +104,8 @@ public class KnownTypes implements TypesMixin {
 
 	public final Optional<ObjectType> _ContextNode;
 
+	public final Optional<ObjectType> _Formattable;
+
 	public final ObjectType _UUID;
 
 	public final ObjectType _URI;
@@ -150,6 +152,7 @@ public class KnownTypes implements TypesMixin {
 		_Optional = b.objectType(Optional.class);
 		_ContextNode = b.optionalObjectType(Prisms.CONTEXT_NODE_CLASS); // MapNode needs
 																		// to be above
+		_Formattable = b.optionalObjectType(Prisms.FORMATTABLE_CLASS);
 		// _Iterable
 		_Iterable = b.objectType(Iterable.class);
 		_List = b.objectType(List.class);

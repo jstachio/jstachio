@@ -73,6 +73,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_FLAGS_CONTEXT_SUPPORT = "jstache.context_support";
+
+	/**
+	 * Generated
+	 */
 	@NonNullByDefault
 	public enum Flag {
 
@@ -96,6 +101,10 @@ public interface Prisms {
 		 * Generated
 		 */
 		PRE_ENCODE_DISABLE, //
+		/**
+		 * Generated
+		 */
+		CONTEXT_SUPPORT, //
 
 	}
 
@@ -191,6 +200,11 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String FORMATTABLE_CLASS = "io.jstach.jstachio.Formatter.Formattable";
+
+	/**
+	 * Generated
+	 */
 	public static final String DEFAULT_FORMATTER_CLASS = "io.jstach.jstachio.formatters.DefaultFormatter";
 
 	/**
@@ -217,6 +231,11 @@ public interface Prisms {
 	 * Generated
 	 */
 	public static final String CONTEXT_NODE_CLASS = "io.jstach.jstachio.context.ContextNode";
+
+	/**
+	 * Generated
+	 */
+	public static final String CONTEXT_TEMPLATE_CLASS = "io.jstach.jstachio.context.ContextTemplate";
 
 	/**
 	 * Generated

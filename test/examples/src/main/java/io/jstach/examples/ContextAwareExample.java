@@ -3,6 +3,8 @@ package io.jstach.examples;
 import java.util.Optional;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheFlags.Flag;
 import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstachio.context.ContextNode;
 
@@ -19,6 +21,7 @@ import io.jstach.jstachio.context.ContextNode;
 		{{/myLambda}}
 		{{/@context}}
 		""")
+@JStacheFlags(flags = Flag.CONTEXT_SUPPORT)
 record ContextAwareExample(String message, IdContainer id) {
 
 	@JStacheLambda
