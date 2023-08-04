@@ -485,6 +485,18 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("");
 		}
 
+		if (jstachio && contextSupport) {
+			println("    @Override");
+			println("    public " + _A + " A execute(" //
+					+ idt + className + " model, " //
+					+ idt + _ContextNode + " context, " //
+					+ idt + "A" + " a) throws E {");
+			println("        render(this, model, context, a, " + templateFormatterExp + ", " + templateEscaperExp + ", "
+					+ templateAppenderExp + ");");
+			println("        return a;");
+			println("    }");
+			println("");
+		}
 		if (jstachio && preEncode && contextSupport) {
 			println("    @Override");
 			println("    public " + _EncodedOutput + " A write(" //
@@ -955,7 +967,6 @@ class TemplateClassWriter implements LoggingSupplier {
 				+ idt + _Escaper + " " + variables.escaper() + "," //
 				+ idt + _Appender + " " + variables.appender() + ") throws E {");
 
-		// printContextNode(variables, dataName, model);
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
 		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
@@ -969,17 +980,6 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		codeWriter.setFormatCallType(formatCallType);
 
-	}
-
-	private void printContextNode(VariableContext variables, String dataName, RendererModel model) {
-		boolean enabled = model.flags().contains(Flag.CONTEXT_SUPPORT);
-		if (!enabled) {
-			println("        " + "@SuppressWarnings(\"unused\")");
-		}
-
-		String contextCreator = renderContextNode(variables, dataName, enabled);
-		String contextDeclare = _ContextNode + " " + variables.context() + " = " + contextCreator + ";";
-		println("        " + contextDeclare);
 	}
 
 	private static String renderContextNode(VariableContext variables, String dataName, RendererModel model) {
