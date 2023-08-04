@@ -62,10 +62,9 @@ public class VariableContext {
 		variables.put(APPENDER, 1);
 		variables.put(APPENDABLE, 1);
 		variables.put(FORMATTER, 1);
+		variables.put(TEMPLATE, 1);
 		variables.put(CONTEXT, 1);
 
-		// return new VariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, variables,
-		// null, true, nullChecking);
 		return new RootVariableContext(APPENDER, ESCAPER, APPENDABLE, FORMATTER, TEMPLATE, CONTEXT, variables,
 				nullChecking);
 	}

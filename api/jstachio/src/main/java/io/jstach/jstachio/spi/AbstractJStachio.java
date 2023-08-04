@@ -6,6 +6,9 @@ import static io.jstach.jstachio.spi.Templates.validateEncoding;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
+import io.jstach.jstachio.context.ContextJStachio;
+import io.jstach.jstachio.context.ContextNode;
+import io.jstach.jstachio.context.ContextTemplate;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.TemplateModel;
@@ -19,7 +22,7 @@ import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
  * @see JStachioExtensions
  * @author agentgt
  */
-public abstract class AbstractJStachio implements JStachio, JStachioExtensions.Provider {
+public abstract class AbstractJStachio implements JStachio, JStachioExtensions.Provider, ContextJStachio {
 
 	/**
 	 * Do nothing constructor
@@ -39,6 +42,37 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		var t = _findTemplate(model);
 		validateEncoding(t, appendable);
 		return t.write(model, appendable);
+	}
+
+	/*
+	 * IF YOU want this method to be not final please file a bug.
+	 */
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public final <A extends EncodedOutput<E>, E extends Exception> A write(Object model, ContextNode context, A output)
+			throws E {
+		var t = _findTemplate(model);
+		validateEncoding(t, output);
+		if (t instanceof ContextTemplate ct) {
+			var _ct = (ContextTemplate<Object>) ct;
+			return _ct.write(model, context, output);
+		}
+		return t.write(model, output);
+	}
+
+	/*
+	 * IF YOU want this method to be not final please file a bug.
+	 */
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public final <A extends Output<E>, E extends Exception> A execute(Object model, ContextNode context, A appendable)
+			throws E {
+		var t = _findTemplate(model);
+		if (t instanceof ContextTemplate ct) {
+			var _ct = (ContextTemplate<Object>) ct;
+			return _ct.execute(model, context, appendable);
+		}
+		return t.execute(model, appendable);
 	}
 
 	/*
