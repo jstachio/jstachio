@@ -13,6 +13,8 @@ import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output.CloseableEncodedOutput;
+import io.jstach.jstachio.context.ContextJStachio;
+import io.jstach.jstachio.context.ContextNode;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,8 +62,16 @@ public interface JStachioModelView extends View {
 			charset = StandardCharsets.UTF_8;
 		}
 		try (var o = createOutput(charset, response)) {
-			jstachio().write(model(), o);
+			var context = createContext(model, request, response);
+			jstachio().write(model(), context, o);
 		}
+	}
+
+	/*
+	 * If you want this public file an issue.
+	 */
+	private ContextNode createContext(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) {
+		return ContextNode.of(model::get);
 	}
 
 	/**
@@ -80,8 +90,8 @@ public interface JStachioModelView extends View {
 	 * @return stachio singleton by default.
 	 * @see JStachio#setStatic(java.util.function.Supplier)
 	 */
-	default JStachio jstachio() {
-		return JStachio.of();
+	default ContextJStachio jstachio() {
+		return ContextJStachio.of(JStachio.of());
 	}
 
 	/**

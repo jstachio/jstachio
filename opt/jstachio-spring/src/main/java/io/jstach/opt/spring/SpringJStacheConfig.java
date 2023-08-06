@@ -2,6 +2,8 @@ package io.jstach.opt.spring;
 
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheConfig;
+import io.jstach.jstache.JStacheFlags;
+import io.jstach.jstache.JStacheFlags.Flag;
 import io.jstach.jstache.JStachePath;
 
 /**
@@ -24,6 +26,7 @@ import io.jstach.jstache.JStachePath;
  * without it
  */
 @JStacheConfig(pathing = @JStachePath(prefix = "templates/", suffix = ".mustache"))
+@JStacheFlags(flags = Flag.CONTEXT_SUPPORT)
 public enum SpringJStacheConfig {
 
 }

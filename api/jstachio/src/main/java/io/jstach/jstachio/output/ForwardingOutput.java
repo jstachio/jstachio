@@ -7,7 +7,7 @@ import io.jstach.jstachio.Output;
  *
  * @param <E> error throw on any append or write
  */
-abstract class ForwardingOutput<E extends Exception> implements Output<E> {
+public abstract class ForwardingOutput<E extends Exception> implements Output<E> {
 
 	/**
 	 * The output to forward to.

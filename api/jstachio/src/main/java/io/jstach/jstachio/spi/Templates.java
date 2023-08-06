@@ -388,7 +388,6 @@ public final class Templates {
 		String cname;
 		if (a == null || a.name().isBlank()) {
 
-			@SuppressWarnings("null") // Eclipse null analysis bug
 			JStacheName name = findAnnotations(modelClass, JStacheConfig.class) //
 					.flatMap(config -> Stream.of(config.naming())).findFirst().orElse(null);
 
