@@ -9,20 +9,19 @@ import org.junit.Test;
 
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
+import io.jstach.jstachio.context.ContextJStachio;
 import io.jstach.jstachio.context.ContextNode;
-import io.jstach.jstachio.output.ContextAwareOutput;
 
 public class ContextAwareTest {
 
 	@Test
 	public void testContextAwareOutput() throws Exception {
-		var output = Output.of(new StringBuilder());
 		Map<String, String> attributes = new LinkedHashMap<>();
 		attributes.put("csrf", "TOKEN");
 		var context = ContextNode.of(attributes::get);
-		var contextOutput = ContextAwareOutput.of(output, context);
 		var model = new ContextAwareExample("Hello", IdContainer.test());
-		String actual = JStachio.of().execute(model, contextOutput).getOutput().toString();
+		var jstachio = ContextJStachio.of(JStachio.of());
+		String actual = jstachio.execute(model, context, Output.of(new StringBuilder())).toString();
 		String expected = """
 				TOKEN
 				Hello
@@ -34,9 +33,9 @@ public class ContextAwareTest {
 
 	@Test
 	public void testContextAwareMissing() throws Exception {
-		var output = Output.of(new StringBuilder());
 		var model = new ContextAwareExample("Hello", IdContainer.test());
-		String actual = JStachio.of().execute(model, output).toString();
+		var jstachio = ContextJStachio.of(JStachio.of());
+		String actual = jstachio.execute(model, Output.of(new StringBuilder())).toString();
 		String expected = """
 
 				Hello

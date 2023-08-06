@@ -356,7 +356,6 @@ sealed interface Internal extends ContextNode {
 
 		}
 
-		@SuppressWarnings("null")
 		private static Stream<? extends @Nullable Object> arrayToStream(Object o) {
 
 			if (o instanceof int[] a) {

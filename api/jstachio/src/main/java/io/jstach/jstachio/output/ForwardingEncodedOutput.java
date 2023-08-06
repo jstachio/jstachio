@@ -9,7 +9,8 @@ import io.jstach.jstachio.Output.EncodedOutput;
  *
  * @param <E> error throw on any append or write
  */
-abstract class ForwardingEncodedOutput<E extends Exception> extends ForwardingOutput<E> implements EncodedOutput<E> {
+public abstract class ForwardingEncodedOutput<E extends Exception> extends ForwardingOutput<E>
+		implements EncodedOutput<E> {
 
 	@Override
 	public void write(byte[] bytes) throws E {

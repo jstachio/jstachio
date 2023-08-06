@@ -1,22 +1,23 @@
-package io.jstach.jstachio.output;
+package io.jstach.jstachio.context;
 
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
-import io.jstach.jstachio.context.ContextNode;
-import io.jstach.jstachio.context.ContextSupplier;
+import io.jstach.jstachio.output.ForwardingEncodedOutput;
+import io.jstach.jstachio.output.ForwardingOutput;
 
 /**
  * Decorate outputs with a context.
  *
  * @author agentgt
+ * @see ContextJStachio
  */
-public sealed interface ContextAwareOutput<O> extends ContextSupplier {
+sealed interface ContextAwareOutput<O> extends ContextSupplier {
 
 	/**
 	 * The original output
 	 * @return the original output
 	 */
-	public O getOutput();
+	O getOutput();
 
 	/**
 	 * Wrap an output with a context.
@@ -26,7 +27,7 @@ public sealed interface ContextAwareOutput<O> extends ContextSupplier {
 	 * @param context context to use
 	 * @return decorated output
 	 */
-	public static <E extends Exception, O extends Output<E>> ContextOutput<E, O> of(O output, ContextNode context) {
+	static <E extends Exception, O extends Output<E>> ContextOutput<E, O> of(O output, ContextNode context) {
 		return new ContextOutput<>(output, context);
 	}
 
@@ -38,7 +39,7 @@ public sealed interface ContextAwareOutput<O> extends ContextSupplier {
 	 * @param context context to use
 	 * @return decorated output
 	 */
-	public static <E extends Exception, O extends EncodedOutput<E>> ContextEncodedOutput<E, O> of(O output,
+	static <E extends Exception, O extends EncodedOutput<E>> ContextEncodedOutput<E, O> of(O output,
 			ContextNode context) {
 		return new ContextEncodedOutput<>(output, context);
 	}
@@ -49,7 +50,7 @@ public sealed interface ContextAwareOutput<O> extends ContextSupplier {
 	 * @param <E> exception type
 	 * @param <O> output type
 	 */
-	public final class ContextOutput<E extends Exception, O extends Output<E>> extends ForwardingOutput<E>
+	final class ContextOutput<E extends Exception, O extends Output<E>> extends ForwardingOutput<E>
 			implements ContextAwareOutput<O> {
 
 		private final O output;
