@@ -16,10 +16,6 @@ import io.jstach.jstache.JStacheConfig;
  * <p>
  * Next checkout the projects main package {@link io.jstach.opt.spring.example}.
  * <p>
- * This project uses the {@linkplain io.jstach.opt.jmustache jmustache extension} which will
- * allow editing of mustache template files while the application is loaded 
- * (e.g. <code>spring-boot:run</code>) without recompiling.
- * <p>
  * <em>
  * While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
  * it might be easier to look at the source 
@@ -34,7 +30,6 @@ import io.jstach.jstache.JStacheConfig;
 module io.jstach.opt.spring.example {
 	
 	requires transitive io.jstach.opt.spring.webmvc;
-	requires transitive io.jstach.opt.jmustache;
 	requires io.jstach.opt.spring.boot.webmvc;
 
 	requires static spring.jcl;
@@ -63,13 +58,13 @@ module io.jstach.opt.spring.example {
 
 	opens io.jstach.opt.spring.example.message to //
 	spring.core, spring.web, spring.beans, spring.context //
-	, io.jstach.jstachio, io.jstach.opt.jmustache //
+	, io.jstach.jstachio //
 	, io.jstach.opt.spring.webmvc
 	;
 
 	opens io.jstach.opt.spring.example.hello to //
 	spring.core, spring.web, spring.beans, spring.context //
-	, io.jstach.jstachio, io.jstach.opt.jmustache //
+	, io.jstach.jstachio //
 	, com.fasterxml.jackson.databind //
 	;
 

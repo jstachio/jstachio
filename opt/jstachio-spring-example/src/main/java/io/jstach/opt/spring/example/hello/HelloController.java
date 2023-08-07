@@ -1,5 +1,7 @@
 package io.jstach.opt.spring.example.hello;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateModel;
+import io.jstach.jstachio.context.ContextNode;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import io.jstach.opt.spring.webmvc.JStachioModelView;
 
@@ -111,6 +114,19 @@ public class HelloController {
 	}
 
 	/**
+	 * Here we show MVC model support which will be bound to
+	 * {@value ContextNode#CONTEXT_BINDING_NAME}.
+	 * @param model Spring provided model map to be filled
+	 * @return the model and view
+	 */
+	@GetMapping(value = "/context")
+	@SuppressWarnings("exports")
+	public View context(Map<String, Object> model) {
+		model.put("csrf", "CSRF_TOKEN");
+		return new HelloModelAndView("Spring Boot MVC is now JStachioed with csrf!");
+	}
+
+	/**
 	 * Here we use the {@linkplain #view wired renderer}.
 	 * @return template model pair derived from {@link Template#model(Object)}.
 	 */
@@ -130,7 +146,7 @@ public class HelloController {
 	 * MVC but allows you to return different views if say you had to redirect on some
 	 * inputs ({@link org.springframework.web.servlet.view.RedirectView}).
 	 * <p>
-	 * 
+	 *
 	 * This controller method is to test buffering. Ignore.
 	 *
 	 * @apiNote Notice that the return type is {@link View}.

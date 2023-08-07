@@ -52,7 +52,11 @@ import io.jstach.jstachio.spi.Templates;
  *
  * @author agentgt
  * @see JStachio
+ * @deprecated This extension does not reliably mimic JStachio's mustache support
+ * unfortunately based on feedback we have decided to deprecate this and recommend using
+ * other mechanisms for hot reload.
  */
+@Deprecated
 @MetaInfServices(JStachioExtension.class)
 public class JMustacheRenderer extends AbstractJStacheEngine {
 

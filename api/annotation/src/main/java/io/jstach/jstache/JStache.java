@@ -205,7 +205,7 @@ import java.util.Optional;
  * <li><code>{{#fragment}}</code></li>
  * <li><code>{{$fragment}}</code></li>
  * <li><code>{{&lt;fragment}}</code></li>
- * <li><code>{{$fragment}}</code></li>
+ * <li><code>{{^fragment}}</code></li>
  * </ul>
  *
  * The semantics of the section block are ignored as well as the rest of the template.

@@ -288,7 +288,8 @@ JStachio provides special global virtual keys all starting "&#64;".
 JStachio allows referencing a <a href="https://htmx.org/essays/template-fragments/">
 subset of a template called "fragments"</a>. The subset of a template can be any type
 of section block and the <em>first one found from top to bottom reading with the matching name</em> is picked. 
-The subset of a resource template is referenced with the URI fragment notation.
+The subset of a resource template is referenced with the 
+<strong>URI {@linkplain java.net.URI#getFragment() fragment notation}</strong>.
 <p>
 <strong> If the fragment start tag is "standalone" and all the content inside the
 fragment start tag starts with the same whitespace (or more) as the fragment start tag
@@ -298,13 +299,19 @@ spec whitespace handling.
 </p>
 Fragment section blocks can be of these type:
 <ul>
-<li><code>{{#fragment}}</code></li>
-<li><code>{{$fragment}}</code></li>
-<li><code>{{&lt;fragment}}</code></li>
-<li><code>{{^fragment}}</code></li>
+  <li><code>{{#fragment}}...{{/fragment}} </code></li>
+  <li><code>{{$fragment}}...{{/fragment}}</code></li>
+  <li><code>{{&lt;fragment}}...{{/fragment}}</code></li>
+  <li><code>{{^fragment}}...{{/fragment}}</code></li>
 </ul>
 
-The semantics of the section block are ignored as well as the rest of the template.
+The semantics of the section block are ignored as well as the rest of the template as it is like a preprocessor.
+<p>
+Note that the section block type does not dictate the separator of the template path and fragment.
+It is always a URI fragment <code>"#"</code> regardless of the type of section block
+(e.g. <code>path = "somefile$fragment"</code> is always wrong even if the fragment is in a 
+block segment (<code>{{$fragment}}</code>).
+</p>
 <p>
 An example of fragments is in the {@linkplain io.jstach.jstache.JStache JStache javadoc}.
 </p>
@@ -684,12 +691,18 @@ the ServiceLoader automatically (unless disabled or using DI framework).
 <h3 id="jmustache">Hot Reload with JMustache</h3>
 <strong>See {@link io.jstach.opt.jmustache/ } and {@link io.jstach.opt.jmustache.JMustacheRenderer}</strong>
 <p>
-The most notable extension is the {@linkplain io.jstach.opt.jmustache/ JMustache extension} as it 
+<strong>As of 1.3.0 JMustache extension has been deprecated!</strong>
+We are currently exploring other hot reload options that you can see in
+<a href="https://github.com/jstachio/jstachio/issues/187">issue #187 Better Hot Reload</a>.
+</p>
+<p>
+{@linkplain io.jstach.opt.jmustache/ JMustache extension} 
 allows you to change templates without recompiling the application.
 </p>
 One major caveat is that JMustache currently does not support template inheritance 
 (aka parents and blocks) so if your jstachio templates use template inheritance JMustache 
 will probably not work.
+
 
 <h3 id="springframework">Spring Framework</h3>
 <strong>See {@link io.jstach.opt.spring/ }</strong>

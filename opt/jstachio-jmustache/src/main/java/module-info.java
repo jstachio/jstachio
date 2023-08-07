@@ -27,7 +27,11 @@ import io.jstach.opt.jmustache.JMustacheRenderer;
  * @author agentgt
  *
  * @provides JStachioExtension
+ * @deprecated This extension does not reliably mimic JStachio's mustache support
+ * unfortunately based on feedback we have decided to deprecate this and recommend
+ * using other mechanisms for hot reload. 
  */
+@Deprecated
 module io.jstach.opt.jmustache {
 	
 	exports io.jstach.opt.jmustache;
