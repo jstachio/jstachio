@@ -145,6 +145,18 @@ public interface JStachioModelView extends View {
 	 * @return view ready for rendering
 	 */
 	static JStachioModelView of(Object model, @SuppressWarnings("exports") MediaType mediaType) {
+		return of(model, mediaType, JStachio.of());
+	}
+
+	/**
+	 * Creates a spring view from a model.
+	 * @param model an instance of a class annotated with {@link JStache}.
+	 * @param mediaType the mediaType
+	 * @param jstachio jstachio to use.
+	 * @return view ready for rendering
+	 */
+	static JStachioModelView of(Object model, @SuppressWarnings("exports") MediaType mediaType, JStachio jstachio) {
+		ContextJStachio contextJStachio = ContextJStachio.of(jstachio);
 		/*
 		 * TODO potentially make this public on the next minor version release.
 		 */
@@ -157,6 +169,11 @@ public interface JStachioModelView extends View {
 			@Override
 			public MediaType getMediaType() {
 				return mediaType;
+			}
+
+			@Override
+			public ContextJStachio jstachio() {
+				return contextJStachio;
 			}
 		};
 	}

@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import io.jstach.jstachio.JStachio;
 import io.jstach.opt.spring.web.JStachioHttpMessageConverter;
 import io.jstach.opt.spring.webmvc.ViewResolvingHandlerInterceptor;
 import io.jstach.opt.spring.webmvc.ViewSetupHandlerInterceptor;
@@ -29,15 +30,19 @@ public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer, Applic
 
 	private final JStachioHttpMessageConverter messageConverter;
 
+	private final JStachio jstachio;
+
 	private ApplicationContext context;
 
 	/**
 	 * Configures based on the jstachio found by spring
 	 * @param messageConverter jstachio powered message converter
+	 * @param jstachio jstachio instance created by Spring
 	 */
 	@Autowired
-	public JStachioWebMvcAutoConfiguration(JStachioHttpMessageConverter messageConverter) {
+	public JStachioWebMvcAutoConfiguration(JStachioHttpMessageConverter messageConverter, JStachio jstachio) {
 		this.messageConverter = messageConverter;
+		this.jstachio = jstachio;
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class JStachioWebMvcAutoConfiguration implements WebMvcConfigurer, Applic
 	@SuppressWarnings("exports")
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new ViewSetupHandlerInterceptor(context));
-		registry.addInterceptor(new ViewResolvingHandlerInterceptor());
+		registry.addInterceptor(new ViewResolvingHandlerInterceptor(jstachio));
 	}
 
 	@Override

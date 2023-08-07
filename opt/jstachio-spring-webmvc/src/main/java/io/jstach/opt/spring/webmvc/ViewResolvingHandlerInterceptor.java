@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstachio.JStachio;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -23,6 +24,17 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("exports")
 public class ViewResolvingHandlerInterceptor implements HandlerInterceptor, WebMvcConfigurer {
+
+	private final JStachio jstachio;
+
+	/**
+	 * Spring will inject jstachio
+	 * @param jstachio jstachio instance found by spring.
+	 */
+	public ViewResolvingHandlerInterceptor(JStachio jstachio) {
+		super();
+		this.jstachio = jstachio;
+	}
 
 	/**
 	 * {@inheritDoc} If the model contains an attribute that is a {@link JStache} model,
@@ -46,15 +58,14 @@ public class ViewResolvingHandlerInterceptor implements HandlerInterceptor, WebM
 	}
 
 	private View view(Class<?> modelClass, Map<String, Object> model) {
-		JStache jstache = modelClass.getAnnotation(JStache.class);
-		if (jstache == null) {
+		if (!jstachio.supportsType(modelClass)) {
 			return null;
 		}
 		Object value = attribute(modelClass, model);
 		if (value == null) {
 			return null;
 		}
-		return JStachioModelView.of(value);
+		return JStachioModelView.of(value, JStachioModelView.DEFAULT_MEDIA_TYPE, jstachio);
 	}
 
 	private Object attribute(Class<?> modelClass, Map<String, Object> model) {
