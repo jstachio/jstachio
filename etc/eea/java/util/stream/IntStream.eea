@@ -1,0 +1,4 @@
+class java/util/stream/IntStream
+boxed
+ ()Ljava/util/stream/Stream<Ljava/lang/Integer;>;
+ ()L1java/util/stream/Stream<Ljava/lang/Integer;>;

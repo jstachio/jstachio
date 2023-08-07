@@ -53,7 +53,15 @@ public class PrismsTest {
 
 		List<Constant> constants() {
 			Stream<Constant> flags = Stream.of(flags()).map(Constant::of);
-			return Stream.concat(allAnnotations().stream().flatMap(Constant::of), flags).toList();
+			Stream<Constant> annotations = allAnnotations().stream().flatMap(Constant::of);
+			Stream<Constant> jstachio = Stream.<Class<?>>of(TemplateInfo.class, ContextNode.class)
+					.flatMap(Constant::of);
+
+			return Stream.<Stream<Constant>>builder().add(flags) //
+					.add(annotations) //
+					.add(jstachio) //
+					.build() //
+					.flatMap(c -> c).toList();
 		}
 	}
 

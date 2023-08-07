@@ -1,6 +1,7 @@
 package io.jstach.apt;
 
 import static io.jstach.apt.prism.Prisms.APPENDER_CLASS;
+import static io.jstach.apt.prism.Prisms.CONTEXT_TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.ENCODED_TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.ESCAPER_CLASS;
 import static io.jstach.apt.prism.Prisms.FILTER_CHAIN_CLASS;
@@ -8,7 +9,6 @@ import static io.jstach.apt.prism.Prisms.FORMATTER_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_CONFIG_CLASS;
 import static io.jstach.apt.prism.Prisms.TEMPLATE_PROVIDER_CLASS;
-import static io.jstach.apt.prism.Prisms.CONTEXT_TEMPLATE_CLASS;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -175,7 +175,7 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		boolean preEncode = !model.flags().contains(Prisms.Flag.PRE_ENCODE_DISABLE);
 
-		boolean contextSupport = model.flags().contains(Prisms.Flag.CONTEXT_SUPPORT);
+		boolean contextSupport = !model.flags().contains(Prisms.Flag.CONTEXT_SUPPORT_DISABLE);
 
 		List<String> interfaces = new ArrayList<>();
 		if (jstachio) {
@@ -983,7 +983,7 @@ class TemplateClassWriter implements LoggingSupplier {
 	}
 
 	private static String renderContextNode(VariableContext variables, String dataName, RendererModel model) {
-		boolean enabled = model.flags().contains(Flag.CONTEXT_SUPPORT);
+		boolean enabled = !model.flags().contains(Flag.CONTEXT_SUPPORT_DISABLE);
 		return renderContextNode(variables, dataName, enabled);
 	}
 

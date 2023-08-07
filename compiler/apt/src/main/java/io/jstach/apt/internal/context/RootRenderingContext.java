@@ -33,6 +33,8 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.prism.Prisms;
+
 /**
  * @author Victor Nazarov
  */
@@ -40,7 +42,10 @@ class RootRenderingContext implements RenderingContext {
 
 	private final VariableContext variables;
 
-	public RootRenderingContext(VariableContext variables) {
+	private final JavaExpression expression;
+
+	public RootRenderingContext(JavaExpression expression, VariableContext variables) {
+		this.expression = expression;
 		this.variables = variables;
 	}
 
@@ -60,15 +65,30 @@ class RootRenderingContext implements RenderingContext {
 	}
 
 	private JavaExpression _get(String name) {
-		if (name.equals("@context")) {
-			var contextNodeType = JavaLanguageModel.getInstance().knownTypes()._ContextNode.orElse(null);
-			if (contextNodeType == null) {
-				return null;
+		var lm = JavaLanguageModel.getInstance();
+		return switch (name) {
+			// @context
+			case Prisms.CONTEXT_NODE_CONTEXT_BINDING_NAME -> {
+				var contextNodeType = lm.knownTypes()._ContextNode.orElse(null);
+				if (contextNodeType == null) {
+					yield null;
+				}
+				yield lm.expression(variables.context(), contextNodeType.typeElement().asType());
 			}
-			return JavaLanguageModel.getInstance().expression(variables.context(),
-					contextNodeType.typeElement().asType());
-		}
-		return null;
+			// @template
+			case Prisms.TEMPLATE_INFO_TEMPLATE_BINDING_NAME -> {
+				var templateType = lm.knownTypes()._Template_Info.orElse(null);
+				if (templateType == null) {
+					yield null;
+				}
+				yield lm.expression(variables.template(), templateType.typeElement().asType());
+			}
+			// @root
+			case Prisms.JSTACHE_ROOT_BINDING_NAME -> {
+				yield expression;
+			}
+			default -> null;
+		};
 	}
 
 	@Override

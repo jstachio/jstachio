@@ -225,7 +225,7 @@ public class RenderingCodeGenerator {
 	public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, TypeElement element,
 			String expression, VariableContext variables) throws AnnotatedException {
 		JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
-		RootRenderingContext root = new RootRenderingContext(variables);
+		RootRenderingContext root = new RootRenderingContext(javaExpression, variables);
 		Lambdas lambdas = resolveLambdas(element, javaExpression);
 
 		RenderingContext rootRenderingContext;

@@ -43,6 +43,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.internal.util.Interpolator;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
 
+import static io.jstach.apt.prism.Prisms.*;
+
 /**
  * @author Victor Nazarov
  * @author agentgt
@@ -70,21 +72,8 @@ class IterableRenderingContext implements RenderingContext {
 
 	@Override
 	public String beginSectionRenderingCode() {
-		/*
-		 *
-		 * int i = 0; for (Iterator<String> it = list.iterator(); it.hasNext(); i++) { var
-		 * _item = it.next(); boolean first = i == 0; boolean last = ! it.hasNext();
-		 *
-		 * System.out.println(_item + " " + i); }
-		 */
-		// return parent.beginSectionRenderingCode()
-		// + String.format("for (%s %s: %s) { ",
-		// elementExpession().type(),
-		// elementVariableName,
-		// expression.text());
-
 		String loop = """
-
+				@SuppressWarnings("unused")
 				int ${i} = 0;
 				for (java.util.Iterator<? extends ${elementGeneric}> ${iteratorVar} = ${iterableVar}.iterator(); ${iteratorVar}.hasNext(); ${i}++) {
 				    ${elementType} ${elementVar} = ${iteratorVar}.next();
@@ -121,10 +110,14 @@ class IterableRenderingContext implements RenderingContext {
 		// https://handlebarsjs.com/api-reference/data-variables.html#root
 		// https://github.com/samskivert/jmustache#-first-and--last
 		return switch (name) {
-			case "-first", "@first" -> first();
-			case "-last", "@last" -> last();
-			case "-index" -> oneBasedIndex();
-			case "@index" -> zeroBasedIndex();
+			// @first
+			case JSTACHE_FIRST_BINDING_NAME, JSTACHE_FIRST_JMUSTACHE_BINDING_NAME -> first();
+			// @last
+			case JSTACHE_LAST_BINDING_NAME, JSTACHE_LAST_JMUSTACHE_BINDING_NAME -> last();
+			// -index
+			case JSTACHE_INDEX_JMUSTACHE_BINDING_NAME -> oneBasedIndex();
+			// @index
+			case JSTACHE_INDEX_BINDING_NAME -> zeroBasedIndex();
 			default -> parent.get(name);
 		};
 	}

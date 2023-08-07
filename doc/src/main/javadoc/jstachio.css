@@ -74,3 +74,17 @@ h1.overview {
 .warn {
   color: red;
 }
+
+table.table {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+table.table caption {
+  padding-top: 0.5rem;  
+  padding-bottom: 0.5rem;  
+}
+
+table.table, table.table th, table.table td {
+  border: 1px solid;
+}

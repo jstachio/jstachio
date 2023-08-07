@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.jstache.JStacheType;
 import io.jstach.jstachio.Appender;
 import io.jstach.jstachio.Formatter;
 import io.jstach.jstachio.Formatter.Formattable;
@@ -59,12 +60,18 @@ import io.jstach.jstachio.context.Internal.FunctionContextNode;
  * has reference to the parent. This interface unlike most of JStachio API is very
  * <code>null</code> heavy because JSON and Javascript allow <code>null</code>.
  * @author agentgt
- *
+ * @see ContextJStachio
  */
 public sealed interface ContextNode extends Formattable, Iterable<@Nullable ContextNode> {
 
 	/**
-	 * The default binding name for context.
+	 * The default binding name in mustache for the context parameter. The context comes
+	 * from the context parameter from either
+	 * {@link ContextJStachio#execute(Object, ContextNode, Output)} or
+	 * {@link ContextJStachio#write(Object, ContextNode, io.jstach.jstachio.Output.EncodedOutput)}.
+	 * <p>
+	 * <strong>This variable is not bound if the generated template is
+	 * {@link JStacheType#STACHE}</strong>
 	 */
 	public static final String CONTEXT_BINDING_NAME = "@context";
 

@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -388,8 +389,9 @@ public final class Templates {
 		String cname;
 		if (a == null || a.name().isBlank()) {
 
+			// @SuppressWarnings("null") // Eclipse bug with annotation arrays
 			JStacheName name = findAnnotations(modelClass, JStacheConfig.class) //
-					.flatMap(config -> Stream.of(config.naming())).findFirst().orElse(null);
+					.flatMap(config -> Arrays.stream(config.naming())).findFirst().orElse(null);
 
 			String prefix = name == null ? JStacheName.UNSPECIFIED : name.prefix();
 

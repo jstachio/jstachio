@@ -40,6 +40,8 @@
     <spring.version>6.0.11</spring.version>
     <spring-boot.version>3.1.2</spring-boot.version>
     <dropwizard.version>4.0.1</dropwizard.version>
+    
+    <maven.build.cache.enabled>false</maven.build.cache.enabled>
 
   </properties>
   <modules>
@@ -440,6 +442,15 @@
       </modules>
     </profile>
     <profile>
+      <id>cache</id>
+      <activation>
+        <property><name>env.JSTACHIO_CACHE</name><value>true</value></property>
+      </activation>
+      <properties>
+        <maven.build.cache.enabled>true</maven.build.cache.enabled>
+      </properties>
+    </profile>
+    <profile>
       <id>format-apply</id>
       <activation>
         <property>
@@ -541,6 +552,9 @@
           <value>snapshot</value>
         </property>
       </activation>
+      <properties>
+        <maven.build.cache.enabled>false</maven.build.cache.enabled>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -578,7 +592,10 @@
           <name>deploy</name>
           <value>release</value>
         </property>
-      </activation> 
+      </activation>
+      <properties>
+        <maven.build.cache.enabled>false</maven.build.cache.enabled>
+      </properties> 
       <build>
         <plugins>
           <plugin>

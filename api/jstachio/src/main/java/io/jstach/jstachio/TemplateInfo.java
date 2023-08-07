@@ -8,6 +8,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheContentType;
+import io.jstach.jstache.JStacheType;
 
 /**
  * Template meta data like its location, formatters, escapers and or its contents.
@@ -17,6 +18,13 @@ import io.jstach.jstache.JStacheContentType;
  * @author agentgt
  */
 public interface TemplateInfo {
+
+	/**
+	 * The template instance is accessible to mustache templates with this global binding
+	 * name. <strong>This is not bound if template is type
+	 * {@link JStacheType#STACHE}.</strong>
+	 */
+	public static String TEMPLATE_BINDING_NAME = "@template";
 
 	/**
 	 * The logical name of the template which maybe different than

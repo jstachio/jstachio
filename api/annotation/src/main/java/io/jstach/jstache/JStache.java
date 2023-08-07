@@ -356,14 +356,16 @@ import java.util.Optional;
  * JStachio is compatible with both handlebars.js (handlebars.java as well) and JMustache
  * index keys for iterable sections.
  * <ol>
- * <li><code>-first</code> and <code>&#64;first</code> is boolean that is true when you
- * are on the first item
- * <li><code>-last</code> and <code>&#64;last</code> is a boolean that is true when you
- * are on the last item in the iterable
- * <li><code>-index</code> is a one based index. The first item would be {@code 1} and not
- * {@code 0}
- * <li><code>&#64;index</code> is zero based index (handlebars). The first item would be
- * {@code 0}.
+ * <li><code>{@value #FIRST_JMUSTACHE_BINDING_NAME}</code> and
+ * <code>{@value #FIRST_BINDING_NAME}</code> is boolean that is true when you are on the
+ * first item.</li>
+ * <li><code>{@value #LAST_JMUSTACHE_BINDING_NAME}</code> and
+ * <code>{@value #LAST_JMUSTACHE_BINDING_NAME}</code> is a boolean that is true when you
+ * are on the last item in the iterable</li>
+ * <li><code>{@value #INDEX_JMUSTACHE_BINDING_NAME}</code> is a one based index. The first
+ * item would be {@code 1} and not {@code 0}</li>
+ * <li><code>{@value #INDEX_BINDING_NAME}</code> is zero based index (handlebars). The
+ * first item would be {@code 0}.
  * </ol>
  *
  * <h3 id="_lambdas">Lambda Support</h3>
@@ -620,5 +622,50 @@ public @interface JStache {
 	 * catalogs} or Service Provider files (<code>META-INF/services</code>).
 	 */
 	public static final String INCREMENTAL_OPTION = "jstache.incremental";
+
+	/**
+	 * A virtual variable that is direct analog to
+	 * <a href="https://handlebarsjs.com/api-reference/data-variables.html#root">
+	 * handlebars <code>&#64;root</code></a>. The root model instance is accessible to
+	 * mustache templates with this global binding name. This allows easier access to the
+	 * model if deeply nested in a context stack.
+	 */
+	public static final String ROOT_BINDING_NAME = "@root";
+
+	/**
+	 * A handlebars inspired virtual variable that is bound while in list contexts. If on
+	 * the first element then it is <code>true</code>.
+	 */
+	public static final String FIRST_BINDING_NAME = "@first";
+
+	/**
+	 * A JMustache inspired virtual variable that is bound while in list contexts. If on
+	 * the first element then it is <code>true</code>.
+	 */
+	public static final String FIRST_JMUSTACHE_BINDING_NAME = "-first";
+
+	/**
+	 * A handlebars inspired virtual variable that is bound while in list contexts. If on
+	 * the last element then it is <code>true</code>.
+	 */
+	public static final String LAST_BINDING_NAME = "@last";
+
+	/**
+	 * A JMustache inspired virtual variable that is bound while in list contexts. If on
+	 * the last element then it is <code>true</code>.
+	 */
+	public static final String LAST_JMUSTACHE_BINDING_NAME = "-last";
+
+	/**
+	 * A handlebars inspired virtual variable that is bound while in list contexts. A zero
+	 * based index that is an integer.
+	 */
+	public static final String INDEX_BINDING_NAME = "@index";
+
+	/**
+	 * A JMustache inspired virtual variable that is bound while in list contexts. A one
+	 * based index that is an integer.
+	 */
+	public static final String INDEX_JMUSTACHE_BINDING_NAME = "-index";
 
 }

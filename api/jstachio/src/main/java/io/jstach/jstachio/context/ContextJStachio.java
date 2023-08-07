@@ -9,17 +9,22 @@ import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template;
 
 /**
- * See {@link JStachio}. A special JStachio that can render models with a loose typed
- * context object bound to {@value ContextNode#CONTEXT_BINDING_NAME}.
+ * A special JStachio that can render models with a loose typed context object bound to
+ * {@value ContextNode#CONTEXT_BINDING_NAME}.
+ *
+ * @see JStachio
+ * @see ContextNode
+ * @since 1.3.0
+ * @author agentgt
  */
 public interface ContextJStachio extends JStachio {
 
 	/**
-	 * Renders the passed in model.
+	 * Renders the passed in model <strong>with a context</strong>.
 	 * @param <A> output type
 	 * @param <E> error type
 	 * @param model a model assumed never to be <code>null</code>.
-	 * @param context context node.
+	 * @param context context node bound to {@value ContextNode#CONTEXT_BINDING_NAME}.
 	 * @param appendable the output to write to.
 	 * @return the output passed in returned for convenience.
 	 * @throws E if there is an error writing to the output
@@ -37,7 +42,7 @@ public interface ContextJStachio extends JStachio {
 	 * @param <A> output type
 	 * @param <E> error type
 	 * @param model a model assumed never to be <code>null</code>.
-	 * @param context context node.
+	 * @param context context node bound to {@value ContextNode#CONTEXT_BINDING_NAME}.
 	 * @param output to write to.
 	 * @return the passed in output for convenience
 	 * @throws E if an error occurs while writing to output

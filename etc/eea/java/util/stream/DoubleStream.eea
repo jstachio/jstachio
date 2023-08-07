@@ -1,0 +1,4 @@
+class java/util/stream/DoubleStream
+boxed
+ ()Ljava/util/stream/Stream<Ljava/lang/Double;>;
+ ()L1java/util/stream/Stream<Ljava/lang/Double;>;

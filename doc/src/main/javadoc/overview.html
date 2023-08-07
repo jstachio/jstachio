@@ -226,24 +226,62 @@ Furthermore if a parent or partial tag(s) are standalone the amount of whitespac
 them is used as indentation for the included template.
 </p>
 
-<h3 id="mustache_virtual_keys">Virtual keys for iterable and enum</h3>
+<h3 id="mustache_virtual_keys">Virtual keys for iterable, enum and more</h3>
 
 One of the biggest limitations in plain Mustache is that it is not easy to do logic on iterables (aka list-like)
 based on index like start and end logic. JStachio adds virtual keys (the keys do not actually exist on the objects)
 that is compatible with both handlebars.js (handlebars.java as well) and JMustache index keys for iterable
 sections.
 
-<ol>
-<li><code>-first</code> and <code>&#64;first</code> is boolean that is true when you are on the first item
-<li><code>-last</code> and <code>&#64;last</code> is a boolean that is true when you are on the last item in the
-iterable
-<li><code>-index</code> is a one based index. The first item would be {@code 1} and not
-{@code 0}
-<li><code>&#64;index</code> is zero based index (handlebars). The first item would be {@code 0}.
-</ol>
+<h4 id="mustache_virtual_keys_iterable">Iterable virtual keys</h4>
 
-JStachio also has virtual keys for enum types where the name is a boolean if it matches.
+While inside an iterable context (list) JStachio binds the following virtual keys:
+
+<table class="table">
+  <caption><strong>Iterable Virtual Keys</strong></caption>
+  <tr><th>Key</th><th>Description</th></tr>
+  <tr>
+    <td><code>{@value io.jstach.jstache.JStache#FIRST_BINDING_NAME}</code></td>
+    <td>A boolean that is true when on the first item.</td>
+  </tr>
+  <tr>
+    <td><code>{@value io.jstach.jstache.JStache#LAST_BINDING_NAME}</code></td>
+    <td>A boolean that is trune when on the last time.</td>
+  </tr>
+  <tr>
+    <td><code>{@value io.jstach.jstache.JStache#INDEX_BINDING_NAME}</code></td>
+    <td>A integer zero based index. The first item would be {@code 0}.</td>
+  </tr>
+</table>
+
+JStachio also binds all the JMustache virtual keys as well that begin with
+"<code>-</code>" instead of "<code>&#64;</code>".
+
+<h4 id="mustache_virtual_keys_enum">Enum virtual keys</h4>
+
+JStachio also has virtual keys for <code>enum</code> types where the name is a boolean if it matches.
 An example of that is in the {@linkplain io.jstach.jstache.JStache JStache javadoc}.
+
+<h4 id="mustache_virtual_keys_context">Context virtual keys</h4>
+
+JStachio provides special global virtual keys all starting "&#64;". 
+
+<table class="table">
+  <caption><strong>Context Virtual Keys</strong></caption>
+  <tr><th>Key</th><th>Description</th></tr>
+  <tr>
+    <td>{@value io.jstach.jstache.JStache#ROOT_BINDING_NAME}</td>
+    <td>The original root model object. This can be useful if you find yourself stuck deep in the context stack.</td>
+  </tr>
+  <tr>
+    <td>{@value io.jstach.jstachio.TemplateInfo#TEMPLATE_BINDING_NAME}</td>
+    <td>An instance of the generated {@link  io.jstach.jstachio.TemplateInfo} class.</td>
+  </tr>
+  <tr>
+    <td>{@value io.jstach.jstachio.context.ContextNode#CONTEXT_BINDING_NAME}</td>
+    <td>A special JSON/Map like type for cross cutting variables. See {@link io.jstach.jstachio.context} for more info.</td>
+  </tr>
+</table>
 
 <h3 id="mustache_fragments">Fragments</h3>
 
@@ -254,7 +292,7 @@ The subset of a resource template is referenced with the URI fragment notation.
 <p>
 <strong> If the fragment start tag is "standalone" and all the content inside the
 fragment start tag starts with the same whitespace (or more) as the fragment start tag
-starting whitespace will be stripped from each line of the content. </strong>
+then that starting whitespace will be stripped from each line of the content. </strong>
 This is to allow a partial references to dictate the indentation based on 
 spec whitespace handling.
 </p>
@@ -263,7 +301,7 @@ Fragment section blocks can be of these type:
 <li><code>{{#fragment}}</code></li>
 <li><code>{{$fragment}}</code></li>
 <li><code>{{&lt;fragment}}</code></li>
-<li><code>{{$fragment}}</code></li>
+<li><code>{{^fragment}}</code></li>
 </ul>
 
 The semantics of the section block are ignored as well as the rest of the template.
@@ -980,9 +1018,10 @@ attributes like CSRF are added after the controller has filled the model but bef
 However this presents a problem to JStachio as JStachio prefers you do not use <code>Map&lt;String,Object&gt;</code>
 as models (you can but not as a root model and you loose type safety).
 
-There are two general strategies:
+There are three general strategies:
 
 <ol>
+  <li>Use {@link io.jstach.jstachio.context.ContextJStachio}</li>
   <li>Make the model mutable for those attributes and set the attributes by intercepting before rendering happens. (the push way)</li>
   <li>Use a Service Locator / Thread Local like pattern with an interface with pull method that all models get. (the pull way)</li>
 </ol>

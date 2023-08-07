@@ -18,36 +18,6 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	public static final String JSTACHE_RESOURCES_PATH_OPTION = "jstache.resourcesPath";
-
-	/**
-	 * Generated
-	 */
-	public static final String JSTACHE_INCREMENTAL_OPTION = "jstache.incremental";
-
-	/**
-	 * Generated
-	 */
-	public static final String JSTACHE_NAME_UNSPECIFIED = "*";
-
-	/**
-	 * Generated
-	 */
-	public static final String JSTACHE_NAME_DEFAULT_PREFIX = "";
-
-	/**
-	 * Generated
-	 */
-	public static final String JSTACHE_NAME_DEFAULT_SUFFIX = "Renderer";
-
-	/**
-	 * Generated
-	 */
-	public static final String JSTACHE_LAMBDA_SECTION_PARTIAL_NAME = "@section";
-
-	/**
-	 * Generated
-	 */
 	public static final String JSTACHE_FLAGS_UNSPECIFIED = "jstache.unspecified";
 
 	/**
@@ -73,7 +43,82 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	public static final String JSTACHE_FLAGS_CONTEXT_SUPPORT = "jstache.context_support";
+	public static final String JSTACHE_FLAGS_CONTEXT_SUPPORT_DISABLE = "jstache.context_support_disable";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_RESOURCES_PATH_OPTION = "jstache.resourcesPath";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_INCREMENTAL_OPTION = "jstache.incremental";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_ROOT_BINDING_NAME = "@root";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_FIRST_BINDING_NAME = "@first";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_FIRST_JMUSTACHE_BINDING_NAME = "-first";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_LAST_BINDING_NAME = "@last";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_LAST_JMUSTACHE_BINDING_NAME = "-last";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_INDEX_BINDING_NAME = "@index";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_INDEX_JMUSTACHE_BINDING_NAME = "-index";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_NAME_UNSPECIFIED = "*";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_NAME_DEFAULT_PREFIX = "";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_NAME_DEFAULT_SUFFIX = "Renderer";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_LAMBDA_SECTION_PARTIAL_NAME = "@section";
+
+	/**
+	 * Generated
+	 */
+	public static final String TEMPLATE_INFO_TEMPLATE_BINDING_NAME = "@template";
+
+	/**
+	 * Generated
+	 */
+	public static final String CONTEXT_NODE_CONTEXT_BINDING_NAME = "@context";
 
 	/**
 	 * Generated
@@ -104,7 +149,7 @@ public interface Prisms {
 		/**
 		 * Generated
 		 */
-		CONTEXT_SUPPORT, //
+		CONTEXT_SUPPORT_DISABLE, //
 
 	}
 

@@ -157,10 +157,9 @@ public @interface JStacheFlags {
 		PRE_ENCODE_DISABLE,
 
 		/**
-		 * <strong>EXPERIMENTAL:</strong> Will bind "@context" with a ContextNode. This is
-		 * to add cross cutting variables that the model does not have such CSRF.
+		 * Will always bind "@context" with a empty ContextNode.
 		 */
-		CONTEXT_SUPPORT;
+		CONTEXT_SUPPORT_DISABLE;
 
 	}
 
