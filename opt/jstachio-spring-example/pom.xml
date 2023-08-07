@@ -13,6 +13,12 @@
       <groupId>io.jstach</groupId>
       <artifactId>jstachio-spring-boot-starter-webmvc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.jstach</groupId>
+      <artifactId>jstachio-apt</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
      <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
@@ -27,18 +33,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <annotationProcessorPaths>
-            <annotationProcessorPath>
-              <groupId>io.jstach</groupId>
-              <artifactId>jstachio-apt</artifactId>
-              <version>${project.version}</version>
-            </annotationProcessorPath>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
