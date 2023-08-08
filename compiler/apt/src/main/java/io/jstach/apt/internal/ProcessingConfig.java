@@ -56,7 +56,7 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 		return false;
 	}
 
-	public record PathConfig(String prefix, String suffix) {
+	public record PathConfig(String prefix, String suffix, boolean prefixUnspecified, boolean suffixUnspecified) {
 
 		public URI resolveTemplatePath(NamedTemplate namedTemplate) throws URISyntaxException {
 			if (namedTemplate instanceof FileTemplate ft) {

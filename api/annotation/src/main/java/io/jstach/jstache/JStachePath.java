@@ -34,14 +34,39 @@ public @interface JStachePath {
 	/**
 	 * Will prefix the path. If you are mapping to a directory remember to end the prefix
 	 * with a "/".
-	 * @return prefix of path
+	 * @return prefix of path by default {@link #UNSPECIFIED} which will resolve to
+	 * {@link #DEFAULT_PREFIX} if not set elsewhere.
 	 */
-	public String prefix() default "";
+	public String prefix() default UNSPECIFIED;
 
 	/**
 	 * Suffix the path. A common use case is to suffix with ".mustache".
-	 * @return suffix of path
+	 * @return suffix of path by default is {@link #UNSPECIFIED} which will resolve to
+	 * {@link #DEFAULT_SUFFIX} if not set elsewhere.
 	 */
-	public String suffix() default "";
+	public String suffix() default UNSPECIFIED;
+
+	/**
+	 * The value to mean the suffix and prefix is not set.
+	 * @apiNote The value is purposely not a possible valid prefix or suffix and is not
+	 * the actual default.
+	 */
+	public static final String UNSPECIFIED = "*";
+
+	/**
+	 * The default prefix if {@link #UNSPECIFIED}.
+	 */
+	public static final String DEFAULT_PREFIX = "";
+
+	/**
+	 * The default suffix if {@link #UNSPECIFIED}.
+	 */
+	public static final String DEFAULT_SUFFIX = "";
+
+	/**
+	 * If a JStache path is empty and template is empty and suffix is unspecified the path
+	 * will be generated from the class name and suffixed with this constant.
+	 */
+	public static final String AUTO_SUFFIX = ".mustache";
 
 }

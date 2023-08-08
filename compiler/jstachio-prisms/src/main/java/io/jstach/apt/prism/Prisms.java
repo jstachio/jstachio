@@ -108,6 +108,26 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
+	public static final String JSTACHE_PATH_UNSPECIFIED = "*";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_PATH_DEFAULT_PREFIX = "";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_PATH_DEFAULT_SUFFIX = "";
+
+	/**
+	 * Generated
+	 */
+	public static final String JSTACHE_PATH_AUTO_SUFFIX = ".mustache";
+
+	/**
+	 * Generated
+	 */
 	public static final String JSTACHE_LAMBDA_SECTION_PARTIAL_NAME = "@section";
 
 	/**

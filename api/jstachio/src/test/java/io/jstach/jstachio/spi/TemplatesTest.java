@@ -1,10 +1,12 @@
 package io.jstach.jstachio.spi;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 import io.jstach.jstache.JStache;
+import io.jstach.jstache.JStachePath;
 
 public class TemplatesTest {
 
@@ -32,6 +34,36 @@ public class TemplatesTest {
 	@Test(expected = TemplateNotFoundException.class)
 	public void shouldNotFindJStacheAndThrowTemplateNotFound() throws Exception {
 		Templates.findJStache(NoJStache.class);
+	}
+
+	@Test
+	public void shouldFindPathInfoWithMustacheSuffix() throws Exception {
+		var info = Templates.getInfoByReflection(ModelWithJStache.class);
+		String path = info.templatePath();
+		assertEquals("io/jstach/jstachio/spi/ModelWithJStache.mustache", path);
+	}
+
+	@Test
+	public void shouldFindPathInfoWithMustacheSuffixForSuper() throws Exception {
+		var stache = Templates.findJStache(ConcreteModel.class);
+		var superClass = stache.getKey();
+		var info = Templates.getInfoByReflection(superClass);
+		String path = info.templatePath();
+		assertEquals("io/jstach/jstachio/spi/AbstractModel.mustache", path);
+	}
+
+	@Test
+	public void shouldSuffixPathWithMustacheIfNoSuffix() throws Exception {
+		var info = Templates.getInfoByReflection(ModelWithPath.class);
+		String path = info.templatePath();
+		assertEquals("stuff", path);
+	}
+
+	@Test
+	public void shouldPrefixAndSuffixIfPathConfigGiven() throws Exception {
+		var info = Templates.getInfoByReflection(ModelWithSuffixPrefix.class);
+		String path = info.templatePath();
+		assertEquals("prefix/io/jstach/jstachio/spi/ModelWithSuffixPrefix/suffix.mustache", path);
 	}
 
 	@JStache
@@ -64,6 +96,17 @@ public class TemplatesTest {
 
 	@JStache
 	record ModelWithJStache(String message) implements InterfaceModel {
+
+	}
+
+	@JStache(path = "stuff")
+	record ModelWithPath(String message) implements InterfaceModel {
+
+	}
+
+	@JStachePath(prefix = "prefix/", suffix = "/suffix.mustache")
+	@JStache
+	record ModelWithSuffixPrefix(String message) implements InterfaceModel {
 
 	}
 
