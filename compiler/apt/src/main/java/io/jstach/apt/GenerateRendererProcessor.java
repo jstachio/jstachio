@@ -323,10 +323,19 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private PathConfig resolvePathConfig(TypeElement element) {
 		JStachePathPrism prism = findPrisms(element, this::pathInstanceOn).findFirst().orElse(null);
+		final String defaultPrefix = Prisms.JSTACHE_PATH_DEFAULT_PREFIX;
+		final String defaultSuffix = Prisms.JSTACHE_PATH_DEFAULT_SUFFIX;
 		if (prism == null) {
-			return new PathConfig("", "");
+			return new PathConfig(defaultPrefix, defaultSuffix, true, true);
 		}
-		return new PathConfig(prism.prefix(), prism.suffix());
+		String prefix = prism.prefix();
+		String suffix = prism.suffix();
+		boolean prefixUnspecified = Prisms.JSTACHE_PATH_UNSPECIFIED.equals(prefix);
+		boolean suffixUnspecified = Prisms.JSTACHE_PATH_UNSPECIFIED.equals(suffix);
+
+		prefix = prefixUnspecified ? defaultPrefix : prefix;
+		suffix = suffixUnspecified ? defaultSuffix : suffix;
+		return new PathConfig(prefix, suffix, prefixUnspecified, suffixUnspecified);
 	}
 
 	@Nullable
@@ -620,6 +629,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				String folder = pe.getQualifiedName().toString().replace('.', '/');
 				path = folder.isEmpty() ? element.getQualifiedName().toString()
 						: folder + "/" + element.getSimpleName();
+				if (pathConfig.suffixUnspecified()) {
+					path += Prisms.JSTACHE_PATH_AUTO_SUFFIX;
+				}
 				name = path;
 			}
 			return resolveNamedTemplate(name, path, template, element, annotationMirror);
