@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.jstach.opt.dropwizard.example.ExampleApplicationStart;
 import io.jstach.opt.dropwizard.example.ExampleConfiguration;
@@ -23,9 +24,13 @@ public class DropwizardExampleAppTest {
 
 	@BeforeAll
 	public static void beforeClass() throws Exception {
-		SUPPORT = new DropwizardTestSupport<ExampleConfiguration>(ExampleApplicationStart.class,
-				new ExampleConfiguration());
+		ConfigOverride randomPortsConfig = ConfigOverride.randomPorts();
+		String configPath = null;
+		SUPPORT = new DropwizardTestSupport<ExampleConfiguration>(ExampleApplicationStart.class, configPath,
+				randomPortsConfig);
 		SUPPORT.before();
+		System.out.println("DROPWIZARD TEST USING LOCAL PORT: " + SUPPORT.getLocalPort() + " ADMIN PORT: "
+				+ SUPPORT.getAdminPort());
 	}
 
 	@AfterAll
