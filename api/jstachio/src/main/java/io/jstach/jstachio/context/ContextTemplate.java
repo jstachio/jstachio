@@ -2,6 +2,8 @@ package io.jstach.jstachio.context;
 
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstachio.Output;
+import io.jstach.jstachio.Output.EncodedOutput;
+import io.jstach.jstachio.Template;
 
 /**
  * A context aware template.
@@ -46,5 +48,38 @@ public interface ContextTemplate<T> {
 			T model, //
 			ContextNode context, //
 			A output) throws E;
+
+	/**
+	 * Creates a context template from a regular template if is not already a context
+	 * template.
+	 * @param <T> model type
+	 * @param template the template to be wrapped
+	 * @return context template
+	 */
+	@SuppressWarnings({ "null", "unchecked" })
+	public static <T> ContextTemplate<T> of(Template<T> template) {
+		if (template instanceof ContextTemplate ct) {
+			return ct;
+		}
+		return new DecoratedContextTemplate<T>(template);
+	}
+
+}
+
+record DecoratedContextTemplate<T> (Template<T> template) implements ContextTemplate<T> {
+
+	@Override
+	public <A extends Output<E>, E extends Exception> A execute(T model, ContextNode context, A appendable) throws E {
+		var out = ContextAwareOutput.of(appendable, context);
+		template.execute(model, out);
+		return appendable;
+	}
+
+	@Override
+	public <A extends EncodedOutput<E>, E extends Exception> A write(T model, ContextNode context, A output) throws E {
+		var out = ContextAwareOutput.of(output, context);
+		template.write(model, out);
+		return output;
+	}
 
 }

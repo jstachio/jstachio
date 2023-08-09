@@ -24,7 +24,7 @@ abstract class AbstractJStacheEngine implements JStachioFilter, JStachioExtensio
 	@Override
 	public FilterChain filter(TemplateInfo template, FilterChain previous) {
 		return (model, a) -> {
-			boolean answer = execute(model, a, template, previous.isBroken(model));
+			boolean answer = execute(model, a.toAppendable(), template, previous.isBroken(model));
 			if (answer) {
 				return;
 			}

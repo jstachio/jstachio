@@ -652,7 +652,8 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("     * @hidden");
 			println("     */");
 			println("    @Override");
-			println("    public void process(Object model, Appendable appendable) throws java.io.IOException {");
+			println("    public void process(Object model, " + _Output + "<?>"
+					+ " appendable) throws java.lang.Exception {");
 			println("        execute( (" + className + ") model, appendable);");
 			println("    }");
 			println("");

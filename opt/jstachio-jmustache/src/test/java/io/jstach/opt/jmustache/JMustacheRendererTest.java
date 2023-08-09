@@ -7,12 +7,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstachio.JStachio;
+import io.jstach.jstachio.Output;
+import io.jstach.jstachio.context.ContextJStachio;
+import io.jstach.jstachio.context.ContextNode;
 import io.jstach.jstachio.spi.JStachioExtensions;
 import io.jstach.jstachio.spi.JStachioFactory;
 
@@ -113,6 +117,30 @@ public class JMustacheRendererTest {
 		 */
 		actual = actual.replace("\n", "");
 		expected = expected.replace("\n", "");
+		assertEquals(expected, actual);
+	}
+
+	@JStache(template = """
+			{{@context.message}}
+			""")
+	public record ContextModel(String message) {
+	}
+
+	@Test
+	public void testContext() throws Exception {
+		JMustacheRenderer jmustacheExt = jmustache();
+		ContextModel m = new ContextModel("hello");
+		String expected = """
+				boo
+				""";
+		/*
+		 * JMustache does not support context at the moment. This is just to check the
+		 * context gets through the filters.
+		 */
+		jmustacheExt.use(false);
+		Map<String, Object> context = Map.of("message", "boo");
+		String actual = ContextJStachio.of(JStachio.of())
+				.execute(m, ContextNode.of(context::get), Output.of(new StringBuilder())).toString();
 		assertEquals(expected, actual);
 	}
 

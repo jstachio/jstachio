@@ -34,45 +34,37 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@Override
 	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
 		var t = _findTemplate(model);
-		return t.execute(model, appendable);
+		return t.execute(_resolveModel(model), appendable);
 	}
 
 	@Override
 	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
 		var t = _findTemplate(model);
 		validateEncoding(t, appendable);
-		return t.write(model, appendable);
+		return t.write(_resolveModel(model), appendable);
 	}
 
 	/*
 	 * IF YOU want this method to be not final please file a bug.
 	 */
-	@SuppressWarnings({ "unchecked" })
 	@Override
 	public final <A extends EncodedOutput<E>, E extends Exception> A write(Object model, ContextNode context, A output)
 			throws E {
 		var t = _findTemplate(model);
 		validateEncoding(t, output);
-		if (t instanceof ContextTemplate ct) {
-			var _ct = (ContextTemplate<Object>) ct;
-			return _ct.write(model, context, output);
-		}
-		return t.write(model, output);
+		var ct = ContextTemplate.of(t);
+		return ct.write(_resolveModel(model), context, output);
 	}
 
 	/*
 	 * IF YOU want this method to be not final please file a bug.
 	 */
-	@SuppressWarnings({ "unchecked" })
 	@Override
 	public final <A extends Output<E>, E extends Exception> A execute(Object model, ContextNode context, A appendable)
 			throws E {
 		var t = _findTemplate(model);
-		if (t instanceof ContextTemplate ct) {
-			var _ct = (ContextTemplate<Object>) ct;
-			return _ct.execute(model, context, appendable);
-		}
-		return t.execute(model, appendable);
+		var ct = ContextTemplate.of(t);
+		return ct.execute(_resolveModel(model), context, appendable);
 	}
 
 	/*
@@ -89,11 +81,12 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Template<Object> _findTemplate(Object model) {
 		TemplateInfo template;
-		if (model instanceof TemplateModel te) {
+		if (model instanceof TemplateModel tm) {
 			/*
-			 * TemplateExecutables can execute on themselves.
+			 * TemplateModel has the template and model combined
 			 */
-			template = te.template();
+			template = tm.template();
+			model = tm.model();
 		}
 		else {
 			template = template(model.getClass());
@@ -103,6 +96,13 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 		return (Template<Object>) t;
 	}
 
+	private static Object _resolveModel(Object model) {
+		if (model instanceof TemplateModel tm) {
+			return tm.model();
+		}
+		return model;
+	}
+
 	/**
 	 * Loads the filter and checks if it can process the model and template.
 	 * @param model to render
@@ -110,7 +110,8 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	 * @return filter chain that can process model
 	 */
 	protected final FilterChain loadFilter(Object model, TemplateInfo template) {
-		var filter = FilterChain.of(extensions().getFilter(), template);
+		var jstachioFilter = extensions().getFilter();
+		var filter = FilterChain.of(jstachioFilter, template);
 		if (filter.isBroken(model)) {
 			boolean isReflectiveTemplate = Templates.isReflectionTemplate(template);
 			final String ind = "\n\t";

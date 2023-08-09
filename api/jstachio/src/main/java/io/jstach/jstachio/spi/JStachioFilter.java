@@ -1,7 +1,6 @@
 package io.jstach.jstachio.spi;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,8 +32,8 @@ import io.jstach.jstachio.TemplateInfo;
  * {@link #order()}).</li>
  * <li>{@linkplain FilterChain#of(JStachioFilter, TemplateInfo) Creates the filter chain}
  * with the loaded template.</li>
- * <li>Then tells the chain to {@linkplain FilterChain#process(Object, Appendable)
- * process} the rendering.</li>
+ * <li>Then tells the chain to {@linkplain FilterChain#process(Object, Output) process}
+ * the rendering.</li>
  * </ol>
  *
  * @apiNote <strong class="warn"> &#x26A0; WARNING! While this extension point is public
@@ -61,7 +60,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 		 * @param appendable the appendable to write to.
 		 * @throws IOException if there is an error writing to the appendable
 		 */
-		public void process(Object model, Appendable appendable) throws IOException;
+		public void process(Object model, Output<?> appendable) throws Exception;
 
 		/**
 		 * A marker method that the filter is broken and should not be used. This mainly
@@ -126,19 +125,14 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 				}
 
 				@Override
-				public void execute(Object model, Appendable a) throws IOException {
-					chain.process(model, a);
-				}
-
-				@Override
 				public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
 					try {
-						chain.process(model, appendable.toAppendable());
+						chain.process(model, appendable);
 						return appendable;
 					}
-					catch (IOException e) {
+					catch (Exception e) {
 						Templates.sneakyThrow(e);
-						throw new UncheckedIOException(e);
+						throw new RuntimeException(e);
 					}
 				}
 
@@ -216,6 +210,9 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 		if (fs.isEmpty()) {
 			return NoFilter.NO_FILTER;
 		}
+		if (fs.size() == 1) {
+			return fs.get(0);
+		}
 		fs.sort(Comparator.comparingInt(JStachioFilter::order));
 		return new CompositeFilterChain(List.copyOf(fs));
 	}
@@ -246,7 +243,7 @@ enum BrokenFilter implements io.jstach.jstachio.spi.JStachioFilter.FilterChain {
 	INSTANCE;
 
 	@Override
-	public void process(Object model, Appendable appendable) throws IOException {
+	public void process(Object model, Output<?> appendable) {
 		throw new BrokenFilterException("Unable to process model: " + model.getClass().getName()
 				+ " probably because a template could not be found.");
 	}

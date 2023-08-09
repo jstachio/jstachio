@@ -2,16 +2,11 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.Objects;
-import java.util.function.Function;
-
-import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template.EncodedTemplate;
-import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**
  * A template and model combined with convenience methods.
@@ -112,66 +107,7 @@ public sealed interface TemplateModel {
 
 }
 
-interface TemplateProxy extends Template<Object>, FilterChain {
-
-	public Template<?> delegateTemplate();
-
-	@Override
-	default String templateName() {
-		return delegateTemplate().templateName();
-	}
-
-	@Override
-	default String templatePath() {
-		return delegateTemplate().templatePath();
-	}
-
-	@Override
-	default Class<?> templateContentType() {
-		return delegateTemplate().templateContentType();
-	}
-
-	@Override
-	default Charset templateCharset() {
-		return delegateTemplate().templateCharset();
-	}
-
-	@Override
-	default String templateMediaType() {
-		return delegateTemplate().templateMediaType();
-	}
-
-	@Override
-	default Function<String, String> templateEscaper() {
-		return delegateTemplate().templateEscaper();
-	}
-
-	@Override
-	default Function<@Nullable Object, String> templateFormatter() {
-		return delegateTemplate().templateFormatter();
-	}
-
-	@Override
-	default Class<?> modelClass() {
-		return delegateTemplate().modelClass();
-	}
-
-	@Override
-	default boolean supportsType(Class<?> type) {
-		if (type.equals(this.getClass())) {
-			return true;
-		}
-		return delegateTemplate().supportsType(type);
-	}
-
-	@Override
-	default void process(Object model, Appendable appendable) throws IOException {
-		execute(model, appendable);
-	}
-
-}
-
-record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) implements TemplateModel, TemplateProxy {
+record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) implements TemplateModel {
 
 	static final String ERROR_MESSAGE = "The model passed into this TemplateModel is not correct";
 
@@ -182,7 +118,7 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) imp
 
 	@Override
 	public Template<?> template() {
-		return this;
+		return delegateTemplate;
 	}
 
 	@Override
@@ -190,18 +126,9 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) imp
 		return Objects.requireNonNull(_model);
 	}
 
-	@Override
-	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
-		if (model == this || model == this._model) {
-			return execute(appendable);
-		}
-		throw new UnsupportedOperationException(ERROR_MESSAGE);
-	}
-
 }
 
-record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
-		T _model) implements TemplateModel, TemplateProxy {
+record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate, T _model) implements TemplateModel {
 
 	@Override
 	public <A extends io.jstach.jstachio.Output<E>, E extends Exception> A execute(A output) throws E {
@@ -215,28 +142,12 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate,
 
 	@Override
 	public Template<?> template() {
-		return this;
+		return delegateTemplate;
 	}
 
 	@Override
 	public Object model() {
 		return Objects.requireNonNull(_model);
-	}
-
-	@Override
-	public <A extends Output<E>, E extends Exception> A execute(Object model, A appendable) throws E {
-		if (model == this || model == this._model) {
-			return execute(appendable);
-		}
-		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);
-	}
-
-	@Override
-	public <A extends EncodedOutput<E>, E extends Exception> A write(Object model, A appendable) throws E {
-		if (model == this || model == this._model) {
-			return write(appendable);
-		}
-		throw new UnsupportedOperationException(DefaultTemplateExecutable.ERROR_MESSAGE);
 	}
 
 }
