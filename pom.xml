@@ -4,7 +4,7 @@
   <artifactId>jstachio-maven-parent</artifactId>
   <name>jstachio-maven-parent</name>
   <packaging>pom</packaging>
-  <version>1.3.0-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
   <url>https://github.com/jstachio/jstachio</url>
   <description>Compile time type-safe Java Mustache templating engine.</description>
   <organization>
@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metainf-services.version>1.11</metainf-services.version>
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
-    <project.build.outputTimestamp>1689626089</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1691609515</project.build.outputTimestamp>
     <ant.tstamp.now>${project.build.outputTimestamp}</ant.tstamp.now>
     <javadoc.stylesheet/>
     <jstachio.doc.resources>../</jstachio.doc.resources>
