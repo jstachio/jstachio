@@ -530,11 +530,27 @@ public final class Templates {
 	 * @apiNote This method is an implementation detail for reflection rendering engines
 	 * such as JMustache and JStachio's future reflection based engine. It is recommended
 	 * you do not rely on it as it is subject to change in the future.
-	 * @deprecated use {@link #getInfoByReflection(Class)}
+	 * @deprecated use {@link #getInfoByReflection(Class)} or {@link #getPathInfo(Class)}.
 	 */
 	@Deprecated
 	public static @Nullable JStachePath resolvePath(Class<?> model) {
 		return _resolvePath(model);
+	}
+
+	/**
+	 * <strong>INTERNAL (use at your own risk):</strong> Resolved {@link JStachePath}
+	 * config by replacing {@link JStachePath#UNSPECIFIED} with default values. The passed
+	 * in model class does not need be directly annotated with {@link JStache} and can be
+	 * subclass.
+	 * @param modelClass the model's class
+	 * @return never <code>null</code> path information.
+	 * @apiNote <strong>INTERNAL (use at your own risk):</strong> This method largely
+	 * exists because {@link TemplateInfo} does not expose the original prefix and suffix
+	 * used. The prefix and suffix are needed for reloading the templates for extensions.
+	 * If you use this method please let the developers know and for what.
+	 */
+	public static PathInfo getPathInfo(Class<?> modelClass) {
+		return DefaultPathInfo.of(modelClass, _resolvePath(modelClass));
 	}
 
 	private static @Nullable JStachePath _resolvePath(Class<?> model) {
@@ -546,61 +562,92 @@ public final class Templates {
 				.orElse(null);
 	}
 
-	static class TemplateInfos {
+	/**
+	 * Resolved {@link JStachePath} config by replacing {@link JStachePath#UNSPECIFIED}
+	 * with default values.
+	 *
+	 * @apiNote This interface largely exists because {@link TemplateInfo} does not expose
+	 * the original prefix and suffix used.
+	 * @author agentgt
+	 */
+	public sealed interface PathInfo {
 
-		record PathConfig(Class<?> modelClass, String prefix, String suffix, String path) {
+		/**
+		 * Resolved prefix.
+		 * @return prefix maybe empty but will never be {@link JStachePath#UNSPECIFIED}.
+		 */
+		String prefix();
 
-			static PathConfig of(Class<?> modelClass, JStache stache) {
-				String prefix;
-				String suffix;
-				var jstachePath = _resolvePath(modelClass);
-				String path = requireNonNull(stache.path());
-				if (jstachePath != null) {
-					prefix = jstachePath.prefix();
-					suffix = jstachePath.suffix();
-				}
-				else {
-					prefix = JStachePath.UNSPECIFIED;
-					suffix = JStachePath.UNSPECIFIED;
-				}
-				return new PathConfig(modelClass, requireNonNull(prefix), requireNonNull(suffix), path);
+		/**
+		 * Resolved suffix.
+		 * @return suffix maybe empty but will never be {@link JStachePath#UNSPECIFIED}.
+		 */
+		String suffix();
+
+		/**
+		 * Calculates the expanded path and if the supplied path is empty then the path
+		 * will be expanded based on the class name where package name are separated with
+		 * a slash ("{@code /}") instead of a "<code>.</code>" and is suffixed with
+		 * {@value JStachePath#AUTO_SUFFIX} if suffix is {@link JStachePath#UNSPECIFIED}.
+		 * @param path if the path is empty it will be calculated based on the modelClass
+		 * package name and class name.
+		 * @return fully resolved path with prefix and suffix.
+		 */
+		public String resolveFullPath(String path);
+
+	}
+
+	record DefaultPathInfo(Class<?> modelClass, String prefix, String suffix, //
+			boolean prefixUnspecified, boolean suffixUnspecified //
+	) implements PathInfo {
+
+		static DefaultPathInfo of(Class<?> modelClass, @Nullable JStachePath path) {
+			String prefix, suffix;
+			boolean prefixUnspecified, suffixUnspecified;
+			if (path == null) {
+				prefix = JStachePath.DEFAULT_PREFIX;
+				suffix = JStachePath.DEFAULT_SUFFIX;
+				prefixUnspecified = suffixUnspecified = true;
 			}
-
-			String resolvePrefix() {
-				return JStachePath.UNSPECIFIED.equals(prefix) ? JStachePath.DEFAULT_PREFIX : prefix;
+			else {
+				prefix = path.prefix();
+				suffix = path.suffix();
+				prefixUnspecified = JStachePath.UNSPECIFIED.equals(prefix);
+				suffixUnspecified = JStachePath.UNSPECIFIED.equals(suffix);
+				prefix = prefixUnspecified ? JStachePath.DEFAULT_PREFIX : prefix;
+				suffix = suffixUnspecified ? JStachePath.DEFAULT_SUFFIX : suffix;
 			}
-
-			String resolveSuffix() {
-				if (path.isEmpty() && JStachePath.UNSPECIFIED.equals(suffix)) {
-					return ".mustache";
-				}
-				return JStachePath.UNSPECIFIED.equals(suffix) ? JStachePath.DEFAULT_SUFFIX : suffix;
-			}
-
-			String resolvePath() {
-				String resolvedPath;
-				if (path.isEmpty()) {
-					resolvedPath = resolveDefaultPath(modelClass);
-				}
-				else {
-					resolvedPath = path;
-				}
-				return resolvedPath;
-			}
-
-			String resolveFullPath() {
-				String resolvedPath = resolvePath();
-				return resolvePrefix() + resolvedPath + resolveSuffix();
-			}
-
-			private static String resolveDefaultPath(Class<?> model) {
-				String resolvedPath;
-				String folder = model.getPackageName().replace('.', '/');
-				folder = folder.isEmpty() ? folder : folder + "/";
-				resolvedPath = folder + model.getSimpleName();
-				return resolvedPath;
-			}
+			return new DefaultPathInfo(modelClass, requireNonNull(prefix), requireNonNull(suffix), prefixUnspecified,
+					suffixUnspecified);
 		}
+
+		public String resolveFullPath(String path) {
+			String resolvePath;
+			String prefix = prefix();
+			String suffix = suffix();
+			if (path.isEmpty()) {
+				resolvePath = resolveDefaultPath(modelClass);
+				if (suffixUnspecified()) {
+					suffix = JStachePath.AUTO_SUFFIX;
+				}
+			}
+			else {
+				resolvePath = path;
+			}
+			return prefix + resolvePath + suffix;
+
+		}
+
+		private static String resolveDefaultPath(Class<?> model) {
+			String resolvedPath;
+			String folder = model.getPackageName().replace('.', '/');
+			folder = folder.isEmpty() ? folder : folder + "/";
+			resolvedPath = folder + model.getSimpleName();
+			return resolvedPath;
+		}
+	}
+
+	static class TemplateInfos {
 
 		public static TemplateInfo templateOf(Class<?> model) throws Exception {
 			JStache stache = model.getAnnotation(JStache.class);
@@ -617,8 +664,8 @@ public final class Templates {
 				templatePath = "";
 			}
 			else {
-				PathConfig pathConfig = PathConfig.of(model, stache);
-				templatePath = pathConfig.resolveFullPath();
+				PathInfo pathInfo = getPathInfo(model);
+				templatePath = pathInfo.resolveFullPath(requireNonNull(stache.path()));
 			}
 
 			var ee = EscaperProvider.INSTANCE.providesFromModelType(model, stache);
