@@ -13,9 +13,9 @@ import com.samskivert.mustache.Template;
 import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstache.JStachePartial;
 import io.jstach.jstache.JStachePartials;
-import io.jstach.jstache.JStachePath;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.Templates;
+import io.jstach.jstachio.spi.Templates.PathInfo;
 
 class CompilerAdapter {
 
@@ -38,15 +38,9 @@ class CompilerAdapter {
 				.withFormatter(template.templateFormatter()::apply) //
 				.withLoader(new JStachioTemplateLoader()) //
 				.withCollector(new JStachioCollector(this));
-		JStachePath path = Templates.resolvePath(modelClass);
-		if (path != null) {
-			prefix = path.prefix();
-			suffix = path.suffix();
-		}
-		else {
-			prefix = "";
-			suffix = "";
-		}
+
+		PathInfo pathInfo = Templates.getPathInfo(modelClass);
+
 		this.loader = loader;
 		Map<String, JStachePartial> ps = new LinkedHashMap<>();
 		JStachePartials jps = modelClass.getAnnotation(JStachePartials.class);
@@ -56,6 +50,8 @@ class CompilerAdapter {
 			}
 		}
 		this.partials = Map.copyOf(ps);
+		this.prefix = pathInfo.prefix();
+		this.suffix = pathInfo.suffix();
 	}
 
 	private class JStachioTemplateLoader implements TemplateLoader {

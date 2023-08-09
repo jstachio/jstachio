@@ -18,6 +18,7 @@ public class ContextNodeTest {
 		assertFalse(ContextNode.ofRoot(ia).iterator().hasNext());
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testIteratorOnArray() throws Exception {
 		int[] ia = new int[] { 1, 0 };
