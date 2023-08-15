@@ -61,7 +61,7 @@ public interface ContextTemplate<T> {
 		if (template instanceof ContextTemplate ct) {
 			return ct;
 		}
-		return new DecoratedContextTemplate<T>(template);
+		return new DecoratedContextTemplate<>(template);
 	}
 
 }

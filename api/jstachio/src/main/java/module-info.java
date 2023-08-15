@@ -27,7 +27,7 @@
  *
  * @see io.jstach.jstachio.JStachio
  * @uses io.jstach.jstachio.spi.JStachioExtension JStachio runtime extension SPI
- * @uses io.jstach.jstachio.spi.TemplateProvider SPI used to find generated templates 
+ * @uses io.jstach.jstachio.spi.TemplateProvider SPI used to find generated templates
  * (see {@link io.jstach.jstache.JStacheCatalog}).
  * @jstachioVersion
  */

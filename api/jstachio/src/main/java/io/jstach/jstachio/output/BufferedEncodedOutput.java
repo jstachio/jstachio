@@ -7,7 +7,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
 import io.jstach.jstachio.Output.CloseableEncodedOutput;
-import io.jstach.jstachio.Output.EncodedOutput;
 import io.jstach.jstachio.Template.EncodedTemplate;
 
 /**
@@ -136,7 +135,7 @@ public sealed interface BufferedEncodedOutput
 	default byte[] toByteArray() {
 		int size = size();
 		byte[] result = new byte[size];
-		OutputConsumer<RuntimeException> consumer = new OutputConsumer<RuntimeException>() {
+		OutputConsumer<RuntimeException> consumer = new OutputConsumer<>() {
 			int index = 0;
 
 			@Override

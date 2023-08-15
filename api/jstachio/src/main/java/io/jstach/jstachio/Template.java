@@ -34,6 +34,7 @@ public interface Template<T> extends Renderer<T>, TemplateInfo {
 	 * {@link #write(Object, io.jstach.jstachio.Output.EncodedOutput)} as it will leverage
 	 * pre-encoding if the template has it.
 	 */
+	@Override
 	public <A extends Output<E>, E extends Exception> A execute(T model, A appendable) throws E;
 
 	/**

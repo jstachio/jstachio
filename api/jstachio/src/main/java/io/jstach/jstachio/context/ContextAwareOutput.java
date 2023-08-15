@@ -76,6 +76,7 @@ sealed interface ContextAwareOutput<O> extends ContextSupplier {
 			return this.output;
 		}
 
+		@Override
 		public O getOutput() {
 			return output;
 		}
@@ -114,6 +115,7 @@ sealed interface ContextAwareOutput<O> extends ContextSupplier {
 			return this.output;
 		}
 
+		@Override
 		public O getOutput() {
 			return output;
 		}

@@ -113,6 +113,7 @@ abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutp
 		return size;
 	}
 
+	@Override
 	public int limit() {
 		return limit;
 	}
@@ -169,8 +170,8 @@ abstract non-sealed class AbstractLimitEncodedOutput implements LimitEncodedOutp
 
 	/**
 	 * If the limit is not exceeded then the buffered data will be replayed and pushed
-	 * when closed. Regardless {@link #close(Object)} will be called on the output like
-	 * object.
+	 * when closed. Regardless {@link #close(OutputStream)} will be called on the output
+	 * like object.
 	 * @throws IOException if an error happens while creating or closing the downstream
 	 * output
 	 */

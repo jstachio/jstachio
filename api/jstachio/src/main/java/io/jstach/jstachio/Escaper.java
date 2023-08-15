@@ -81,16 +81,19 @@ public non-sealed interface Escaper extends Appender, Function<String, String> {
 	/**
 	 * Escapes the characters if it needs it. {@inheritDoc}
 	 */
+	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E;
 
 	/**
 	 * Escapes the characters if it needs it. {@inheritDoc}
 	 */
+	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E;
 
 	/**
 	 * Escapes the character if it needs escaping. {@inheritDoc}
 	 */
+	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, char c) throws E;
 
 	/**

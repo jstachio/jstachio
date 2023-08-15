@@ -139,10 +139,8 @@ public final class Templates {
 		/*
 		 * TODO JMH as this method will be called quite frequently
 		 */
-		if (modelType == String.class || modelType == Map.class || modelType == Object.class) {
-			return true;
-		}
-		if (modelType.isPrimitive()) {
+		if (modelType == String.class || modelType == Map.class || modelType == Object.class
+				|| modelType.isPrimitive()) {
 			return true;
 		}
 		if (modelType.getName().startsWith("java.")) {
@@ -156,7 +154,7 @@ public final class Templates {
 	 * interfaces).
 	 *
 	 * TODO possible candidate to make public on minor release
-	 * @param c the model type to search on.
+	 * @param modelType the model type to search on.
 	 * @return a tuple of found class annotated and the jstache annotation.
 	 */
 	static Entry<Class<?>, JStache> findJStache(final Class<?> modelType) {
@@ -172,7 +170,7 @@ public final class Templates {
 	 * interfaces).
 	 *
 	 * TODO possible candidate to make public on minor release
-	 * @param c the model type to search on.
+	 * @param modelType the model type to search on.
 	 * @return a tuple of found class annotated and the jstache annotation.
 	 */
 	static @Nullable Entry<Class<?>, JStache> findJStacheOrNull(final Class<?> modelType) {
@@ -621,6 +619,7 @@ public final class Templates {
 					suffixUnspecified);
 		}
 
+		@Override
 		public String resolveFullPath(String path) {
 			String resolvePath;
 			String prefix = prefix();
