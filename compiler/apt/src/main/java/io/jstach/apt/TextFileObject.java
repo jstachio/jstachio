@@ -31,11 +31,16 @@ package io.jstach.apt;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
@@ -97,28 +102,27 @@ class TextFileObject {
 			 * We use a dummy FileObject to get a relative directory. This is because
 			 * current work directory can be misleading depending on build implementation.
 			 */
-			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", "dummy");
+			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", OutputPathPattern.DUMMY);
+
+			if (config.isGradleEnabled() && config.isDebug()) {
+				config.debug("Looks like we are using Gradle incremental. dummy: " + dummy.toUri());
+
+			}
+			else if (config.isDebug()) {
+				config.debug("Looks like we are using Eclipse or Intellij incremental. dummy: " + dummy.toUri());
+			}
 
 			/*
 			 * Aka the CWD
 			 */
 			Path projectPath;
 
-			if (config.isGradleEnabled()) {
-				if (config.isDebug()) {
-					config.debug("Looks like we are using Gradle incremental. dummy: " + dummy.toUri());
-				}
-				// build/classes/java/main/dummy
-				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent().getParent().getParent();
+			OutputPathPattern pattern = OutputPathPattern.find(dummy.toUri());
+			projectPath = pattern.resolveProjectPath(dummy.toUri());
+			if (config.isDebug()) {
+				config.debug("Detected class output pattern: " + pattern + " projectPath: " + projectPath);
+			}
 
-			}
-			else {
-				if (config.isDebug()) {
-					config.debug("Looks like we are using Eclipse incremental. dummy: " + dummy.toUri());
-				}
-				// target/classes/dummy
-				projectPath = Paths.get(dummy.toUri()).getParent().getParent().getParent();
-			}
 			String resourceName = name;
 			List<Path> fullPaths = config.resourcesPaths().stream()
 					.map(rp -> resolvePath(projectPath, rp, resourceName)).toList();
@@ -132,17 +136,108 @@ class TextFileObject {
 					return Files.newInputStream(fullPath);
 				}
 			}
-			StringBuilder sb = new StringBuilder();
-			sb.append("Failed to find template resource: '").append(name).append("'. Tried the following locations: ");
-			sb.append("'").append(resource.toUri()).append("'");
-			for (Path p : fullPaths) {
-				sb.append(", '").append(p.toString()).append("'");
+			String error = printAttempts(new StringBuilder(), name, resource, fullPaths, "").toString();
+			if (config.isDebug()) {
+				StringBuilder diagnostic = new StringBuilder();
+				printAttempts(diagnostic, name, resource, fullPaths, "\n\t");
+				diagnostic.append("\n\n");
+				diagnosticDump(diagnostic, config, Map.of("outputPathPattern", pattern.toString()));
+				config.debug(diagnostic.toString());
 			}
-
-			throw new IOException(sb.toString());
+			throw new IOException(error);
 		}
 
 		return resource.openInputStream();
+	}
+
+	private static StringBuilder printAttempts(StringBuilder sb, String name, FileObject resource, List<Path> fullPaths,
+			String separator) {
+		sb.append("Failed to find template resource: '").append(name).append("'. Tried the following locations: ");
+		sb.append(separator).append("'").append(resource.toUri()).append("'");
+		for (Path p : fullPaths) {
+			sb.append(separator).append(", '").append(p.toString()).append("'");
+		}
+		return sb;
+	}
+
+	private enum OutputPathPattern {
+
+		GRADLE("/build/classes/java/main/"), GRADLE_TEST("/build/classes/java/test/"), MAVEN("/target/classes/"),
+		MAVEN_TEST("/target/test-classes/"), CWD(".") {
+			@Override
+			public boolean matches(String uri) {
+				return false;
+			}
+
+			@Override
+			public Path resolveProjectPath(URI uri) {
+				return Path.of(".");
+			}
+		};
+
+		private static final String DUMMY = "dummy";
+
+		private String endPath;
+
+		private OutputPathPattern(String endPath) {
+			this.endPath = endPath;
+		}
+
+		public boolean matches(String uri) {
+			return uri.endsWith(endPath + DUMMY);
+		}
+
+		public Path resolveProjectPath(URI uri) {
+			Path path = Paths.get(uri);
+			int segments = endPath.split("/").length;
+			for (int i = 0; i < segments; i++) {
+				path = path.getParent();
+			}
+			return path;
+		}
+
+		public static OutputPathPattern find(URI uri) {
+			String u = uri.toString().trim();
+			for (var o : values()) {
+				if (o.matches(u)) {
+					return o;
+				}
+			}
+			return CWD;
+		}
+
+	}
+
+	private static StringBuilder diagnosticDump(StringBuilder sb, ProcessingConfig config, Map<String, String> keys) {
+		sb.append("Environment Info:").append("\n");
+		Map<String, String> info = new LinkedHashMap<>();
+		info.putAll(keys);
+		Path cwd = Path.of(".");
+		try {
+			info.put("CWD", cwd.toAbsolutePath().toString());
+		}
+		catch (Exception e) {
+			info.put("CWD", cwd.toString());
+		}
+		info.put("JDK", Runtime.version().toString());
+		info.put("isGradle", config.isGradleEnabled() + "");
+		for (var e : info.entrySet()) {
+			sb.append("\n\t").append(e.getKey()).append("=").append(e.getValue());
+		}
+		sb.append("\n\n");
+
+		for (var e : System.getProperties().entrySet()) {
+			var key = e.getKey().toString().toLowerCase();
+			/*
+			 * Shitty heuristic for not printing out sensitive stuff
+			 */
+			if (key.contains("secret") || key.contains("password") || key.contains("key")
+					|| key.contains("line.separator")) {
+				continue;
+			}
+			sb.append("\n\t").append(e.getKey()).append("=").append(e.getValue());
+		}
+		return sb;
 	}
 
 	private static Path resolvePath(Path projectPath, String resourcePath, String name) {

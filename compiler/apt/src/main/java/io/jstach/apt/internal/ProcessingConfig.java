@@ -51,7 +51,7 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 	public static boolean isGradle() {
 		String cmd = System.getProperty("sun.java.command");
 		if (cmd != null) {
-			return cmd.toLowerCase().contains("gradle");
+			return cmd.trim().startsWith("org.gradle.launcher.daemon.bootstrap.GradleDaemon");
 		}
 		return false;
 	}
