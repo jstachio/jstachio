@@ -6,12 +6,12 @@ import static io.jstach.jstachio.spi.Templates.validateEncoding;
 import io.jstach.jstachio.JStachio;
 import io.jstach.jstachio.Output;
 import io.jstach.jstachio.Output.EncodedOutput;
-import io.jstach.jstachio.context.ContextJStachio;
-import io.jstach.jstachio.context.ContextNode;
-import io.jstach.jstachio.context.ContextTemplate;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.TemplateModel;
+import io.jstach.jstachio.context.ContextJStachio;
+import io.jstach.jstachio.context.ContextNode;
+import io.jstach.jstachio.context.ContextTemplate;
 import io.jstach.jstachio.spi.JStachioFilter.FilterChain;
 
 /**
@@ -92,8 +92,8 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 			template = template(model.getClass());
 		}
 		var filter = loadFilter(model, template);
-		Template t = FilterChain.toTemplate(filter, template);
-		return (Template<Object>) t;
+		Template t = (Template<Object>) FilterChain.toTemplate(filter, template);
+		return t;
 	}
 
 	private static Object _resolveModel(Object model) {

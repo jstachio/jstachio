@@ -200,6 +200,7 @@ public sealed interface ContextNode extends Formattable, Iterable<@Nullable Cont
 	 * elements and if it does not it is falsey.
 	 * @return true if falsey.
 	 */
+	@SuppressWarnings("AmbiguousMethodReference")
 	default boolean isFalsey() {
 		return !iterator().hasNext();
 	}
@@ -213,6 +214,7 @@ public sealed interface ContextNode extends Formattable, Iterable<@Nullable Cont
 	 * <code>null</code>.
 	 * @return true if the object is falsey.
 	 */
+	@SuppressWarnings("AmbiguousMethodReference")
 	static boolean isFalsey(@Nullable Object context) {
 		if ((context == null) || Boolean.FALSE.equals(context)) {
 			return true;
@@ -240,6 +242,7 @@ public sealed interface ContextNode extends Formattable, Iterable<@Nullable Cont
 	 * @param context a context node. <code>null</code>.
 	 * @return true if the node is falsey.
 	 */
+	@SuppressWarnings("AmbiguousMethodReference")
 	static boolean isFalsey(@Nullable ContextNode context) {
 		if (context == null) {
 			return true;
@@ -278,6 +281,7 @@ sealed interface Internal extends ContextNode {
 		return ContextNodeFactory.INSTANCE.ofChild(this, index, o);
 	}
 
+	@Override
 	default @Nullable ContextNode find(String field) {
 		/*
 		 * In theory we could make a special RenderingContext for ContextNode to go up the
@@ -486,6 +490,7 @@ sealed interface Internal extends ContextNode {
 	}
 
 	record OptionalContextNode(Optional<?> object, @Nullable ContextNode parent) implements ValueNode {
+		@Override
 		public boolean isFalsey() {
 			return object.isEmpty();
 		}
@@ -514,6 +519,7 @@ sealed interface Internal extends ContextNode {
 			return ContextNodeFactory.INSTANCE.iteratorOf(this, object);
 		}
 
+		@Override
 		public boolean isFalsey() {
 			return ContextNode.isFalsey(object);
 		}

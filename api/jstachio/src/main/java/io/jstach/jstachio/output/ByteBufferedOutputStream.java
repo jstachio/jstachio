@@ -115,6 +115,7 @@ public class ByteBufferedOutputStream extends OutputStream implements ByteBuffer
 	 * How many bytes have been written so far.
 	 * @return 0 if empty, otherwise how many bytes so far
 	 */
+	@Override
 	public int size() {
 		return count;
 	}
@@ -123,6 +124,7 @@ public class ByteBufferedOutputStream extends OutputStream implements ByteBuffer
 	 * Copy internal byte array into a new array.
 	 * @return Byte array.
 	 */
+	@Override
 	public byte[] toByteArray() {
 		byte[] array = new byte[count];
 		System.arraycopy(buf, 0, array, 0, count);

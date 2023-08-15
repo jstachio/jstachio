@@ -67,6 +67,7 @@ class ByteArrayChunkEncodedOutput implements ChunkEncodedOutput<byte[]> {
 		}
 	}
 
+	@Override
 	public byte[] toByteArray() {
 		byte[] result = new byte[size];
 

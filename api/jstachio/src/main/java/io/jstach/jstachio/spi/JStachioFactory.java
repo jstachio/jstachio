@@ -20,7 +20,7 @@ import io.jstach.jstachio.TemplateInfo;
 public final class JStachioFactory {
 
 	/**
-	 * @hidden
+	 * Ignore
 	 */
 	private JStachioFactory() {
 

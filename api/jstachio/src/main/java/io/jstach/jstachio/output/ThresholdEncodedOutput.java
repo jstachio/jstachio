@@ -191,6 +191,7 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 	 * This is the current written length.
 	 * @return current written length
 	 */
+	@Override
 	public int size() {
 		return size;
 	}
