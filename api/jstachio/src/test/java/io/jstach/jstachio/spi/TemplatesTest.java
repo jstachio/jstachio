@@ -12,15 +12,13 @@ public class TemplatesTest {
 
 	@Test
 	public void shouldFindAnnotatedParentInterface() {
-		var stache = Templates.findJStacheOrNull(ModelNoJStache.class);
-		assertNotNull(stache);
+		var stache = Templates.findJStache(ModelNoJStache.class);
 		assertEquals(stache.getKey(), InterfaceModel.class);
 	}
 
 	@Test
 	public void shouldFindAnnotated() {
-		var stache = Templates.findJStacheOrNull(ModelWithJStache.class);
-		assertNotNull(stache);
+		var stache = Templates.findJStache(ModelWithJStache.class);
 		assertEquals(stache.getKey(), ModelWithJStache.class);
 	}
 

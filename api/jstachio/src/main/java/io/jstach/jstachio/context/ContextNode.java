@@ -341,7 +341,8 @@ sealed interface Internal extends ContextNode {
 
 		public Iterator<@Nullable ContextNode> iteratorOf(ContextNode parent, Iterable<?> it) {
 			int[] j = { -1 };
-			return StreamSupport.stream(it.spliterator(), false).map(i -> this.ofChild(parent, (j[0] += 1), i))
+			return StreamSupport.stream(it.spliterator(), false) //
+					.<@Nullable ContextNode>map(i -> this.ofChild(parent, (j[0] += 1), i)) //
 					.iterator();
 		}
 
@@ -354,13 +355,15 @@ sealed interface Internal extends ContextNode {
 				return iteratorOf(parent, o);
 			}
 			else if (o instanceof Optional<?> opt) {
-				return opt.stream().map(i -> this.ofChild(parent, 0, i)).iterator();
+				return opt.stream() //
+						.<@Nullable ContextNode>map(i -> this.ofChild(parent, 0, i)) //
+						.iterator();
 			}
 			else if (o.getClass().isArray()) {
 
 				Stream<? extends @Nullable Object> s = arrayToStream(o);
 				int[] j = { -1 };
-				return s.map(i -> this.ofChild(parent, (j[0] += 1), i)).iterator();
+				return s.<@Nullable ContextNode>map(i -> this.ofChild(parent, (j[0] += 1), i)).iterator();
 			}
 
 			return Collections.<@Nullable ContextNode>singletonList(parent).iterator();
@@ -497,7 +500,7 @@ sealed interface Internal extends ContextNode {
 
 		@Override
 		public @NonNull Iterator<@Nullable ContextNode> iterator() {
-			return object.stream().map(i -> this.ofChild(0, i)).iterator();
+			return object.stream().<@Nullable ContextNode>map(i -> this.ofChild(0, i)).iterator();
 		}
 
 		@Override

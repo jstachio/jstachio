@@ -235,17 +235,16 @@ class TemplateNotFoundException extends NoSuchElementException {
 
 	private final Class<?> modelType;
 
-	protected TemplateNotFoundException(Class<?> modelType, @Nullable String message, @Nullable Throwable cause) {
-		super(message, cause);
-		this.modelType = modelType;
-	}
-
 	public TemplateNotFoundException(Class<?> modelType) {
-		this(modelType, errorMessage(modelType), (Throwable) null);
+		super(errorMessage(modelType));
+		this.modelType = modelType;
+
 	}
 
 	public TemplateNotFoundException(String message, Class<?> modelType) {
-		this(modelType, message + " " + errorMessage(modelType), (Throwable) null);
+		super(message + " " + errorMessage(modelType));
+		this.modelType = modelType;
+
 	}
 
 	protected static String errorMessage(Class<?> modelType) {
@@ -294,9 +293,9 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 		this.cache = new ClassValue<>() {
 
 			@Override
-			protected @Nullable TemplateInfo computeValue(@Nullable Class<?> type) {
+			protected TemplateInfo computeValue(Class<?> type) {
 				try {
-					return delegate.findTemplate(Objects.requireNonNull(type));
+					return delegate.findTemplate(type);
 				}
 				catch (Exception e) {
 					Templates.sneakyThrow(e);

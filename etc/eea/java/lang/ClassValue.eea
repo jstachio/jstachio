@@ -1,7 +1,7 @@
 class java/lang/ClassValue
 computeValue
  (Ljava/lang/Class<*>;)TT;
- (L0java/lang/Class<*>;)T0T;
+ (L1java/lang/Class<*>;)TT;
 get
  (Ljava/lang/Class<*>;)TT;
  (L1java/lang/Class<*>;)T0T;
