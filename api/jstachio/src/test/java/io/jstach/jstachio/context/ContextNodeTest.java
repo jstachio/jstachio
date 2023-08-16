@@ -20,14 +20,15 @@ public class ContextNodeTest {
 		assertFalse(ContextNode.ofRoot(ia).iterator().hasNext());
 	}
 
-	@SuppressWarnings("null")
 	@Test
 	public void testIteratorOnArray() throws Exception {
 		int[] ia = new int[] { 1, 0 };
 		var node = ContextNode.ofRoot(ia);
 		StringBuilder sb = new StringBuilder();
 		for (var n : node) {
-			sb.append(n.renderString()).append("\n");
+			if (n != null) {
+				sb.append(n.renderString()).append("\n");
+			}
 		}
 		String expected = """
 				1

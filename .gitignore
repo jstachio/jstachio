@@ -43,3 +43,6 @@ build
 
 #VS code
 .vscode
+
+# Check dumps these files for some reason
+javac.*.args

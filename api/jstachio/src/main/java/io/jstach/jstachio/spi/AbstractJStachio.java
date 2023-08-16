@@ -78,7 +78,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 	/*
 	 * IF YOU want this method protected (thus overrideable) please file a bug.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private Template<Object> _findTemplate(Object model) {
 		TemplateInfo template;
 		if (model instanceof TemplateModel tm) {
@@ -92,7 +92,7 @@ public abstract class AbstractJStachio implements JStachio, JStachioExtensions.P
 			template = template(model.getClass());
 		}
 		var filter = loadFilter(model, template);
-		Template t = (Template<Object>) FilterChain.toTemplate(filter, template);
+		Template<Object> t = (Template<Object>) FilterChain.toTemplate(filter, template);
 		return t;
 	}
 

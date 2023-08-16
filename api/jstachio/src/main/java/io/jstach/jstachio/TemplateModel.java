@@ -2,7 +2,6 @@ package io.jstach.jstachio;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
 import io.jstach.jstache.JStacheInterfaces;
 import io.jstach.jstachio.Output.EncodedOutput;
@@ -123,7 +122,13 @@ record DefaultTemplateExecutable<T> (Template<T> delegateTemplate, T _model) imp
 
 	@Override
 	public Object model() {
-		return Objects.requireNonNull(_model);
+		var m = _model;
+		// Both eclipse and checkerframework seem to be unable to apply nonnull
+		// to records with parameters
+		if (m == null) {
+			throw new NullPointerException("model is null");
+		}
+		return m;
 	}
 
 }
@@ -147,7 +152,13 @@ record EncodedTemplateExecutable<T> (EncodedTemplate<T> delegateTemplate, T _mod
 
 	@Override
 	public Object model() {
-		return Objects.requireNonNull(_model);
+		var m = _model;
+		// Both eclipse and checkerframework seem to be unable to apply nonnull
+		// to records with parameters
+		if (m == null) {
+			throw new NullPointerException("model is null");
+		}
+		return m;
 	}
 
 }

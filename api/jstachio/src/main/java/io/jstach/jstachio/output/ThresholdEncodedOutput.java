@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -143,9 +142,10 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 			/*
 			 * We have exceeded the threshold
 			 */
-			this.consumer = c = Objects.requireNonNull(createConsumer(-1));
+			T _consumer;
+			this.consumer = _consumer = createConsumer(-1);
 			chunks.add(chunk);
-			drain(c);
+			drain(_consumer);
 		}
 		else {
 			chunks.add(chunk);
@@ -177,13 +177,21 @@ public abstract non-sealed class ThresholdEncodedOutput<T, E extends Exception> 
 	 */
 	@Override
 	public void close() throws E {
+		/*
+		 * This little ceremony is because of null checkers. For whatever reason c cannot
+		 * be flow coerced into nonnull.
+		 */
 		@Nullable
 		T c = this.consumer;
+		T _consumer;
 		if (c == null) {
-			this.consumer = c = Objects.requireNonNull(createConsumer(size));
-			drain(c);
+			this.consumer = _consumer = createConsumer(size);
+			drain(_consumer);
 		}
-		close(c);
+		else {
+			_consumer = c;
+		}
+		close(_consumer);
 		this.consumer = null;
 	}
 

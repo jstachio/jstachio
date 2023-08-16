@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -426,8 +427,11 @@ public final class Templates {
 
 	private static Stream<? extends AnnotatedElement> annotationElements(Class<?> c) {
 		Stream<? extends AnnotatedElement> enclosing = enclosing(c).flatMap(Templates::expandUsing);
-		return Stream.<Stream<? extends AnnotatedElement>>builder().add(enclosing)
-				.add(Stream.ofNullable(c.getPackage())).add(Stream.ofNullable(c.getModule())).build()
+		return Stream.<Stream<? extends AnnotatedElement>>builder() //
+				.add(enclosing) //
+				.add(Stream.ofNullable(c.getPackage())) //
+				.add(Stream.ofNullable(c.getModule())) //
+				.build() //
 				.flatMap(Function.identity());
 	}
 
@@ -554,8 +558,7 @@ public final class Templates {
 	private static @Nullable JStachePath _resolvePath(Class<?> model) {
 		// TODO perhaps this information should be on TemplateInfo?
 		return annotationElements(model) //
-				.map(TemplateInfos::resolvePathOnElement) //
-				.filter(p -> p != null) //
+				.flatMap(e -> TemplateInfos.resolvePathOnElement(e).stream()) //
 				.findFirst() //
 				.orElse(null);
 	}
@@ -695,16 +698,16 @@ public final class Templates {
 
 		}
 
-		private static @Nullable JStachePath resolvePathOnElement(AnnotatedElement a) {
+		private static Optional<JStachePath> resolvePathOnElement(AnnotatedElement a) {
 			var path = a.getAnnotation(JStachePath.class);
 			if (path != null) {
-				return path;
+				return Optional.of(path);
 			}
 			var config = a.getAnnotation(JStacheConfig.class);
 			if (config != null && config.pathing().length > 0) {
-				return config.pathing()[0];
+				return Optional.ofNullable(config.pathing()[0]);
 			}
-			return null;
+			return Optional.empty();
 		}
 
 		sealed interface StaticProvider<P> {
@@ -742,8 +745,8 @@ public final class Templates {
 					return provider;
 				}
 				provider = findAnnotations(modelType, JStacheConfig.class)
-						.map(config -> autoToNull(providerFromConfig(config))).filter(p -> p != null).findFirst()
-						.orElse(null);
+						.flatMap(config -> Optional.ofNullable(autoToNull(providerFromConfig(config))).stream())
+						.findFirst().orElse(null);
 				return nullToDefault(provider);
 			}
 

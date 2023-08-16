@@ -81,6 +81,7 @@
             <configuration>
               <fork>true</fork>
               <compilerArgs combine.children="append">
+                <arg>-Astubs=${parent.root}/etc/eea/checker</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
