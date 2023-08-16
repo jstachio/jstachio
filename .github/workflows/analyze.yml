@@ -9,6 +9,10 @@ on:
 jobs:
   build:
 
+    strategy:
+      matrix:
+        profile: ['checkerframework', 'errorprone']
+
     runs-on: ubuntu-latest
     env:
       BUILD_NUMBER: "${{github.run_number}}"
@@ -22,7 +26,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-      - name: Checkerframework
-        run: ./mvnw $MAVEN_CLI_OPTS verify -Pcheckerframework
-      - name: Error Prone
-        run: ./mvnw $MAVEN_CLI_OPTS verify -Perrorprone
+      - name: ${{ matrix.profile }}
+        run: ./mvnw $MAVEN_CLI_OPTS verify -P${{ matrix.profile }} -Dmaven.javadoc.skip -DskipTest
