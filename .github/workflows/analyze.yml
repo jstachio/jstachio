@@ -1,0 +1,28 @@
+name: Analyze
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: "${{github.run_number}}"
+      MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --no-transfer-progress"
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Checkerframework
+        run: ./mvnw $MAVEN_CLI_OPTS verify -Pcheckerframework
+      - name: Error Prone
+        run: ./mvnw $MAVEN_CLI_OPTS verify -Perrorprone
