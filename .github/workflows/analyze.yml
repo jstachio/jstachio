@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  analyze:
 
     strategy:
       matrix:
@@ -27,4 +27,4 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: ${{ matrix.profile }}
-        run: ./mvnw $MAVEN_CLI_OPTS verify -P${{ matrix.profile }} -Dmaven.javadoc.skip -DskipTest
+        run: ./mvnw $MAVEN_CLI_OPTS verify -P${{ matrix.profile }} -Dmaven.javadoc.skip -DskipTest -Dmaven.source.skip=true
