@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        profile: ['checkerframework', 'errorprone']
+        profile: ['checkerframework', 'errorprone', 'eclipse']
 
     runs-on: ubuntu-latest
     env:

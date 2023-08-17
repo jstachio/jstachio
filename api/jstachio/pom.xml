@@ -120,5 +120,56 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>eclipse</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerId>eclipse</compilerId>
+              <!-- 
+              You need to use compilerArguments here instead of compilerArgs despite it being deprecated 
+              -->
+              <compilerArguments>
+                <properties>${parent.root}/etc/eea/prefs/org.eclipse.jdt.core.prefs</properties>
+                <!-- Apparently CLASSPATH is the only one that works -->
+                <annotationpath>CLASSPATH</annotationpath>
+                <!-- Because classpath is the only that works we add our eea directory to it -->
+                <classpath>${parent.root}/etc/eea</classpath>
+              </compilerArguments>
+              <showWarnings>true</showWarnings>
+              <showDeprecation>true</showDeprecation>
+              <failOnWarning>true</failOnWarning>
+              <failOnError>true</failOnError>
+            </configuration>
+            <!-- 
+            Maven will try patch in modules which breaks the eclipse compiler
+            Fatal error compiling: Failed to run the ecj compiler: Unrecognized option : patch-module
+            The patch module above has two hyphens in front of it.
+            -->
+            <executions>
+              <execution>
+                <id>default-testCompile</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-eclipse</artifactId>
+                <version>2.13.0</version>
+              </dependency>
+              <dependency>
+                <groupId>org.eclipse.jdt</groupId>
+                <artifactId>ecj</artifactId>
+                <version>3.34.0</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
