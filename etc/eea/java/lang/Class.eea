@@ -49,7 +49,7 @@ getConstructors
  ()[1L1java/lang/reflect/Constructor<*>;
 getDeclaredAnnotation
  <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
- <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T1A;
+ <A::Ljava/lang/annotation/Annotation;>(L1java/lang/Class<TA;>;)T0A;
 getDeclaredAnnotations
  ()[Ljava/lang/annotation/Annotation;
  ()[1L1java/lang/annotation/Annotation;

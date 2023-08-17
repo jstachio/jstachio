@@ -179,8 +179,8 @@ public final class Templates {
 			return null;
 		return Stream.concat(parents(modelType), interfaces(modelType)) //
 				.filter(_c -> !isIgnoredType(_c)) //
-				.filter(_c -> _c.getDeclaredAnnotation(JStache.class) != null) //
-				.map(_c -> Map.<Class<?>, JStache>entry(_c, _c.getDeclaredAnnotation(JStache.class))) //
+				.flatMap(_c -> Stream.ofNullable(_c.getDeclaredAnnotation(JStache.class)) //
+						.map(a -> Map.<Class<?>, JStache>entry(_c, a))) //
 				.findFirst() //
 				.orElse(null);
 	}
