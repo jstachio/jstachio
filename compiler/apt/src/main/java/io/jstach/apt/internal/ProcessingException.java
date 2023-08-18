@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.internal;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.context.ContextException;
@@ -43,12 +45,12 @@ public class ProcessingException extends Exception {
 
 	private final Position position;
 
-	protected ProcessingException(Position position, @Nullable String message, @Nullable Throwable cause) {
+	protected ProcessingException(Position position, String message, @Nullable Throwable cause) {
 		super(message, cause);
 		this.position = position;
 	}
 
-	public ProcessingException(Position position, @Nullable String message) {
+	public ProcessingException(Position position, String message) {
 		this(position, message, null);
 	}
 
@@ -62,6 +64,11 @@ public class ProcessingException extends Exception {
 
 	public Position position() {
 		return position;
+	}
+
+	@Override
+	public String getMessage() {
+		return Objects.requireNonNull(super.getMessage());
 	}
 
 	public static class AnnotationProcessingException extends ProcessingException {

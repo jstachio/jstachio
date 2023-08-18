@@ -53,8 +53,8 @@ public class Throwables {
 	private Throwables() {
 	}
 
-	public interface SneakyFunction<@Nullable T, @Nullable R, E extends Exception>
-			extends Function<@Nullable T, @Nullable R> {
+	public interface SneakyFunction<T extends @Nullable Object, R extends @Nullable Object, E extends Exception>
+			extends Function<T, R> {
 
 		@Override
 		default R apply(T t) {

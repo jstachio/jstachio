@@ -2,7 +2,9 @@ package io.jstach.apt.internal.context;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-class LambdaRenderingContext implements RenderingContext {
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
+class LambdaRenderingContext implements ChildRenderingContext {
 
 	private final Lambda lambda;
 

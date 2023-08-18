@@ -2,6 +2,7 @@ package io.jstach.apt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -34,8 +35,11 @@ public class CallSiteProcessorTest {
 		processor.run(reader);
 
 		var blocks = processor.getBlocks();
+		var one = blocks.get("one");
 
-		String actual = blocks.get("one").content();
+		assertNotNull(one);
+
+		String actual = one.content();
 
 		assertFalse(blocks.containsKey("two"));
 

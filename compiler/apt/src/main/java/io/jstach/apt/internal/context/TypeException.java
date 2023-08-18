@@ -29,6 +29,8 @@
  */
 package io.jstach.apt.internal.context;
 
+import java.util.Objects;
+
 /**
  * @author Victor Nazarov
  */
@@ -38,6 +40,11 @@ class TypeException extends Exception {
 
 	public TypeException(String message) {
 		super(message);
+	}
+
+	@Override
+	public String getMessage() {
+		return Objects.requireNonNull(super.getMessage());
 	}
 
 }

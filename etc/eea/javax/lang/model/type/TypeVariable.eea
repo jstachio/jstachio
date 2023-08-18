@@ -1,0 +1,7 @@
+class javax/lang/model/type/TypeVariable
+getLowerBound
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;
+getUpperBound
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L1javax/lang/model/type/TypeMirror;

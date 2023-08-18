@@ -84,7 +84,7 @@ class CatalogClassWriter {
 
 	void addAll(Collection<? extends ClassRef> templateClasses) {
 		for (var tc : templateClasses) {
-			this.templateClassNames.add(tc.getCanonicalName());
+			this.templateClassNames.add(tc.requireCanonicalName());
 		}
 	}
 

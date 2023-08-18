@@ -184,7 +184,7 @@ public class JavaLanguageModel implements TypesMixin {
 	}
 
 	boolean isType(TypeMirror type, Optional<? extends KnownType> knownType) {
-		var kt = knownType.orElse(null);
+		KnownType kt = knownType.orElse(null);
 		if (kt == null) {
 			return false;
 		}

@@ -35,6 +35,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
@@ -51,6 +52,7 @@ import io.jstach.apt.internal.context.TemplateCompilerContext;
 import io.jstach.apt.internal.context.VariableContext;
 import io.jstach.apt.internal.context.VariableContext.NullChecking;
 import io.jstach.apt.internal.util.ClassRef;
+import io.jstach.apt.internal.util.EclipseNonNull;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
 import io.jstach.apt.prism.JStacheContentTypePrism;
 import io.jstach.apt.prism.JStacheFormatterPrism;
@@ -155,10 +157,10 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		boolean jstachio = formatCallType == FormatCallType.JSTACHIO;
 
-		var element = model.element();
-		var contentTypeElement = model.contentTypeElement();
-		var formatterTypeElement = model.formatterTypeElement();
-		var ifaces = model.ifaces();
+		var element = EclipseNonNull.castNonNull(model.element());
+		var contentTypeElement = EclipseNonNull.castNonNull(model.contentTypeElement());
+		var formatterTypeElement = EclipseNonNull.castNonNull(model.formatterTypeElement());
+		var ifaces = EclipseNonNull.castNonNull(model.ifaces());
 		var renderClassRef = model.rendererClassRef();
 		ClassRef modelClassRef = ClassRef.of(element);
 		String className = modelClassRef.getCanonicalName();
@@ -191,7 +193,7 @@ class TemplateClassWriter implements LoggingSupplier {
 			interfaces.add(TEMPLATE_PROVIDER_CLASS);
 			interfaces.add(FILTER_CHAIN_CLASS);
 		}
-		interfaces.addAll(ifaces.templateInterfaces());
+		interfaces.addAll(EclipseNonNull.castNonNullList(ifaces.templateInterfaces()));
 		String implementsString = interfaces.stream().collect(Collectors.joining(",\n    "));
 
 		String rendererAnnotated = ifaces.templateAnnotations().stream().map(ta -> "@" + ta)
@@ -696,8 +698,9 @@ class TemplateClassWriter implements LoggingSupplier {
 			return;
 		}
 		List<ExecutableElement> constructors = ElementFilter.constructorsIn(extendsElement.getEnclosedElements())
-				.stream().filter(e -> e.getModifiers().contains(Modifier.PUBLIC)
-						&& !e.getModifiers().contains(Modifier.FINAL) && !e.getParameters().isEmpty())
+				.stream() //
+				.filter(e -> e.getModifiers().contains(Modifier.PUBLIC) && !e.getModifiers().contains(Modifier.FINAL)
+						&& !e.getParameters().isEmpty())
 				.toList();
 		for (var c : constructors) {
 			writeConstructor(rendererClassSimpleName, c);
@@ -751,12 +754,11 @@ class TemplateClassWriter implements LoggingSupplier {
 		if (target == null) {
 			return EnumSet.allOf(ElementType.class);
 		}
-		ElementType[] ets = target.value();
-		if (ets == null) {
-			return EnumSet.allOf(ElementType.class);
-		}
+		@NonNull
+		ElementType[] ets = EclipseNonNull.castNonNullArray(target.value());
+
 		EnumSet<ElementType> t = EnumSet.noneOf(ElementType.class);
-		for (var et : ets) {
+		for (ElementType et : ets) {
 			t.add(et);
 		}
 		if (t.isEmpty()) {

@@ -38,10 +38,12 @@ import javax.lang.model.util.ElementFilter;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
 /**
  * @author Victor Nazarov
  */
-class ListRenderingContext implements RenderingContext {
+class ListRenderingContext implements ChildRenderingContext {
 
 	private final JavaExpression listExpression;
 
@@ -105,7 +107,7 @@ class ListRenderingContext implements RenderingContext {
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return parent;
 	}
 

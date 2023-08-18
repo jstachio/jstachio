@@ -37,10 +37,12 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
 /**
  * @author vir
  */
-class InvertedRenderingContext implements BooleanExpressionContext {
+class InvertedRenderingContext implements ChildRenderingContext, BooleanExpressionContext {
 
 	private final BooleanExpressionContext parent;
 
@@ -131,7 +133,7 @@ class InvertedRenderingContext implements BooleanExpressionContext {
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return parent;
 	}
 

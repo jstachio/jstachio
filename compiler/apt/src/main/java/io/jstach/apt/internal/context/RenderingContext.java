@@ -99,9 +99,7 @@ interface RenderingContext {
 
 	VariableContext createEnclosedVariableContext();
 
-	default VariableContext variableContext() {
-		return getParent().variableContext();
-	}
+	VariableContext variableContext();
 
 	@Nullable
 	RenderingContext getParent();
@@ -121,6 +119,16 @@ interface RenderingContext {
 
 	default String description() {
 		return getClass().getName();
+	}
+
+	public interface ChildRenderingContext extends RenderingContext {
+
+		public RenderingContext getParent();
+
+		default VariableContext variableContext() {
+			return getParent().variableContext();
+		}
+
 	}
 
 }

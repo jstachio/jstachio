@@ -22,7 +22,8 @@ public class ContextNodeRenderingContext extends MapRenderingContext {
 
 		var parent = getParent();
 
-		JavaExpression r = parent.find(name, filter.and(c -> !(c instanceof MapRenderingContext)));
+		JavaExpression r = parent == null ? null
+				: parent.find(name, filter.and(c -> !(c instanceof MapRenderingContext)));
 		if (r != null) {
 			return r;
 		}

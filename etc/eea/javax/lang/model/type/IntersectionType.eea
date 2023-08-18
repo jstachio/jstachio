@@ -1,0 +1,4 @@
+class javax/lang/model/type/IntersectionType
+getBounds
+ ()Ljava/util/List<+Ljavax/lang/model/type/TypeMirror;>;
+ ()L1java/util/List<+L1javax/lang/model/type/TypeMirror;>;

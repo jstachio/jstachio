@@ -1,0 +1,4 @@
+class java/nio/file/Paths
+get
+ (Ljava/net/URI;)Ljava/nio/file/Path;
+ (Ljava/net/URI;)L1java/nio/file/Path;

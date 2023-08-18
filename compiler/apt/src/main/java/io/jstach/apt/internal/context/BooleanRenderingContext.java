@@ -31,10 +31,12 @@ package io.jstach.apt.internal.context;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
 /**
  * @author vir
  */
-class BooleanRenderingContext implements BooleanExpressionContext {
+class BooleanRenderingContext implements ChildRenderingContext, BooleanExpressionContext {
 
 	private final String expression;
 
@@ -84,7 +86,7 @@ class BooleanRenderingContext implements BooleanExpressionContext {
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return parent;
 	}
 

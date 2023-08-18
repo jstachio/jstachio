@@ -31,10 +31,12 @@ package io.jstach.apt.internal.context;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
 /**
  * @author agentgt
  */
-class PrimitiveRenderingContext implements RenderingContext {
+class PrimitiveRenderingContext implements ChildRenderingContext {
 
 	private final JavaExpression expression;
 
@@ -72,7 +74,7 @@ class PrimitiveRenderingContext implements RenderingContext {
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return parent;
 	}
 

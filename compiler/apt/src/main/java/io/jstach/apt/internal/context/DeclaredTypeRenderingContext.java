@@ -46,10 +46,12 @@ import javax.lang.model.util.ElementFilter;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
 /**
  * @author Victor Nazarov
  */
-class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressionContext {
+class DeclaredTypeRenderingContext implements ChildRenderingContext, InvertedExpressionContext {
 
 	private final JavaExpression expression;
 
@@ -215,7 +217,7 @@ class DeclaredTypeRenderingContext implements RenderingContext, InvertedExpressi
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return this.parent;
 	}
 

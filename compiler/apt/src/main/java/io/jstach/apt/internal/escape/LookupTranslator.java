@@ -18,7 +18,6 @@ package io.jstach.apt.internal.escape;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.security.InvalidParameterException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,9 +50,6 @@ class LookupTranslator extends CharSequenceTranslator {
 	 * @param lookupMap Map&lt;CharSequence, CharSequence&gt; table of translator mappings
 	 */
 	public LookupTranslator(final Map<CharSequence, CharSequence> lookupMap) {
-		if (lookupMap == null) {
-			throw new InvalidParameterException("lookupMap cannot be null");
-		}
 		this.lookupMap = new HashMap<>();
 		this.prefixSet = new BitSet();
 		int currentShortest = Integer.MAX_VALUE;

@@ -86,6 +86,10 @@ class PartialParameterProcessor
 		public String name() {
 			return section.token().name();
 		}
+
+		public List<PositionedToken<MustacheToken>> tokens() {
+			return this.tokens;
+		}
 	}
 
 	public void run(NamedReader reader) throws ProcessingException, IOException {
@@ -147,7 +151,7 @@ class PartialParameterProcessor
 
 		if (depth < 1) {
 			if (mt instanceof TagToken tt && tt.tagKind() == MustacheTagKind.BEGIN_PARENT_SECTION) {
-				var beginSection = new Section<>(tt, position, depth);
+				var beginSection = new Section<Integer>(tt, position, depth);
 				sectionStack.push(beginSection);
 				return;
 			}
@@ -165,7 +169,7 @@ class PartialParameterProcessor
 		if (mt instanceof TagToken tt) {
 			String name = tt.name();
 			if (tt.tagKind().isBeginSection()) {
-				var beginSection = new Section<>(tt, position, depth);
+				var beginSection = new Section<Integer>(tt, position, depth);
 				sectionStack.push(beginSection);
 				if (tt.tagKind() == MustacheTagKind.BEGIN_BLOCK_SECTION && depth == 1) {
 					if (blocks.containsKey(name)) {

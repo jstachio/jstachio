@@ -1,0 +1,4 @@
+class java/util/EnumMap
+keySet
+ ()Ljava/util/Set<TK;>;
+ ()L1java/util/Set<T1K;>;

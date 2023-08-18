@@ -1,4 +1,10 @@
 class javax/lang/model/type/TypeMirror
+getAnnotation
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)TA;
+ <A::Ljava/lang/annotation/Annotation;>(Ljava/lang/Class<TA;>;)T0A;
+getAnnotationMirrors
+ ()Ljava/util/List<+Ljavax/lang/model/element/AnnotationMirror;>;
+ ()L1java/util/List<+L1javax/lang/model/element/AnnotationMirror;>;
 getKind
  ()Ljavax/lang/model/type/TypeKind;
  ()L1javax/lang/model/type/TypeKind;

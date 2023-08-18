@@ -8,6 +8,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic.Kind;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.internal.context.JavaLanguageModel;
 
 public sealed interface LoggingSupport {
@@ -48,6 +50,7 @@ public sealed interface LoggingSupport {
 
 	public non-sealed interface MessagerLogging extends LoggingSupport {
 
+		@Nullable
 		AnnotationMirror annotationToLog();
 
 		Element elementToLog();

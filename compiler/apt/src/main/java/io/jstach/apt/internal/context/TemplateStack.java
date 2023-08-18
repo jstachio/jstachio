@@ -26,6 +26,8 @@ public sealed interface TemplateStack extends MessagerLogging {
 
 	public TemplateType getTemplateType();
 
+	public AnnotationMirror annotationToLog();
+
 	public enum TemplateType {
 
 		ROOT, PARTIAL, PARAMETER_PARTIAL, LAMBDA
@@ -195,6 +197,11 @@ public sealed interface TemplateStack extends MessagerLogging {
 		@Override
 		public Element elementToLog() {
 			return template.element();
+		}
+
+		@Override
+		public Set<Flag> flags() {
+			return this.flags;
 		}
 
 	}

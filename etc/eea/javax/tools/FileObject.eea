@@ -5,3 +5,9 @@ openInputStream
 openOutputStream
  ()Ljava/io/OutputStream;
  ()L1java/io/OutputStream;
+openWriter
+ ()Ljava/io/Writer;
+ ()L1java/io/Writer;
+toUri
+ ()Ljava/net/URI;
+ ()L1java/net/URI;

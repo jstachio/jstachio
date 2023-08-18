@@ -1,0 +1,4 @@
+class javax/lang/model/util/AbstractTypeVisitor8
+visitIntersection
+ (Ljavax/lang/model/type/IntersectionType;TP;)TR;
+ (L1javax/lang/model/type/IntersectionType;TP;)TR;

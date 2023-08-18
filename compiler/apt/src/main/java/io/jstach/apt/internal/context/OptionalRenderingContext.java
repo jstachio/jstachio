@@ -7,7 +7,9 @@ import javax.lang.model.util.ElementFilter;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-class OptionalRenderingContext implements RenderingContext {
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
+
+class OptionalRenderingContext implements ChildRenderingContext {
 
 	private final JavaExpression expression;
 
@@ -75,7 +77,7 @@ class OptionalRenderingContext implements RenderingContext {
 	// }
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return this.parent;
 	}
 

@@ -8,6 +8,9 @@ getFiler
 getMessager
  ()Ljavax/annotation/processing/Messager;
  ()L1javax/annotation/processing/Messager;
+getOptions
+ ()Ljava/util/Map<Ljava/lang/String;Ljava/lang/String;>;
+ ()L1java/util/Map<L1java/lang/String;L1java/lang/String;>;
 getTypeUtils
  ()Ljavax/lang/model/util/Types;
  ()L1javax/lang/model/util/Types;

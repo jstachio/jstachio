@@ -1,0 +1,4 @@
+class javax/lang/model/util/AbstractTypeVisitor7
+visitUnion
+ (Ljavax/lang/model/type/UnionType;TP;)TR;
+ (L1javax/lang/model/type/UnionType;TP;)TR;

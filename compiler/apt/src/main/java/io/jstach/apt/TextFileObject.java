@@ -31,8 +31,6 @@ package io.jstach.apt;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -191,7 +189,11 @@ class TextFileObject {
 			Path path = Paths.get(uri);
 			int segments = endPath.split("/").length;
 			for (int i = 0; i < segments; i++) {
-				path = path.getParent();
+				var parent = path.getParent();
+				if (parent == null) {
+					throw new IllegalStateException("Path pattern (bug). pattern: " + this + " uri: " + uri);
+				}
+				path = parent;
 			}
 			return path;
 		}

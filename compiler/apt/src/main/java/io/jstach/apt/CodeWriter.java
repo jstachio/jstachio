@@ -171,6 +171,9 @@ class CodeWriter {
 	private NamedReader reader(TextFileObject resource, String name, URI uri) throws IOException {
 		String fragment = uri.getFragment();
 		String path = uri.getPath();
+		if (path == null || path.isBlank()) {
+			throw new IOException("Path is blank or null for template. name: " + name + "  uri: " + uri);
+		}
 		if (fragment == null || fragment.isBlank()) {
 			return fileReader(resource, name, path);
 		}

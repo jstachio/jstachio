@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,7 +130,9 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			}
 			catch (ProcessingException e) {
 				if (isDebug()) {
-					debug(e.getMessage());
+					String m = e.getMessage();
+					if (m != null)
+						debug(m);
 					debug(context.getTemplateStack().describeTemplateStack());
 					debug(context.printStack());
 					debug(e);
@@ -757,11 +760,11 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 		private @Nullable Block block;
 
-		private final ArrayDeque<Section<@Nullable Block>> sectionStack = new ArrayDeque<>();
+		private final Deque<Section<@Nullable Block>> sectionStack = new ArrayDeque<>();
 
 		public ParameterPartialTemplateCompiler(String partialName, //
 				NamedReader reader, //
-				@Nullable TemplateCompilerLike parent, //
+				TemplateCompilerLike parent, //
 				TemplateCompilerContext context) {
 			super(reader, parent, context);
 			this.processor = new PartialParameterProcessor(partialName, parent.logging());
@@ -800,8 +803,9 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 				throws ProcessingException {
 			var mt = positionedToken.innerToken();
 			if (mt instanceof TagToken tt) {
+				final var b = block;
 				if (tt.tagKind().isBeginSection()) {
-					sectionStack.push(new Section<@Nullable Block>(tt, positionedToken.position(), block));
+					sectionStack.push(new Section<@Nullable Block>(tt, positionedToken.position(), b));
 				}
 				else if (tt.tagKind().isEndSection()) {
 					var section = sectionStack.pop();
@@ -810,9 +814,9 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 								"bad end section: \"" + tt.name() + "\" expected \"" + section.name() + "\"");
 					}
 				}
-				if (block == null && tt.tagKind() == MustacheTagKind.BEGIN_BLOCK_SECTION) {
+				if (b == null && tt.tagKind() == MustacheTagKind.BEGIN_BLOCK_SECTION) {
 					String name = tt.name();
-					var _block = findBlock(name);
+					Block _block = findBlock(name);
 					this.block = _block;
 					if (_block != null) {
 						debug("Replaying tokens for block: " + name);
@@ -823,11 +827,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 						return List.of(positionedToken);
 					}
 				}
-				else if (block != null && tt.name().equals(block.name())
-						&& tt.tagKind() == MustacheTagKind.END_SECTION) {
+				else if (b != null && tt.name().equals(b.name()) && tt.tagKind() == MustacheTagKind.END_SECTION) {
 					var section = sectionStack.peek();
 					if (section == null || section.data() == null) {
-						debug("Closing block: " + block.name());
+						debug("Closing block: " + b.name());
 						debug("Section stack: " + sectionStack);
 						block = null;
 						return List.of();

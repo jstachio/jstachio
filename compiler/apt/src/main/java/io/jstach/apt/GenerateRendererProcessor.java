@@ -186,7 +186,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	@Override
-	public @NonNull Set<@NonNull String> getSupportedAnnotationTypes() {
+	public Set<String> getSupportedAnnotationTypes() {
 		return Set.copyOf(Prisms.ANNOTATIONS);
 	}
 
@@ -265,6 +265,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheCatalogElement)) {
 				PackageElement packageElement = (PackageElement) element;
 				JStacheCatalogPrism jstacheCatalog = JStacheCatalogPrism.getInstanceOn(packageElement);
+				if (jstacheCatalog == null) {
+					throw new IllegalStateException("This might be a bug. JStacheCatalogPrism failed.");
+				}
 				String catalogName = jstacheCatalog.name();
 				var classRef = ClassRef.of(packageElement, catalogName);
 				catalogClasses.add(new CatalogRef(jstacheCatalog, classRef, packageElement));
@@ -275,6 +278,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			for (Element element : roundEnv.getElementsAnnotatedWith(jstacheElement)) {
 				TypeElement classElement = (TypeElement) element;
 				JStachePrism jstache = JStachePrism.getInstanceOn(classElement);
+				if (jstache == null) {
+					throw new IllegalStateException("This might be a bug. JStachePrism failed.");
+				}
 				@Nullable
 				JStacheRef ref = writeRenderableAdapterClass(classElement, jstache, options);
 				if (ref != null) {
@@ -377,12 +383,12 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return new InterfacesConfig(templateInterfaces, templateAnnotions, extendsElement);
 	}
 
-	private <T> Stream<T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
+	private <T> Stream<@NonNull T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
 		return findPrisms(expandUsing(enclosing(element)), prismSupplier);
 	}
 
 	private <T> Stream<T> findPrisms(Stream<? extends Element> elements, Function<Element, @Nullable T> prismSupplier) {
-		return elements.filter(e -> e != null).map(prismSupplier).filter(e -> e != null);
+		return elements.filter(e -> e != null).map(prismSupplier).flatMap(p -> Stream.ofNullable(p));
 	}
 
 	private static Stream<Element> enclosing(Element e) {
@@ -392,11 +398,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 			@Override
 			public boolean tryAdvance(Consumer<? super Element> action) {
-				if (current == null) {
+				var c = current;
+				if (c == null) {
 					return false;
 				}
-				var c = current;
-				current = current.getEnclosingElement();
+				current = c.getEnclosingElement();
 				action.accept(c);
 				return true;
 			}
@@ -483,7 +489,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	private Set<Flag> resolveFlags(Map<String, String> options, @Nullable TypeElement element) {
 		var flags = EnumSet.noneOf(Flag.class);
 		Stream.ofNullable(element) //
-				.flatMap(e -> findPrisms(e, JStacheFlagsPrism::getInstanceOn)) //
+				.<JStacheFlagsPrism>flatMap(e -> findPrisms(e, JStacheFlagsPrism::getInstanceOn)) //
 				.filter(p -> !this.isFlagsUnspecified(p)) //
 				.limit(1) //
 				.flatMap(p -> p.flags().stream()) //
@@ -626,7 +632,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			}
 			else {
 				var pe = JavaLanguageModel.getInstance().getElements().getPackageOf(element);
-				String folder = pe.getQualifiedName().toString().replace('.', '/');
+				String folder = pe == null ? "" : pe.getQualifiedName().toString().replace('.', '/');
 				path = folder.isEmpty() ? element.getQualifiedName().toString()
 						: folder + "/" + element.getSimpleName();
 				if (pathConfig.suffixUnspecified()) {
@@ -648,8 +654,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 
 		@Override
-		public AnnotationMirror annotationToLog() {
-			// TODO Auto-generated method stub
+		public @Nullable AnnotationMirror annotationToLog() {
 			return null;
 		}
 
@@ -663,6 +668,29 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			return JavaLanguageModel.getInstance().getMessager();
 		}
 
+		// The below bullshit is because eclipse is broken for
+		// records that implement an interface with null constraints
+		// even if the attributes are nonnull.
+		//
+		public Map<String, NamedTemplate> partials() {
+			return this.partials;
+		}
+
+		@Override
+		public Set<Flag> flags() {
+			return this.flags;
+		}
+
+		@Override
+		public Charset charset() {
+			return this.charset;
+		}
+
+		@Override
+		public PathConfig pathConfig() {
+			return this.pathConfig;
+		}
+
 	}
 
 	private RendererModel model(TypeElement element, JStachePrism jstache, Map<String, String> options)
@@ -674,10 +702,6 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 
 		JStachePrism gp = jstache;
-
-		if (gp == null) {
-			throw new AnnotatedException(element, "Missing annotation. bug.");
-		}
 
 		FormatCallType formatCallType = resolveFormatCallType(element);
 
@@ -731,8 +755,10 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	private FormatCallType resolveFormatCallType(TypeElement element) {
 		JStacheType type = findPrisms(element, JStacheConfigPrism::getInstanceOn) //
-				.map(config -> JStacheType.valueOf(config.type())).filter(t -> !JStacheType.UNSPECIFIED.equals(t))
-				.findFirst().orElse(JStacheType.UNSPECIFIED);
+				.map(config -> JStacheType.valueOf(config.type())) //
+				.filter(t -> !JStacheType.UNSPECIFIED.equals(t)) //
+				.findFirst() //
+				.orElseGet(() -> JStacheType.UNSPECIFIED);
 
 		FormatCallType formatCallType = switch (type) {
 			case UNSPECIFIED -> FormatCallType.JSTACHIO;

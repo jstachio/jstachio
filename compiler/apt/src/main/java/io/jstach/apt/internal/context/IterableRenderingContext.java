@@ -40,6 +40,7 @@ import javax.lang.model.type.WildcardType;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
 import io.jstach.apt.internal.util.Interpolator;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
 
@@ -49,7 +50,7 @@ import static io.jstach.apt.prism.Prisms.*;
  * @author Victor Nazarov
  * @author agentgt
  */
-class IterableRenderingContext implements RenderingContext {
+class IterableRenderingContext implements ChildRenderingContext {
 
 	private final JavaExpression expression;
 
@@ -101,7 +102,7 @@ class IterableRenderingContext implements RenderingContext {
 	public @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
 		return switch (name) {
 			case "-first", "-last", "@first", "@last", "-index", "@index" -> get(name);
-			default -> RenderingContext.super.find(name, filter);
+			default -> ChildRenderingContext.super.find(name, filter);
 		};
 	}
 
@@ -206,7 +207,7 @@ class IterableRenderingContext implements RenderingContext {
 	}
 
 	@Override
-	public @Nullable RenderingContext getParent() {
+	public RenderingContext getParent() {
 		return parent;
 	}
 

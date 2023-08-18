@@ -29,7 +29,7 @@
  */
 package io.jstach.apt.internal.context;
 
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author Victor Nazarov
@@ -38,19 +38,24 @@ public class ContextException extends Exception {
 
 	private static final long serialVersionUID = -1496891677459676774L;
 
-	private ContextException(@Nullable String message, TypeException ex) {
+	private ContextException(String message, TypeException ex) {
 		super(message + ": type error: " + ex.getMessage(), ex);
 	}
 
-	public ContextException(@Nullable String message) {
+	public ContextException(String message) {
 		super(message);
+	}
+
+	@Override
+	public String getMessage() {
+		return Objects.requireNonNull(super.getMessage());
 	}
 
 	public static class TypeNotAllowedContextException extends ContextException {
 
 		private static final long serialVersionUID = 3516540102898167374L;
 
-		TypeNotAllowedContextException(@Nullable String message, TypeException ex) {
+		TypeNotAllowedContextException(String message, TypeException ex) {
 			super(message, ex);
 
 		}

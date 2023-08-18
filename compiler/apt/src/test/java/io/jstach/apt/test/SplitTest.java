@@ -89,9 +89,13 @@ public class SplitTest {
 		// s.offer("a");
 		// .offer("b");
 
-		System.out.println(s.getLast());
+		var out = System.out;
+		if (out == null) {
+			return;
+		}
+		out.println(s.getLast());
 		for (var i : s) {
-			System.out.println(i);
+			out.println(i);
 		}
 	}
 

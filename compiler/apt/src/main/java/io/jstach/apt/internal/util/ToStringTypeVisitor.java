@@ -58,7 +58,9 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 			if (depth > 10) {
 				throw new IllegalStateException();
 			}
-			System.out.println(indent(depth) + "#" + message + ". " + o);
+			var out = System.out;
+			if (out != null)
+				out.println(indent(depth) + "#" + message + ". " + o);
 		}
 	}
 

@@ -52,9 +52,6 @@ abstract class CharSequenceTranslator {
 	 * @return String output of translation
 	 */
 	public final String translate(final CharSequence input) {
-		if (input == null) {
-			return null;
-		}
 		try {
 			final StringWriter writer = new StringWriter(input.length() * 2);
 			translate(input, writer);
@@ -88,9 +85,6 @@ abstract class CharSequenceTranslator {
 	 */
 	public final void translate(final CharSequence input, final Writer writer) throws IOException {
 		Objects.requireNonNull(writer, "The Writer must not be null");
-		if (input == null) {
-			return;
-		}
 		int pos = 0;
 		final int len = input.length();
 		while (pos < len) {

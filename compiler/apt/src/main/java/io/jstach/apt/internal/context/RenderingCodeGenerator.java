@@ -31,7 +31,10 @@ package io.jstach.apt.internal.context;
 
 import java.text.MessageFormat;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -106,9 +109,9 @@ public class RenderingCodeGenerator {
 		TypeMirror type = expression.type();
 		final String text = expression.text();
 		// String path = expression.path();
-		if (type instanceof WildcardType) {
-			return generateRenderingCode(javaModel.expression(text, ((WildcardType) type).getExtendsBound()), variables,
-					path);
+		if (type instanceof WildcardType wildcardType) {
+			var bound = resolveBound(wildcardType);
+			return generateRenderingCode(javaModel.expression(text, bound), variables, path);
 		}
 
 		KnownType knownType = javaModel.resolveType(type).orElse(null);
@@ -190,21 +193,25 @@ public class RenderingCodeGenerator {
 	private Lambdas resolveLambdas(TypeElement element, JavaExpression root) throws AnnotatedException {
 
 		var all = javaModel.getElements().getAllMembers(element);
-		var lambdaMethods = ElementFilter.methodsIn(all).stream()
+		List<Entry<ExecutableElement, JStacheLambdaPrism>> lambdaMethods = ElementFilter.methodsIn(all) //
+				.stream() //
 				.filter(e -> e.getModifiers().contains(Modifier.PUBLIC) && e.getReturnType().getKind() != TypeKind.VOID)
-				.filter(e -> JStacheLambdaPrism.getInstanceOn(e) != null).toList();
+				.flatMap(e -> Stream.ofNullable(JStacheLambdaPrism.getInstanceOn(e)).map(p -> Map.entry(e, p)))
+				.toList();
+
 		Map<String, Lambda> lambdas = new LinkedHashMap<>();
 
-		for (ExecutableElement lm : lambdaMethods) {
-			JStacheLambdaPrism p = JStacheLambdaPrism.getInstanceOn(lm);
+		for (var e : lambdaMethods) {
+			JStacheLambdaPrism p = e.getValue();
+			var method = e.getKey();
 			String name = p.name();
 			String template = p.template();
 			Lambda lambda;
 			try {
-				lambda = Lambda.of(root, lm, name, template);
+				lambda = Lambda.of(root, method, name, template);
 			}
 			catch (Exception e1) {
-				throw new AnnotatedException(e1.getMessage(), lm);
+				throw new AnnotatedException(e1.getMessage(), method);
 			}
 			// TODO check for name collisions
 			lambdas.put(lambda.name(), lambda);
@@ -262,8 +269,8 @@ public class RenderingCodeGenerator {
 			};
 		}
 		else if (expression.type() instanceof WildcardType wildcardType) {
-			var extendsBound = wildcardType.getExtendsBound();
-			return createRenderingContext(childType, javaModel.expression(expression.text(), extendsBound), enclosing);
+			var bound = resolveBound(wildcardType);
+			return createRenderingContext(childType, javaModel.expression(expression.text(), bound), enclosing);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._boolean)
 				&& !(childType.isVar() || childType == ContextType.ROOT)) {
@@ -316,6 +323,17 @@ public class RenderingCodeGenerator {
 		else {
 			return new NoDataContext(expression, enclosing);
 		}
+	}
+
+	private static TypeMirror resolveBound(WildcardType wildcardType) throws TypeException {
+		var bound = wildcardType.getExtendsBound();
+		if (bound == null) {
+			bound = wildcardType.getSuperBound();
+		}
+		if (bound == null) {
+			throw new TypeException("Cannot handle wildcards with out bounds! type: " + wildcardType);
+		}
+		return bound;
 	}
 
 	private DeclaredTypeRenderingContext createDeclaredContext(JavaExpression expression, DeclaredType declaredType,

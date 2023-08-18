@@ -58,8 +58,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 			}
 			catch (ProcessingException e) {
 				if (logging.isDebug()) {
-					debug(e.getMessage());
-					e.printStackTrace();
+					debug(e);
 				}
 				throw e;
 			}

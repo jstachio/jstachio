@@ -1,0 +1,7 @@
+class javax/lang/model/type/WildcardType
+getExtendsBound
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L0javax/lang/model/type/TypeMirror;
+getSuperBound
+ ()Ljavax/lang/model/type/TypeMirror;
+ ()L0javax/lang/model/type/TypeMirror;

@@ -16,7 +16,7 @@ iterator
  ()L1java/util/Iterator<TE;>;
 of
  <E:Ljava/lang/Object;>()Ljava/util/Set<TE;>;
- <E:Ljava/lang/Object;>()L1java/util/Set<TE;>;
+ <E:Ljava/lang/Object;>()L1java/util/Set<T1E;>;
 of
  <E:Ljava/lang/Object;>(TE;)Ljava/util/Set<TE;>;
  <E:Ljava/lang/Object;>(T1E;)L1java/util/Set<TE;>;

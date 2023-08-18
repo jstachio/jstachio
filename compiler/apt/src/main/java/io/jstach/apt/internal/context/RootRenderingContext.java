@@ -64,7 +64,7 @@ class RootRenderingContext implements RenderingContext {
 		return _get(name);
 	}
 
-	private JavaExpression _get(String name) {
+	private @Nullable JavaExpression _get(String name) {
 		var lm = JavaLanguageModel.getInstance();
 		return switch (name) {
 			// @context

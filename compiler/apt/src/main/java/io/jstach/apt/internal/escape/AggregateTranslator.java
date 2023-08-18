@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -42,7 +41,9 @@ class AggregateTranslator extends CharSequenceTranslator {
 	 */
 	public AggregateTranslator(final CharSequenceTranslator... translators) {
 		if (translators != null) {
-			Stream.of(translators).filter(Objects::nonNull).forEach(this.translators::add);
+			Stream.of(translators) //
+					.flatMap(t -> Stream.<CharSequenceTranslator>ofNullable(t)) //
+					.forEach(this.translators::add);
 		}
 	}
 
