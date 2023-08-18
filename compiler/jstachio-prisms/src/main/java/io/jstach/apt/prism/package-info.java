@@ -17,9 +17,7 @@
 		@GeneratePrism(value = io.jstach.jstache.JStacheFlags.class, publicAccess = true), //
 
 })
-@org.eclipse.jdt.annotation.NonNullByDefault({ DefaultLocation.TYPE_ARGUMENT })
+@org.eclipse.jdt.annotation.NonNullByDefault
 package io.jstach.apt.prism;
-
-import org.eclipse.jdt.annotation.DefaultLocation;
 
 import io.jstach.prism.GeneratePrism;

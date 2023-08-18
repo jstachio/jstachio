@@ -1,0 +1,7 @@
+class javax/lang/model/element/AnnotationValue
+accept
+ <R:Ljava/lang/Object;P:Ljava/lang/Object;>(Ljavax/lang/model/element/AnnotationValueVisitor<TR;TP;>;TP;)TR;
+ <R:Ljava/lang/Object;P:Ljava/lang/Object;>(L1javax/lang/model/element/AnnotationValueVisitor<TR;TP;>;TP;)TR;
+getValue
+ ()Ljava/lang/Object;
+ ()L1java/lang/Object;

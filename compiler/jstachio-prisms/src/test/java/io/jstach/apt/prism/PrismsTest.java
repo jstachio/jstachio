@@ -2,11 +2,15 @@ package io.jstach.apt.prism;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -37,22 +41,24 @@ import io.jstach.jstachio.spi.TemplateProvider;
 
 public class PrismsTest {
 
+	private static PrintStream out = Objects.requireNonNull(System.out);
+
 	record CodeModel(List<ClassModel> annotations, List<ClassModel> apiClasses) {
-		JStacheFlags.Flag[] flags() {
-			return JStacheFlags.Flag.values();
+		Collection<JStacheFlags.Flag> flags() {
+			return EnumSet.allOf(JStacheFlags.Flag.class);
 		}
 
-		JStacheType[] types() {
-			return JStacheType.values();
+		Collection<JStacheType> types() {
+			return EnumSet.allOf(JStacheType.class);
 
 		}
 
-		JStacheCatalog.CatalogFlag[] catalogFlags() {
-			return JStacheCatalog.CatalogFlag.values();
+		Collection<JStacheCatalog.CatalogFlag> catalogFlags() {
+			return EnumSet.allOf(JStacheCatalog.CatalogFlag.class);
 		}
 
 		List<Constant> constants() {
-			Stream<Constant> flags = Stream.of(flags()).map(Constant::of);
+			Stream<Constant> flags = flags().stream().map(Constant::of);
 			Stream<Constant> annotations = allAnnotations().stream().flatMap(Constant::of);
 			Stream<Constant> jstachio = Stream.<Class<?>>of(TemplateInfo.class, ContextNode.class)
 					.flatMap(Constant::of);
@@ -73,9 +79,9 @@ public class PrismsTest {
 		}
 
 		static Stream<Constant> of(Class<?> c) {
-			return Stream
-					.of(c.getDeclaredFields()).filter(f -> Modifier.isFinal(f.getModifiers())
-							&& Modifier.isStatic(f.getModifiers()) && Modifier.isPublic(f.getModifiers()))
+			return Stream.of(c.getDeclaredFields()) //
+					.filter(f -> Modifier.isFinal(f.getModifiers()) && Modifier.isStatic(f.getModifiers())
+							&& Modifier.isPublic(f.getModifiers()))
 					.map(f -> of(f));
 
 		}
@@ -85,6 +91,9 @@ public class PrismsTest {
 			String value;
 			try {
 				value = (String) field.get(null);
+				if (value == null) {
+					throw new NullPointerException();
+				}
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -99,7 +108,11 @@ public class PrismsTest {
 		}
 
 		String name() {
-			return klass.getCanonicalName();
+			String n = klass.getCanonicalName();
+			if (n != null) {
+				return n;
+			}
+			return klass.getName();
 		}
 	}
 
@@ -109,8 +122,6 @@ public class PrismsTest {
 				package io.jstach.apt.prism;
 
 				import java.util.List;
-
-				import org.eclipse.jdt.annotation.NonNullByDefault;
 
 				/**
 				 * THIS CLASS IS GENERATED FROM PrismsTest. Run the test and copy and paste.
@@ -133,7 +144,6 @@ public class PrismsTest {
 					/**
 					 * Generated
 					 */
-					@NonNullByDefault
 					public enum Flag {
 
 					{{#flags}}
@@ -148,7 +158,6 @@ public class PrismsTest {
 					/**
 					 * Generated
 					 */
-					@NonNullByDefault
 					public enum JStacheType {
 
 					{{#types}}
@@ -163,7 +172,6 @@ public class PrismsTest {
 					/**
 					 * Generated
 					 */
-					@NonNullByDefault
 					public enum CatalogFlag {
 
 					{{#catalogFlags}}
@@ -202,13 +210,13 @@ public class PrismsTest {
 
 				}
 				""";
-		List<ClassModel> annotations = allAnnotations().stream().map(ClassModel::new).toList();
-		List<ClassModel> apiClasses = apiClasses().stream().map(ClassModel::new).toList();
+		List<ClassModel> annotations = allAnnotations().stream().map(m -> new ClassModel(m)).toList();
+		List<ClassModel> apiClasses = apiClasses().stream().map(m -> new ClassModel(m)).toList();
 		var model = new CodeModel(annotations, apiClasses);
 		String expected = Mustache.compiler().escapeHTML(false).compile(t).execute(model);
-		System.out.println(expected);
+		out.println(expected);
 
-		String sourceFile = "src/main/java/" + Prisms.class.getCanonicalName().replace(".", "/") + ".java";
+		String sourceFile = "src/main/java/" + Prisms.class.getName().replace(".", "/") + ".java";
 		String actual = Files.readString(Path.of(sourceFile));
 
 		assertEquals(sourceFile + " should be up to date", expected, actual);

@@ -8,7 +8,7 @@
   <url>${jstachio.website.doc}</url>
   <properties>
     <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-    <pistachio.version>0.1.1</pistachio.version>
+    <pistachio.version>0.1.2</pistachio.version>
   </properties>
   <artifactId>jstachio-prisms</artifactId>
 

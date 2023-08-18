@@ -2,8 +2,6 @@ package io.jstach.apt.prism;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * THIS CLASS IS GENERATED FROM PrismsTest. Run the test and copy and paste.
  *
@@ -143,7 +141,6 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	@NonNullByDefault
 	public enum Flag {
 
 		/**
@@ -176,7 +173,6 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	@NonNullByDefault
 	public enum JStacheType {
 
 		/**
@@ -197,7 +193,6 @@ public interface Prisms {
 	/**
 	 * Generated
 	 */
-	@NonNullByDefault
 	public enum CatalogFlag {
 
 		/**
