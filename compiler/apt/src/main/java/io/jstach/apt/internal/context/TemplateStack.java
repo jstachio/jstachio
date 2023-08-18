@@ -204,6 +204,10 @@ public sealed interface TemplateStack extends MessagerLogging {
 			return this.flags;
 		}
 
+		public NamedTemplate template() {
+			return this.template;
+		}
+
 	}
 
 	default Set<Flag> flags() {

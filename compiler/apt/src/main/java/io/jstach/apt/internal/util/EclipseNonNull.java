@@ -15,17 +15,17 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class EclipseNonNull {
 
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "nullness" })
 	public static <T extends @Nullable Object> @NonNull T castNonNull(@Nullable T ref) {
 		return (T) ref;
 	}
 
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "nullness" })
 	public static <T> @NonNull List<@NonNull T> castNonNullList(@Nullable List<T> ref) {
 		return ref;
 	}
 
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "nullness" })
 	public static <T> @NonNull T[] castNonNullArray(T @Nullable [] ref) {
 		return ref;
 	}

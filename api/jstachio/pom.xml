@@ -32,9 +32,6 @@
   <profiles>
     <profile>
       <id>errorprone</id>
-      <properties>
-        <error-prone.version>2.21.1</error-prone.version>
-      </properties>
       <build>
         <plugins>
           <plugin>
@@ -70,9 +67,6 @@
     </profile>
     <profile>
       <id>checkerframework</id>
-      <properties>
-        <checkerframework.version>3.37.0</checkerframework.version>
-      </properties>
       <build>
         <plugins>
           <plugin>
@@ -159,12 +153,12 @@
               <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-compiler-eclipse</artifactId>
-                <version>2.13.0</version>
+                <version>${plexus-compiler-eclipse.version}</version>
               </dependency>
               <dependency>
                 <groupId>org.eclipse.jdt</groupId>
                 <artifactId>ecj</artifactId>
-                <version>3.34.0</version>
+                <version>${ecj.version}</version>
               </dependency>
             </dependencies>
           </plugin>

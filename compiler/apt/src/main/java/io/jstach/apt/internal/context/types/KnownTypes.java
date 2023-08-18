@@ -127,7 +127,9 @@ public class KnownTypes implements TypesMixin {
 		// this.elements = declarations;
 		this.types = types;
 
-		var b = new Builder(this, declarations, types);
+		TypesMixin mixin = () -> types;
+
+		var b = new Builder(mixin, declarations, types);
 
 		_int = b.nativeType(TypeKind.INT, Integer.class, int.class);
 		_short = b.nativeType(TypeKind.SHORT, Short.class, short.class);

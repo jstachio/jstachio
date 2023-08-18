@@ -63,7 +63,7 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 		 * Beginning of the file case: {{#some section}} [ space* ] [ newline ]
 		 */
 
-		ArrayDeque<PositionedToken<MustacheToken>> buf = new ArrayDeque<>();
+		Deque<PositionedToken<MustacheToken>> buf = new ArrayDeque<>();
 
 		do {
 
@@ -72,7 +72,7 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 			int size = previousTokens.size();
 
 			if (size == 1 && eof) {
-				_processToken(previousTokens.poll());
+				_processToken(previousTokens.pop());
 				return;
 			}
 
@@ -80,8 +80,8 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 				return; // we need more tokens
 			}
 
-			var firstToken = previousTokens.poll();
-			var secondToken = previousTokens.poll();
+			var firstToken = previousTokens.pop();
+			var secondToken = previousTokens.pop();
 			buf.offerLast(firstToken);
 			buf.offerLast(secondToken);
 
@@ -107,7 +107,7 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 			}
 
 			if (atStartOfLine && size >= 3) {
-				var thirdToken = previousTokens.poll();
+				var thirdToken = previousTokens.pop();
 				buf.add(thirdToken);
 
 				/*
@@ -137,7 +137,7 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 				}
 
 				if (size >= 4) {
-					var fourthToken = previousTokens.poll();
+					var fourthToken = previousTokens.pop();
 					buf.add(fourthToken);
 
 					/*
@@ -160,10 +160,10 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 			buf.descendingIterator().forEachRemaining(previousTokens::offerFirst);
 
 			if (eof && !previousTokens.isEmpty()) {
-				processTokenGroup(ProcessToken.of(previousTokens.poll()));
+				processTokenGroup(ProcessToken.of(previousTokens.pop()));
 			}
 			else if (previousTokens.size() > 5) {
-				processTokenGroup(ProcessToken.of(previousTokens.poll()));
+				processTokenGroup(ProcessToken.of(previousTokens.pop()));
 			}
 
 		}

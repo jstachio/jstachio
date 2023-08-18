@@ -107,7 +107,7 @@ class CodeWriter {
 		TemplateStack stack = context.getTemplateStack();
 		String templateName = stack.getTemplateName();
 
-		NamedTemplate rootTemplate;
+		final NamedTemplate rootTemplate;
 
 		if (stack instanceof RootTemplateStack rt) {
 			rootTemplate = rt.template();

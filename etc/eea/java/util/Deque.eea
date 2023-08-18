@@ -5,3 +5,6 @@ descendingIterator
 peek
  ()TE;
  ()T0E;
+poll
+ ()TE;
+ ()T0E;
