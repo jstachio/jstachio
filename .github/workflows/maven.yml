@@ -10,6 +10,10 @@ on:
 jobs:
   build:
 
+    strategy:
+      matrix:
+        java: ['17', '20']
+
     runs-on: ubuntu-latest
     env:
       BUILD_NUMBER: "${{github.run_number}}"
@@ -17,17 +21,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
       - name: Build and Test with Maven
         run: ./mvnw $MAVEN_CLI_OPTS clean verify
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
-        if: always()
+        if: ${{ always() && matrix.java == '17' }} 
         with:
           name: test-results
           path: '**/target/surefire-reports/TEST-*.xml'
