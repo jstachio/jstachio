@@ -10,6 +10,12 @@ import io.jstach.jstachio.Output;
 public abstract class ForwardingOutput<E extends Exception> implements Output<E> {
 
 	/**
+	 * Do nothing constructor
+	 */
+	protected ForwardingOutput() {
+	}
+
+	/**
 	 * The output to forward to.
 	 * @return output to forward to.
 	 */

@@ -12,6 +12,13 @@ import io.jstach.jstachio.Output.EncodedOutput;
 public abstract class ForwardingEncodedOutput<E extends Exception> extends ForwardingOutput<E>
 		implements EncodedOutput<E> {
 
+	/**
+	 * Do nothing constructor
+	 */
+	protected ForwardingEncodedOutput() {
+		super();
+	}
+
 	@Override
 	public void write(byte[] bytes) throws E {
 		delegate().write(bytes);

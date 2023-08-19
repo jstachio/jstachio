@@ -19,8 +19,14 @@ public class JStachioProperties {
 	private MediaType mediaType = JStachioHttpMessageConverter.DEFAULT_MEDIA_TYPE;
 
 	/**
+	 * Do nothing constructor for Spring
+	 */
+	public JStachioProperties() {
+	}
+
+	/**
 	 * Because JStachio does pre-encoding of templates it can handle buffering the
-	 * template output better than the builtin servlet framework buffering while reliable
+	 * template output better than the builtin servlet framework buffering while reliably
 	 * setting the <code>Content-Length</code>. If the servlet frameworks buffer is set
 	 * higher than this value it will be used as the limit instead.
 	 * @return the buffer limit in number of bytes which by default is

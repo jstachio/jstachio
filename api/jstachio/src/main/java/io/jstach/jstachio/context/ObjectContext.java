@@ -18,6 +18,12 @@ import io.jstach.jstachio.context.Internal.ObjectContextNode;
 public non-sealed abstract class ObjectContext implements ObjectContextNode {
 
 	/**
+	 * Do nothing constructor
+	 */
+	protected ObjectContext() {
+	}
+
+	/**
 	 * Get a value by key. This is analagous to {@link Map#get(Object)}.
 	 * @param key not null
 	 * @return value mapped to key.

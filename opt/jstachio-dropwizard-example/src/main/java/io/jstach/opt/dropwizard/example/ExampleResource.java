@@ -19,6 +19,12 @@ import jakarta.ws.rs.core.MediaType;
 public class ExampleResource {
 
 	/**
+	 * Do nothing constructor.
+	 */
+	public ExampleResource() {
+	}
+
+	/**
 	 * For this endpoint we create the model and call the model to view mixin
 	 * {@link JStacheViewSupport#toView()}. This approach allows us not to reference the
 	 * generated template directly.

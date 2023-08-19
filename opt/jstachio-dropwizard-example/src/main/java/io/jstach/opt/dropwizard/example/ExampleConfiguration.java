@@ -10,4 +10,11 @@ import io.dropwizard.core.Configuration;
  */
 public class ExampleConfiguration extends Configuration {
 
+	/**
+	 * Do nothing constructor
+	 */
+	public ExampleConfiguration() {
+		super();
+	}
+
 }

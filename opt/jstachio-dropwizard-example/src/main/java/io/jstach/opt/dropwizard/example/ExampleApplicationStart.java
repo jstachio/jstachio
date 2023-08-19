@@ -14,6 +14,12 @@ import io.dropwizard.views.common.ViewBundle;
 public class ExampleApplicationStart extends Application<ExampleConfiguration> {
 
 	/**
+	 * Do nothing constructor
+	 */
+	public ExampleApplicationStart() {
+	}
+
+	/**
 	 * Main method entrypoint for the application. If no args are passed we assume that
 	 * "<code>server</code>" is the desired mode.
 	 * @param args if empty <code>["server"]</code> will be used.
