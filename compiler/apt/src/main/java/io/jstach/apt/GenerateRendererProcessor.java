@@ -114,8 +114,12 @@ import io.jstach.apt.prism.Prisms;
  *
  */
 @MetaInfServices(value = Processor.class)
-@SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, Prisms.JSTACHE_INCREMENTAL_OPTION, Prisms.JSTACHE_FLAGS_DEBUG,
-		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN, Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING })
+@SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, //
+		Prisms.JSTACHE_INCREMENTAL_OPTION, //
+		Prisms.JSTACHE_FLAGS_DEBUG, //
+		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN, //
+		Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING, GenerateRendererProcessor.JSTACHE_GRADLE_INCREMENTAL //
+})
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
 	/**
@@ -123,6 +127,16 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	 */
 	public GenerateRendererProcessor() {
 	}
+
+	static final String JSTACHE_GRADLE_INCREMENTAL = "jstache.gradle_incremental";
+
+	private enum GradleIncremental {
+
+		isolating, aggregating, disable;
+
+	}
+
+	private GradleIncremental gradleIncremental = GradleIncremental.disable;
 
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
@@ -139,7 +153,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	boolean catalogGenerated = false;
 
-	boolean incremental = false;
+	boolean generateServiceFiles = true;
 
 	private static String formatErrorMessage(Position position, @Nullable String message) {
 		message = message == null ? "" : message;
@@ -166,7 +180,16 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	public synchronized void init(ProcessingEnvironment processingEnv) {
 		super.init(processingEnv);
 		var opts = processingEnv.getOptions();
-		incremental = Boolean.parseBoolean(opts.get(JSTACHE_INCREMENTAL_OPTION));
+		boolean incremental = Boolean.parseBoolean(opts.get(JSTACHE_INCREMENTAL_OPTION));
+
+		GradleIncremental gradleIncremental = Optional.ofNullable(opts.get(JSTACHE_GRADLE_INCREMENTAL))
+				.map(GradleIncremental::valueOf).orElse(null);
+
+		if (gradleIncremental == null) {
+			gradleIncremental = incremental ? GradleIncremental.isolating : GradleIncremental.disable;
+		}
+		this.gradleIncremental = gradleIncremental;
+
 		globalDebug = resolveFlags(opts, null).contains(Flag.DEBUG);
 		LoggingSupport.RootLogging rootLogging = new LoggingSupport.RootLogging(processingEnv.getMessager(),
 				globalDebug);
@@ -179,7 +202,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				}
 			}
 		}
-		if (incremental) {
+		if (gradleIncremental == GradleIncremental.isolating) {
+			generateServiceFiles = false;
 			rootLogging
 					.info("Incremental is turned on so catalogs and service provider files will not be (re)generated!");
 		}
@@ -192,8 +216,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	@Override
 	public Set<String> getSupportedOptions() {
-		if (ProcessingConfig.isGradle() || incremental) {
-			String gradleFlag = incremental ? "isolating" : "aggregating";
+		if (this.gradleIncremental != GradleIncremental.disable) {
+			String gradleFlag = this.gradleIncremental.name();
 			gradleFlag = "org.gradle.annotation.processing." + gradleFlag;
 			return Stream.concat(Stream.of(gradleFlag), super.getSupportedOptions().stream())
 					.collect(Collectors.toSet());
@@ -238,7 +262,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 					.filter(c -> c.flags().contains(CatalogFlag.GENERATE_PROVIDER_META_INF_SERVICE))
 					.map(c -> c.classRef());
 
-			if (!incremental) {
+			if (generateServiceFiles) {
 				ServicesFiles.writeServicesFile(processingEnv.getFiler(), rootLogging, serviceClass,
 						Stream.concat(catalogs, renderers).toList());
 				ClassRef extensionClass = ClassRef.ofBinaryName(JSTACHIO_EXTENSION_CLASS);
@@ -301,7 +325,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private void generateCatalog() {
-		if (catalogGenerated || incremental)
+		if (catalogGenerated || !generateServiceFiles)
 			return;
 		catalogGenerated = true;
 		for (var cat : catalogClasses) {
