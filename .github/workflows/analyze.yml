@@ -26,5 +26,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-      - name: ${{ matrix.profile }}
-        run: ./mvnw $MAVEN_CLI_OPTS verify -P${{ matrix.profile }} -Dmaven.javadoc.skip -DskipTests -Dmaven.source.skip=true
+      - name: Install maven modules
+        run: ./mvnw $MAVEN_CLI_OPTS install -Dmaven.javadoc.skip -DskipTests -Dmaven.source.skip=true
+      - name: Analyze with ${{ matrix.profile }}
+        run: bin/analyze.sh ${{ matrix.profile }} 
