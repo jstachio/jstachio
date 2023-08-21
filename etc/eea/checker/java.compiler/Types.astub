@@ -1,0 +1,7 @@
+package javax.lang.model.util;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public interface Types {
+    WildcardType getWildcardType(@Nullable TypeMirror extendsBound, @Nullable TypeMirror superBound);
+}

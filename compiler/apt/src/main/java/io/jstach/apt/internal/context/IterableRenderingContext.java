@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -193,8 +194,8 @@ class IterableRenderingContext implements ChildRenderingContext {
 		 * but asMemberOf will fix it provided you pass it the type parameter element.
 		 *
 		 */
-		var iterableElement = (TypeElement) iterableType.asElement();
-		var parameterElement = iterableElement.getTypeParameters().iterator().next();
+		TypeElement iterableElement = (TypeElement) iterableType.asElement();
+		TypeParameterElement parameterElement = iterableElement.getTypeParameters().iterator().next();
 
 		TypeMirror elementType = model.getTypes().asMemberOf(expressionType, parameterElement);
 		if (elementType instanceof @NonNull WildcardType wildcardType) {

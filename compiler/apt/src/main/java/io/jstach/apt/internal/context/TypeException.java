@@ -44,7 +44,7 @@ class TypeException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return Objects.requireNonNull(super.getMessage());
+		return Objects.requireNonNullElse(super.getMessage(), "type error");
 	}
 
 }

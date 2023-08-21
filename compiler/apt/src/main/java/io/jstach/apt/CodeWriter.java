@@ -41,7 +41,6 @@ import java.util.Set;
 
 import javax.lang.model.element.TypeElement;
 
-import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.TemplateCompilerLike.TemplateLoader;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
@@ -101,8 +100,8 @@ class CodeWriter {
 		}
 	}
 
-	void compileTemplate(TextFileObject resource, TemplateCompilerContext context,
-			TemplateCompilerType templateCompilerType) throws IOException, ProcessingException {
+	void compileTemplate(TextFileObject resource, TemplateCompilerContext context)
+			throws IOException, ProcessingException {
 
 		TemplateStack stack = context.getTemplateStack();
 		String templateName = stack.getTemplateName();
@@ -163,7 +162,7 @@ class CodeWriter {
 		};
 
 		try (TemplateCompiler templateCompiler = TemplateCompiler.createCompiler(templateName, templateLoader, writer,
-				context, templateCompilerType, config.flags())) {
+				context, config.flags())) {
 			templateCompiler.run();
 		}
 	}

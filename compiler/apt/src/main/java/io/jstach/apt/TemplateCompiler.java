@@ -68,17 +68,11 @@ import io.jstach.apt.prism.Prisms.Flag;
 /**
  * @author Victor Nazarov
  */
-class TemplateCompiler extends AbstractTemplateCompiler {
+abstract class TemplateCompiler extends AbstractTemplateCompiler {
 
 	public static TemplateCompiler createCompiler(String templateName, TemplateLoader templateLoader,
-			CodeAppendable writer, TemplateCompilerContext context, TemplateCompilerType compilerType, Set<Flag> flags)
-			throws IOException {
-
-		return switch (compilerType) {
-			case SIMPLE -> new SimpleTemplateCompiler(templateName, templateLoader, writer, context, flags);
-			case PARTIAL_TEMPLATE, PARAM_PARTIAL_TEMPLATE, LAMBDA ->
-				throw new IllegalArgumentException("Cannot create partial template as root");
-		};
+			CodeAppendable writer, TemplateCompilerContext context, Set<Flag> flags) throws IOException {
+		return new RootTemplateCompiler(templateName, templateLoader, writer, context, flags);
 	}
 
 	private final NamedReader reader;
@@ -108,14 +102,10 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	String indent = "";
 
-	private final @Nullable TemplateCompilerLike parent;
-
 	private @Nullable ParameterPartial _partial;
 
-	protected TemplateCompiler(NamedReader reader, @Nullable TemplateCompilerLike parent,
-			TemplateCompilerContext context) {
+	protected TemplateCompiler(NamedReader reader, TemplateCompilerContext context) {
 		this.reader = reader;
-		this.parent = parent;
 		this.context = context;
 		this.logging = context.getTemplateStack();
 	}
@@ -289,11 +279,6 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	}
 
 	@Override
-	public @Nullable TemplateCompilerLike getCaller() {
-		return this.parent;
-	}
-
-	@Override
 	public @Nullable ParameterPartial currentParameterPartial() {
 		return this._partial;
 	}
@@ -338,7 +323,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 	public Partial createPartial(String templateName) throws IOException {
 		var reader = getTemplateLoader().open(templateName);
 		TemplateCompilerContext context = this.context.createForPartial(templateName);
-		var c = new TemplateCompiler(reader, this, context) {
+		var c = new SubTemplateCompiler(reader, this, context) {
 			@Override
 			public TemplateCompilerType getCompilerType() {
 				return TemplateCompilerType.PARTIAL_TEMPLATE;
@@ -461,7 +446,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 						throws IOException, ProcessingException {
 					NamedReader namedReader = new NamedReader(reader, name, "INLINE");
 					StringCodeAppendable codeAppendable = new StringCodeAppendable();
-					try (var c = new TemplateCompiler(namedReader, self, rootContext) {
+					try (var c = new SubTemplateCompiler(namedReader, self, rootContext) {
 						{
 							this.baseCodeTab = "";
 						}
@@ -720,7 +705,7 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 		public RootTemplateCompiler(String templateName, TemplateLoader templateLoader, CodeAppendable writer,
 				TemplateCompilerContext context, Set<Flag> flags) throws IOException {
-			super(templateLoader.open(templateName), null, context);
+			super(templateLoader.open(templateName), context);
 			this.templateLoader = templateLoader;
 			this.writer = writer;
 			this.flags = flags;
@@ -754,7 +739,24 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 
 	}
 
-	static class ParameterPartialTemplateCompiler extends TemplateCompiler {
+	static class SubTemplateCompiler extends TemplateCompiler implements TemplateCompilerLike.ChildTemplateCompiler {
+
+		private final TemplateCompilerLike parent;
+
+		protected SubTemplateCompiler(NamedReader reader, TemplateCompilerLike parent,
+				TemplateCompilerContext context) {
+			super(reader, context);
+			this.parent = parent;
+		}
+
+		@Override
+		public TemplateCompilerLike getCaller() {
+			return this.parent;
+		}
+
+	}
+
+	static class ParameterPartialTemplateCompiler extends SubTemplateCompiler {
 
 		private final PartialParameterProcessor processor;
 
@@ -855,20 +857,6 @@ class TemplateCompiler extends AbstractTemplateCompiler {
 			else {
 				return List.of(positionedToken);
 			}
-		}
-
-	}
-
-	static class SimpleTemplateCompiler extends RootTemplateCompiler {
-
-		private SimpleTemplateCompiler(String templateName, TemplateLoader templateLoader, CodeAppendable writer,
-				TemplateCompilerContext context, Set<Flag> flags) throws IOException {
-			super(templateName, templateLoader, writer, context, flags);
-		}
-
-		@Override
-		public void run() throws ProcessingException, IOException {
-			super.run();
 		}
 
 	}

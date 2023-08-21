@@ -3,10 +3,10 @@ package io.jstach.apt;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,7 +36,7 @@ class PartialParameterProcessor
 
 	private Position position;
 
-	private final ArrayDeque<Section<Integer>> sectionStack;
+	private final Deque<Section<Integer>> sectionStack;
 
 	private boolean done = false;
 
@@ -234,7 +234,11 @@ class PartialParameterProcessor
 	}
 
 	private Section<Integer> currentSection() {
-		return Objects.requireNonNull(sectionStack.peek());
+		Section<Integer> current = sectionStack.peek();
+		if (current == null) {
+			throw new IllegalStateException("section stack is empty");
+		}
+		return current;
 	}
 
 	private boolean isCurrentSection(String name) {

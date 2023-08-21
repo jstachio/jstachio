@@ -173,7 +173,7 @@ public class KnownTypes implements TypesMixin {
 		this.objectTypes = List.copyOf(b.objectTypes);
 
 		var typeElement = Objects.requireNonNull(declarations.getTypeElement(Object.class.getName()));
-		var ot = new ObjectType(this, typeElement, Object.class.getName());
+		var ot = new ObjectType(mixin, typeElement, Object.class.getName());
 
 		_Object = ot;
 

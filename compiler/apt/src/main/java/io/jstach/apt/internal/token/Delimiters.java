@@ -3,7 +3,6 @@ package io.jstach.apt.internal.token;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public record Delimiters(char start1, char start2, char end1, char end2) {
 
@@ -67,12 +66,15 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 
 		private static final long serialVersionUID = -6891726165744713522L;
 
+		private final String message;
+
 		public DelimiterParsingException(String content) {
 			super("Cannot parse delimiters from '" + content + "'");
+			this.message = "Cannot parse delimiters from '" + content + "'";
 		}
 
 		public String getMessage() {
-			return Objects.requireNonNull(super.getMessage());
+			return this.message;
 		}
 
 	}

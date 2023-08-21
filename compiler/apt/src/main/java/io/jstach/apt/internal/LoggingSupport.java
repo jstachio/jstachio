@@ -61,7 +61,12 @@ public sealed interface LoggingSupport {
 			var m = messager();
 			var a = annotationToLog();
 			var e = elementToLog();
-			m.printMessage(Kind.ERROR, message, e, a);
+			if (a == null) {
+				m.printMessage(Kind.ERROR, message, e);
+			}
+			else {
+				m.printMessage(Kind.ERROR, message, e, a);
+			}
 		}
 
 		@Override

@@ -408,7 +408,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	}
 
 	private <T> Stream<@NonNull T> findPrisms(TypeElement element, Function<Element, @Nullable T> prismSupplier) {
-		return findPrisms(expandUsing(enclosing(element)), prismSupplier);
+		return this.<@NonNull T>findPrisms(expandUsing(enclosing(element)), prismSupplier);
 	}
 
 	private <T> Stream<T> findPrisms(Stream<? extends Element> elements, Function<Element, @Nullable T> prismSupplier) {

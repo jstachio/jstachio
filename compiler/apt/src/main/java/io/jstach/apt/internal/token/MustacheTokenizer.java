@@ -55,19 +55,20 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
 			TokenProcessor<PositionedToken<MustacheToken>> downstream) {
 		MustacheTokenizer mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<>(downstream));
+		mustacheTokenizer.state = new OutsideMustacheTokenizerState(mustacheTokenizer);
 		var publisher = mustacheTokenizer.getDelimitersPublisher();
 		return BracesTokenizer.createInstance(fileName, mustacheTokenizer, publisher);
 	}
 
 	private final PositionHodingTokenProcessor<MustacheToken> downstream;
 
-	private MustacheTokenizerState state = new OutsideMustacheTokenizerState(this);
+	private @Nullable MustacheTokenizerState state;
 
 	private Position position = Position.noPosition();
 
 	private Delimiters.Publisher delimitersPublisher = new Delimiters.Publisher();
 
-	MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
+	private MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
 		this.downstream = downstream;
 	}
 
@@ -76,7 +77,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 		var p = position = positionedToken.position();
 		downstream.setPosition(p);
 		BracesToken token = positionedToken.innerToken();
-		token.accept(state);
+		token.accept(requireState());
 	}
 
 	public Delimiters.Publisher getDelimitersPublisher() {
@@ -91,8 +92,16 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 		delimitersPublisher.setDelimiters(delimiters);
 	}
 
+	private MustacheTokenizerState requireState() {
+		var s = state;
+		if (s == null) {
+			throw new IllegalStateException();
+		}
+		return s;
+	}
+
 	void setState(MustacheTokenizerState newState) throws ProcessingException {
-		state.beforeStateChange();
+		requireState().beforeStateChange();
 		state = newState;
 	}
 

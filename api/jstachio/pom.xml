@@ -67,6 +67,9 @@
     </profile>
     <profile>
       <id>checkerframework</id>
+      <properties>
+        <checker.stubs>${parent.root}/etc/eea/checker</checker.stubs>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -75,7 +78,7 @@
             <configuration>
               <fork>true</fork>
               <compilerArgs combine.children="append">
-                <arg>-Astubs=${parent.root}/etc/eea/checker</arg>
+                <arg>-Astubs=${checker.stubs}/java.base</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>

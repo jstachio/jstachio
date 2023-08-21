@@ -39,7 +39,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.GenerateRendererProcessor.RendererModel;
-import io.jstach.apt.TemplateCompilerLike.TemplateCompilerType;
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable;
 import io.jstach.apt.internal.FormatterTypes.FormatCallType;
@@ -686,9 +685,9 @@ class TemplateClassWriter implements LoggingSupplier {
 		println("    }");
 		println("");
 		writeExtendsConstructors(extendsElement, rendererClassSimpleName);
-		writeRendererDefinitionMethod(TemplateCompilerType.SIMPLE, model);
+		writeRendererDefinitionMethod(model);
 		if (preEncode) {
-			writeRendererDefinitionMethodStream(TemplateCompilerType.SIMPLE, model);
+			writeRendererDefinitionMethodStream(model);
 		}
 		println("}");
 	}
@@ -785,7 +784,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		}
 	}
 
-	private void writeRendererDefinitionMethod(TemplateCompilerType templateCompilerType, RendererModel model)
+	private void writeRendererDefinitionMethod(RendererModel model)
 			throws IOException, ProcessingException, AnnotatedException {
 
 		boolean jstachio = formatCallType == FormatCallType.JSTACHIO;
@@ -805,7 +804,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		}
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
-		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
+		codeWriter.compileTemplate(templateLoader, context);
 		println("");
 		println("    }");
 	}
@@ -898,7 +897,7 @@ class TemplateClassWriter implements LoggingSupplier {
 		return nullChecking;
 	}
 
-	private void writeRendererDefinitionMethodStream(TemplateCompilerType templateCompilerType, RendererModel model)
+	private void writeRendererDefinitionMethodStream(RendererModel model)
 			throws IOException, ProcessingException, AnnotatedException {
 
 		if (formatCallType != FormatCallType.JSTACHIO) {
@@ -972,7 +971,7 @@ class TemplateClassWriter implements LoggingSupplier {
 
 		TemplateCompilerContext context = codeWriter.createTemplateContext(model.namedTemplate(), element, dataName,
 				variables, model.flags());
-		codeWriter.compileTemplate(templateLoader, context, templateCompilerType);
+		codeWriter.compileTemplate(templateLoader, context);
 		println("");
 		println("    }");
 		var textVariables = variables.textVariables();

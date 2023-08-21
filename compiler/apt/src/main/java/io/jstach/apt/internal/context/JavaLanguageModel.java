@@ -31,7 +31,6 @@ package io.jstach.apt.internal.context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -67,7 +66,11 @@ public class JavaLanguageModel implements TypesMixin {
 	}
 
 	public static JavaLanguageModel getInstance() {
-		return Objects.requireNonNull(INSTANCE);
+		var i = INSTANCE;
+		if (i == null) {
+			throw new IllegalStateException("Java Language Model not bound yet");
+		}
+		return i;
 	}
 
 	private final Types operations;
@@ -127,9 +130,8 @@ public class JavaLanguageModel implements TypesMixin {
 		for (int i = 0; i < numberOfParameters; i++) {
 			typeArguments.add(operations.getWildcardType(null, null));
 		}
-		TypeMirror[] typeArgumentArray = new TypeMirror[typeArguments.size()];
-		typeArgumentArray = typeArguments.toArray(typeArgumentArray);
-		return getDeclaredType(element, typeArgumentArray);
+		var filled = typeArguments.toArray(new TypeMirror[] {});
+		return getDeclaredType(element, filled);
 	}
 
 	@Nullable
@@ -153,9 +155,12 @@ public class JavaLanguageModel implements TypesMixin {
 	}
 
 	public Stream<DeclaredType> supers(DeclaredType type) {
-		return Stream.concat(Stream.of(type), operations.directSupertypes(type).stream() //
-				.flatMap(tm -> operations.directSupertypes(tm).stream()) //
-				.filter(tm -> tm instanceof DeclaredType).map(DeclaredType.class::cast));
+		Stream<DeclaredType> self = Stream.of(type);
+		Stream<DeclaredType> supers = operations.directSupertypes(type) //
+				.stream() //
+				.<TypeMirror>flatMap(tm -> operations.directSupertypes(tm).stream()) //
+				.filter(tm -> tm instanceof DeclaredType).map(DeclaredType.class::cast);
+		return Stream.concat(self, supers);
 	}
 
 	public Stream<TypeElement> supers(TypeElement type) {
@@ -169,7 +174,10 @@ public class JavaLanguageModel implements TypesMixin {
 	}
 
 	TypeElement asElement(DeclaredType declaredType) {
-		return Objects.requireNonNull((TypeElement) operations.asElement(declaredType));
+		if (operations.asElement(declaredType) instanceof TypeElement te) {
+			return te;
+		}
+		throw new IllegalStateException("unable to find type element for: " + declaredType);
 	}
 
 	boolean isType(TypeMirror type, KnownType knownType) {
@@ -184,10 +192,12 @@ public class JavaLanguageModel implements TypesMixin {
 	}
 
 	boolean isType(TypeMirror type, Optional<? extends KnownType> knownType) {
-		KnownType kt = knownType.orElse(null);
-		if (kt == null) {
+		if (!knownType.isPresent()) {
 			return false;
 		}
+		// This bull shit is because Checker and Eclipse have different ideas
+		// on what can be passed to Optional.orElse
+		KnownType kt = knownType.orElseThrow();
 		return isType(type, kt);
 	}
 

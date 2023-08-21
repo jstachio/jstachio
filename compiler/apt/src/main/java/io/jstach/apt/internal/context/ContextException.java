@@ -48,7 +48,7 @@ public class ContextException extends Exception {
 
 	@Override
 	public String getMessage() {
-		return Objects.requireNonNull(super.getMessage());
+		return Objects.requireNonNullElse(super.getMessage(), "");
 	}
 
 	public static class TypeNotAllowedContextException extends ContextException {

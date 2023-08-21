@@ -206,13 +206,7 @@ public class RenderingCodeGenerator {
 			var method = e.getKey();
 			String name = p.name();
 			String template = p.template();
-			Lambda lambda;
-			try {
-				lambda = Lambda.of(root, method, name, template);
-			}
-			catch (Exception e1) {
-				throw new AnnotatedException(e1.getMessage(), method);
-			}
+			Lambda lambda = Lambda.of(root, method, name, template);
 			// TODO check for name collisions
 			lambdas.put(lambda.name(), lambda);
 		}

@@ -1,0 +1,4 @@
+class java/util/ArrayDeque
+peek
+ ()TE;
+ ()T0E;

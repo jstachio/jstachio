@@ -33,8 +33,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * @author Victor Nazarov
  */
@@ -53,7 +51,7 @@ class NamedReader extends Reader {
 	}
 
 	@Override
-	public int read(char @Nullable [] cbuf, int off, int len) throws IOException {
+	public int read(char[] cbuf, int off, int len) throws IOException {
 		return reader.read(cbuf, off, len);
 	}
 

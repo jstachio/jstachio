@@ -155,7 +155,10 @@
       </build>
     </profile>
     <profile>
-      <id>checkerframework-disable</id>
+      <id>checkerframework</id>
+      <properties>
+        <checker.stubs>${parent.root}/etc/eea/checker</checker.stubs>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -164,7 +167,7 @@
             <configuration>
               <fork>true</fork>
               <compilerArgs combine.children="append">
-                <arg>-Astubs=${parent.root}/etc/eea/checker</arg>
+                <arg>-Astubs=${checker.stubs}/java.base:${checker.stubs}/java.compiler</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
                 <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
@@ -187,6 +190,13 @@
                 <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
               </annotationProcessors>
             </configuration>
+            <!-- checkers junit annotations are all over the place on nullability -->
+            <executions>
+              <execution>
+                <id>default-testCompile</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

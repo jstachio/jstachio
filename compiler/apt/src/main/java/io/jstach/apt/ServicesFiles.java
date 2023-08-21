@@ -47,7 +47,7 @@ final class ServicesFiles {
 	 * Reads the set of service classes from a service file.
 	 * @param input not {@code null}. Closed after use.
 	 * @return a not {@code null Set} of service class names.
-	 * @throws IOException
+	 * @throws IOException if an error happens while reading the service file
 	 */
 	static Set<String> readServiceFile(InputStream input) throws IOException {
 		LinkedHashSet<String> serviceClasses = new LinkedHashSet<>();
@@ -80,7 +80,7 @@ final class ServicesFiles {
 	 * Writes the set of service class names to a service file.
 	 * @param output not {@code null}. Not closed after use.
 	 * @param services a not {@code null Collection} of service class names.
-	 * @throws IOException
+	 * @throws IOException if an error happens while writing the service file
 	 */
 	private static void writeServiceFile(Collection<String> services, OutputStream output) throws IOException {
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, UTF_8));

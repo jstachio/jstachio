@@ -25,23 +25,37 @@ interface TemplateCompilerLike extends AutoCloseable {
 
 	String getTemplateName();
 
-	default ClassRef getModelClass() {
-		return Objects.requireNonNull(getCaller()).getModelClass();
-	}
+	public ClassRef getModelClass();
 
 	@Nullable
 	TemplateCompilerLike getCaller();
 
-	default TemplateLoader getTemplateLoader() {
-		return Objects.requireNonNull(getCaller()).getTemplateLoader();
-	}
+	public TemplateLoader getTemplateLoader();
 
-	default CodeAppendable getWriter() {
-		return Objects.requireNonNull(getCaller()).getWriter();
-	}
+	public CodeAppendable getWriter();
 
-	default Set<Flag> flags() {
-		return Objects.requireNonNull(getCaller()).flags();
+	public Set<Flag> flags();
+
+	interface ChildTemplateCompiler extends TemplateCompilerLike {
+
+		TemplateCompilerLike getCaller();
+
+		default TemplateLoader getTemplateLoader() {
+			return getCaller().getTemplateLoader();
+		}
+
+		default CodeAppendable getWriter() {
+			return getCaller().getWriter();
+		}
+
+		default Set<Flag> flags() {
+			return getCaller().flags();
+		}
+
+		default ClassRef getModelClass() {
+			return Objects.requireNonNull(getCaller()).getModelClass();
+		}
+
 	}
 
 	@Nullable
