@@ -118,7 +118,8 @@ import io.jstach.svc.ServiceProvider;
 		Prisms.JSTACHE_INCREMENTAL_OPTION, //
 		Prisms.JSTACHE_FLAGS_DEBUG, //
 		Prisms.JSTACHE_FLAGS_NO_INVERTED_BROKEN_CHAIN, //
-		Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING, GenerateRendererProcessor.JSTACHE_GRADLE_INCREMENTAL //
+		Prisms.JSTACHE_FLAGS_NO_NULL_CHECKING, GenerateRendererProcessor.JSTACHE_CLAIM_ANNOTATIONS, //
+		GenerateRendererProcessor.JSTACHE_GRADLE_INCREMENTAL //
 })
 public class GenerateRendererProcessor extends AbstractProcessor implements Prisms {
 
@@ -132,6 +133,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	 * TODO doc or remove for for minor release. This was for gradle bug fix: #223
 	 */
 	static final String JSTACHE_GRADLE_INCREMENTAL = "jstache.gradle_incremental";
+
+	static final String JSTACHE_CLAIM_ANNOTATIONS = "jstache.claim_annotations";
 
 	private enum GradleIncremental {
 
@@ -158,6 +161,8 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 
 	boolean generateServiceFiles = true;
 
+	boolean claimAnnotations = false;
+
 	private static String formatErrorMessage(Position position, @Nullable String message) {
 		message = message == null ? "" : message;
 		String formatString = "%s:%d: error: %s%n%s%n%s%nsymbol: mustache directive%nlocation: mustache template";
@@ -183,6 +188,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	public synchronized void init(ProcessingEnvironment processingEnv) {
 		super.init(processingEnv);
 		var opts = processingEnv.getOptions();
+
+		this.claimAnnotations = Boolean.parseBoolean(opts.get(JSTACHE_CLAIM_ANNOTATIONS));
+
 		boolean incremental = Boolean.parseBoolean(opts.get(JSTACHE_INCREMENTAL_OPTION));
 
 		GradleIncremental gradleIncremental = Optional.ofNullable(opts.get(JSTACHE_GRADLE_INCREMENTAL))
@@ -232,15 +240,16 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	@Override
 	public boolean process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv) {
 		try {
-			return _process(processEnnotations, roundEnv);
+			_process(processEnnotations, roundEnv);
+			return claimAnnotations;
 		}
 		catch (AnnotatedException e) {
 			e.report(processingEnv.getMessager());
-			return true;
+			return claimAnnotations;
 		}
 	}
 
-	private boolean _process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv)
+	private void _process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv)
 			throws AnnotatedException {
 		/*
 		 * Lets just bind the damn utils so that we do not have to pass them around
@@ -284,7 +293,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				 */
 				generateCatalog();
 			}
-			return false;
+			return;
 		}
 		else {
 			boolean found = false;
@@ -323,7 +332,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 				generateCatalog();
 			}
 
-			return true;
+			return;
 		}
 	}
 
@@ -912,7 +921,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			suffix = suffix.equals(JSTACHE_NAME_UNSPECIFIED) ? JSTACHE_NAME_DEFAULT_SUFFIX : suffix;
 
 			ClassRef ref = ClassRef.of(element);
-			adapterClassSimpleName = ref.getSimpleName() + suffix;
+			adapterClassSimpleName = prefix + ref.getSimpleName() + suffix;
 		}
 		else {
 			adapterClassSimpleName = directiveAdapterName;
