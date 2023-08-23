@@ -7,7 +7,6 @@ import java.lang.System.Logger.Level;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.kohsuke.MetaInfServices;
 
 import com.samskivert.mustache.Template;
 
@@ -17,6 +16,7 @@ import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.JStachioExtension;
 import io.jstach.jstachio.spi.Templates;
+import io.jstach.svc.ServiceProvider;
 
 /**
  * Use JMustache instead of JStachio for rendering. The idea of this extension is to allow
@@ -57,7 +57,7 @@ import io.jstach.jstachio.spi.Templates;
  * other mechanisms for hot reload.
  */
 @Deprecated
-@MetaInfServices(JStachioExtension.class)
+@ServiceProvider(JStachioExtension.class)
 public class JMustacheRenderer extends AbstractJStacheEngine {
 
 	/**

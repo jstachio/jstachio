@@ -13,7 +13,6 @@ module io.jstach.spec.generator {
 
 	requires static org.eclipse.jdt.annotation;
 
-	requires static org.kohsuke.metainf_services;
 
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;

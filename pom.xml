@@ -14,7 +14,7 @@
   <properties>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <metainf-services.version>1.11</metainf-services.version>
+
     <m2e.jdt.annotationpath>/jstachio-eea</m2e.jdt.annotationpath>
     <project.build.outputTimestamp>1691609515</project.build.outputTimestamp>
     <ant.tstamp.now>${project.build.outputTimestamp}</ant.tstamp.now>
@@ -37,6 +37,8 @@
 
     <jstachio.tag>&lt;div class="jstachio-version"&gt; ${jstachio.doc.message} &lt;br/&gt; ${jstachio.doc.ahref}&lt;/div&gt;</jstachio.tag>
     
+     <pistachio.version>0.1.2</pistachio.version>
+
     <spring.version>6.0.11</spring.version>
     <spring-boot.version>3.1.2</spring-boot.version>
     <dropwizard.version>4.0.1</dropwizard.version>
@@ -113,24 +115,24 @@
           <version>${maven.core.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.kohsuke.metainf-services</groupId>
-        <artifactId>metainf-services</artifactId>
-        <version>${metainf-services.version}</version>
-        <optional>true</optional>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.jolira</groupId>
-        <artifactId>hickory</artifactId>
-        <version>1.0.0</version>
-        <scope>provided</scope>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
         <groupId>org.eclipse.jdt</groupId>
         <artifactId>org.eclipse.jdt.annotation</artifactId>
         <version>2.2.700</version>
         <optional>true</optional>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach.pistachio</groupId>
+        <artifactId>pistachio-svc</artifactId>
+        <version>${pistachio.version}</version>
+        <optional>true</optional>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jstach.pistachio</groupId>
+        <artifactId>pistachio-svc-apt</artifactId>
+        <version>${pistachio.version}</version>
+        <optional>true</optional>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.samskivert</groupId>

@@ -25,11 +25,6 @@
               <version>${org.mapstruct.version}</version>
             </annotationProcessorPath>
             <annotationProcessorPath>
-              <groupId>org.kohsuke.metainf-services</groupId>
-              <artifactId>metainf-services</artifactId>
-              <version>${metainf-services.version}</version>
-            </annotationProcessorPath>
-            <annotationProcessorPath>
               <groupId>${project.groupId}</groupId>
               <artifactId>jstachio-apt</artifactId>
               <version>${project.version}</version>
@@ -58,12 +53,6 @@
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>${org.mapstruct.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.kohsuke.metainf-services</groupId>
-      <artifactId>metainf-services</artifactId>
-      <optional>true</optional>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

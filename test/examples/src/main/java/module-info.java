@@ -5,7 +5,6 @@ import io.jstach.jstachio.spi.TemplateProvider;
 module io.jstach.examples {
 	requires transitive io.jstach.jstachio;
 	requires java.compiler;
-	requires org.kohsuke.metainf_services;
 	requires com.samskivert.jmustache;
 	requires org.mapstruct;
 

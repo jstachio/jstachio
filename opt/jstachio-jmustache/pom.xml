@@ -14,11 +14,6 @@
         <configuration>
           <annotationProcessorPaths>
             <annotationProcessorPath>
-              <groupId>org.kohsuke.metainf-services</groupId>
-              <artifactId>metainf-services</artifactId>
-              <version>${metainf-services.version}</version>
-            </annotationProcessorPath>
-            <annotationProcessorPath>
               <groupId>${project.groupId}</groupId>
               <artifactId>jstachio-apt</artifactId>
               <version>${project.version}</version>
@@ -45,8 +40,14 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.kohsuke.metainf-services</groupId>
-      <artifactId>metainf-services</artifactId>
+      <groupId>io.jstach.pistachio</groupId>
+      <artifactId>pistachio-svc</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.jstach.pistachio</groupId>
+      <artifactId>pistachio-svc-apt</artifactId>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>

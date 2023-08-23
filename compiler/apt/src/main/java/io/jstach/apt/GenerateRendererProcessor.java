@@ -74,7 +74,6 @@ import javax.tools.JavaFileObject;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.kohsuke.MetaInfServices;
 
 import io.jstach.apt.internal.AnnotatedException;
 import io.jstach.apt.internal.CodeAppendable.StringCodeAppendable;
@@ -106,6 +105,7 @@ import io.jstach.apt.prism.JStachePartialsPrism;
 import io.jstach.apt.prism.JStachePathPrism;
 import io.jstach.apt.prism.JStachePrism;
 import io.jstach.apt.prism.Prisms;
+import io.jstach.svc.ServiceProvider;
 
 /**
  * Renderer processor
@@ -113,7 +113,7 @@ import io.jstach.apt.prism.Prisms;
  * @author agentgt
  *
  */
-@MetaInfServices(value = Processor.class)
+@ServiceProvider(value = Processor.class)
 @SupportedOptions({ Prisms.JSTACHE_RESOURCES_PATH_OPTION, //
 		Prisms.JSTACHE_INCREMENTAL_OPTION, //
 		Prisms.JSTACHE_FLAGS_DEBUG, //
@@ -128,6 +128,9 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	public GenerateRendererProcessor() {
 	}
 
+	/*
+	 * TODO doc or remove for for minor release. This was for gradle bug fix: #223
+	 */
 	static final String JSTACHE_GRADLE_INCREMENTAL = "jstache.gradle_incremental";
 
 	private enum GradleIncremental {

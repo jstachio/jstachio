@@ -43,7 +43,7 @@ module io.jstach.opt.jmustache {
 	requires transitive io.jstach.jstachio;
 	requires transitive com.samskivert.jmustache;
 
-	requires static org.kohsuke.metainf_services;
+	requires static io.jstach.svc;
 	requires static org.eclipse.jdt.annotation;
 
 	provides JStachioExtension with JMustacheRenderer;
