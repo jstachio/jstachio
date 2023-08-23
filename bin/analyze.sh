@@ -7,7 +7,7 @@ if [ -z "$_profiles" ]; then
   _profiles="checkerframework errorprone eclipse"
 fi
 for profile in $_profiles; do
-./mvnw $_MAVEN_CLI_OPTS clean verify -pl api/jstachio,compiler/apt  -P${profile} -Dmaven.javadoc.skip -DskipTests -Dmaven.source.skip=true 
+./mvnw $_MAVEN_CLI_OPTS clean verify -pl api/jstachio,compiler/apt  -P${profile},show-profiles -Dmaven.javadoc.skip -DskipTests -Dmaven.source.skip=true 
 done
 
 # Checker or the maven compiler leaves these files around
