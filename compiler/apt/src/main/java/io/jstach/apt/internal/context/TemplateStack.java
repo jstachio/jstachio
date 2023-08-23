@@ -26,6 +26,7 @@ public sealed interface TemplateStack extends MessagerLogging {
 
 	public TemplateType getTemplateType();
 
+	@Override
 	public AnnotationMirror annotationToLog();
 
 	public enum TemplateType {

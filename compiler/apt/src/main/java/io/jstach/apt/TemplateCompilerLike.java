@@ -38,20 +38,25 @@ interface TemplateCompilerLike extends AutoCloseable {
 
 	interface ChildTemplateCompiler extends TemplateCompilerLike {
 
+		@Override
 		TemplateCompilerLike getCaller();
 
+		@Override
 		default TemplateLoader getTemplateLoader() {
 			return getCaller().getTemplateLoader();
 		}
 
+		@Override
 		default CodeAppendable getWriter() {
 			return getCaller().getWriter();
 		}
 
+		@Override
 		default Set<Flag> flags() {
 			return getCaller().flags();
 		}
 
+		@Override
 		default ClassRef getModelClass() {
 			return Objects.requireNonNull(getCaller()).getModelClass();
 		}

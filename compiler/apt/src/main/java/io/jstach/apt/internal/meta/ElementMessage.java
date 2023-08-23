@@ -31,10 +31,6 @@ package io.jstach.apt.internal.meta;
 
 import javax.lang.model.element.TypeElement;
 
-/**
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
- */
-
 public class ElementMessage {
 
 	public static ElementMessage of(TypeElement element, String message) {

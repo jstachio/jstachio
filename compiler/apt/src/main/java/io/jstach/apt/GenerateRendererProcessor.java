@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -237,10 +238,11 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return super.getSupportedOptions();
 	}
 
+	@SuppressWarnings("DoNotClaimAnnotations") // it is configurable just in case
 	@Override
-	public boolean process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv) {
+	public boolean process(Set<? extends TypeElement> processAnnotations, RoundEnvironment roundEnv) {
 		try {
-			_process(processEnnotations, roundEnv);
+			_process(roundEnv);
 			return claimAnnotations;
 		}
 		catch (AnnotatedException e) {
@@ -249,8 +251,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 	}
 
-	private void _process(Set<? extends TypeElement> processEnnotations, RoundEnvironment roundEnv)
-			throws AnnotatedException {
+	private void _process(RoundEnvironment roundEnv) throws AnnotatedException {
 		/*
 		 * Lets just bind the damn utils so that we do not have to pass them around
 		 * everywhere
@@ -514,7 +515,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 	static {
 		Map<String, Flag> m = new LinkedHashMap<>();
 		for (var f : Flag.values()) {
-			String name1 = "jstache." + f.name().toLowerCase();
+			String name1 = "jstache." + f.name().toLowerCase(Locale.ENGLISH);
 			String name2 = "jstache." + f.name();
 			m.put(name1, f);
 			m.put(name2, f);
@@ -744,7 +745,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		Charset charset = resolveCharset(element);
 
 		@Nullable
-		TypeElement contentTypeElement = resolveContentType(element, gp);
+		TypeElement contentTypeElement = resolveContentType(element);
 		if (contentTypeElement == null && formatCallType != FormatCallType.STACHE) {
 			throw new AnnotatedException(element,
 					"Content Type provider class is missing which usually is a classpath issue"
@@ -752,7 +753,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		}
 
 		@Nullable
-		TypeElement formatterElement = resolveFormatter(element, gp);
+		TypeElement formatterElement = resolveFormatter(element);
 		if (formatterElement == null && formatCallType != FormatCallType.STACHE) {
 			throw new AnnotatedException(element,
 					"Formatter provider class is missing which usually is a classpath issue"
@@ -821,7 +822,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return rendererClassRef;
 	}
 
-	private @Nullable TypeElement resolveContentType(TypeElement element, JStachePrism gp) throws DeclarationException {
+	private @Nullable TypeElement resolveContentType(TypeElement element) throws DeclarationException {
 
 		var lm = JavaLanguageModel.getInstance();
 
@@ -846,7 +847,7 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 		return contentTypeProviderElement;
 	}
 
-	private @Nullable TypeElement resolveFormatter(TypeElement element, JStachePrism gp) throws DeclarationException {
+	private @Nullable TypeElement resolveFormatter(TypeElement element) throws DeclarationException {
 
 		var lm = JavaLanguageModel.getInstance();
 

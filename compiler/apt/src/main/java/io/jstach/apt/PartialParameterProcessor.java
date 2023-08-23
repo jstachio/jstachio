@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -209,7 +210,7 @@ class PartialParameterProcessor
 		 * We are inside a block so we need to capture
 		 */
 		if (currentBlock != null) {
-			if (closedSection != currentBlock.section()) {
+			if (!Objects.equals(closedSection, currentBlock.section())) {
 				currentBlock.tokens().add(token);
 			}
 		}

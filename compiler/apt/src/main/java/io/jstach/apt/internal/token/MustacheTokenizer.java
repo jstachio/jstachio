@@ -37,11 +37,8 @@ import io.jstach.apt.internal.PositionedToken;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.TokenProcessor;
 import io.jstach.apt.internal.token.util.BracesTokenizer;
-import io.jstach.apt.internal.token.util.PositionHodingTokenProcessor;
+import io.jstach.apt.internal.token.util.PositionTokenProcessor;
 
-/**
- * @author Victor Nazarov
- */
 public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesToken>> {
 
 	/**
@@ -50,17 +47,17 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 	 * @param fileName fileName used in error messages. It can be custom string like
 	 * "&lt;stdin&gt;"
 	 * @param downstream TokenProcessor is invoked on each found MustacheToken
-	 * @return .
+	 * @return token processor.
 	 */
 	public static TokenProcessor<@Nullable Character> createInstance(String fileName,
 			TokenProcessor<PositionedToken<MustacheToken>> downstream) {
-		MustacheTokenizer mustacheTokenizer = new MustacheTokenizer(new PositionHodingTokenProcessor<>(downstream));
+		MustacheTokenizer mustacheTokenizer = new MustacheTokenizer(new PositionTokenProcessor<>(downstream));
 		mustacheTokenizer.state = new OutsideMustacheTokenizerState(mustacheTokenizer);
 		var publisher = mustacheTokenizer.getDelimitersPublisher();
 		return BracesTokenizer.createInstance(fileName, mustacheTokenizer, publisher);
 	}
 
-	private final PositionHodingTokenProcessor<MustacheToken> downstream;
+	private final PositionTokenProcessor<MustacheToken> downstream;
 
 	private @Nullable MustacheTokenizerState state;
 
@@ -68,7 +65,7 @@ public class MustacheTokenizer implements TokenProcessor<PositionedToken<BracesT
 
 	private Delimiters.Publisher delimitersPublisher = new Delimiters.Publisher();
 
-	private MustacheTokenizer(PositionHodingTokenProcessor<MustacheToken> downstream) {
+	private MustacheTokenizer(PositionTokenProcessor<MustacheToken> downstream) {
 		this.downstream = downstream;
 	}
 

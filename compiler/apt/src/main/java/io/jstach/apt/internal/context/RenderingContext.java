@@ -54,16 +54,16 @@ interface RenderingContext {
 	/**
 	 * Gets the method (or field) directly in this context. This is for dotted names as
 	 * they cannot look up the context stack.
-	 * @param name
-	 * @return
-	 * @throws ContextException
+	 * @param name binding name
+	 * @return expression or null if not found
+	 * @throws ContextException if error resolve name
 	 */
 	@Nullable
 	JavaExpression get(String name) throws ContextException;
 
 	/**
 	 * This should be mostly equivalent to {{.}}
-	 * @return
+	 * @return current expression
 	 */
 	default JavaExpression get() {
 		return currentExpression();
@@ -72,12 +72,10 @@ interface RenderingContext {
 	/**
 	 * Looks for a method or or field up the context stack starting in the current context
 	 * first and then delgating to the parent.
-	 * @param name
-	 * @return
-	 * @throws ContextException
+	 * @param name binding name
+	 * @return expression or null if not found.
+	 * @throws ContextException if an error happens resolving name
 	 */
-	// @Nullable JavaExpression find(String name) throws ContextException;
-
 	default @Nullable JavaExpression find(String name, Predicate<RenderingContext> filter) throws ContextException {
 
 		JavaExpression result = null;
@@ -123,8 +121,10 @@ interface RenderingContext {
 
 	public interface ChildRenderingContext extends RenderingContext {
 
+		@Override
 		public RenderingContext getParent();
 
+		@Override
 		default VariableContext variableContext() {
 			return getParent().variableContext();
 		}

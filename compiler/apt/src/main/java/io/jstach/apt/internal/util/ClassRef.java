@@ -12,7 +12,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.context.JavaLanguageModel;
 
-public class ClassRef {
+public final class ClassRef {
 
 	private final String packageName;
 

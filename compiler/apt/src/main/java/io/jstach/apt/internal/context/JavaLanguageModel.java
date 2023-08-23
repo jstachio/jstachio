@@ -51,9 +51,6 @@ import io.jstach.apt.internal.context.types.NativeType;
 import io.jstach.apt.internal.context.types.ObjectType;
 import io.jstach.apt.internal.context.types.TypesMixin;
 
-/**
- * @author Victor Nazarov
- */
 public class JavaLanguageModel implements TypesMixin {
 
 	private static @Nullable JavaLanguageModel INSTANCE;

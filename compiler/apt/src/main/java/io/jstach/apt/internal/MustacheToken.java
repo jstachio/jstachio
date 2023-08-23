@@ -36,10 +36,6 @@ import java.io.UncheckedIOException;
 import io.jstach.apt.internal.token.Delimiters;
 import io.jstach.apt.internal.token.MustacheTagKind;
 
-/**
- * @author Victor Nazarov
- * @author agentgt
- */
 public sealed interface MustacheToken {
 
 	public record TagToken(MustacheTagKind tagKind, String name, Delimiters delimiters) implements MustacheToken {
@@ -298,7 +294,7 @@ public sealed interface MustacheToken {
 	 * N.B this does not include newline!
 	 */
 	default boolean isWhitespaceToken() {
-		return isWhitespaceToken(this);
+		return isWhitespace(this);
 	}
 
 	default boolean isTagToken() {
@@ -351,7 +347,7 @@ public sealed interface MustacheToken {
 	/**
 	 * N.B this does not include newline!
 	 */
-	public static boolean isWhitespaceToken(MustacheToken token) {
+	public static boolean isWhitespace(MustacheToken token) {
 		if (token instanceof TextToken tt) {
 			return tt.text().isBlank();
 		}

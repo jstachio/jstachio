@@ -44,10 +44,6 @@ import javax.lang.model.util.Types;
 
 import io.jstach.apt.prism.Prisms;
 
-/**
- * @author Victor Nazarov
- * @author agentgt
- */
 public class KnownTypes implements TypesMixin {
 
 	public static KnownTypes createInstace(Elements declarations, Types types) {

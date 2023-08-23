@@ -18,8 +18,6 @@ class CatalogClassWriter {
 
 	private final Set<String> templateClassNames = new TreeSet<>();
 
-	private boolean dirty = true;
-
 	private final ClassRef catalogClass;
 
 	public CatalogClassWriter(String packageName, String catalogName) {
@@ -88,16 +86,9 @@ class CatalogClassWriter {
 		}
 	}
 
-	boolean addTemplateClasses(Collection<String> templateClassNames) {
-		boolean b = this.templateClassNames.addAll(templateClassNames);
-		if (b) {
-			dirty = b;
-		}
-		return b;
-	}
+	void addTemplateClasses(Collection<String> templateClassNames) {
+		this.templateClassNames.addAll(templateClassNames);
 
-	public boolean isDirty() {
-		return dirty;
 	}
 
 }

@@ -34,6 +34,7 @@ class FragmentTokenProcessor extends WhitespaceTokenProcessor {
 
 	private String processed = "";
 
+	@SuppressWarnings("UnusedVariable") // errorprone bug
 	private record Section(TagToken token, boolean isFragment) {
 	}
 

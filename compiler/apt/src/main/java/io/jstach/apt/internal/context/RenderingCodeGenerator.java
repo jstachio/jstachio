@@ -61,20 +61,8 @@ import io.jstach.apt.internal.context.types.NativeType;
 import io.jstach.apt.internal.context.types.ObjectType;
 import io.jstach.apt.prism.JStacheLambdaPrism;
 
-/**
- * This class allows to create TemplateCompilerContext instance
- *
- * @author Victor Nazarov
- */
 public class RenderingCodeGenerator {
 
-	/**
-	 * Creates instance.
-	 * @param javaModel language model to allow java expression manipulation
-	 * @param formatClass type declaration denoting text format. formatClass should not
-	 * contain type variables.
-	 * @return
-	 */
 	public static RenderingCodeGenerator createInstance(JavaLanguageModel javaModel, FormatterTypes formatterTypes,
 			FormatCallType formatCallType) {
 		return new RenderingCodeGenerator(javaModel.knownTypes(), javaModel, formatterTypes, formatCallType);
@@ -143,10 +131,7 @@ public class RenderingCodeGenerator {
 		if (kt == null) {
 			return false;
 		}
-		if (kt instanceof NativeType) {
-			return true;
-		}
-		if (kt.equals(knownTypes._String)) {
+		if ((kt instanceof NativeType) || kt.equals(knownTypes._String)) {
 			return true;
 		}
 		return false;
@@ -214,15 +199,6 @@ public class RenderingCodeGenerator {
 		return new Lambdas(lambdas);
 	}
 
-	/**
-	 * creates TemplateCompilerContext instance.
-	 * @param element root of the data binding context. Element should not contain
-	 * type-variables.
-	 * @param expression java expression of type corresponding to given TypeElement
-	 * @param variables declared variables to use in generated code
-	 * @return new TemplateCompilerContext
-	 * @throws AnnotatedException
-	 */
 	public TemplateCompilerContext createTemplateCompilerContext(TemplateStack templateStack, TypeElement element,
 			String expression, VariableContext variables) throws AnnotatedException {
 		JavaExpression javaExpression = javaModel.expression(expression, javaModel.getDeclaredType(element));
@@ -255,7 +231,7 @@ public class RenderingCodeGenerator {
 		if (contextNode != null && contextNode.isType(expression.type())) {
 			return switch (childType) {
 				case SECTION: {
-					yield createIterableContext(childType, expression, enclosing);
+					yield createIterableContext(expression, enclosing);
 				}
 				default: {
 					yield createContextNodeContext(expression, enclosing);
@@ -288,7 +264,7 @@ public class RenderingCodeGenerator {
 			return createRenderingContext(childType, list.componentExpession(), list);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._Iterable) && childType == ContextType.SECTION) {
-			return createIterableContext(childType, expression, enclosing);
+			return createIterableContext(expression, enclosing);
 		}
 		else if (javaModel.isType(expression.type(), knownTypes._Map)) {
 			return createMapContext(expression, enclosing);
@@ -368,8 +344,8 @@ public class RenderingCodeGenerator {
 		return map;
 	}
 
-	private RenderingContext createIterableContext(ContextType childType, JavaExpression expression,
-			RenderingContext enclosing) throws TypeException {
+	private RenderingContext createIterableContext(JavaExpression expression, RenderingContext enclosing)
+			throws TypeException {
 		RenderingContext nullable = nullableRenderingContext(expression, enclosing);
 		VariableContext variableContext = nullable.createEnclosedVariableContext();
 		String elementVariableName = variableContext.introduceNewNameLike("element");

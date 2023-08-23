@@ -29,10 +29,6 @@
  */
 package io.jstach.apt.internal.token;
 
-/**
- *
- * @author Victor Nazarov
- */
 public enum MustacheTagKind {
 
 	VARIABLE, //

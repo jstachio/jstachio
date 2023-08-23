@@ -25,6 +25,7 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 	 *
 	 * The real solution is to put ina PR to JMustache to fix it.
 	 */
+	@SuppressWarnings("StringSplitter")
 	public static Delimiters of(String content) throws DelimiterParsingException {
 		String[] delims = content.trim().split("\\s+");
 		if (delims.length != 2)
@@ -73,6 +74,7 @@ public record Delimiters(char start1, char start2, char end1, char end2) {
 			this.message = "Cannot parse delimiters from '" + content + "'";
 		}
 
+		@Override
 		public String getMessage() {
 			return this.message;
 		}

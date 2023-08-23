@@ -39,9 +39,6 @@ import io.jstach.apt.internal.token.BracesToken;
 import io.jstach.apt.internal.token.BracesToken.TokenType;
 import io.jstach.apt.internal.token.Delimiters;
 
-/**
- * @author Victor Nazarov
- */
 public class BracesTokenizer implements TokenProcessor<@Nullable Character>, Delimiters.Subscriber {
 
 	static TokenProcessorDecorator<@Nullable Character, BracesToken> decorator(Delimiters.Publisher publisher) {

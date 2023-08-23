@@ -127,10 +127,8 @@ class TemplateClassWriter implements LoggingSupplier {
 		public boolean isMatch(ExecutableElement e) {
 			var jlm = JavaLanguageModel.getInstance();
 
-			if (!this.name().equals(e.getSimpleName().toString())) {
-				return false;
-			}
-			if (!e.getModifiers().contains(Modifier.PUBLIC) || e.getModifiers().contains(Modifier.ABSTRACT)) {
+			if (!this.name().equals(e.getSimpleName().toString()) || !e.getModifiers().contains(Modifier.PUBLIC)
+					|| e.getModifiers().contains(Modifier.ABSTRACT)) {
 				return false;
 			}
 			var appendable = jlm.getElements().getTypeElement(Appendable.class.getName()).asType();

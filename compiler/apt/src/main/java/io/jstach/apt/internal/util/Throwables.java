@@ -36,10 +36,6 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/**
- * @author agentgt
- * @author Victor Nazarov &lt;asviraspossible@gmail.com&gt;
- */
 public class Throwables {
 
 	public static String render(Throwable exception) {

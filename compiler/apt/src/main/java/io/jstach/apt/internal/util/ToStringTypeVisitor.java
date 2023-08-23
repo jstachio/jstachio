@@ -1,6 +1,7 @@
 package io.jstach.apt.internal.util;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.lang.model.element.Element;
@@ -86,7 +87,7 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 				p.append(ta.toString()).append(" ");
 			}
 		}
-		p.append(t.getKind().toString().toLowerCase());
+		p.append(t.getKind().toString().toLowerCase(Locale.ROOT));
 
 		return p;
 	}

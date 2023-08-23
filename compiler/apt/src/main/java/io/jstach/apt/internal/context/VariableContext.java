@@ -37,9 +37,6 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/**
- * @author Victor Nazarov
- */
 public class VariableContext {
 
 	public static String APPENDER = "appender";

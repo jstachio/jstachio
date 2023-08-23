@@ -355,6 +355,12 @@ abstract class TemplateCompiler extends AbstractTemplateCompiler {
 		println();
 	}
 
+	/*
+	 * TODO check is s.split(..., -1) will work here to make errorprone stop complaining.
+	 * I'm aware of the surpring results of "split" but I already tested for the default
+	 * behavior
+	 */
+	@SuppressWarnings("StringSplitter")
 	private void print(String s) {
 		int i = 0;
 		for (String line : s.split("\n")) {
@@ -571,14 +577,16 @@ abstract class TemplateCompiler extends AbstractTemplateCompiler {
 		popContext();
 	}
 
-	private void _endParentSection(String name) throws ProcessingException {
+	protected void _endParentSection(String name) throws ProcessingException {
 		/*
 		 * We are at the end of a parent partial {{< parent}} {{/parent}} <-- we are here
 		 */
-		throw new UnsupportedOperationException("bug close parent should be dealt somewhere else.");
+		throw new UnsupportedOperationException("bug close parent should be dealt somewhere else. name=" + name);
 	}
 
-	private void _endBlockSection(String name) {
+	@SuppressWarnings("UnusedVariable") // I want this for consistency
+	protected void _endBlockSection(String name) {
+		// do nothing
 	}
 
 	@Override

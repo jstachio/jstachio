@@ -240,21 +240,21 @@ abstract class WhitespaceTokenProcessor implements MustacheTokenProcessor, Loggi
 
 	protected record ProcessToken(PositionedToken<MustacheToken> token, ProcessHint hint) {
 
-		protected static ProcessToken ignore(PositionedToken<MustacheToken> token) {
+		static ProcessToken ignore(PositionedToken<MustacheToken> token) {
 			if (token.innerToken().isEOF()) {
 				return new ProcessToken(token, ProcessHint.EOF);
 			}
 			return new ProcessToken(token, ProcessHint.IGNORE);
 		}
 
-		protected static ProcessToken of(PositionedToken<MustacheToken> token) {
+		static ProcessToken of(PositionedToken<MustacheToken> token) {
 			if (token.innerToken().isEOF()) {
 				return new ProcessToken(token, ProcessHint.EOF);
 			}
 			return new ProcessToken(token, ProcessHint.NORMAL);
 		}
 
-		protected static ProcessToken indent(PositionedToken<MustacheToken> token) {
+		static ProcessToken indent(PositionedToken<MustacheToken> token) {
 			if (token.innerToken().isEOF()) {
 				return new ProcessToken(token, ProcessHint.EOF);
 			}

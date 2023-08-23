@@ -29,10 +29,6 @@
  */
 package io.jstach.apt.internal;
 
-/**
- * @author Victor Nazarov
- * @param <T>
- */
 public class PositionedToken<T> {
 
 	private final Position position;

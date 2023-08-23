@@ -29,6 +29,13 @@
  */
 package io.jstach.apt.internal.context;
 
+import static io.jstach.apt.prism.Prisms.JSTACHE_FIRST_BINDING_NAME;
+import static io.jstach.apt.prism.Prisms.JSTACHE_FIRST_JMUSTACHE_BINDING_NAME;
+import static io.jstach.apt.prism.Prisms.JSTACHE_INDEX_BINDING_NAME;
+import static io.jstach.apt.prism.Prisms.JSTACHE_INDEX_JMUSTACHE_BINDING_NAME;
+import static io.jstach.apt.prism.Prisms.JSTACHE_LAST_BINDING_NAME;
+import static io.jstach.apt.prism.Prisms.JSTACHE_LAST_JMUSTACHE_BINDING_NAME;
+
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -44,8 +51,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
 import io.jstach.apt.internal.util.Interpolator;
 import io.jstach.apt.internal.util.ToStringTypeVisitor;
-
-import static io.jstach.apt.prism.Prisms.*;
 
 /**
  * @author Victor Nazarov

@@ -52,10 +52,6 @@ import io.jstach.apt.internal.context.Lambda.Lambdas;
 import io.jstach.apt.prism.Prisms;
 import io.jstach.apt.prism.Prisms.Flag;
 
-/**
- * @see RenderingCodeGenerator#createTemplateCompilerContext
- * @author Victor Nazarov
- */
 public class TemplateCompilerContext {
 
 	private final TemplateStack templateStack;
@@ -392,7 +388,7 @@ public class TemplateCompilerContext {
 				return new LambdaRenderingContext(lambda, variables, enclosing);
 			}
 		}
-		if (entry == null & !direct) {
+		if (entry == null && !direct) {
 			// We retry for Map like contexts
 			entry = enclosing.find(name, c -> true);
 		}

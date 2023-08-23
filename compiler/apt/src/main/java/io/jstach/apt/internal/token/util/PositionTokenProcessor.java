@@ -36,17 +36,13 @@ import io.jstach.apt.internal.PositionedToken;
 import io.jstach.apt.internal.ProcessingException;
 import io.jstach.apt.internal.TokenProcessor;
 
-/**
- * @author Victor Nazarov
- * @param <T>
- */
-public class PositionHodingTokenProcessor<T> implements TokenProcessor<T> {
+public class PositionTokenProcessor<T> implements TokenProcessor<T> {
 
 	private final TokenProcessor<PositionedToken<T>> downstream;
 
 	private @Nullable Position position = null;
 
-	public PositionHodingTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
+	public PositionTokenProcessor(TokenProcessor<PositionedToken<T>> downstream) {
 		this.downstream = downstream;
 	}
 

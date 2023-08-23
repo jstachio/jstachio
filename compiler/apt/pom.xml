@@ -126,7 +126,7 @@
 
   <profiles>
     <profile>
-      <id>errorprone-disable</id>
+      <id>errorprone</id>
       <build>
         <plugins>
           <plugin>

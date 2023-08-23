@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -175,7 +176,7 @@ class TextFileObject {
 
 		private static final String DUMMY = "dummy";
 
-		private String endPath;
+		private final String endPath;
 
 		private OutputPathPattern(String endPath) {
 			this.endPath = endPath;
@@ -229,7 +230,7 @@ class TextFileObject {
 		sb.append("\n\n");
 
 		for (var e : System.getProperties().entrySet()) {
-			var key = e.getKey().toString().toLowerCase();
+			var key = e.getKey().toString().toLowerCase(Locale.ENGLISH);
 			/*
 			 * Shitty heuristic for not printing out sensitive stuff
 			 */

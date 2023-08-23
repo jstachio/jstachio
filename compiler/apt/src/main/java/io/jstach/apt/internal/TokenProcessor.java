@@ -31,10 +31,6 @@ package io.jstach.apt.internal;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/**
- * @author Victor Nazarov
- * @param <T>
- */
 public interface TokenProcessor<T> {
 
 	static @Nullable Character EOF = null;

@@ -29,9 +29,6 @@
  */
 package io.jstach.apt.internal;
 
-/**
- * @author Victor Nazarov
- */
 public class Position {
 
 	private final String fileName;

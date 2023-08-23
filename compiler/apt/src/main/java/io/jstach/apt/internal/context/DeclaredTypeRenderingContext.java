@@ -48,9 +48,6 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.jstach.apt.internal.context.RenderingContext.ChildRenderingContext;
 
-/**
- * @author Victor Nazarov
- */
 class DeclaredTypeRenderingContext implements ChildRenderingContext, InvertedExpressionContext {
 
 	private final JavaExpression expression;
@@ -107,12 +104,15 @@ class DeclaredTypeRenderingContext implements ChildRenderingContext, InvertedExp
 		return result;
 	}
 
+	private static boolean nameFuzzyMatch(Element element, String name) {
+		return element.getSimpleName().toString().toLowerCase(Locale.ROOT).contains(name.toLowerCase(Locale.ROOT));
+	}
+
 	private @Nullable JavaExpression getMethodEntry(List<? extends Element> elements, String name)
 			throws ContextException {
 		boolean nameFound = false;
 		for (Element element : elements) {
-			if (element.getKind() == ElementKind.METHOD
-					&& element.getSimpleName().toString().toLowerCase().contains(name.toLowerCase())) {
+			if (element.getKind() == ElementKind.METHOD && nameFuzzyMatch(element, name)) {
 				nameFound = true;
 				ExecutableType method;
 				try {
@@ -158,6 +158,9 @@ class DeclaredTypeRenderingContext implements ChildRenderingContext, InvertedExp
 				}
 			}
 		}
+		/*
+		 * TODO this weird nameFound logic was going to be "did you mean"
+		 */
 		if (!nameFound)
 			return null;
 		else {

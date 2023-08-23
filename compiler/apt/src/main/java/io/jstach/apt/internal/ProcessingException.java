@@ -34,9 +34,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.apt.internal.context.ContextException;
 import io.jstach.apt.internal.context.TemplateCompilerContext;
 
-/**
- * @author Victor Nazarov
- */
 public class ProcessingException extends Exception {
 
 	private static final long serialVersionUID = 7396512855619812062L;

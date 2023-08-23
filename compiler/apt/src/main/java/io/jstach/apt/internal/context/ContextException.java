@@ -31,9 +31,6 @@ package io.jstach.apt.internal.context;
 
 import java.util.Objects;
 
-/**
- * @author Victor Nazarov
- */
 public class ContextException extends Exception {
 
 	private static final long serialVersionUID = -1496891677459676774L;
