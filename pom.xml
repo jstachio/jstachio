@@ -416,7 +416,7 @@
             <executions>
               <execution>
                 <id>show-profiles</id>
-                <phase>compile</phase>
+                <phase>initialize</phase>
                 <goals>
                   <goal>active-profiles</goal>
                 </goals>

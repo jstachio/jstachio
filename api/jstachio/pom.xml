@@ -168,5 +168,26 @@
         </plugins>
       </build>
     </profile>
+    <!-- IMHO spotbugs is not very good. -->
+    <profile>
+      <id>spotbugs</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>4.7.3.5</version>
+            <executions>
+              <execution>
+                <id>spotbugs-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
