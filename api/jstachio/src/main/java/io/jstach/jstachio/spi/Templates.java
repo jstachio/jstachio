@@ -388,7 +388,7 @@ public final class Templates {
 			throw new TemplateNotFoundException(modelClass);
 		}
 		String cname;
-		if (a == null || a.name().isBlank()) {
+		if (a.name().isBlank()) {
 
 			// @SuppressWarnings("null") // Eclipse bug with annotation arrays
 			JStacheName name = findAnnotations(modelClass, JStacheConfig.class) //
