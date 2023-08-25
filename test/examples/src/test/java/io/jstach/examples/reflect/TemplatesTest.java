@@ -1,18 +1,22 @@
 package io.jstach.examples.reflect;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
+import io.jstach.examples.IterableExample;
 import io.jstach.jstache.JStache;
 import io.jstach.jstache.JStacheConfig;
 import io.jstach.jstache.JStacheName;
 import io.jstach.jstachio.Template;
 import io.jstach.jstachio.TemplateInfo;
 import io.jstach.jstachio.escapers.PlainText;
+import io.jstach.jstachio.spi.JStachioConfig;
 import io.jstach.jstachio.spi.Templates;
 
 public class TemplatesTest {
@@ -84,6 +88,13 @@ public class TemplatesTest {
 	@Test(expected = NoSuchElementException.class)
 	public void testGetOnUseInterfaceNotAnnotatedShouldNotFind() throws Exception {
 		Templates.getTemplate(UseInterfaceNotAnnotated.class);
+	}
+
+	@Test
+	public void testReflectionFree() throws Exception {
+		Map<String, String> config = Map.of(JStachioConfig.REFLECTION_TEMPLATE_DISABLE, "true");
+		var t = Templates.findTemplate(IterableExample.class, config::get);
+		assertNotNull(t);
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package io.jstach.jstachio.spi;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -241,6 +242,12 @@ class TemplateNotFoundException extends NoSuchElementException {
 
 	}
 
+	public TemplateNotFoundException(Class<?> modelType, Collection<Templates.TemplateLoadStrategy> strategies) {
+		super(errorMessage(modelType, strategies));
+		this.modelType = modelType;
+
+	}
+
 	public TemplateNotFoundException(String message, Class<?> modelType) {
 		super(message + " " + errorMessage(modelType));
 		this.modelType = modelType;
@@ -248,7 +255,11 @@ class TemplateNotFoundException extends NoSuchElementException {
 	}
 
 	protected static String errorMessage(Class<?> modelType) {
-		return "Template not found for type: " + modelType;
+		return "Template not found for type: '" + modelType + "'";
+	}
+
+	protected static String errorMessage(Class<?> modelType, Collection<Templates.TemplateLoadStrategy> strategies) {
+		return errorMessage(modelType) + ", using strategies: " + strategies;
 	}
 
 	public Class<?> modelType() {

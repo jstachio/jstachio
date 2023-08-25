@@ -177,17 +177,22 @@ public final class Templates {
 	static @Nullable Entry<Class<?>, JStache> findJStacheOrNull(final Class<?> modelType) {
 		if (isIgnoredType(modelType))
 			return null;
-		return Stream.concat(parents(modelType), interfaces(modelType)) //
-				.filter(_c -> !isIgnoredType(_c)) //
+		return possibleJStacheTypes(modelType) //
 				.flatMap(_c -> Stream.ofNullable(_c.getDeclaredAnnotation(JStache.class)) //
 						.map(a -> Map.<Class<?>, JStache>entry(_c, a))) //
 				.findFirst() //
 				.orElse(null);
 	}
 
-	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
+	private static Stream<Class<?>> possibleJStacheTypes(Class<?> modelType) {
+		if (isIgnoredType(modelType)) {
+			return Stream.empty();
+		}
+		return Stream.concat(parents(modelType), interfaces(modelType)) //
+				.filter(_c -> !isIgnoredType(_c));
+	}
 
-		var resolvedType = findJStache(modelType).getKey();
+	static TemplateInfo findTemplate(Class<?> modelType, JStachioConfig config, Logger logger) throws Exception {
 
 		EnumSet<TemplateLoadStrategy> strategies = EnumSet.noneOf(TemplateLoadStrategy.class);
 
@@ -196,17 +201,49 @@ public final class Templates {
 				strategies.add(s);
 			}
 		}
-		var classLoaders = collectClassLoaders(modelType.getClassLoader());
 
+		var classLoaders = collectClassLoaders(modelType.getClassLoader());
 		Exception error;
-		try {
-			Template<?> r = Templates.getTemplate(resolvedType, strategies, classLoaders, logger);
-			return r;
+		if (config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
+			/*
+			 * Here we walk up the ancestor tree but do not call getDeclaredAnnotation as
+			 * that is borderline reflection.
+			 *
+			 * It is not so much that it is reflection but calling get*Annotation on any
+			 * class will instantiate most of the annotations and if someone is looking to
+			 * disable reflection they probably want that as well.
+			 *
+			 * This is probably more expensive computational wise as the ServiceLoader is
+			 * repeatedly instantiated up the hieararchy but more often the class passed
+			 * is the one annotated. TODO cache serviceloader.
+			 */
+			var resolvedTypes = possibleJStacheTypes(modelType).toList();
+			@Nullable
+			Exception firstError = null;
+			for (var resolvedType : resolvedTypes) {
+				try {
+					return Templates.getTemplate(resolvedType, strategies, classLoaders, logger);
+				}
+				catch (Exception e) {
+					if (firstError == null) {
+						firstError = e;
+					}
+				}
+			}
+			error = firstError != null ? firstError : new TemplateNotFoundException(modelType, strategies);
 		}
-		catch (Exception e) {
-			error = e;
-		}
-		if (!config.getBoolean(JStachioConfig.REFLECTION_TEMPLATE_DISABLE)) {
+		else {
+			/*
+			 * Since reflection is allowed we go looking for the annotation to find the
+			 * JStache model.
+			 */
+			var resolvedType = findJStache(modelType).getKey();
+			try {
+				return Templates.getTemplate(resolvedType, strategies, classLoaders, logger);
+			}
+			catch (Exception e) {
+				error = e;
+			}
 			if (logger.isLoggable(Level.WARNING)) {
 				String message = String
 						.format("Could not find generated template and will try reflection for model type:"
@@ -214,10 +251,8 @@ public final class Templates {
 				logger.log(Level.WARNING, message, error);
 			}
 			return getInfoByReflection(resolvedType);
-
 		}
 		throw error;
-
 	}
 
 	/**
@@ -286,7 +321,7 @@ public final class Templates {
 				}
 			}
 		}
-		throw new TemplateNotFoundException(modelType);
+		throw new TemplateNotFoundException(modelType, StreamSupport.stream(strategies.spliterator(), false).toList());
 	}
 
 	static boolean isReflectionTemplate(TemplateInfo template) {

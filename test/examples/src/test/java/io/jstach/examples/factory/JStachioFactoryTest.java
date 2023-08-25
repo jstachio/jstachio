@@ -67,7 +67,7 @@ public class JStachioFactoryTest {
 		}
 		catch (NoSuchElementException e) {
 			assertEquals("JStache annotation was not found on type or parents. "
-					+ "Template not found for type: class io.jstach.examples.factory.JStachioFactoryTest$NotRegistered",
+					+ "Template not found for type: 'class io.jstach.examples.factory.JStachioFactoryTest$NotRegistered'",
 					e.getMessage());
 		}
 
