@@ -687,7 +687,16 @@ public class GenerateRendererProcessor extends AbstractProcessor implements Pris
 			if (path != null) {
 				return Stream.of(path.split(",")).filter(p -> !p.isBlank()).toList();
 			}
-			return ProcessingConfig.super.resourcesPaths();
+			return List.of();
+		}
+
+		@Override
+		public boolean fallbackToFilesystem() {
+			String path = options.get(JSTACHE_RESOURCES_PATH_OPTION);
+			if (path != null && path.isBlank()) {
+				return false;
+			}
+			return true;
 		}
 
 		@Override
