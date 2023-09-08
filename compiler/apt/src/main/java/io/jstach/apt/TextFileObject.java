@@ -122,9 +122,13 @@ class TextFileObject {
 				config.debug("Detected class output pattern: " + pattern + " projectPath: " + projectPath);
 			}
 
+			var resourcePaths = config.resourcesPaths();
+			if (resourcePaths.isEmpty()) {
+				resourcePaths = pattern.relativeSourcePaths();
+			}
 			String resourceName = name;
-			List<Path> fullPaths = config.resourcesPaths().stream()
-					.map(rp -> resolvePath(projectPath, rp, resourceName)).toList();
+			List<Path> fullPaths = resourcePaths.stream().map(rp -> resolvePath(projectPath, rp, resourceName))
+					.toList();
 
 			for (Path fullPath : fullPaths) {
 				if (config.isDebug()) {
@@ -161,8 +165,11 @@ class TextFileObject {
 
 	private enum OutputPathPattern {
 
-		GRADLE("/build/classes/java/main/"), GRADLE_TEST("/build/classes/java/test/"), MAVEN("/target/classes/"),
-		MAVEN_TEST("/target/test-classes/"), CWD(".") {
+		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
+		GRADLE_TEST("/build/classes/java/test/", List.of("src/test/resources")), //
+		MAVEN("/target/classes/", List.of("src/main/resources")), //
+		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), //
+		CWD(".", List.of("src/main/resources")) {
 			@Override
 			public boolean matches(String uri) {
 				return false;
@@ -178,8 +185,11 @@ class TextFileObject {
 
 		private final String endPath;
 
-		private OutputPathPattern(String endPath) {
+		private final List<String> relativeSourcePaths;
+
+		private OutputPathPattern(String endPath, List<String> relativeSourcePaths) {
 			this.endPath = endPath;
+			this.relativeSourcePaths = relativeSourcePaths;
 		}
 
 		public boolean matches(String uri) {
@@ -197,6 +207,10 @@ class TextFileObject {
 				path = parent;
 			}
 			return path;
+		}
+
+		public List<String> relativeSourcePaths() {
+			return relativeSourcePaths;
 		}
 
 		public static OutputPathPattern find(URI uri) {

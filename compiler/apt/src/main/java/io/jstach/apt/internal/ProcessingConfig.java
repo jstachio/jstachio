@@ -38,9 +38,7 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 		return List.of("src/main/resources");
 	}
 
-	default boolean fallbackToFilesystem() {
-		return !resourcesPaths().isEmpty();
-	}
+	public boolean fallbackToFilesystem();
 
 	PathConfig pathConfig();
 
