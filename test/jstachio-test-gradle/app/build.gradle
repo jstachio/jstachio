@@ -5,8 +5,8 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
 }
 
 test {
@@ -27,6 +27,7 @@ dependencies {
     //Comment me!!!
     annotationProcessor "io.jstach:jstachio-apt:$jstachioVersion"
 
+    testAnnotationProcessor "io.jstach:jstachio-apt:$jstachioVersion"
 
     annotationProcessor fileTree(layout.projectDirectory.dir('src/main/resources/templates')) { include '**/*' }
 }
