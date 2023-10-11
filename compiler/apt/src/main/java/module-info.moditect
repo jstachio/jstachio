@@ -1,6 +1,7 @@
 module io.jstach.apt {
 	
 	requires java.compiler;
+	requires java.xml;
 	provides javax.annotation.processing.Processor with io.jstach.apt.GenerateRendererProcessor;
 	
 }

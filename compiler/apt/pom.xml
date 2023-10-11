@@ -74,30 +74,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.moditect</groupId>
-        <artifactId>moditect-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-module-infos</id>
-            <phase>package</phase>
-            <goals>
-              <goal>add-module-info</goal>
-            </goals>
-            <configuration>
-              <overwriteExistingFiles>true</overwriteExistingFiles>
-              <module>
-                <moduleInfoFile>
-                  src/main/java/module-info.moditect
-                </moduleInfoFile>
-              </module>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
     </plugins>
   </build>
   <dependencies>
@@ -125,6 +101,34 @@
   </dependencies>
 
   <profiles>
+    <profile>
+      <id>moditect</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>add-module-info</goal>
+                </goals>
+                <configuration>
+                  <overwriteExistingFiles>true</overwriteExistingFiles>
+                  <module>
+                    <moduleInfoFile>
+                      src/main/java/module-info.moditect
+                    </moduleInfoFile>
+                  </module>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>errorprone</id>
       <build>
