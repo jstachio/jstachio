@@ -671,6 +671,24 @@ if present.
   <li>The configuration can be placed on enclosing types of class, package, and module where the inner enclosed takes precedence.</li>
 </ol>
 
+<h4 id="compile_processor_options">Annotation processor options</h4>
+
+Some configuration is available as an annotation processor options. 
+Annotation processor options are compiler arguments starting with <code>-A</code>.
+
+Current available options are:
+
+<ul>
+<li>{@link io.jstach.jstache.JStache#RESOURCES_PATH_OPTION}</li>
+<li>{@link io.jstach.jstache.JStache#INCREMENTAL_OPTION}</li>
+</ul>
+
+{@linkplain io.jstach.jstache.JStacheFlags compiler flags} are also available as
+annotation options. The flags are prefixed with "<code>jstache.</code>". For example
+{@link io.jstach.jstache.JStacheFlags.Flag#DEBUG} would be:
+<p>
+<code>-Ajstache.debug=true/false</code>.
+
 <h3 id="runtime_config">Runtime Configuration</h3>
 
 Certain configuration such as logging and whether or not to use
@@ -825,7 +843,21 @@ class is not available because of incremental compiling and particularly
 a problem with Maven. Try a full rebuild (e.g. mvn clean package).
 </p>
 <p>
-If your application is a modular application (<code>module-info.java</code>)
+<strong>If you are using Eclipse</strong> and see compiler errors in the Eclipse UI 
+there is a possibility that the current working directory and or source paths could not be resolved.
+JStachio does its best to resolve source path but not all configuration will work.
+
+As a painful last resort you can use Eclipse project settings and go to: 
+<em>Java Compiler -&gt; Annotation Processing -&gt; Processor options</em>.
+
+Set {@value io.jstach.jstache.JStache#RESOURCES_PATH_OPTION} to the <strong>absolute</strong>
+path of your templates.
+
+See {@link io.jstach.jstache.JStache#RESOURCES_PATH_OPTION} for more information.
+
+</p>
+<p>
+Finally if your application is a modular application (<code>module-info.java</code>)
 then you will need to either allow reflective access to JStachio 
 (e.g <code> open somepackage to io.jstach.jstachio</code>) or 
 register a Service Located TemplateProvider. 

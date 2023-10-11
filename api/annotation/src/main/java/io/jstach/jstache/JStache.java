@@ -588,13 +588,22 @@ public @interface JStache {
 	 * instead of the output (<code>javax.tools.StandardLocation#CLASS_OUTPUT</code>) if
 	 * the files cannot be found.
 	 * <p>
+	 * JStachio tries to resolve your project layout and current working directory
+	 * automatically based on variety of heuristics so that you do not need to use this
+	 * flag. JStachio may not find the correct source folder for your templates but it
+	 * usually can find the correct "<em>current working directory</em>" (which will be
+	 * called "<em>CWD</em>" for the rest of this passage).
+	 * </p>
 	 * <strong>Multiple paths can be passed by comma separating them.</strong> The paths
 	 * are tried in order. If a path does not start with a path separator then it will be
-	 * appended to the the current working directory otherwise it is assumed to be a fully
-	 * qualified path.
+	 * appended to the <strong>resolved</strong> CWD otherwise it is assumed to be a fully
+	 * qualified path. <strong> NOTE the CWD may not be correct! </strong>
 	 * <p>
-	 * The default location is <code>CWD/src/main/resources</code> where CWD is the
-	 * current working directory.
+	 * The default location is <code>CWD/src/main/resources</code>. Again the CWD may not
+	 * be resolved correctly so the only guarantee is to give the absolute path if nothing
+	 * else is working. Please file an issue with info on your build system and IDE if you
+	 * project is mostly canonical in layout if you are experiencing issues.
+	 * </p>
 	 *
 	 * <strong>If the option is blank or empty then NO fallback will happen and
 	 * effectively disables the above behavior. </strong>
