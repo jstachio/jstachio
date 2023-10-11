@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.internal.NamedTemplate.FileTemplate;
 import io.jstach.apt.internal.NamedTemplate.InlineTemplate;
 import io.jstach.apt.prism.Prisms.Flag;
@@ -50,6 +52,18 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 		String cmd = System.getProperty("sun.java.command");
 		if (cmd != null) {
 			return cmd.trim().startsWith("org.gradle.launcher.daemon.bootstrap.GradleDaemon");
+		}
+		return false;
+	}
+
+	public static @Nullable String eclipseVersion() {
+		return System.getProperty("eclipse.buildId");
+	}
+
+	public static boolean isEclipse() {
+		String v = eclipseVersion();
+		if (v != null && !v.isBlank()) {
+			return true;
 		}
 		return false;
 	}

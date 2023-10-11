@@ -1,0 +1,4 @@
+class javax/xml/parsers/DocumentBuilder
+parse
+ (Ljava/io/InputStream;)Lorg/w3c/dom/Document;
+ (Ljava/io/InputStream;)L1org/w3c/dom/Document;

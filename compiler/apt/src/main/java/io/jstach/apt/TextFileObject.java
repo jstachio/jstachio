@@ -40,26 +40,36 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import io.jstach.apt.internal.ProcessingConfig;
+import io.jstach.apt.internal.util.EclipseClasspath;
+import io.jstach.apt.internal.util.EclipseClasspath.EclipseClasspathFile;
+import io.jstach.apt.internal.util.Throwables;
 
 /**
+ * THERE BE MOTHER FUCKING DRAGONS HERE
+ *
  * @author Victor Nazarov
  * @author agentgt
  */
 class TextFileObject {
 
-	// private final FileObject resource;
 	private final ProcessingEnvironment env;
 
 	private final ProcessingConfig config;
 
+	private final static ConcurrentMap<Path, Optional<EclipseClasspathFile>> eclipseClasspathFileCache = new ConcurrentHashMap<>();
+
 	TextFileObject(ProcessingConfig config, ProcessingEnvironment env) {
-		// this.resource = resource;
 		this.env = env;
 		this.config = config;
 	}
@@ -87,37 +97,88 @@ class TextFileObject {
 		if (resource.getLastModified() > 0) {
 			return resource.openInputStream();
 		}
+		boolean eclipseFileManager = env.getFiler().getClass().getName().startsWith("org.eclipse");
+
 		if (config.isDebug()) {
 			config.debug("File not found with Filer. resource: " + resource.toUri());
+			if (eclipseFileManager) {
+				config.debug("Eclipse file manager is in use.");
+			}
 		}
 		/*
 		 * Often times during incremental compilation via Eclipse or Gradle the resource
 		 * is missing from the Filer. This is because it looks for the file in output
 		 * directory and it has not been copied for whatever reason. So we go directly
 		 * looking for the file.
+		 *
+		 * The major thing we need to figure out is where is the source directory. This is
+		 * challenging because with APT the CWD may not be the project directory
+		 * furthermore there can be multiple source and output directories for a given
+		 * project.
 		 */
 		if (config.fallbackToFilesystem()) {
 			/*
 			 * We use a dummy FileObject to get a relative directory. This is because
 			 * current work directory can be misleading depending on build implementation.
 			 */
-			FileObject dummy = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "", OutputPathPattern.DUMMY);
+			FileObject dummyClassOutput = env.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "",
+					OutputPathPattern.DUMMY);
+			FileObject dummySourceOutput = env.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "",
+					OutputPathPattern.DUMMY);
 
 			if (config.isGradleEnabled() && config.isDebug()) {
-				config.debug("Looks like we are using Gradle incremental. dummy: " + dummy.toUri());
+				config.debug("Looks like we are using Gradle incremental. dummy: " + dummyClassOutput.toUri());
 
 			}
 			else if (config.isDebug()) {
-				config.debug("Looks like we are using Eclipse or Intellij incremental. dummy: " + dummy.toUri());
+				config.debug(
+						"Looks like we are using Eclipse or Intellij incremental. dummy: " + dummyClassOutput.toUri());
 			}
 
+			OutputPathPattern outputPattern = OutputPathPattern.find(dummyClassOutput.toUri());
 			/*
-			 * Aka the CWD
+			 * Aka the CWD.
 			 */
 			Path projectPath;
+			ProjectPattern pattern;
+			if (outputPattern == OutputPathPattern.CWD && eclipseFileManager) {
+				/*
+				 * The following is because Eclipse projects that are not maven/gradle can
+				 * have unusual source paths. Furthermore figuring out the CWD is not easy
+				 * either.
+				 *
+				 * The EclipseClasspath will find the .classpath as well as parse it so
+				 * that we can get the source paths.
+				 *
+				 * We do not do this for Eclipse and Gradle buildship because it is slow
+				 * as shit parsing XML on every template.
+				 */
+				config.debug("Attempting to locate .classpath as we are in Eclipse");
+				var classOutputPath = Path.of(dummyClassOutput.toUri()).getParent();
+				if (classOutputPath == null) {
+					throw new IOException(printAttempts("Failed to locate Eclipse .classpath! ", name, resource));
+				}
+				var classpathFile = findEclipseClasspathFile(classOutputPath);
 
-			OutputPathPattern pattern = OutputPathPattern.find(dummy.toUri());
-			projectPath = pattern.resolveProjectPath(dummy.toUri());
+				if (classpathFile == null) {
+					config.debug("Failed to locate Eclipse .classpath!");
+					throw new IOException(printAttempts("Failed to locate Eclipse .classpath! ", name, resource));
+				}
+				var projectDirectory = classpathFile.classpathFile().getParent();
+				if (projectDirectory == null) {
+					throw new IOException(printAttempts("No parent directory to Eclipse .classpath! ", name, resource));
+				}
+				projectPath = projectDirectory;
+				var sourceOutputPath = Path.of(dummySourceOutput.toUri()).getParent();
+				List<String> sourcePaths = classpathFile.findRelativeSourcePaths(classOutputPath, sourceOutputPath)
+						.toList();
+				pattern = new ProjectPattern.EclipseProjectPattern(sourcePaths);
+
+			}
+			else {
+				projectPath = outputPattern.resolveProjectPath(dummyClassOutput.toUri());
+				pattern = outputPattern;
+			}
 			if (config.isDebug()) {
 				config.debug("Detected class output pattern: " + pattern + " projectPath: " + projectPath);
 			}
@@ -133,7 +194,7 @@ class TextFileObject {
 			for (Path fullPath : fullPaths) {
 				if (config.isDebug()) {
 					config.debug("File not found with Filer. Trying direct file access. name:" + resourceName
-							+ ", path: " + fullPath + ", dummy: " + dummy.toUri());
+							+ ", path: " + fullPath + ", dummy: " + dummyClassOutput.toUri());
 				}
 				if (Files.isReadable(fullPath)) {
 					return Files.newInputStream(fullPath);
@@ -144,13 +205,38 @@ class TextFileObject {
 				StringBuilder diagnostic = new StringBuilder();
 				printAttempts(diagnostic, name, resource, fullPaths, "\n\t");
 				diagnostic.append("\n\n");
-				diagnosticDump(diagnostic, config, Map.of("outputPathPattern", pattern.toString()));
+				Map<String, String> keys = Map.of( //
+						"outputPathPattern", pattern.toString(), //
+						"filer", env.getFiler().getClass().toString(), //
+						"classOutput", dummyClassOutput.toUri().toString(), //
+						"sourceOutput", dummySourceOutput.toUri().toString() //
+				);
+				diagnosticDump(diagnostic, config, keys);
 				config.debug(diagnostic.toString());
+				error = error + "\n" + diagnostic.toString();
 			}
 			throw new IOException(error);
 		}
 
 		return resource.openInputStream();
+	}
+
+	@SuppressWarnings("null")
+	private @Nullable EclipseClasspathFile findEclipseClasspathFile(Path classOutputPath) throws IOException {
+
+		return eclipseClasspathFileCache.computeIfAbsent(classOutputPath, (Path p) -> {
+			try {
+				return EclipseClasspath.find(p);
+			}
+			catch (IOException e) {
+				throw Throwables.sneakyThrow(e);
+			}
+		}).orElse(null);
+	}
+
+	private static String printAttempts(String error, String name, FileObject resource) {
+		StringBuilder sb = new StringBuilder(error);
+		return printAttempts(sb, name, resource, List.of(), "").toString();
 	}
 
 	private static StringBuilder printAttempts(StringBuilder sb, String name, FileObject resource, List<Path> fullPaths,
@@ -163,13 +249,25 @@ class TextFileObject {
 		return sb;
 	}
 
-	private enum OutputPathPattern {
+	private interface ProjectPattern {
+
+		public List<String> relativeSourcePaths();
+
+		record EclipseProjectPattern(List<String> relativeSourcePaths) implements ProjectPattern {
+			// eclipse bug
+			public List<String> relativeSourcePaths() {
+				return this.relativeSourcePaths;
+			}
+		}
+
+	}
+
+	private enum OutputPathPattern implements ProjectPattern {
 
 		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
 		GRADLE_TEST("/build/classes/java/test/", List.of("src/test/resources")), //
 		MAVEN("/target/classes/", List.of("src/main/resources")), //
-		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), //
-		CWD(".", List.of("src/main/resources")) {
+		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), CWD(".", List.of("src/main/resources")) {
 			@Override
 			public boolean matches(String uri) {
 				return false;
@@ -187,9 +285,16 @@ class TextFileObject {
 
 		private final List<String> relativeSourcePaths;
 
+		private final StandardLocation outputType;
+
 		private OutputPathPattern(String endPath, List<String> relativeSourcePaths) {
+			this(endPath, relativeSourcePaths, StandardLocation.CLASS_OUTPUT);
+		}
+
+		private OutputPathPattern(String endPath, List<String> relativeSourcePaths, StandardLocation outputType) {
 			this.endPath = endPath;
 			this.relativeSourcePaths = relativeSourcePaths;
+			this.outputType = outputType;
 		}
 
 		public boolean matches(String uri) {
@@ -214,8 +319,15 @@ class TextFileObject {
 		}
 
 		public static OutputPathPattern find(URI uri) {
+			return find(uri, StandardLocation.CLASS_OUTPUT);
+		}
+
+		public static OutputPathPattern find(URI uri, StandardLocation location) {
 			String u = uri.toString().trim();
 			for (var o : values()) {
+				if (location != o.outputType) {
+					continue;
+				}
 				if (o.matches(u)) {
 					return o;
 				}

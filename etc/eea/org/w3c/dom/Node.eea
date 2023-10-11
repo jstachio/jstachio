@@ -1,0 +1,4 @@
+class org/w3c/dom/Node
+getChildNodes
+ ()Lorg/w3c/dom/NodeList;
+ ()L1org/w3c/dom/NodeList;

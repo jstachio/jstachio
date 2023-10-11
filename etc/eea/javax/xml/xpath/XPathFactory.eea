@@ -1,0 +1,4 @@
+class javax/xml/xpath/XPathFactory
+newXPath
+ ()Ljavax/xml/xpath/XPath;
+ ()L1javax/xml/xpath/XPath;

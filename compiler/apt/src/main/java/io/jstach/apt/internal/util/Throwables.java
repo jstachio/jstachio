@@ -68,7 +68,7 @@ public class Throwables {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <E extends Throwable> void sneakyThrow(final Throwable x) throws E {
+	public static <E extends Throwable> RuntimeException sneakyThrow(final Throwable x) throws E {
 		throw (E) x;
 	}
 
