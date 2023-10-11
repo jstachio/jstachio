@@ -132,6 +132,9 @@ public class EclipseClasspath {
 		File file = startingPath.toAbsolutePath().toFile();
 		if (file.isFile()) {
 			file = file.getParentFile();
+			if (file == null) {
+				return Stream.empty();
+			}
 		}
 		var sp = file.toPath();
 
