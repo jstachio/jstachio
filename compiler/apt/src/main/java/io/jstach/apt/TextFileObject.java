@@ -29,6 +29,8 @@
  */
 package io.jstach.apt;
 
+import static java.util.Map.entry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -40,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -173,7 +176,10 @@ class TextFileObject {
 				List<String> sourcePaths = classpathFile.findRelativeSourcePaths(classOutputPath, sourceOutputPath)
 						.toList();
 				pattern = new ProjectPattern.EclipseProjectPattern(sourcePaths);
-
+				if (config.isDebug()) {
+					config.info("Inside Eclipse. Using .classpath. name = " + name + " projectPath = " + projectPath
+							+ " sourcePaths = " + sourcePaths + " resourcesPaths=" + config.resourcesPaths());
+				}
 			}
 			else {
 				projectPath = outputPattern.resolveProjectPath(dummyClassOutput.toUri());
@@ -205,15 +211,21 @@ class TextFileObject {
 				StringBuilder diagnostic = new StringBuilder();
 				printAttempts(diagnostic, name, resource, fullPaths, "\n\t");
 				diagnostic.append("\n\n");
-				Map<String, String> keys = Map.of( //
-						"outputPathPattern", pattern.toString(), //
-						"filer", env.getFiler().getClass().toString(), //
-						"classOutput", dummyClassOutput.toUri().toString(), //
-						"sourceOutput", dummySourceOutput.toUri().toString() //
+				List<Entry<String, String>> keys = List.of( //
+						entry("projectPath", projectPath.toString()), //
+						entry("classOutput", dummyClassOutput.toUri().toString()), //
+						entry("sourceOutput", dummySourceOutput.toUri().toString()), //
+						entry("outputPathPattern", pattern.toString()), //
+						entry("jstache.resourcesPath", config.resourcesPaths().toString()), //
+						entry("filer", env.getFiler().getClass().toString()) //
 				);
 				diagnosticDump(diagnostic, config, keys);
-				config.debug(diagnostic.toString());
-				error = error + "\n" + diagnostic.toString();
+				config.warn(diagnostic.toString());
+				if (diagnostic.length() > (4 * 1024)) {
+					diagnostic.setLength(4 * 1024);
+				}
+				error = error + "\nBelow is extended diagnostic data which maybe truncated (check logs).\n"
+						+ diagnostic.toString();
 			}
 			throw new IOException(error);
 		}
@@ -267,7 +279,8 @@ class TextFileObject {
 		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
 		GRADLE_TEST("/build/classes/java/test/", List.of("src/test/resources")), //
 		MAVEN("/target/classes/", List.of("src/main/resources")), //
-		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), CWD(".", List.of("src/main/resources")) {
+		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), //
+		CWD(".", List.of("src/main/resources")) {
 			@Override
 			public boolean matches(String uri) {
 				return false;
@@ -337,10 +350,11 @@ class TextFileObject {
 
 	}
 
-	private static StringBuilder diagnosticDump(StringBuilder sb, ProcessingConfig config, Map<String, String> keys) {
+	private static StringBuilder diagnosticDump(StringBuilder sb, ProcessingConfig config,
+			List<Entry<String, String>> keys) {
 		sb.append("Environment Info:").append("\n");
 		Map<String, String> info = new LinkedHashMap<>();
-		info.putAll(keys);
+		keys.forEach(e -> info.put(e.getKey(), e.getValue()));
 		Path cwd = Path.of(".");
 		try {
 			info.put("CWD", cwd.toAbsolutePath().toString());
@@ -360,8 +374,14 @@ class TextFileObject {
 			/*
 			 * Shitty heuristic for not printing out sensitive stuff
 			 */
-			if (key.contains("secret") || key.contains("password") || key.contains("key")
-					|| key.contains("line.separator")) {
+			if (key.contains("secret") //
+					|| key.contains("password") //
+					|| key.contains("key") //
+					|| key.contains("line.separator") //
+					|| key.contains("vmargs") //
+					|| key.contains("eclipse.commands") //
+					|| key.startsWith("osgi") //
+					|| key.startsWith("org.osgi")) {
 				continue;
 			}
 			sb.append("\n\t").append(e.getKey()).append("=").append(e.getValue());

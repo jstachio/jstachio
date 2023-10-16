@@ -74,6 +74,10 @@ public sealed interface LoggingSupport {
 			messager().printMessage(Kind.NOTE, message);
 		}
 
+		default void warn(CharSequence message) {
+			messager().printMessage(Kind.WARNING, message);
+		}
+
 	}
 
 	public record AdHocMessager(String prefix, boolean isDebug, Element elementToLog,

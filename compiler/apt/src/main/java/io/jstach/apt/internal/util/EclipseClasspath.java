@@ -50,8 +50,24 @@ public class EclipseClasspath {
 	public record EclipseClasspathFile(Path classpathFile, List<ClasspathEntry> entries) {
 
 		public Optional<ClasspathEntry> findEntry(Path classOutput, Path sourceOutput) {
-			String output = classpathFile.relativize(classOutput).toString();
-			String path = classpathFile.relativize(sourceOutput).toString();
+			String output;
+			String path;
+			if (classOutput.isAbsolute() && sourceOutput.isAbsolute()) {
+				var dir = classpathFile.getParent();
+				if (dir == null) {
+					return Optional.empty();
+				}
+				output = dir.relativize(classOutput).toString();
+				path = dir.relativize(sourceOutput).toString();
+			}
+			else if (!classOutput.isAbsolute() && !sourceOutput.isAbsolute()) {
+				output = classOutput.toString();
+				path = sourceOutput.toString();
+			}
+			else {
+				throw new IllegalArgumentException(
+						"classOutput and sourceOutput should be both absolute or neither absolute");
+			}
 			return entries.stream().filter(ce -> output.equals(ce.output()) && path.equals(ce.path())).findFirst();
 		}
 
@@ -66,15 +82,13 @@ public class EclipseClasspath {
 			 * If no match is found then we just return all source paths.
 			 */
 			if (entry == null) {
-				return entries.stream().flatMap(ce -> Stream.ofNullable(ce.path())).distinct();
+				return entries.stream().filter(ClasspathEntry::isSourcePath).map(ClasspathEntry::path).distinct();
 			}
 			/*
 			 * If this is a test source path we need to make it have precedence
 			 */
-			Stream<ClasspathEntry> mainStream = entries.stream()
-					.flatMap(ce -> ce.isTest() ? Stream.empty() : Stream.of(ce));
-			Stream<ClasspathEntry> testStream = entries.stream()
-					.flatMap(ce -> ce.isTest() ? Stream.of(ce) : Stream.empty());
+			Stream<ClasspathEntry> mainStream = entries.stream().filter(ce -> !ce.isTest());
+			Stream<ClasspathEntry> testStream = entries.stream().filter(ce -> ce.isTest());
 			Stream<ClasspathEntry> resolved;
 			if (entry.isTest()) {
 				resolved = Stream.<ClasspathEntry>concat(testStream, mainStream);
@@ -82,7 +96,7 @@ public class EclipseClasspath {
 			else {
 				resolved = mainStream;
 			}
-			return resolved.flatMap(ce -> Stream.ofNullable(ce.path())).distinct();
+			return resolved.filter(ClasspathEntry::isSourcePath).map(ClasspathEntry::path).distinct();
 		}
 	}
 
@@ -90,20 +104,26 @@ public class EclipseClasspath {
 		return xml.findElements("//classpathentry").map(ClasspathEntry::of);
 	}
 
-	public record ClasspathEntry(@Nullable String output, @Nullable String kind, @Nullable String path,
-			Map<String, String> attributes) {
+	private static String nullToEmpty(@Nullable String s) {
+		if (s == null) {
+			return "";
+		}
+		return s;
+	}
+
+	public record ClasspathEntry(String output, String kind, String path, Map<String, String> attributes) {
 		private static ClasspathEntry of(Element element) {
-			String output = element.getAttribute("output");
-			String kind = element.getAttribute("kind");
-			String path = element.getAttribute("path");
+			String output = nullToEmpty(element.getAttribute("output"));
+			String kind = nullToEmpty(element.getAttribute("kind"));
+			String path = nullToEmpty(element.getAttribute("path"));
 			var attributes = XmlHelper.toElementStream(element.getChildNodes()) //
 					.filter(e -> "attributes".equals(e.getTagName())) //
 					.flatMap(e -> XmlHelper.toElementStream(e.getChildNodes())) //
 					.filter(e -> "attribute".equals(e.getTagName()));
 			Map<String, String> ats = new LinkedHashMap<>();
 			attributes.forEach(a -> {
-				String name = a.getAttribute("name");
-				String value = a.getAttribute("value");
+				String name = nullToEmpty(a.getAttribute("name"));
+				String value = nullToEmpty(a.getAttribute("value"));
 				if (name != null && value != null) {
 					ats.put(name, value);
 				}
@@ -117,6 +137,10 @@ public class EclipseClasspath {
 				case SOURCE_OUTPUT -> path();
 				default -> throw new IllegalArgumentException("" + location);
 			};
+		}
+
+		public boolean isSourcePath() {
+			return (!path.isEmpty()) && "src".equals(kind);
 		}
 
 		public boolean isTest() {

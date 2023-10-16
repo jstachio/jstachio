@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -64,6 +65,28 @@ public class EclipseClasspathTest {
 				ClasspathEntry[output=bin/eclipseApt, kind=src, path=.apt_generated, attributes={gradle_scope=eclipseApt, gradle_used_by_scope=eclipseApt}]""";
 
 		assertEquals(expected, entries);
+
+		Path p = Path.of("/some/parent/.classpath");
+		EclipseClasspath.EclipseClasspathFile f = new EclipseClasspath.EclipseClasspathFile(p, cp.entries().toList());
+		var sourcePaths = f.findRelativeSourcePaths(null, null).toList();
+		expected = "[src/main/java, src/main/resources, src/test/java, src/test/resources, .apt_generated]";
+		assertEquals(expected, sourcePaths.toString());
+		sourcePaths = f
+				.findRelativeSourcePaths(Path.of("/some/parent/bin/eclipseApt"), Path.of("/some/parent/.apt_generated"))
+				.toList();
+		expected = "[src/main/java, src/main/resources, .apt_generated]";
+		assertEquals(expected, sourcePaths.toString());
+		/*
+		 * We expect the test directories to be first since a test output was found
+		 */
+		sourcePaths = f.findRelativeSourcePaths(Path.of("/some/parent/bin/test"), Path.of("/some/parent/src/test/java"))
+				.toList();
+		expected = "[src/test/java, src/test/resources, src/main/java, src/main/resources, .apt_generated]";
+		assertEquals(expected, sourcePaths.toString());
+
+		sourcePaths = f.findRelativeSourcePaths(Path.of("bin/test"), Path.of("src/test/java")).toList();
+		expected = "[src/test/java, src/test/resources, src/main/java, src/main/resources, .apt_generated]";
+		assertEquals(expected, sourcePaths.toString());
 	}
 
 }
