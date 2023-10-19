@@ -23,6 +23,6 @@ public interface JStachioModelViewConfigurer {
 	 * @param request the current servlet request
 	 */
 	@SuppressWarnings("exports")
-	void configure(Object page, Map<String, ?> model, HttpServletRequest request);
+	void configure(Object page, Map<String, Object> model, HttpServletRequest request);
 
 }
