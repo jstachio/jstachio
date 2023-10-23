@@ -41,7 +41,7 @@
 
     <spring.version>6.0.13</spring.version>
     <spring-boot.version>3.1.5</spring-boot.version>
-    <dropwizard.version>4.0.2</dropwizard.version>
+    <dropwizard.version>4.0.3</dropwizard.version>
     
     <plexus-compiler-eclipse.version>2.13.0</plexus-compiler-eclipse.version>
     <ecj.version>3.34.0</ecj.version>
