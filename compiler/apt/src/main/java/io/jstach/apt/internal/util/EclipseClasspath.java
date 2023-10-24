@@ -140,7 +140,7 @@ public class EclipseClasspath {
 		}
 
 		public boolean isSourcePath() {
-			return (!path.isEmpty()) && "src".equals(kind);
+			return !path.isEmpty() && "src".equals(kind);
 		}
 
 		public boolean isTest() {
