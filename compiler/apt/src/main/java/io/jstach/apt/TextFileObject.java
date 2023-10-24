@@ -267,6 +267,7 @@ class TextFileObject {
 
 		record EclipseProjectPattern(List<String> relativeSourcePaths) implements ProjectPattern {
 			// eclipse bug
+			@Override
 			public List<String> relativeSourcePaths() {
 				return this.relativeSourcePaths;
 			}
@@ -274,6 +275,7 @@ class TextFileObject {
 
 	}
 
+	@SuppressWarnings("ImmutableEnumChecker")
 	private enum OutputPathPattern implements ProjectPattern {
 
 		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
@@ -327,6 +329,7 @@ class TextFileObject {
 			return path;
 		}
 
+		@Override
 		public List<String> relativeSourcePaths() {
 			return relativeSourcePaths;
 		}
