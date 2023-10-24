@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD_NUMBER: "${{github.run_number}}"
-      MAVEN_CLI_OPTS: "-s ${{ env.GITHUB_WORKSPACE }}/.m2/settings.xml --batch-mode --no-transfer-progress"
+      MAVEN_CLI_OPTS: "-s ${{ github.workspace }}/.m2/settings.xml --batch-mode --no-transfer-progress"
 
     steps:
       - uses: actions/checkout@v3
