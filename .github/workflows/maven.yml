@@ -28,10 +28,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build and Test with Maven
-        run: ./mvnw $MAVEN_CLI_OPTS clean verify
+        run: ./mvnw $MAVEN_CLI_OPTS clean verify 
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         if: ${{ always() && matrix.java == '17' }} 
         with:
           name: test-results
           path: '**/target/surefire-reports/TEST-*.xml'
+      - name: Test Stache Javadoc 
+        run: cd test/jstachio-test-stache && ../../mvnw $MAVEN_CLI_OPTS clean verify -Pstache-javadoc
+      - name: Test Gradle Support
+        run: cd test/jstachio-test-gradle && ./gradlew --console=plain --no-daemon --no-build-cache clean build 

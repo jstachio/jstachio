@@ -377,8 +377,8 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("    /**");
 			println("     * Renders the passed in model.");
 			println("     * @param model a model assumed never to be <code>null</code>.");
-			println("     * @param appendable the appendable to write to.");
-			println("     * @throws IOException if there is an error writing to the appendable");
+			println("     * @param a the appendable to write to.");
+			println("     * @throws java.io.IOException if there is an error writing to the appendable");
 			println("     */");
 			println("    public void execute(" + className + " model, Appendable a) throws java.io.IOException {");
 			println("        execute(model, a, " + templateFormatterExp + ", " + templateEscaperExp + ");");
@@ -459,7 +459,7 @@ class TemplateClassWriter implements LoggingSupplier {
 			println("     * @param a appendable to write to.");
 			println("     * @param formatter formats variables before they are passed to the escaper");
 			println("     * @param escaper used to write escaped variables");
-			println("     * @throws IOException if an error occurs while writing to the appendable");
+			println("     * @throws java.io.IOException if an error occurs while writing to the appendable");
 			println("     */");
 			println("    protected void execute(" //
 					+ idt + className + " model, " //
