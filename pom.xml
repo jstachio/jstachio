@@ -201,6 +201,7 @@
             <target>${java.version}</target>
             <encoding>${project.build.sourceEncoding}</encoding>
             <showWarnings>true</showWarnings>
+            <failOnWarning>true</failOnWarning>
           </configuration>
         </plugin>
         <plugin>
@@ -660,6 +661,29 @@
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>jdk21</id>
+      <activation>
+        <jdk>[21,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+            <configuration>
+              <compilerArgs>
+                <arg>-proc:full</arg>
+              </compilerArgs>
+            </configuration>
           </plugin>
         </plugins>
       </build>
