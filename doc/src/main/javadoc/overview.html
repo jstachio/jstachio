@@ -513,7 +513,8 @@ provided you <strong>DO NOT put</strong> <code>requires io.jstach.apt</code> in 
 which you should never do in general.
 <p>
 Be aware that the above option may have problems if you have multiple annotation processors 
-as some processors rely on specific order.
+as some processors rely on specific order. Furthermore if using Eclipse always set <code>scope</code> 
+<code>provided</code> even if you are only using JStachio for unit testing.
 
 <em>(note you still need to add either io.jstach:jstache or io.jstach:jstachio as a dependency.)</em>
 
@@ -536,6 +537,9 @@ you can instead rely on only one compile time dependency (replace dependencies s
 <dependencies>
 }
 </pre>
+
+You will still need to add the APT module as an annotation processor which is explained in the <a href="#maven_classpath">previous section</a>.
+If configured correctly the APT module will not be a true dependency.
 
 <h3 id="3.2">Gradle</h3>
 
@@ -673,7 +677,7 @@ if present.
 
 <h4 id="compile_processor_options">Annotation processor options</h4>
 
-Some configuration is available as an annotation processor options. 
+Some configuration is available as annotation processor options. 
 Annotation processor options are compiler arguments starting with <code>-A</code>.
 
 Current available options are:
