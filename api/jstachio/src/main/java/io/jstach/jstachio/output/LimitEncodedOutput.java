@@ -36,7 +36,6 @@ import io.jstach.jstachio.Output.CloseableEncodedOutput;
  * @see BufferedEncodedOutput#limit(int, OutputFactory)
  * @see ThresholdEncodedOutput
  */
-@SuppressWarnings("rawtypes") // eclipse bug
 public sealed interface LimitEncodedOutput<T, E extends Exception>
 		extends CloseableEncodedOutput<E>permits AbstractLimitEncodedOutput, ThresholdEncodedOutput {
 

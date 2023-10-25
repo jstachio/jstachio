@@ -49,7 +49,6 @@ import io.jstach.jstachio.Template.EncodedTemplate;
  * the output is to be reused "<code>as</code>" methods should be copied or fully used
  * before the output is reused.
  */
-@SuppressWarnings("rawtypes") // this is an eclipse bug
 public sealed interface BufferedEncodedOutput
 		extends CloseableEncodedOutput<RuntimeException>permits ChunkEncodedOutput, ByteBufferEncodedOutput {
 
