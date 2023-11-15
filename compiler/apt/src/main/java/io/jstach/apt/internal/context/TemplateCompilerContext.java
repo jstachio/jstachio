@@ -97,10 +97,6 @@ public class TemplateCompilerContext {
 		}
 	}
 
-	String addTextCode(String textCode) {
-		return variables.addTextCode(textCode);
-	}
-
 	public String renderUnescapedOutputCode(String code) {
 		return switch (generator.getFormatCallType()) {
 			case JSTACHIO, STACHE -> unescapedWriterExpression() + ".append(" + code + ");";

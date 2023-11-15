@@ -157,8 +157,11 @@ public class VariableContext {
 
 	public String addTextCode(String textCode) {
 		var codes = textCodes();
-		int i = codes.size();
-		codes.add(textCode);
+		int i = codes.indexOf(textCode);
+		if (i < 0) {
+			i = codes.size();
+			codes.add(textCode);
+		}
 		return TEXT + "_" + i;
 	}
 
