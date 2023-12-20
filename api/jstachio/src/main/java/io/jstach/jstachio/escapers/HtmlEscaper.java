@@ -7,6 +7,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import io.jstach.jstachio.Escaper;
 import io.jstach.jstachio.Output;
 
+@SuppressWarnings("ImmutableEnumChecker")
 enum HtmlEscaper implements Escaper {
 
 	HTML5(defaultMappings());
