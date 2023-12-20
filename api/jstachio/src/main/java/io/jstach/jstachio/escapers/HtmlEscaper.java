@@ -34,9 +34,14 @@ enum HtmlEscaper implements Escaper {
 	static final String BACK_TICK = "&#x60;";
 
 	static Map<Character, String> defaultMappings() {
-		return Map.<Character, String>of('"', QUOT, //
+		return Map.<Character, String>of(//
+				'"', QUOT, //
 				'&', AMP, //
-				'\'', APOS, '<', LT, '=', EQUAL, '>', GT, '`', BACK_TICK);
+				'\'', APOS, //
+				'<', LT, //
+				'=', EQUAL, //
+				'>', GT, //
+				'`', BACK_TICK);
 	}
 
 	@Override
