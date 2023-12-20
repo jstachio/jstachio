@@ -45,13 +45,70 @@ enum HtmlEscaper implements Escaper {
 	}
 
 	@Override
-	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence s) throws E {
-		append(a, s, 0, s.length());
+	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq) throws E {
+		// we duplicate the logic here because StringBuilder.append(String)
+		// is fairly different than StringBuilder.append(csq, start, end)
+		// the former is fast byte copy and the latter has to check if all latin1
+		int end = csq.length();
+		for (int i = 0; i < end; i++) {
+			char c = csq.charAt(i);
+			String found = escapeChar(lookupTable, c);
+			/*
+			 * While this could be done with one loop it appears through benchmarking that
+			 * by having the first loop assume the string to be not changed creates a fast
+			 * path for strings with no escaping needed.
+			 */
+			if (found != null) {
+				a.append(csq, 0, i);
+				a.append(found);
+				int start = i = i + 1;
+				for (; i < end; i++) {
+					c = csq.charAt(i);
+					found = escapeChar(lookupTable, c);
+					if (found != null) {
+						a.append(csq, start, i);
+						a.append(found);
+						start = i + 1;
+					}
+				}
+				a.append(csq, start, end);
+				return;
+			}
+		}
+		a.append(csq);
 	}
 
 	@Override
 	public <A extends Output<E>, E extends Exception> void append(A a, CharSequence csq, int start, int end) throws E {
-		escape(a, csq, lookupTable);
+		// we duplicate the logic here because StringBuilder.append(String)
+		// is fairly different than StringBuilder.append(csq, start, end)
+		// the former is fast byte copy and the latter has to check if all latin1
+		for (int i = 0; i < end; i++) {
+			char c = csq.charAt(i);
+			String found = escapeChar(lookupTable, c);
+			/*
+			 * While this could be done with one loop it appears through benchmarking that
+			 * by having the first loop assume the string to be not changed creates a fast
+			 * path for strings with no escaping needed.
+			 */
+			if (found != null) {
+				a.append(csq, 0, i);
+				a.append(found);
+				start = i = i + 1;
+				for (; i < end; i++) {
+					c = csq.charAt(i);
+					found = escapeChar(lookupTable, c);
+					if (found != null) {
+						a.append(csq, start, i);
+						a.append(found);
+						start = i + 1;
+					}
+				}
+				a.append(csq, start, end);
+				return;
+			}
+		}
+		a.append(csq, start, end);
 	}
 
 	@Override
@@ -108,38 +165,6 @@ enum HtmlEscaper implements Escaper {
 			return null;
 		}
 		return lookupTable[c];
-	}
-
-	private static <A extends Output<E>, E extends Exception> void escape(A a, CharSequence raw, String[] lookupTable)
-			throws E {
-		int end = raw.length();
-		for (int i = 0, start = 0; i < end; i++) {
-			char c = raw.charAt(i);
-			String found = escapeChar(lookupTable, c);
-			/*
-			 * While this could be done with one loop it appears through benchmarking that
-			 * by having the first loop assume the string to be not changed creates a fast
-			 * path for strings with no escaping needed.
-			 */
-			if (found != null) {
-				a.append(raw, 0, i);
-				a.append(found);
-				start = i = i + 1;
-				for (; i < end; i++) {
-					c = raw.charAt(i);
-					found = escapeChar(lookupTable, c);
-					if (found != null) {
-						a.append(raw, start, i);
-						a.append(found);
-						start = i + 1;
-					}
-				}
-				a.append(raw, start, end);
-				return;
-			}
-		}
-		a.append(raw);
-
 	}
 
 }
