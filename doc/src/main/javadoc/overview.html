@@ -157,6 +157,12 @@ Furthermore if the model does not have reactive datatypes for its iterables
 as the model is already in memory.
 </p>
 
+<h4 id="limitations_recursion">Recursive Partials</h4>
+
+The Mustache specification allows the ability to recursively render partials. JStachio at this time
+does not support this. The current workaround is to use custom lambdas.
+
+
 <h2 id="mustache">Mustache Syntax and Semantics</h2>
 
 The format of the templates should by default be <a href="https://mustache.github.io/">Mustache</a>
@@ -721,9 +727,9 @@ We are currently exploring other hot reload options that you can see in
 {@linkplain io.jstach.opt.jmustache/ JMustache extension} 
 allows you to change templates without recompiling the application.
 </p>
-One major caveat is that JMustache currently does not support template inheritance 
-(aka parents and blocks) so if your jstachio templates use template inheritance JMustache 
-will probably not work.
+One major caveat is that JMustache may produce different output than JStachio.
+The JStachio team is working to make JMustache and JStachio as similar as possible but
+because JMustache does things at runtime there are possibilities the output could vary.
 
 
 <h3 id="springframework">Spring Framework</h3>
