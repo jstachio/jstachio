@@ -155,6 +155,12 @@ public interface Output<E extends Exception> {
 	/**
 	 * A specialized Output designed for pre-encoded templates that have already encoded
 	 * byte arrays to be used directly.
+	 * <p>
+	 * Most template engines traditionally write to an Appendable and as they write to the
+	 * appendable in a web framework the output is eventually converted to bytes in almost
+	 * always <code>UTF-8</code> format. Given that a large majority of templates is
+	 * static text this encoding can be done apriori which saves some processing time
+	 * especially if the text contains any non latin1 characters.
 	 *
 	 * @author agentgt
 	 * @param <E> the exception type

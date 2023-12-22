@@ -413,6 +413,8 @@ JStachio provides two major modes for how code is generated.
 
 If you do not care about dependencies or footprint 
 {@link io.jstach.jstache.JStacheType#JSTACHIO} is the preferred mode and is the default.
+This mode also supports {@linkplain io.jstach.jstachio.Output.EncodedOutput pre-encoding}
+for in theory faster byte output of templates.
 
 <p>
 
@@ -715,6 +717,19 @@ additional extensions are available. They are in the
 Many extensions just require the extension jars be in the classpath and are loaded via
 the ServiceLoader automatically (unless disabled or using DI framework).
 </p>
+<p>
+For integration with web application frameworks (like Spring, Micronaut and Jooby) JStachio prefers 
+controllers return the JStache annotated model.
+This is different than most template engine integrations where the model is {@code Map<String,?>} and 
+you return a {@code String} for template name. We think this is superior to the older style.
+<a href="#jstache_spring_example">Here is a Spring example of a controller returning a model</a>
+instead of returning template name.
+</p>
+<p>
+Another difference that JStachio has over other template engines in web frameworks is that 
+{@linkplain io.jstach.jstachio.Output.EncodedOutput pre-encoding} can be used.
+Consequently JStachio prefers having access to the raw byte stream (OutputStream) over a
+Writer.
 
 <h3 id="jmustache">Hot Reload with JMustache</h3>
 <strong>See {@link io.jstach.opt.jmustache/ } and {@link io.jstach.opt.jmustache.JMustacheRenderer}</strong>
@@ -757,7 +772,7 @@ For Spring MVC the integration allows you to return models and they will automat
 be rendered to the response.
 </p>
 
-<pre><code class="language-java">
+<pre id="jstache_spring_example"><code class="language-java">
     &#64;JStache
     public record HelloModel(String message){}
     
@@ -804,7 +819,8 @@ it might be easier to look
 JStachio has support for the <a href="https://github.com/jooby-project/jooby">Jooby web framework</a> version 3.x.
 The documentation on how to set this up is in Jooby's documentation.
 <p>
-Jooby has support for efficiently handling pre-encoded templates as well as buffer reuse.
+Jooby has support for efficiently handling pre-encoded templates as well as buffer reuse and follos JStachio preference of returning models
+instead of template names.
 </p>
 
 
@@ -821,6 +837,16 @@ There is an example modularized {@linkplain io.jstach.opt.dropwizard.example/ Dr
 While the code is Javadoc and the source is linked (if you click on the classes the source code is shown) 
 it might be easier to look 
 <strong><a href="https://github.com/jstachio/jstachio/tree/main/opt/jstachio-dropwizard-example">directly on github (link to project).</a></strong> 
+
+<h3 id="Micronaut">Micronaut</h3>
+
+JStachio has support for <a href="https://micronaut-projects.github.io/micronaut-views/latest/guide/#jstachio">Micronaut (views)</a>.
+The documentation on how to set this up is in 
+<a href="https://micronaut-projects.github.io/micronaut-views/latest/guide/#jstachio">Micronaut's Views documentation</a>.
+<p>
+Micronaut has support for efficiently handling pre-encoded templates and follows JStachio preference of returning models
+instead of template names.
+</p>
 
 <h2 id="FAQ">FAQ</h2>
 
