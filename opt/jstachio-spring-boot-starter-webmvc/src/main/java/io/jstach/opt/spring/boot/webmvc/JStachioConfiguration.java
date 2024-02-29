@@ -1,5 +1,6 @@
 package io.jstach.opt.spring.boot.webmvc;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -96,9 +97,13 @@ public class JStachioConfiguration {
 	@ConditionalOnMissingBean(JStachioTemplateFinder.class)
 	public JStachioTemplateFinder templateFinder(JStachioConfig config, TemplateConfig templateConfig) {
 		var templates = templatesByServiceLoader(templateConfig);
-		var springTemplateFinder = JStachioTemplateFinder.cachedTemplateFinder(JStachioTemplateFinder.of(templates, 0));
-		var fallbackFinder = JStachioTemplateFinder.defaultTemplateFinder(config);
-		return JStachioTemplateFinder.of(List.of(springTemplateFinder, fallbackFinder));
+		List<JStachioTemplateFinder> finders = new ArrayList<>();
+		if (!templates.isEmpty()) {
+			finders.add(JStachioTemplateFinder.of(templates, 0));
+		}
+		finders.add(JStachioTemplateFinder.defaultTemplateFinder(config));
+		var unCached = JStachioTemplateFinder.of(finders);
+		return JStachioTemplateFinder.cachedTemplateFinder(unCached);
 	}
 
 	/**

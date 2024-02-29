@@ -2,10 +2,13 @@ package io.jstach.jstachio.spi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -345,7 +348,33 @@ final class CompositeTemplateFinder implements JStachioTemplateFinder {
 		ArrayList<JStachioTemplateFinder> sorted = new ArrayList<>();
 		sorted.addAll(finders);
 		sorted.sort(Comparator.comparingInt(JStachioTemplateFinder::order));
-		return new CompositeTemplateFinder(List.copyOf(sorted));
+		/*
+		 * Flatten and remove duplicates
+		 */
+		ArrayList<JStachioTemplateFinder> flatten = new ArrayList<>();
+		@SuppressWarnings("null")
+		Set<JStachioTemplateFinder> found = Collections
+				.newSetFromMap(new IdentityHashMap<JStachioTemplateFinder, Boolean>());
+		for (var f : sorted) {
+			if (f instanceof CompositeTemplateFinder ctf) {
+				for (var sub : ctf.finders) {
+					if (found.add(sub)) {
+						flatten.add(sub);
+					}
+				}
+			}
+			else {
+				if (found.add(f)) {
+					flatten.add(f);
+				}
+			}
+		}
+
+		if (flatten.size() == 1) {
+			return flatten.get(0);
+		}
+
+		return new CompositeTemplateFinder(List.copyOf(flatten));
 	}
 
 	@Override

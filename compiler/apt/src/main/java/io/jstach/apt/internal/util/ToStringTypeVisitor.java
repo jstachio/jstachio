@@ -127,7 +127,14 @@ public class ToStringTypeVisitor extends AbstractTypeVisitor14<StringBuilder, St
 		var tas = t.getTypeArguments();
 		if (!tas.isEmpty()) {
 			p.append("<");
+			boolean first = true;
 			for (var ta : t.getTypeArguments()) {
+				if (first) {
+					first = false;
+				}
+				else {
+					p.append(", ");
+				}
 				ta.accept(child(), p);
 			}
 			p.append(">");

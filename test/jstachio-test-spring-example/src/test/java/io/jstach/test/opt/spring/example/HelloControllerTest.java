@@ -42,17 +42,19 @@ public class HelloControllerTest {
 
 	@Test
 	public void testHelloWithMediaTypeAll() throws Exception {
-		var rb = MockMvcRequestBuilders.get("/").accept(MediaType.ALL);
-		var result = mockMvc.perform(rb).andReturn();
-		var bytes = result.getResponse().getContentAsByteArray();
-		System.out.println(bytes.length);
-		String body = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-		assertEquals(414, result.getResponse().getContentLength());
-		assertEquals(414, SLASH_BODY.getBytes(StandardCharsets.UTF_8).length);
-		assertEquals(414, body.getBytes(StandardCharsets.UTF_8).length);
-		assertEquals(SLASH_BODY, body);
-		String contentType = result.getResponse().getContentType();
-		assertEquals("text/html;charset=UTF-8", contentType);
+		for (int i = 0; i < 10; i++) {
+			var rb = MockMvcRequestBuilders.get("/").accept(MediaType.ALL);
+			var result = mockMvc.perform(rb).andReturn();
+			var bytes = result.getResponse().getContentAsByteArray();
+			System.out.println(bytes.length);
+			String body = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+			assertEquals(414, result.getResponse().getContentLength());
+			assertEquals(414, SLASH_BODY.getBytes(StandardCharsets.UTF_8).length);
+			assertEquals(414, body.getBytes(StandardCharsets.UTF_8).length);
+			assertEquals(SLASH_BODY, body);
+			String contentType = result.getResponse().getContentType();
+			assertEquals("text/html;charset=UTF-8", contentType);
+		}
 	}
 
 	@Test
