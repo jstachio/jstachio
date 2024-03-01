@@ -66,6 +66,11 @@ public class JStachioConfiguration {
 	 */
 	@Bean
 	public List<Template<?>> templatesByServiceLoader(TemplateConfig templateConfig) {
+		/*
+		 * TODO check config.getBoolean(JStachioConfig.SERVICELOADER_TEMPLATE_DISABLE)
+		 * Cannot do it yet because that will change the method contract and require a
+		 * minor version change.
+		 */
 		var serviceLoader = serviceLoader(TemplateProvider.class);
 		var templates = Templates.findTemplates(serviceLoader, templateConfig, e -> {
 			logger.error("Failed to load template provider. Skipping it.", e);
@@ -96,14 +101,16 @@ public class JStachioConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(JStachioTemplateFinder.class)
 	public JStachioTemplateFinder templateFinder(JStachioConfig config, TemplateConfig templateConfig) {
-		var templates = templatesByServiceLoader(templateConfig);
 		List<JStachioTemplateFinder> finders = new ArrayList<>();
-		if (!templates.isEmpty()) {
-			finders.add(JStachioTemplateFinder.of(templates, 0));
-		}
-		else {
-			logger.warn("Failed to find any templates with ServiceLoader. "
-					+ "Using reflection based fallback! https://jstach.io/jstachio/#faq_template_not_found ");
+		if (!config.getBoolean(JStachioConfig.SERVICELOADER_TEMPLATE_DISABLE)) {
+			var templates = templatesByServiceLoader(templateConfig);
+			if (!templates.isEmpty()) {
+				finders.add(JStachioTemplateFinder.of(templates, 0));
+			}
+			else {
+				logger.info("Failed to find any templates with ServiceLoader. "
+						+ "Using reflection based fallback! https://jstach.io/jstachio/#faq_template_not_found ");
+			}
 		}
 		finders.add(JStachioTemplateFinder.defaultTemplateFinder(config));
 		var unCached = JStachioTemplateFinder.of(finders);
