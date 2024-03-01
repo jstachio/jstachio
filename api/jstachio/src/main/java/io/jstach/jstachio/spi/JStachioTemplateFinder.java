@@ -402,6 +402,7 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 		return Objects.requireNonNull(info);
 	}
 
+	@Override
 	public @Nullable TemplateInfo findOrNull(Class<?> modelType) {
 		Objects.requireNonNull(modelType, "modelType");
 		/*
