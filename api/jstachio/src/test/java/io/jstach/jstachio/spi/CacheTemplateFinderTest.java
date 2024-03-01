@@ -1,10 +1,15 @@
 package io.jstach.jstachio.spi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -25,9 +30,15 @@ public class CacheTemplateFinderTest {
 	public void testFindOrNull() {
 		var finder = test.counting();
 		var cached = JStachioTemplateFinder.cachedTemplateFinder(finder);
-		cached.findOrNull(UnsupportedType.class);
-		cached.findOrNull(UnsupportedType.class);
-		cached.findOrNull(UnsupportedType.class);
+		for (int i = 0; i < 3; i++) {
+			var templateInfo = cached.findOrNull(UnsupportedType.class);
+			if (test.expectMissing()) {
+				assertNull(templateInfo);
+			}
+			else {
+				assertNotNull(templateInfo);
+			}
+		}
 		int actual = finder.count.get();
 		if (test.expectCache()) {
 			int expected = 1;
@@ -46,7 +57,9 @@ public class CacheTemplateFinderTest {
 		for (int i = 0; i < 3; i++) {
 			try {
 				cached.findTemplate(UnsupportedType.class);
-				fail("should have failed");
+				if (test.expectMissing()) {
+					fail("should have failed");
+				}
 			}
 			catch (Exception e) {
 				// e.printStackTrace();
@@ -129,6 +142,19 @@ public class CacheTemplateFinderTest {
 				});
 			}
 
+		},
+		FOUND_TEMPLATE() {
+			@Override
+			protected JStachioTemplateFinder create() {
+				return t -> {
+					return FakeTemplateInfo.FAKE;
+				};
+			}
+
+			@Override
+			public boolean expectMissing() {
+				return false;
+			}
 		};
 
 		private FinderTest() {
@@ -141,6 +167,10 @@ public class CacheTemplateFinderTest {
 		protected abstract JStachioTemplateFinder create();
 
 		public boolean expectCache() {
+			return true;
+		}
+
+		public boolean expectMissing() {
 			return true;
 		}
 
@@ -177,5 +207,63 @@ public class CacheTemplateFinderTest {
 		}
 
 	}
+
+	enum FakeTemplateInfo implements TemplateInfo {
+
+		FAKE;
+
+		@Override
+		public String templateName() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String templatePath() {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public Class<?> templateContentType() {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public Charset templateCharset() {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public String templateMediaType() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Function<String, String> templateEscaper() {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public Function<@Nullable Object, String> templateFormatter() {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public boolean supportsType(Class<?> type) {
+			throw new UnsupportedOperationException();
+
+		}
+
+		@Override
+		public Class<?> modelClass() {
+			throw new UnsupportedOperationException();
+
+		}
+
+	};
 
 }
