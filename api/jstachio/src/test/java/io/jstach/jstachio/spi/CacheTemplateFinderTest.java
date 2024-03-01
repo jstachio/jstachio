@@ -26,6 +26,7 @@ public class CacheTemplateFinderTest {
 		this.test = test;
 	}
 
+	@SuppressWarnings("nullness") // wtf checker does not like assertNull
 	@Test
 	public void testFindOrNull() {
 		var finder = test.counting();
