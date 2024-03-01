@@ -101,8 +101,16 @@ public class JStachioConfiguration {
 		if (!templates.isEmpty()) {
 			finders.add(JStachioTemplateFinder.of(templates, 0));
 		}
+		else {
+			logger.warn("Failed to find any templates with ServiceLoader. "
+					+ "Using reflection based fallback! https://jstach.io/jstachio/#faq_template_not_found ");
+		}
 		finders.add(JStachioTemplateFinder.defaultTemplateFinder(config));
 		var unCached = JStachioTemplateFinder.of(finders);
+		/*
+		 * TODO we should add a flag to disable cache for developer mode with the
+		 * assumption that some form of hot reloading might be happening.
+		 */
 		return JStachioTemplateFinder.cachedTemplateFinder(unCached);
 	}
 

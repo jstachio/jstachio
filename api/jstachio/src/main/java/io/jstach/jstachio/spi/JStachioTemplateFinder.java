@@ -1,5 +1,6 @@
 package io.jstach.jstachio.spi;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -295,6 +297,65 @@ final class IterableTemplateFinder implements SimpleTemplateFinder {
 
 }
 
+sealed interface MissingTemplateInfo extends TemplateInfo {
+
+	@Override
+	default String templateName() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	default String templatePath() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default Class<?> templateContentType() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default Charset templateCharset() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default String templateMediaType() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	default Function<String, String> templateEscaper() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default Function<@Nullable Object, String> templateFormatter() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default boolean supportsType(Class<?> type) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	@Override
+	default Class<?> modelClass() {
+		throw new UnsupportedOperationException();
+
+	}
+
+}
+
+record ExceptionTemplateInfo(Exception exception) implements MissingTemplateInfo {
+}
+
 final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 
 	private final ClassValue<TemplateInfo> cache;
@@ -311,6 +372,9 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 				try {
 					return delegate.findTemplate(type);
 				}
+				catch (TemplateNotFoundException e) {
+					return new ExceptionTemplateInfo(e);
+				}
 				catch (Exception e) {
 					Templates.sneakyThrow(e);
 					throw new RuntimeException();
@@ -321,8 +385,42 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 
 	@Override
 	public TemplateInfo findTemplate(Class<?> modelType) throws Exception {
-		Objects.requireNonNull(modelType);
-		return Objects.requireNonNull(cache.get(modelType));
+		Objects.requireNonNull(modelType, "modelType");
+		/*
+		 * TODO JMH whether accessing cache is faster than checking if type is not is on
+		 * the ignore list.
+		 *
+		 * The original idea was to save memory but maybe better to use cache.
+		 */
+		if (Templates.isIgnoredType(modelType)) {
+			throw new TemplateNotFoundException(modelType);
+		}
+		var info = cache.get(modelType);
+		if (info instanceof ExceptionTemplateInfo et) {
+			throw et.exception();
+		}
+		return Objects.requireNonNull(info);
+	}
+
+	public @Nullable TemplateInfo findOrNull(Class<?> modelType) {
+		Objects.requireNonNull(modelType, "modelType");
+		/*
+		 * TODO JMH whether accessing cache is faster than checking if type is not is on
+		 * the ignore list.
+		 */
+		if (Templates.isIgnoredType(modelType)) {
+			return null;
+		}
+		try {
+			var info = cache.get(modelType);
+			if (info instanceof ExceptionTemplateInfo et) {
+				return null;
+			}
+			return info;
+		}
+		catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
