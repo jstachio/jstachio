@@ -104,7 +104,7 @@ public interface ProcessingConfig extends LoggingSupport.MessagerLogging {
 
 		static URI resolveFragmentURI(NamedTemplate rootTemplate, URI template) throws URISyntaxException {
 
-			if (rootTemplate instanceof InlineTemplate it) {
+			if (rootTemplate instanceof InlineTemplate) {
 				return template;
 			}
 			var rootUri = new URI(rootTemplate.path());
