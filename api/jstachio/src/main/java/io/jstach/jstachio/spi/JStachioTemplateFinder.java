@@ -414,7 +414,7 @@ final class ClassValueCacheTemplateFinder implements JStachioTemplateFinder {
 		}
 		try {
 			var info = cache.get(modelType);
-			if (info instanceof ExceptionTemplateInfo et) {
+			if (info instanceof ExceptionTemplateInfo) {
 				return null;
 			}
 			return info;

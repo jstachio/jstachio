@@ -325,7 +325,7 @@ public final class Templates {
 	}
 
 	static boolean isReflectionTemplate(TemplateInfo template) {
-		if (template instanceof SimpleTemplateInfo si) {
+		if (template instanceof SimpleTemplateInfo) {
 			return true;
 		}
 		return false;

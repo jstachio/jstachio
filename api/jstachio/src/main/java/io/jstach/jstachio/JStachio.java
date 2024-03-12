@@ -197,10 +197,14 @@ public interface JStachio extends Renderer<Object> {
 	 * avoid constant recreation it is recommend the supplier be memoized/cached.
 	 */
 	public static void setStatic(Supplier<JStachio> jstachioProvider) {
-		if (Objects.isNull(jstachioProvider)) {
+		if (isNull(jstachioProvider)) {
 			throw new NullPointerException("JStachio provider cannot be null");
 		}
 		JStachioHolder.provider = jstachioProvider;
+	}
+
+	private static boolean isNull(Object o) {
+		return o == null;
 	}
 
 }

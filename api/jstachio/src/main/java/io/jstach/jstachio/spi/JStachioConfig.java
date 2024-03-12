@@ -104,17 +104,21 @@ public non-sealed interface JStachioConfig extends JStachioExtension {
 	 * @throws NullPointerException if the fallback is null or if the key is null.
 	 */
 	default String requireProperty(String key, String fallback) {
-		if (Objects.isNull(key)) {
+		if (isNull(key)) {
 			throw new NullPointerException("key is null");
 		}
 		String v = getProperty(key);
 		if (v == null) {
 			v = fallback;
 		}
-		if (Objects.isNull(v)) {
+		if (isNull(v)) {
 			throw new NullPointerException("fallback is null. key: " + key);
 		}
 		return v;
+	}
+
+	private static boolean isNull(Object o) {
+		return o == null;
 	}
 
 	/**

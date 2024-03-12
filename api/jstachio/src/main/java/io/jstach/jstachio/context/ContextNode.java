@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -82,10 +81,14 @@ public sealed interface ContextNode extends Formattable, Iterable<@Nullable Cont
 	 * @apiNote Unlike many other methods in this class this is not nullable.
 	 */
 	public static ContextNode of(Function<String, ?> function) {
-		if (Objects.isNull(function)) {
+		if (isNull(function)) {
 			throw new NullPointerException("function is required");
 		}
 		return new FunctionContextNode(function);
+	}
+
+	private static boolean isNull(Object o) {
+		return o == null;
 	}
 
 	/**
@@ -351,7 +354,7 @@ sealed interface Internal extends ContextNode {
 			if (o == null || Boolean.FALSE.equals(o)) {
 				return Collections.emptyIterator();
 			}
-			else if (o instanceof Iterable<?> it) {
+			else if (o instanceof Iterable<?>) {
 				return iteratorOf(parent, o);
 			}
 			else if (o instanceof Optional<?> opt) {
