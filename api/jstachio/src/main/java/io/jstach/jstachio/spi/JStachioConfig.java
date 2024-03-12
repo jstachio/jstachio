@@ -2,7 +2,6 @@ package io.jstach.jstachio.spi;
 
 import java.lang.System.Logger;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.eclipse.jdt.annotation.NonNull;
