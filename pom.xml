@@ -349,7 +349,7 @@
         <plugin>
           <groupId>org.moditect</groupId>
           <artifactId>moditect-maven-plugin</artifactId>
-          <version>1.2.0.Final</version>
+          <version>1.2.1.Final</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
