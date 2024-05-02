@@ -45,7 +45,7 @@
     
     <plexus-compiler-eclipse.version>2.15.0</plexus-compiler-eclipse.version>
     <ecj.version>3.37.0</ecj.version>
-    <error-prone.version>2.26.1</error-prone.version>
+    <error-prone.version>2.27.1</error-prone.version>
     <checkerframework.version>3.42.0</checkerframework.version>
 
     <maven.build.cache.enabled>false</maven.build.cache.enabled>
