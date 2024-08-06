@@ -87,7 +87,23 @@ class DeclaredTypeRenderingContext implements ChildRenderingContext, InvertedExp
 		JavaExpression result = getMethodEntry(allMethods, name);
 		if (result != null)
 			return result;
-		result = getFieldEntry(enclosedElements, name);
+
+		List<Element> allFields = new ArrayList<>();
+
+		/*
+		 * We add all the enclosed fields first.
+		 */
+		allFields.addAll(ElementFilter.fieldsIn(enclosedElements));
+		/*
+		 * We add all the public fields that are inherited next. TODO at the moment we are
+		 * not going to support protected or package friendly fields.
+		 */
+		var publicFields = ElementFilter.fieldsIn(all).stream()
+				.filter(e -> e.getModifiers().contains(Modifier.PUBLIC) && !e.getModifiers().contains(Modifier.STATIC))
+				.toList();
+		allFields.addAll(publicFields);
+
+		result = getFieldEntry(allFields, name);
 
 		return result;
 	}
