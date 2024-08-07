@@ -323,6 +323,21 @@ import java.util.Optional;
  * field with such name but it's not accessible.</li>
  * </ol>
  *
+ * <h4 id="_inheritance">Inheritance and enclosed access of fields and methods</h4>
+ *
+ * Currently JStachio will only allow access to <code>public</code> methods and fields
+ * that are <strong>inherited</strong>. However enclosed fields and methods
+ * <strong>directly</strong> on the type annotated can be package protected (the default
+ * no modifier). <code>private</code> fields and methods regardless of inheritance are not
+ * allowed as the only way to access them would be through MethodHandles and would greatly
+ * complicate code generation.
+ * <p>
+ * <em> The above behavior is to simplify portability and usage of reflective engines such
+ * as JMustache and Handlebars.java in modular applications and libraries. However the use
+ * of these engines unlike JStachio may still require <code>open</code>ing up the module
+ * containing the annotated models. If you would like different rules for access please
+ * file an issue. </em>
+ *
  * <h4 id="_enums">Enum Matching Extension</h4> Basically enums have boolean keys that are
  * the enums name ({@code Enum.name()}) that can be used as conditional sections. Assume
  * {@code light} is an enum like:

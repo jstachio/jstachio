@@ -14,7 +14,10 @@ public class FieldExample {
 			""")
 	public class FieldExampleModelA extends FieldExampleModelB {
 
-		public String fieldA;
+		/*
+		 * Package friendly is allowed if it is directly on the class annotated.
+		 */
+		String fieldA;
 
 	}
 
