@@ -613,6 +613,24 @@ compileJava {
 }
 </code></pre>
 
+<h4 id="gradle_custom_buildDirectory">Gradle with custom build directory</h4>
+
+JStachio tries to resolve where the resource directory (root templates directory) is during gradle compilation by assuming
+you are following the standard build layout. This normally works provided you do not change the build layout.
+If you do you will need to set the resources compiler flag. Assuming <code>src/main/resources</code>
+is where your templates live the following will help resolve the templates:
+
+<pre>
+<code class="language-kotlin">
+compileJava {
+    options.compilerArgs.add("-Ajstache.resourcesPath=" + file("src/main/resources").absolutePath)
+}
+</code>
+</pre>
+
+The absolute path is required because it is not possible to resolve the project directory
+absolute path in the annotation processor while Gradle is compiling.
+
 <h2 id="configuration">Configuration</h2>
 
 <h3 id="compile_config">Compile time Configuration</h3>
@@ -888,6 +906,14 @@ As a painful last resort you can use Eclipse project settings and go to:
 
 Set {@value io.jstach.jstache.JStache#RESOURCES_PATH_OPTION} to the <strong>absolute</strong>
 path of your templates.
+</p>
+<p>
+<strong>If you changed the default output in either Gradle or Maven</strong> there
+is a strong possibility you will need set {@link io.jstach.jstache.JStache#RESOURCES_PATH_OPTION} 
+to an <strong>absolute</strong> path. In Maven one can resolve this by using 
+<strong>{$project.baseDir}/src/main/resources</strong> but this is usually not a problem in Maven
+as resources can be found with the annotation processor Filer. It is however a common problem
+with Gradle incremental.
 
 See {@link io.jstach.jstache.JStache#RESOURCES_PATH_OPTION} for more information.
 

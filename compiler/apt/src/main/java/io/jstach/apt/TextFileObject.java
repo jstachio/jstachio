@@ -101,6 +101,7 @@ class TextFileObject {
 			return resource.openInputStream();
 		}
 		boolean eclipseFileManager = env.getFiler().getClass().getName().startsWith("org.eclipse");
+		boolean isGradle = config.isGradleEnabled();
 
 		if (config.isDebug()) {
 			config.debug("File not found with Filer. resource: " + resource.toUri());
@@ -129,7 +130,7 @@ class TextFileObject {
 			FileObject dummySourceOutput = env.getFiler().getResource(StandardLocation.SOURCE_OUTPUT, "",
 					OutputPathPattern.DUMMY);
 
-			if (config.isGradleEnabled() && config.isDebug()) {
+			if (isGradle && config.isDebug()) {
 				config.debug("Looks like we are using Gradle incremental. dummy: " + dummyClassOutput.toUri());
 
 			}
@@ -181,7 +182,20 @@ class TextFileObject {
 							+ " sourcePaths = " + sourcePaths + " resourcesPaths=" + config.resourcesPaths());
 				}
 			}
+			else if (outputPattern == OutputPathPattern.CWD && isGradle) {
+				String error = "We are in Gradle and the build output has been changed from the default! "
+						+ "Please see: https://jstach.io/doc/jstachio/current/apidocs/#faq_template_not_found";
+				var exception = new IOException(error);
+				config.error(error, exception);
+				throw exception;
+			}
 			else {
+				if (outputPattern == OutputPathPattern.CWD) {
+					config.warn("Using CWD to resolve templates directory. "
+							+ "While this might work it is not reliable and suggested "
+							+ "you use the jstache.resourcePaths compiler flag to the absolute path of your resources directory. "
+							+ "Please see: https://jstach.io/doc/jstachio/current/apidocs/#faq_template_not_found");
+				}
 				projectPath = outputPattern.resolveProjectPath(dummyClassOutput.toUri());
 				pattern = outputPattern;
 			}
