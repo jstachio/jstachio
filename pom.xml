@@ -39,7 +39,7 @@
     
      <pistachio.version>0.1.2</pistachio.version>
 
-    <spring.version>6.1.8</spring.version>
+    <spring.version>6.1.14</spring.version>
     <spring-boot.version>3.3.0</spring-boot.version>
     <dropwizard.version>4.0.7</dropwizard.version>
     
