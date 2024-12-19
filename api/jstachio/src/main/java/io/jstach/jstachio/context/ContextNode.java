@@ -354,8 +354,8 @@ sealed interface Internal extends ContextNode {
 			if (o == null || Boolean.FALSE.equals(o)) {
 				return Collections.emptyIterator();
 			}
-			else if (o instanceof Iterable<?>) {
-				return iteratorOf(parent, o);
+			else if (o instanceof Iterable<?> it) {
+				return iteratorOf(parent, it);
 			}
 			else if (o instanceof Optional<?> opt) {
 				return opt.stream() //
