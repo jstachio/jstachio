@@ -302,7 +302,7 @@ class TextFileObject {
 		GRADLE_TEST("/build/classes/java/test/", List.of(RESOURCES_TEST)), //
 		MAVEN("/target/classes/", List.of(RESOURCES)), //
 		MAVEN_TEST("/target/test-classes/", List.of(RESOURCES_TEST)), //
-		CWD(".", List.of("src/main/resources")) {
+		CWD(".", List.of(RESOURCES)) {
 			@Override
 			public boolean matches(String uri) {
 				return false;
