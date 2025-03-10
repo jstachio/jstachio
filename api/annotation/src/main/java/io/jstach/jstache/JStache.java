@@ -165,15 +165,15 @@ import java.util.Optional;
  *         &lt;div hx-target="this"&gt;
  *           {{#archive-ui}}
  *             {{#contact.archived}}
- *             &lt;button hx-patch="/contacts/${contact.id}/unarchive"&gt;Unarchive&lt;/button&gt;
+ *             &lt;button hx-patch="/contacts/{{contact.id}}/unarchive"&gt;Unarchive&lt;/button&gt;
  *             {{/contact.archived}}
  *             {{^contact.archived}}
- *             &lt;button hx-delete="/contacts/${contact.id}"&gt;Archive&lt;/button&gt;
+ *             &lt;button hx-delete="/contacts/{{contact.id}}"&gt;Archive&lt;/button&gt;
  *             {{/contact.archived}}
  *           {{/archive-ui}}
  *         &lt;/div&gt;
  *         &lt;h3&gt;Contact&lt;/h3&gt;
- *         &lt;p&gt;${contact.email}&lt;/p&gt;
+ *         &lt;p&gt;{{contact.email}}&lt;/p&gt;
  *     &lt;/body&gt;
  * &lt;/html&gt;
  * </code> </pre>
@@ -187,10 +187,10 @@ import java.util.Optional;
  *
  * <pre><code class="language-hbs">
  *   {{#contact.archived}}
- *   &lt;button hx-patch="/contacts/${contact.id}/unarchive"&gt;Unarchive&lt;/button&gt;
+ *   &lt;button hx-patch="/contacts/{{contact.id}}/unarchive"&gt;Unarchive&lt;/button&gt;
  *   {{/contact.archived}}
  *   {{^contact.archived}}
- *   &lt;button hx-delete="/contacts/${contact.id}"&gt;Archive&lt;/button&gt;
+ *   &lt;button hx-delete="/contacts/{{contact.id}}"&gt;Archive&lt;/button&gt;
  *   {{/contact.archived}}
  * </code> </pre>
  *
