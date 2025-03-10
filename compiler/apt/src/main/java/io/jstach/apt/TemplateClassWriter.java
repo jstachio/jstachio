@@ -253,8 +253,9 @@ class TemplateClassWriter implements LoggingSupplier {
 		String templateEscaperExp = GeneratedMethod.templateEscaper.gen(generatedMethods) ? "this.escaper"
 				: "templateEscaper()";
 		String templateAppenderExp = "templateAppender()";
-
-		println("package " + packageName + ";");
+		if (!packageName.isBlank()) {
+			println("package " + packageName + ";");
+		}
 		println("");
 		println("/**");
 		println(" * Generated Renderer.");
