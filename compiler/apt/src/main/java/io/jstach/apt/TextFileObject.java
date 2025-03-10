@@ -291,7 +291,8 @@ class TextFileObject {
 
 	@SuppressWarnings("ImmutableEnumChecker")
 	private enum OutputPathPattern implements ProjectPattern {
-
+		KAPT("/build/tmp/kapt3/classes/main/", List.of("src/main/resources")), //
+		KAPT_TEST("/build/tmp/kapt3/classes/test/", List.of("src/test/resources")), //
 		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
 		GRADLE_TEST("/build/classes/java/test/", List.of("src/test/resources")), //
 		MAVEN("/target/classes/", List.of("src/main/resources")), //
