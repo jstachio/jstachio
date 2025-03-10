@@ -279,7 +279,7 @@ class TextFileObject {
 
 		String RESOURCES = "src/main/resources";
 
-		String RESOURCES_TEST = "src/main/resources";
+		String RESOURCES_TEST = "src/test/resources";
 
 		List<String> relativeSourcePaths();
 
