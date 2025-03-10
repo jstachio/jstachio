@@ -162,6 +162,11 @@ as the model is already in memory.
 The Mustache specification allows the ability to recursively render partials. JStachio at this time
 does not support this. The current workaround is to use custom lambdas.
 
+<h4 id="limitations_kotlin">Full Kotlin support</h4>
+
+JStachio will mostly work with <a href="https://kotlinlang.org/docs/kapt.html">Kotlin's KAPT</a> 
+provided you do not use Kotlin specific data structures. At this time only KAPT is supported and
+not Kotlin's newer KSP which allows incremental.
 
 <h2 id="mustache">Mustache Syntax and Semantics</h2>
 
@@ -1002,6 +1007,35 @@ Below is an example:
 See the <a href="#jmustache">JMustache Extension</a> that uses reflection. In the future JStachio
 will have its own reflection based runtime for template development but for now we are leveraging the
 fact that JMustache is almost equivalent to JStachio once configured correctly.
+
+<p>
+We are currently exploring other hot reload options that you can see in
+<a href="https://github.com/jstachio/jstachio/issues/187">issue #187 Better Hot Reload</a>.
+</p>
+
+<h3 id="faq_resource_recompile">How come my IDE will not recompile on template resource change or it fails on partial recompile?</h3>
+
+Both Intellij and Eclipse offer incremental compilation however they are not triggered for 
+changes in external templates (for example templates in <code>src/main/resources</code>).
+The issue is that IDE does not know that it has to recompile the corresponding model class (annotated class)
+and thus the code is not regenerated when you change a resource.
+<p>
+Some workarounds are currently being explored in 
+<a href="https://github.com/jstachio/jstachio/issues/187">issue #187 Better Hot Reload</a>.
+One workaround is to modify the class that is associated with the resource or to do a full rebuild.
+In the future IDE plugins maybe offered to handle this issue.
+Another workaround is to use embedded template strings for template code that changes frequently
+and then reference resources that do not change frequently such as the header and footer with partials.
+The idea is the class will be updated because you have changed the annotation contents.
+</p>
+<p>
+In some cases partial compiliation causes errors especially if you are mixing command line
+build and your IDE build (<a href="https://github.com/jstachio/jstachio/issues/422">see issue #422</a>).
+This happens because the annotation processor sees a source file has already been created.
+Thus you may get errors and the solution for now is to issue a rebuild in your IDE or build tool.
+In the future a flag maybe added to ignore these errors. This problem though is independent of 
+JStachio and is a known issue with annotation processors and IDEs.
+</p>
 
 
 <h3 id="faq_no_reflection">How do I make the JStachio runtime use zero reflection?</h3>
