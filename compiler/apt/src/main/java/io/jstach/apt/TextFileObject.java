@@ -277,7 +277,11 @@ class TextFileObject {
 
 	private interface ProjectPattern {
 
-		public List<String> relativeSourcePaths();
+		String RESOURCES = "src/main/resources";
+
+		String RESOURCES_TEST = "src/main/resources";
+
+		List<String> relativeSourcePaths();
 
 		record EclipseProjectPattern(List<String> relativeSourcePaths) implements ProjectPattern {
 			// eclipse bug
@@ -291,12 +295,13 @@ class TextFileObject {
 
 	@SuppressWarnings("ImmutableEnumChecker")
 	private enum OutputPathPattern implements ProjectPattern {
-		KAPT("/build/tmp/kapt3/classes/main/", List.of("src/main/resources")), //
-		KAPT_TEST("/build/tmp/kapt3/classes/test/", List.of("src/test/resources")), //
-		GRADLE("/build/classes/java/main/", List.of("src/main/resources")), //
-		GRADLE_TEST("/build/classes/java/test/", List.of("src/test/resources")), //
-		MAVEN("/target/classes/", List.of("src/main/resources")), //
-		MAVEN_TEST("/target/test-classes/", List.of("src/test/resources")), //
+
+		KAPT("/build/tmp/kapt3/classes/main/", List.of(RESOURCES)), //
+		KAPT_TEST("/build/tmp/kapt3/classes/test/", List.of(RESOURCES_TEST)), //
+		GRADLE("/build/classes/java/main/", List.of(RESOURCES)), //
+		GRADLE_TEST("/build/classes/java/test/", List.of(RESOURCES_TEST)), //
+		MAVEN("/target/classes/", List.of(RESOURCES)), //
+		MAVEN_TEST("/target/test-classes/", List.of(RESOURCES_TEST)), //
 		CWD(".", List.of("src/main/resources")) {
 			@Override
 			public boolean matches(String uri) {
