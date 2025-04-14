@@ -330,7 +330,7 @@ public enum Light {
 }
 ```
 
-You can conditinally select on the enum like a pattern match:
+You can conditionally select on the enum like a pattern match:
 
 ```hbs
 {{#light.RED}}
