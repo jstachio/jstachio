@@ -198,7 +198,7 @@ public non-sealed interface JStachioFilter extends JStachioExtension {
 	}
 
 	/**
-	 * Creates a composite filter of a many filters.
+	 * Creates a composite filter of many filters.
 	 * @param filters not null.
 	 * @return a composite filter ordered by {@link JStachioFilter#order()}
 	 */
